@@ -6,7 +6,7 @@ This application is a basic [create-react-app](https://github.com/facebook/creat
 
 ## How to Run in a Browser
 
-1. [Run a local Haveno test network](https://github.com/woodser/haveno#running-a-local-haveno-test-network) except replace `./bisq-desktop` with `./bisq-daemon` when starting Alice at port 9999.
+1. [Run a local Haveno test network](https://github.com/woodser/haveno#running-a-local-haveno-test-network) except replace `./haveno-desktop` with `./haveno-daemon` when starting Alice at port 9999.
 2. `git clone https://github.com/haveno-dex/haveno-ui-poc`
 4. Start envoy with the config in ./config/envoy.yaml<br>
   Example: `docker run --rm -it -v ~/git/haveno-ui-poc/config/envoy.yaml:/envoy.yaml -p 8080:8080 envoyproxy/envoy-dev:8a2143613d43d17d1eb35a24b4a4a4c432215606 -c /envoy.yaml`
