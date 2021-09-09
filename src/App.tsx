@@ -1,5 +1,5 @@
 import React from 'react';
-import logo from './logo.svg';
+import logo from './logo.png';
 import './App.css';
 
 /**
@@ -23,18 +23,18 @@ class App extends React.Component<{}, {daemonVersion: string}> {
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
           <p>
-            Haveno daemon version: {this.state.daemonVersion}
+            Version {this.state.daemonVersion}
           </p>
           <p>
-            Edit <code>src/App.tsx</code> and save to reload!
+            Coming soon...
           </p>
           <a
             className="App-link"
-            href="https://reactjs.org"
+            href="https://haveno.exchange"
             target="_blank"
             rel="noopener noreferrer"
           >
-            Learn React
+            Learn More
           </a>
         </header>
       </div>
