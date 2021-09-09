@@ -15,7 +15,7 @@ This application is a basic [create-react-app](https://github.com/facebook/creat
 7. Confirm that the Haveno daemon version is displayed (1.6.2)
 
 <p align="center">
-    <img src="haveno-ui-poc.png" width="400" height="400"/><br>
+    <img src="haveno-ui-poc.png" width="500"/><br>
 </p>
 
 ## How to Update the Protobuf Client
