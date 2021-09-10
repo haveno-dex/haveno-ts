@@ -16,8 +16,6 @@ test("Can get the user's balances", async () => {
   let balances: BalancesModel = await daemon.getBalances();
   expect(balances.unlockedBalance);
   expect(balances.lockedBalance);
-  expect(balances.reservedBalance); // TODO: remove this
-  expect(balances.totalBalance); // TODO: remove this
-  //expect(balances.reservedOfferBalance); // TODO
-  //expect(balances.reservedMultisigBalance); // TODO
+  expect(balances.reservedOfferBalance);
+  expect(balances.reservedTradeBalance);
 });

@@ -59,10 +59,10 @@ class HavenoDaemon {
       walletsClient.getBalances(request, {password: that._password}, function(err: any, response: any) {
         if (err) reject(err);
         else resolve(new BalancesModel(
-            BigInt(response.getBalances().getXmr().getAvailablebalance()),
+            BigInt(response.getBalances().getXmr().getUnlockedbalance()),
             BigInt(response.getBalances().getXmr().getLockedbalance()),
-            BigInt(response.getBalances().getXmr().getReservedbalance()),
-            BigInt(response.getBalances().getXmr().getTotalbalance())));
+            BigInt(response.getBalances().getXmr().getReservedofferbalance()),
+            BigInt(response.getBalances().getXmr().getReservedtradebalance())));
       });
     });
   }
@@ -71,17 +71,16 @@ class HavenoDaemon {
 class BalancesModel {
   unlockedBalance: bigint;
   lockedBalance: bigint;
-  reservedBalance: bigint;
-  totalBalance: bigint;
-  constructor(
-        unlockedBalance: bigint,
+  reservedOfferBalance: bigint;
+  reservedTradeBalance: bigint;
+  constructor(unlockedBalance: bigint,
         lockedBalance: bigint,
-        reservedBalance: bigint,
-        totalBalance: bigint) {
+        reservedOfferBalance: bigint,
+        reservedTradeBalance: bigint) {
     this.unlockedBalance = unlockedBalance;
     this.lockedBalance = lockedBalance;
-    this.reservedBalance = reservedBalance;
-    this.totalBalance = totalBalance;
+    this.reservedOfferBalance = reservedOfferBalance;
+    this.reservedTradeBalance = reservedTradeBalance;
   }
 }
 
