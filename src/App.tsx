@@ -3,14 +3,17 @@ import logo from './logo.png';
 import './App.css';
 import {HavenoDaemon} from './HavenoDaemon';
 
+const HAVENO_DAEMON_URL = "http://localhost:8080";
+const HAVENO_DAEMON_PASSWORD = "apitest";
+
 class App extends React.Component<{}, {daemonVersion: string}> {
-    
+  
   daemon: HavenoDaemon;
     
   constructor(props: any) {
     super(props);
     this.state = {daemonVersion: ""};
-    this.daemon = new HavenoDaemon("http://localhost:8080", undefined, "apitest");
+    this.daemon = new HavenoDaemon(HAVENO_DAEMON_URL, HAVENO_DAEMON_PASSWORD);
   }
 
   render() {
@@ -38,7 +41,12 @@ class App extends React.Component<{}, {daemonVersion: string}> {
   }
   
   async componentDidMount() {
-    this.setState({daemonVersion: await this.daemon.getVersion()});
+    try {
+      this.setState({daemonVersion: await this.daemon.getVersion()});
+    } catch (err) {
+      console.error(err);
+      this.setState({daemonVersion: " not available"});
+    }
   }
 }
 
