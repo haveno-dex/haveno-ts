@@ -20,7 +20,14 @@ test("Can get the user's balances", async () => {
 });
 
 test("Can get offers", async() => {
-  let offers: HavenoOffer[] = await daemon.getOffers("SELL", "XMR");
+  let offers: HavenoOffer[] = await daemon.getOffers("BUY");
+  for (let offer of offers) {
+    testOffer(offer);
+  }
+});
+
+test("Can get the user's created offers", async() => {
+  let offers: HavenoOffer[] = await daemon.getMyOffers("SELL");
   for (let offer of offers) {
     testOffer(offer);
   }

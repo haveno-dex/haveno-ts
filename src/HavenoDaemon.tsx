@@ -68,51 +68,49 @@ class HavenoDaemon {
   }
   
   /**
-   * Get available offers.
+   * Get available offers to buy or sell XMR.
    * 
    * @param {string} direction - one of "BUY" or "SELL"
-   * @param {string} currencyCode - the currency being bought or sold, e.g. "ETH"
    * 
    * @return {HavenoOffer[]} available offers
    */
-  async getOffers(direction: string, currencyCode: string): Promise<HavenoOffer[]> {
+  async getOffers(direction: string): Promise<HavenoOffer[]> {
     if (!this._offersClient) this._offersClient = new OffersClient(this._url);
     let request = new GetOffersRequest()
             .setDirection(direction)
-            .setCurrencycode(currencyCode);
+            .setCurrencycode("XMR");
     let that = this;
     return new Promise(function(resolve, reject) {
       that._offersClient.getOffers(request, {password: that._password}, function(err: any, response: any) {
         if (err) reject(err);
         else {
           let offers: HavenoOffer[] = [];
-          for (let offer of response.getOffersList()) {
-            offers.push(new HavenoOffer(
-                offer.getId(),
-                offer.getDirection(),
-                offer.getPrice(),
-                offer.getUsemarketbasedprice(),
-                offer.getMarketpricemargin(),
-                offer.getAmount(),
-                offer.getMinamount(),
-                offer.getVolume(),
-                offer.getMinvolume(),
-                offer.getBuyersecuritydeposit(),
-                offer.getTriggerprice(),
-                offer.getIscurrencyformakerfeebtc(),
-                offer.getPaymentaccountid(),
-                offer.getPaymentmethodid(),
-                offer.getPaymentmethodshortname(),
-                offer.getBasecurrencycode(),
-                offer.getCountercurrencycode(),
-                offer.getDate(),
-                offer.getState(),
-                offer.getSellersecuritydeposit(),
-                offer.getOfferfeepaymenttxid(),
-                offer.getTxfee(),
-                offer.getMakerfee()
-            ));
-          }
+          for (let offer of response.getOffersList()) offers.push(grpcOfferToHavenoOffer(offer));
+          resolve(offers);
+        }
+      });
+    });
+  }
+  
+  /**
+   * Get user's created offers to buy or sell XMR.
+   * 
+   * @param {string} direction - one of "BUY" or "SELL"
+   * 
+   * @return {HavenoOffer[]} created offers
+   */
+  async getMyOffers(direction: string): Promise<HavenoOffer[]> {
+    if (!this._offersClient) this._offersClient = new OffersClient(this._url);
+    let request = new GetOffersRequest()
+            .setDirection(direction)
+            .setCurrencycode("XMR");
+    let that = this;
+    return new Promise(function(resolve, reject) {
+      that._offersClient.getMyOffers(request, {password: that._password}, function(err: any, response: any) {
+        if (err) reject(err);
+        else {
+          let offers: HavenoOffer[] = [];
+          for (let offer of response.getOffersList()) offers.push(grpcOfferToHavenoOffer(offer));
           resolve(offers);
         }
       });
@@ -207,6 +205,34 @@ class HavenoOffer {
     this.txFee = txFee;
     this.makerFee = makerFee;
   }
+}
+
+function grpcOfferToHavenoOffer(offer: any) {
+  return new HavenoOffer(
+      offer.getId(),
+      offer.getDirection(),
+      offer.getPrice(),
+      offer.getUsemarketbasedprice(),
+      offer.getMarketpricemargin(),
+      offer.getAmount(),
+      offer.getMinamount(),
+      offer.getVolume(),
+      offer.getMinvolume(),
+      offer.getBuyersecuritydeposit(),
+      offer.getTriggerprice(),
+      offer.getIscurrencyformakerfeebtc(),
+      offer.getPaymentaccountid(),
+      offer.getPaymentmethodid(),
+      offer.getPaymentmethodshortname(),
+      offer.getBasecurrencycode(),
+      offer.getCountercurrencycode(),
+      offer.getDate(),
+      offer.getState(),
+      offer.getSellersecuritydeposit(),
+      offer.getOfferfeepaymenttxid(),
+      offer.getTxfee(),
+      offer.getMakerfee()
+  );
 }
 
 export {HavenoDaemon, HavenoBalances, HavenoOffer};
