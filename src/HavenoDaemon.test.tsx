@@ -1,4 +1,6 @@
-import {HavenoDaemon, HavenoBalances, HavenoOffer} from "./HavenoDaemon";
+import {HavenoDaemon} from "./HavenoDaemon";
+import {XmrBalanceInfo, OfferInfo} from './protobuf/grpc_pb';
+import {PaymentAccount} from './protobuf/pb_pb';
 
 const HAVENO_UI_VERSION = "1.6.2";
 const HAVENO_DAEMON_URL = "http://localhost:8080";
@@ -12,21 +14,40 @@ test("Can get the version", async () => {
 });
 
 test("Can get the user's balances", async () => {
-  let balances: HavenoBalances = await daemon.getBalances();
-  expect(balances.unlockedBalance);
-  expect(balances.lockedBalance);
-  expect(balances.reservedOfferBalance);
-  expect(balances.reservedTradeBalance);
+  let balances: XmrBalanceInfo = await daemon.getBalances();
+  expect(balances.getUnlockedbalance()); // TODO: correct camelcase in grpc
+  expect(balances.getLockedbalance());
+  expect(balances.getReservedofferbalance());
+  expect(balances.getReservedtradebalance());
 });
 
-test("Can get offers", async() => {
-  let offers: HavenoOffer[] = await daemon.getOffers("SELL", "XMR");
+test("Can get offers", async () => {
+  let offers: OfferInfo[] = await daemon.getOffers("BUY");
   for (let offer of offers) {
     testOffer(offer);
   }
 });
 
-function testOffer(offer: HavenoOffer) {
-  expect(offer.id).toHaveLength;
+test("Can get the user's created offers", async () => {
+  let offers: OfferInfo[] = await daemon.getMyOffers("SELL");
+  for (let offer of offers) {
+    testOffer(offer);
+  }
+});
+
+test("Can get payment accounts", async () => {
+  let paymentAccounts: PaymentAccount[] = await daemon.getPaymentAccounts();
+  for (let paymentAccount of paymentAccounts) {
+    testPaymentAccount(paymentAccount);
+  }
+});
+
+function testPaymentAccount(paymentAccount: PaymentAccount) {
+  expect(paymentAccount.getId()).toHaveLength;
+  // TODO: test rest of offer
+}
+
+function testOffer(offer: OfferInfo) {
+  expect(offer.getId()).toHaveLength;
   // TODO: test rest of offer
 }
