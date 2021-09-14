@@ -42,6 +42,75 @@ test("Can get payment accounts", async () => {
   }
 });
 
+test("Can create crypto payment account", async () => {
+  let ethPaymentAccount: PaymentAccount = await daemon.createCryptoPaymentAccount(
+        "my eth account",
+        "eth",
+        "0xdBdAb835Acd6fC84cF5F9aDD3c0B5a1E25fbd99f",
+        true);
+   testPaymentAccount(ethPaymentAccount);
+});
+
+test("Can post and remove an offer", async () => {
+    
+  // test requires ethereum payment account
+  let ethPaymentAccount: PaymentAccount | undefined;
+  for (let paymentAccount of await daemon.getPaymentAccounts()) {
+    if (paymentAccount.getSelectedTradeCurrency()?.getCode() === "ETH") {
+      ethPaymentAccount = paymentAccount;
+      break;
+    }
+  }
+  if (!ethPaymentAccount) throw new Error("Test requires ethereum payment account to post offer");
+  
+  // get unlocked balance before reserving offer
+  let unlockedBalanceBefore: bigint = BigInt((await daemon.getBalances()).getUnlockedbalance()); // TODO: correct camelcase
+  
+  // post offer
+  let amount: bigint = BigInt("250000000000");
+  let minAmount: bigint = BigInt("150000000000");
+  let price: number = 12.378981; // TODO: price is optional? price string gets converted to long?
+  let useMarketBasedPrice: boolean = true;
+  let marketPriceMargin: number = 0.02; // within 2%
+  let buyerSecurityDeposit: number = 0.15; // 15%
+  let triggerPrice: number = 12; // TODO: fails if there is decimal, gets converted to long?
+  let paymentAccountId: string = ethPaymentAccount.getId();
+  let offer: OfferInfo = await daemon.postOffer("eth",
+        "buy", // buy xmr for eth
+        price,
+        useMarketBasedPrice,
+        marketPriceMargin,
+        amount,
+        minAmount,
+        buyerSecurityDeposit,
+        paymentAccountId,
+        triggerPrice);
+  testOffer(offer);
+
+  // unlocked balance has decreased
+  let unlockedBalanceAfter: bigint = BigInt((await daemon.getBalances()).getUnlockedbalance());
+  expect(unlockedBalanceAfter).toBeLessThan(unlockedBalanceBefore);
+  
+  // offer is included in my offers only
+  if (!getOffer(await daemon.getMyOffers("buy"), offer.getId())) throw new Error("Offer " + offer.getId() + " was not found in my offers");
+  if (getOffer(await daemon.getOffers("buy"), offer.getId())) throw new Error("My offer " + offer.getId() + " should not appear in available offers");
+  
+  // cancel the offer
+  await daemon.cancelOffer(offer.getId());
+  
+  // offer is removed from my offers
+  if (getOffer(await daemon.getOffers("buy"), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in my offers after removal");
+  
+  // reserved balance restored
+  expect(unlockedBalanceBefore).toEqual(BigInt((await daemon.getBalances()).getUnlockedbalance()));
+});
+
+// ------------------------------- HELPERS ------------------------------------
+
+function getOffer(offers: OfferInfo[], id: string): OfferInfo | undefined {
+  return offers.find(offer => offer.getId() === id);
+}
+
 function testPaymentAccount(paymentAccount: PaymentAccount) {
   expect(paymentAccount.getId()).toHaveLength;
   // TODO: test rest of offer
