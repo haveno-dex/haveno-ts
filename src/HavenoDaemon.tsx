@@ -1,6 +1,6 @@
 import * as grpcWeb from 'grpc-web';
 import {GetVersionClient, WalletsClient, OffersClient, PaymentAccountsClient} from './protobuf/GrpcServiceClientPb';
-import {GetVersionRequest, GetVersionReply, GetBalancesRequest, GetBalancesReply, XmrBalanceInfo, GetOffersRequest, GetOffersReply, OfferInfo, GetPaymentAccountsRequest, GetPaymentAccountsReply} from './protobuf/grpc_pb';
+import {GetVersionRequest, GetVersionReply, GetBalancesRequest, GetBalancesReply, XmrBalanceInfo, GetOffersRequest, GetOffersReply, OfferInfo, GetPaymentAccountsRequest, GetPaymentAccountsReply, CreateCryptoCurrencyPaymentAccountRequest, CreateCryptoCurrencyPaymentAccountReply, CreateOfferRequest, CreateOfferReply, CancelOfferRequest} from './protobuf/grpc_pb';
 import {PaymentAccount} from './protobuf/pb_pb';
 
 /**
@@ -114,6 +114,94 @@ class HavenoDaemon {
       that._paymentAccountsClient.getPaymentAccounts(new GetPaymentAccountsRequest(), {password: that._password}, function(err: grpcWeb.Error, response: GetPaymentAccountsReply) {
         if (err) reject(err);
         else resolve(response.getPaymentaccountsList());
+      });
+    });
+  }
+  
+  /**
+   * Create a crypto payment account.
+   * 
+   * @param {string} accountName - description of the account
+   * @param {string} currencyCode - currency code of the account
+   * @param {string} address - payment address of the account
+   * @param {boolean} tradeInstant - whether or not trade can be completed quickly
+   * @return {PaymentAccount} the created payment account
+   */
+  async createCryptoPaymentAccount(accountName: string,
+        currencyCode: string,
+        address: string,
+        tradeInstant: boolean): Promise<PaymentAccount> {
+    let that = this;
+    let request = new CreateCryptoCurrencyPaymentAccountRequest()
+            .setAccountname(accountName)
+            .setCurrencycode(currencyCode)
+            .setAddress(address)
+            .setTradeinstant(tradeInstant);
+    return new Promise(function(resolve, reject) {
+      that._paymentAccountsClient.createCryptoCurrencyPaymentAccount(request, {password: that._password}, function(err: grpcWeb.Error, response: CreateCryptoCurrencyPaymentAccountReply) {
+        if (err) reject(err);
+        else resolve(response.getPaymentaccount());
+      });
+    });
+  }
+  
+  /**
+   * Post an offer.
+   * 
+   * @param {string} currencyCode - currency code of traded pair
+   * @param {string} direction - one of "BUY" or "SELL"
+   * @param {number} price - trade price
+   * @param {bool} useMarketBasedPrice - base trade on market price
+   * @param {number} marketPriceMargin - % from market price to tolerate
+   * @param {bigint} amount - amount to trade
+   * @param {bigint} minAmount - minimum amount to trade
+   * @param {number} buyerSecurityDeposit - buyer security deposit as % of trade amount
+   * @param {string} paymentAccountId - payment account id
+   * @param {number} triggerPrice - price to remove offer
+   * @return {HavenoOffer[]} created offers
+   */
+  async postOffer(currencyCode: string,
+        direction: string,
+        price: number,
+        useMarketBasedPrice: boolean,
+        marketPriceMargin: number,
+        amount: bigint,
+        minAmount: bigint,
+        buyerSecurityDeposit: number,
+        paymentAccountId: string,
+        triggerPrice?: number): Promise<OfferInfo> {
+    let that = this;
+    let request = new CreateOfferRequest()
+            .setCurrencycode(currencyCode)
+            .setDirection(direction)
+            .setPrice(price.toString())
+            .setUsemarketbasedprice(useMarketBasedPrice)
+            .setMarketpricemargin(marketPriceMargin)
+            .setAmount(amount.toString())
+            .setMinamount(minAmount.toString())
+            .setBuyersecuritydeposit(buyerSecurityDeposit)
+            .setPaymentaccountid(paymentAccountId)
+            .setMakerfeecurrencycode("XMR");
+    if (triggerPrice) request.setTriggerprice(BigInt(triggerPrice.toString()).toString());
+    return new Promise(function(resolve, reject) {
+      that._offersClient.createOffer(request, {password: that._password}, function(err: grpcWeb.Error, response: CreateOfferReply) {
+        if (err) reject(err);
+        else resolve(response.getOffer());
+      });
+    });
+  }
+  
+  /**
+   * Remove a posted offer, unreserving its funds.
+   * 
+   * @param {string} id - the offer id to cancel
+   */
+  async cancelOffer(id: string) {
+    let that = this;
+    return new Promise(function(resolve, reject) {
+      that._offersClient.cancelOffer(new CancelOfferRequest().setId(id), {password: that._password}, function(err: grpcWeb.Error) {
+        if (err) reject(err);
+        else resolve();
       });
     });
   }
