@@ -22,4 +22,4 @@ This application is a basic [create-react-app](https://github.com/facebook/creat
 
 1. Copy grpc.proto and pb.proto from Haveno's [protobuf definitions](https://github.com/haveno-dex/haveno/tree/master/proto/src/main/proto) to ./config.
 2. Install protobuf for your system, e.g. on mac: `brew install protobuf`
-2. `./bin/build_protobuf.sh`
+3. `./bin/build_protobuf.sh`

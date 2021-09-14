@@ -9332,10 +9332,10 @@ proto.io.bisq.protobuffer.PreliminaryGetDataRequest.prototype.setNonce = functio
 
 /**
  * repeated bytes excluded_keys = 2;
- * @return {!Array<string>}
+ * @return {!(Array<!Uint8Array>|Array<string>)}
  */
 proto.io.bisq.protobuffer.PreliminaryGetDataRequest.prototype.getExcludedKeysList = function() {
-  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 2));
+  return /** @type {!(Array<!Uint8Array>|Array<string>)} */ (jspb.Message.getRepeatedField(this, 2));
 };
 
 
@@ -9984,10 +9984,10 @@ proto.io.bisq.protobuffer.GetUpdatedDataRequest.prototype.setNonce = function(va
 
 /**
  * repeated bytes excluded_keys = 3;
- * @return {!Array<string>}
+ * @return {!(Array<!Uint8Array>|Array<string>)}
  */
 proto.io.bisq.protobuffer.GetUpdatedDataRequest.prototype.getExcludedKeysList = function() {
-  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 3));
+  return /** @type {!(Array<!Uint8Array>|Array<string>)} */ (jspb.Message.getRepeatedField(this, 3));
 };
 
 
@@ -12710,10 +12710,10 @@ proto.io.bisq.protobuffer.RefreshOfferMessage.serializeBinaryToWriter = function
 
 /**
  * optional bytes hash_of_data_and_seq_nr = 1;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.RefreshOfferMessage.prototype.getHashOfDataAndSeqNr = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
@@ -12752,10 +12752,10 @@ proto.io.bisq.protobuffer.RefreshOfferMessage.prototype.setHashOfDataAndSeqNr = 
 
 /**
  * optional bytes signature = 2;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.RefreshOfferMessage.prototype.getSignature = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
@@ -12794,10 +12794,10 @@ proto.io.bisq.protobuffer.RefreshOfferMessage.prototype.setSignature = function(
 
 /**
  * optional bytes hash_of_payload = 3;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.RefreshOfferMessage.prototype.getHashOfPayload = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
@@ -14175,10 +14175,10 @@ proto.io.bisq.protobuffer.PrefixedSealedAndSignedMessage.prototype.hasSealedAndS
 
 /**
  * optional bytes address_prefix_hash = 3;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.PrefixedSealedAndSignedMessage.prototype.getAddressPrefixHash = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
@@ -14885,10 +14885,10 @@ proto.io.bisq.protobuffer.InputsForDepositTxRequest.prototype.setChangeOutputAdd
 
 /**
  * optional bytes taker_multi_sig_pub_key = 11;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.InputsForDepositTxRequest.prototype.getTakerMultiSigPubKey = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 11, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 11, ""));
 };
 
 
@@ -15223,10 +15223,10 @@ proto.io.bisq.protobuffer.InputsForDepositTxRequest.prototype.setUid = function(
 
 /**
  * optional bytes account_age_witness_signature_of_offer_id = 22;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.InputsForDepositTxRequest.prototype.getAccountAgeWitnessSignatureOfOfferId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 22, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 22, ""));
 };
 
 
@@ -15767,10 +15767,10 @@ proto.io.bisq.protobuffer.InputsForDepositTxResponse.prototype.setMakerPayoutAdd
 
 /**
  * optional bytes prepared_deposit_tx = 7;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.InputsForDepositTxResponse.prototype.getPreparedDepositTx = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
 };
 
 
@@ -15847,10 +15847,10 @@ proto.io.bisq.protobuffer.InputsForDepositTxResponse.prototype.clearMakerInputsL
 
 /**
  * optional bytes maker_multi_sig_pub_key = 9;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.InputsForDepositTxResponse.prototype.getMakerMultiSigPubKey = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 9, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 9, ""));
 };
 
 
@@ -15944,10 +15944,10 @@ proto.io.bisq.protobuffer.InputsForDepositTxResponse.prototype.setUid = function
 
 /**
  * optional bytes account_age_witness_signature_of_prepared_deposit_tx = 12;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.InputsForDepositTxResponse.prototype.getAccountAgeWitnessSignatureOfPreparedDepositTx = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 12, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 12, ""));
 };
 
 
@@ -16590,10 +16590,10 @@ proto.io.bisq.protobuffer.InitTradeRequest.prototype.setUid = function(value) {
 
 /**
  * optional bytes account_age_witness_signature_of_offer_id = 11;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.InitTradeRequest.prototype.getAccountAgeWitnessSignatureOfOfferId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 11, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 11, ""));
 };
 
 
@@ -17561,10 +17561,10 @@ proto.io.bisq.protobuffer.SignContractRequest.prototype.setAccountId = function(
 
 /**
  * optional bytes payment_account_payload_hash = 7;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.SignContractRequest.prototype.getPaymentAccountPayloadHash = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
 };
 
 
@@ -19857,10 +19857,10 @@ proto.io.bisq.protobuffer.DelayedPayoutTxSignatureRequest.prototype.hasSenderNod
 
 /**
  * optional bytes delayed_payout_tx = 4;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.DelayedPayoutTxSignatureRequest.prototype.getDelayedPayoutTx = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
 
@@ -19899,10 +19899,10 @@ proto.io.bisq.protobuffer.DelayedPayoutTxSignatureRequest.prototype.setDelayedPa
 
 /**
  * optional bytes delayed_payout_tx_seller_signature = 5;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.DelayedPayoutTxSignatureRequest.prototype.getDelayedPayoutTxSellerSignature = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
 };
 
 
@@ -20176,10 +20176,10 @@ proto.io.bisq.protobuffer.DelayedPayoutTxSignatureResponse.prototype.hasSenderNo
 
 /**
  * optional bytes delayed_payout_tx_buyer_signature = 4;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.DelayedPayoutTxSignatureResponse.prototype.getDelayedPayoutTxBuyerSignature = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
 
@@ -20218,10 +20218,10 @@ proto.io.bisq.protobuffer.DelayedPayoutTxSignatureResponse.prototype.setDelayedP
 
 /**
  * optional bytes deposit_tx = 5;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.DelayedPayoutTxSignatureResponse.prototype.getDepositTx = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
 };
 
 
@@ -20495,10 +20495,10 @@ proto.io.bisq.protobuffer.DepositTxAndDelayedPayoutTxMessage.prototype.hasSender
 
 /**
  * optional bytes deposit_tx = 4;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.DepositTxAndDelayedPayoutTxMessage.prototype.getDepositTx = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
 
@@ -20537,10 +20537,10 @@ proto.io.bisq.protobuffer.DepositTxAndDelayedPayoutTxMessage.prototype.setDeposi
 
 /**
  * optional bytes delayed_payout_tx = 5;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.DepositTxAndDelayedPayoutTxMessage.prototype.getDelayedPayoutTx = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
 };
 
 
@@ -20840,10 +20840,10 @@ proto.io.bisq.protobuffer.DepositTxMessage.prototype.hasSenderNodeAddress = func
 
 /**
  * optional bytes deposit_tx_without_witnesses = 4;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.DepositTxMessage.prototype.getDepositTxWithoutWitnesses = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
 
@@ -21677,10 +21677,10 @@ proto.io.bisq.protobuffer.FinalizePayoutTxRequest.prototype.setTradeId = functio
 
 /**
  * optional bytes seller_signature = 2;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.FinalizePayoutTxRequest.prototype.getSellerSignature = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
@@ -22815,10 +22815,10 @@ proto.io.bisq.protobuffer.MediatedPayoutTxPublishedMessage.prototype.setTradeId 
 
 /**
  * optional bytes payout_tx = 2;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.MediatedPayoutTxPublishedMessage.prototype.getPayoutTx = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
@@ -23098,10 +23098,10 @@ proto.io.bisq.protobuffer.MediatedPayoutTxSignatureMessage.prototype.setTradeId 
 
 /**
  * optional bytes tx_signature = 2;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.MediatedPayoutTxSignatureMessage.prototype.getTxSignature = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
@@ -28367,10 +28367,10 @@ proto.io.bisq.protobuffer.PubKeyRing.serializeBinaryToWriter = function(message,
 
 /**
  * optional bytes signature_pub_key_bytes = 1;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.PubKeyRing.prototype.getSignaturePubKeyBytes = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
@@ -28409,10 +28409,10 @@ proto.io.bisq.protobuffer.PubKeyRing.prototype.setSignaturePubKeyBytes = functio
 
 /**
  * optional bytes encryption_pub_key_bytes = 2;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.PubKeyRing.prototype.getEncryptionPubKeyBytes = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
@@ -28599,10 +28599,10 @@ proto.io.bisq.protobuffer.SealedAndSigned.serializeBinaryToWriter = function(mes
 
 /**
  * optional bytes encrypted_secret_key = 1;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.SealedAndSigned.prototype.getEncryptedSecretKey = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
@@ -28641,10 +28641,10 @@ proto.io.bisq.protobuffer.SealedAndSigned.prototype.setEncryptedSecretKey = func
 
 /**
  * optional bytes encrypted_payload_with_hmac = 2;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.SealedAndSigned.prototype.getEncryptedPayloadWithHmac = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
@@ -28683,10 +28683,10 @@ proto.io.bisq.protobuffer.SealedAndSigned.prototype.setEncryptedPayloadWithHmac 
 
 /**
  * optional bytes signature = 3;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.SealedAndSigned.prototype.getSignature = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
@@ -28725,10 +28725,10 @@ proto.io.bisq.protobuffer.SealedAndSigned.prototype.setSignature = function(valu
 
 /**
  * optional bytes sig_public_key_bytes = 4;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.SealedAndSigned.prototype.getSigPublicKeyBytes = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
 
@@ -29942,10 +29942,10 @@ proto.io.bisq.protobuffer.ProtectedStorageEntry.prototype.hasStoragepayload = fu
 
 /**
  * optional bytes owner_pub_key_bytes = 2;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.ProtectedStorageEntry.prototype.getOwnerPubKeyBytes = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
@@ -30002,10 +30002,10 @@ proto.io.bisq.protobuffer.ProtectedStorageEntry.prototype.setSequenceNumber = fu
 
 /**
  * optional bytes signature = 4;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.ProtectedStorageEntry.prototype.getSignature = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
 
@@ -30453,10 +30453,10 @@ proto.io.bisq.protobuffer.ProtectedMailboxStorageEntry.prototype.hasEntry = func
 
 /**
  * optional bytes receivers_pub_key_bytes = 2;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.ProtectedMailboxStorageEntry.prototype.getReceiversPubKeyBytes = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
@@ -31467,10 +31467,10 @@ proto.io.bisq.protobuffer.DecryptedMessageWithPubKey.prototype.hasNetworkEnvelop
 
 /**
  * optional bytes signature_pub_key_bytes = 2;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.DecryptedMessageWithPubKey.prototype.getSignaturePubKeyBytes = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
@@ -31681,10 +31681,10 @@ proto.io.bisq.protobuffer.PrivateNotificationPayload.prototype.setSignatureAsBas
 
 /**
  * optional bytes sig_public_key_bytes = 3;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.PrivateNotificationPayload.prototype.getSigPublicKeyBytes = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
@@ -32168,10 +32168,10 @@ proto.io.bisq.protobuffer.Alert.prototype.setSignatureAsBase64 = function(value)
 
 /**
  * optional bytes owner_pub_key_bytes = 5;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.Alert.prototype.getOwnerPubKeyBytes = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
 };
 
 
@@ -32602,10 +32602,10 @@ proto.io.bisq.protobuffer.Arbitrator.prototype.setRegistrationSignature = functi
 
 /**
  * optional bytes registration_pub_key = 5;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.Arbitrator.prototype.getRegistrationPubKey = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
 };
 
 
@@ -32681,10 +32681,10 @@ proto.io.bisq.protobuffer.Arbitrator.prototype.hasPubKeyRing = function() {
 
 /**
  * optional bytes btc_pub_key = 7;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.Arbitrator.prototype.getBtcPubKey = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
 };
 
 
@@ -33127,10 +33127,10 @@ proto.io.bisq.protobuffer.Mediator.prototype.setRegistrationSignature = function
 
 /**
  * optional bytes registration_pub_key = 5;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.Mediator.prototype.getRegistrationPubKey = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
 };
 
 
@@ -33592,10 +33592,10 @@ proto.io.bisq.protobuffer.RefundAgent.prototype.setRegistrationSignature = funct
 
 /**
  * optional bytes registration_pub_key = 5;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.RefundAgent.prototype.getRegistrationPubKey = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
 };
 
 
@@ -34304,10 +34304,10 @@ proto.io.bisq.protobuffer.Filter.prototype.setSignatureAsBase64 = function(value
 
 /**
  * optional bytes owner_pub_key_bytes = 5;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.Filter.prototype.getOwnerPubKeyBytes = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
 };
 
 
@@ -35578,10 +35578,10 @@ proto.io.bisq.protobuffer.TradeStatistics2.prototype.setDepositTxId = function(v
 
 /**
  * optional bytes hash = 15;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.TradeStatistics2.prototype.getHash = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 15, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 15, ""));
 };
 
 
@@ -35987,10 +35987,10 @@ proto.io.bisq.protobuffer.TradeStatistics3.prototype.setDate = function(value) {
 
 /**
  * optional bytes hash = 8;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.TradeStatistics3.prototype.getHash = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 8, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 8, ""));
 };
 
 
@@ -36291,10 +36291,10 @@ proto.io.bisq.protobuffer.MailboxStoragePayload.prototype.hasPrefixedSealedAndSi
 
 /**
  * optional bytes sender_pub_key_for_add_operation_bytes = 2;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.MailboxStoragePayload.prototype.getSenderPubKeyForAddOperationBytes = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
@@ -36333,10 +36333,10 @@ proto.io.bisq.protobuffer.MailboxStoragePayload.prototype.setSenderPubKeyForAddO
 
 /**
  * optional bytes owner_pub_key_bytes = 3;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.MailboxStoragePayload.prototype.getOwnerPubKeyBytes = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
@@ -37881,10 +37881,10 @@ proto.io.bisq.protobuffer.AccountAgeWitness.serializeBinaryToWriter = function(m
 
 /**
  * optional bytes hash = 1;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.AccountAgeWitness.prototype.getHash = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
@@ -38152,10 +38152,10 @@ proto.io.bisq.protobuffer.SignedWitness.prototype.setVerificationMethod = functi
 
 /**
  * optional bytes account_age_witness_hash = 2;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.SignedWitness.prototype.getAccountAgeWitnessHash = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
@@ -38194,10 +38194,10 @@ proto.io.bisq.protobuffer.SignedWitness.prototype.setAccountAgeWitnessHash = fun
 
 /**
  * optional bytes signature = 3;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.SignedWitness.prototype.getSignature = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
@@ -38236,10 +38236,10 @@ proto.io.bisq.protobuffer.SignedWitness.prototype.setSignature = function(value)
 
 /**
  * optional bytes signer_pub_key = 4;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.SignedWitness.prototype.getSignerPubKey = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
 
@@ -38278,10 +38278,10 @@ proto.io.bisq.protobuffer.SignedWitness.prototype.setSignerPubKey = function(val
 
 /**
  * optional bytes witness_owner_pub_key = 5;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.SignedWitness.prototype.getWitnessOwnerPubKey = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
 };
 
 
@@ -39102,10 +39102,10 @@ proto.io.bisq.protobuffer.Dispute.prototype.hasContract = function() {
 
 /**
  * optional bytes contract_hash = 11;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.Dispute.prototype.getContractHash = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 11, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 11, ""));
 };
 
 
@@ -39144,10 +39144,10 @@ proto.io.bisq.protobuffer.Dispute.prototype.setContractHash = function(value) {
 
 /**
  * optional bytes deposit_tx_serialized = 12;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.Dispute.prototype.getDepositTxSerialized = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 12, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 12, ""));
 };
 
 
@@ -39186,10 +39186,10 @@ proto.io.bisq.protobuffer.Dispute.prototype.setDepositTxSerialized = function(va
 
 /**
  * optional bytes payout_tx_serialized = 13;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.Dispute.prototype.getPayoutTxSerialized = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 13, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 13, ""));
 };
 
 
@@ -39830,10 +39830,10 @@ proto.io.bisq.protobuffer.Attachment.prototype.setFileName = function(value) {
 
 /**
  * optional bytes bytes = 2;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.Attachment.prototype.getBytes = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
@@ -40411,10 +40411,10 @@ proto.io.bisq.protobuffer.DisputeResult.prototype.setSellerPayoutAmount = functi
 
 /**
  * optional bytes arbitrator_pub_key = 13;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.DisputeResult.prototype.getArbitratorPubKey = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 13, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 13, ""));
 };
 
 
@@ -41040,10 +41040,10 @@ proto.io.bisq.protobuffer.Contract.prototype.setTakerPaymentMethodId = function(
 
 /**
  * optional bytes maker_payment_account_payload_hash = 11;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.Contract.prototype.getMakerPaymentAccountPayloadHash = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 11, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 11, ""));
 };
 
 
@@ -41082,10 +41082,10 @@ proto.io.bisq.protobuffer.Contract.prototype.setMakerPaymentAccountPayloadHash =
 
 /**
  * optional bytes taker_payment_account_payload_hash = 12;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.Contract.prototype.getTakerPaymentAccountPayloadHash = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 12, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 12, ""));
 };
 
 
@@ -41553,10 +41553,10 @@ proto.io.bisq.protobuffer.RawTransactionInput.prototype.setIndex = function(valu
 
 /**
  * optional bytes parent_transaction = 2;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.RawTransactionInput.prototype.getParentTransaction = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
@@ -52544,10 +52544,10 @@ proto.io.bisq.protobuffer.ByteArray.serializeBinaryToWriter = function(message, 
 
 /**
  * optional bytes bytes = 1;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.ByteArray.prototype.getBytes = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
@@ -54060,10 +54060,10 @@ proto.io.bisq.protobuffer.AddressEntry.prototype.setContext = function(value) {
 
 /**
  * optional bytes pub_key = 9;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.AddressEntry.prototype.getPubKey = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 9, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 9, ""));
 };
 
 
@@ -54102,10 +54102,10 @@ proto.io.bisq.protobuffer.AddressEntry.prototype.setPubKey = function(value) {
 
 /**
  * optional bytes pub_key_hash = 10;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.AddressEntry.prototype.getPubKeyHash = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 10, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 10, ""));
 };
 
 
@@ -57452,10 +57452,10 @@ proto.io.bisq.protobuffer.Trade.prototype.setContractAsJson = function(value) {
 
 /**
  * optional bytes contract_hash = 18;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.Trade.prototype.getContractHash = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 18, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 18, ""));
 };
 
 
@@ -57568,10 +57568,10 @@ proto.io.bisq.protobuffer.Trade.prototype.hasMediatorNodeAddress = function() {
 
 /**
  * optional bytes arbitrator_btc_pub_key = 21;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.Trade.prototype.getArbitratorBtcPubKey = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 21, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 21, ""));
 };
 
 
@@ -57812,10 +57812,10 @@ proto.io.bisq.protobuffer.Trade.prototype.setLockTime = function(value) {
 
 /**
  * optional bytes delayed_payout_tx_bytes = 30;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.Trade.prototype.getDelayedPayoutTxBytes = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 30, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 30, ""));
 };
 
 
@@ -59470,10 +59470,10 @@ proto.io.bisq.protobuffer.ProcessModel.prototype.setTakeOfferFeeTxId = function(
 
 /**
  * optional bytes payout_tx_signature = 6;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.ProcessModel.prototype.getPayoutTxSignature = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
 };
 
 
@@ -59622,10 +59622,10 @@ proto.io.bisq.protobuffer.ProcessModel.prototype.setFundsNeededForTradeAsLong = 
 
 /**
  * optional bytes my_multi_sig_pub_key = 15;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.ProcessModel.prototype.getMyMultiSigPubKey = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 15, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 15, ""));
 };
 
 
@@ -59682,10 +59682,10 @@ proto.io.bisq.protobuffer.ProcessModel.prototype.setPaymentStartedMessageState =
 
 /**
  * optional bytes mediated_payout_tx_signature = 18;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.ProcessModel.prototype.getMediatedPayoutTxSignature = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 18, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 18, ""));
 };
 
 
@@ -60600,10 +60600,10 @@ proto.io.bisq.protobuffer.TradingPeer.prototype.setPaymentMethodId = function(va
 
 /**
  * optional bytes payment_account_payload_hash = 4;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.TradingPeer.prototype.getPaymentAccountPayloadHash = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
 
@@ -60733,10 +60733,10 @@ proto.io.bisq.protobuffer.TradingPeer.prototype.setContractSignature = function(
 
 /**
  * optional bytes signature = 9;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.TradingPeer.prototype.getSignature = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 9, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 9, ""));
 };
 
 
@@ -60812,10 +60812,10 @@ proto.io.bisq.protobuffer.TradingPeer.prototype.hasPubKeyRing = function() {
 
 /**
  * optional bytes multi_sig_pub_key = 11;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.TradingPeer.prototype.getMultiSigPubKey = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 11, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 11, ""));
 };
 
 
@@ -60928,10 +60928,10 @@ proto.io.bisq.protobuffer.TradingPeer.prototype.setChangeOutputAddress = functio
 
 /**
  * optional bytes account_age_witness_nonce = 15;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.TradingPeer.prototype.getAccountAgeWitnessNonce = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 15, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 15, ""));
 };
 
 
@@ -60970,10 +60970,10 @@ proto.io.bisq.protobuffer.TradingPeer.prototype.setAccountAgeWitnessNonce = func
 
 /**
  * optional bytes account_age_witness_signature = 16;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.TradingPeer.prototype.getAccountAgeWitnessSignature = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 16, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 16, ""));
 };
 
 
@@ -61030,10 +61030,10 @@ proto.io.bisq.protobuffer.TradingPeer.prototype.setCurrentDate = function(value)
 
 /**
  * optional bytes mediated_payout_tx_signature = 18;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.TradingPeer.prototype.getMediatedPayoutTxSignature = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 18, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 18, ""));
 };
 
 
@@ -67083,10 +67083,10 @@ proto.io.bisq.protobuffer.BaseTxOutput.prototype.setAddress = function(value) {
 
 /**
  * optional bytes op_return_data = 6;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.BaseTxOutput.prototype.getOpReturnData = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
 };
 
 
@@ -71399,10 +71399,10 @@ proto.io.bisq.protobuffer.MyReputation.prototype.setUid = function(value) {
 
 /**
  * optional bytes salt = 2;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.MyReputation.prototype.getSalt = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
@@ -72255,10 +72255,10 @@ proto.io.bisq.protobuffer.TempProposalPayload.prototype.hasProposal = function()
 
 /**
  * optional bytes owner_pub_key_encoded = 2;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.TempProposalPayload.prototype.getOwnerPubKeyEncoded = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
@@ -72482,10 +72482,10 @@ proto.io.bisq.protobuffer.ProposalPayload.prototype.hasProposal = function() {
 
 /**
  * optional bytes hash = 2;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.ProposalPayload.prototype.getHash = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
@@ -73917,10 +73917,10 @@ proto.io.bisq.protobuffer.MyVote.prototype.hasBallotList = function() {
 
 /**
  * optional bytes secret_key_encoded = 3;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.MyVote.prototype.getSecretKeyEncoded = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
@@ -74704,10 +74704,10 @@ proto.io.bisq.protobuffer.BlindVote.serializeBinaryToWriter = function(message, 
 
 /**
  * optional bytes encrypted_votes = 1;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.BlindVote.prototype.getEncryptedVotes = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
@@ -74782,10 +74782,10 @@ proto.io.bisq.protobuffer.BlindVote.prototype.setStake = function(value) {
 
 /**
  * optional bytes encrypted_merit_list = 4;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.BlindVote.prototype.getEncryptedMeritList = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
 
@@ -75347,10 +75347,10 @@ proto.io.bisq.protobuffer.BlindVotePayload.prototype.hasBlindVote = function() {
 
 /**
  * optional bytes hash = 2;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.BlindVotePayload.prototype.getHash = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
@@ -75682,10 +75682,10 @@ proto.io.bisq.protobuffer.Merit.prototype.hasIssuance = function() {
 
 /**
  * optional bytes signature = 2;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.Merit.prototype.getSignature = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
@@ -76542,10 +76542,10 @@ proto.io.bisq.protobuffer.DecryptedBallotsWithMerits.serializeBinaryToWriter = f
 
 /**
  * optional bytes hash_of_blind_vote_list = 1;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.DecryptedBallotsWithMerits.prototype.getHashOfBlindVoteList = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
@@ -77077,10 +77077,10 @@ proto.io.bisq.protobuffer.DaoStateHash.prototype.setHeight = function(value) {
 
 /**
  * optional bytes hash = 2;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.DaoStateHash.prototype.getHash = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
@@ -77119,10 +77119,10 @@ proto.io.bisq.protobuffer.DaoStateHash.prototype.setHash = function(value) {
 
 /**
  * optional bytes prev_hash = 3;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.DaoStateHash.prototype.getPrevHash = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
@@ -77327,10 +77327,10 @@ proto.io.bisq.protobuffer.ProposalStateHash.prototype.setHeight = function(value
 
 /**
  * optional bytes hash = 2;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.ProposalStateHash.prototype.getHash = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
@@ -77369,10 +77369,10 @@ proto.io.bisq.protobuffer.ProposalStateHash.prototype.setHash = function(value) 
 
 /**
  * optional bytes prev_hash = 3;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.ProposalStateHash.prototype.getPrevHash = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
@@ -77595,10 +77595,10 @@ proto.io.bisq.protobuffer.BlindVoteStateHash.prototype.setHeight = function(valu
 
 /**
  * optional bytes hash = 2;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.BlindVoteStateHash.prototype.getHash = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
@@ -77637,10 +77637,10 @@ proto.io.bisq.protobuffer.BlindVoteStateHash.prototype.setHash = function(value)
 
 /**
  * optional bytes prev_hash = 3;
- * @return {string}
+ * @return {!(string|Uint8Array)}
  */
 proto.io.bisq.protobuffer.BlindVoteStateHash.prototype.getPrevHash = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
@@ -77925,7 +77925,7 @@ proto.io.bisq.protobuffer.PaymentAccount.prototype.toObject = function(opt_inclu
 proto.io.bisq.protobuffer.PaymentAccount.toObject = function(includeInstance, msg) {
   var f, obj = {
     id: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    creationDate: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    creationDate: jspb.Message.getFieldWithDefault(msg, 2, "0"),
     paymentMethod: (f = msg.getPaymentMethod()) && proto.io.bisq.protobuffer.PaymentMethod.toObject(includeInstance, f),
     accountName: jspb.Message.getFieldWithDefault(msg, 4, ""),
     tradeCurrenciesList: jspb.Message.toObjectList(msg.getTradeCurrenciesList(),
@@ -77973,7 +77973,7 @@ proto.io.bisq.protobuffer.PaymentAccount.deserializeBinaryFromReader = function(
       msg.setId(value);
       break;
     case 2:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setCreationDate(value);
       break;
     case 3:
@@ -78037,8 +78037,8 @@ proto.io.bisq.protobuffer.PaymentAccount.serializeBinaryToWriter = function(mess
     );
   }
   f = message.getCreationDate();
-  if (f !== 0) {
-    writer.writeInt64(
+  if (parseInt(f, 10) !== 0) {
+    writer.writeInt64String(
       2,
       f
     );
@@ -78105,19 +78105,19 @@ proto.io.bisq.protobuffer.PaymentAccount.prototype.setId = function(value) {
 
 /**
  * optional int64 creation_date = 2;
- * @return {number}
+ * @return {string}
  */
 proto.io.bisq.protobuffer.PaymentAccount.prototype.getCreationDate = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, "0"));
 };
 
 
 /**
- * @param {number} value
+ * @param {string} value
  * @return {!proto.io.bisq.protobuffer.PaymentAccount} returns this
  */
 proto.io.bisq.protobuffer.PaymentAccount.prototype.setCreationDate = function(value) {
-  return jspb.Message.setProto3IntField(this, 2, value);
+  return jspb.Message.setProto3StringIntField(this, 2, value);
 };
 
 
@@ -78321,8 +78321,8 @@ proto.io.bisq.protobuffer.PaymentMethod.prototype.toObject = function(opt_includ
 proto.io.bisq.protobuffer.PaymentMethod.toObject = function(includeInstance, msg) {
   var f, obj = {
     id: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    maxTradePeriod: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    maxTradeLimit: jspb.Message.getFieldWithDefault(msg, 3, 0)
+    maxTradePeriod: jspb.Message.getFieldWithDefault(msg, 2, "0"),
+    maxTradeLimit: jspb.Message.getFieldWithDefault(msg, 3, "0")
   };
 
   if (includeInstance) {
@@ -78364,11 +78364,11 @@ proto.io.bisq.protobuffer.PaymentMethod.deserializeBinaryFromReader = function(m
       msg.setId(value);
       break;
     case 2:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setMaxTradePeriod(value);
       break;
     case 3:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setMaxTradeLimit(value);
       break;
     default:
@@ -78408,15 +78408,15 @@ proto.io.bisq.protobuffer.PaymentMethod.serializeBinaryToWriter = function(messa
     );
   }
   f = message.getMaxTradePeriod();
-  if (f !== 0) {
-    writer.writeInt64(
+  if (parseInt(f, 10) !== 0) {
+    writer.writeInt64String(
       2,
       f
     );
   }
   f = message.getMaxTradeLimit();
-  if (f !== 0) {
-    writer.writeInt64(
+  if (parseInt(f, 10) !== 0) {
+    writer.writeInt64String(
       3,
       f
     );
@@ -78444,37 +78444,37 @@ proto.io.bisq.protobuffer.PaymentMethod.prototype.setId = function(value) {
 
 /**
  * optional int64 max_trade_period = 2;
- * @return {number}
+ * @return {string}
  */
 proto.io.bisq.protobuffer.PaymentMethod.prototype.getMaxTradePeriod = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, "0"));
 };
 
 
 /**
- * @param {number} value
+ * @param {string} value
  * @return {!proto.io.bisq.protobuffer.PaymentMethod} returns this
  */
 proto.io.bisq.protobuffer.PaymentMethod.prototype.setMaxTradePeriod = function(value) {
-  return jspb.Message.setProto3IntField(this, 2, value);
+  return jspb.Message.setProto3StringIntField(this, 2, value);
 };
 
 
 /**
  * optional int64 max_trade_limit = 3;
- * @return {number}
+ * @return {string}
  */
 proto.io.bisq.protobuffer.PaymentMethod.prototype.getMaxTradeLimit = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, "0"));
 };
 
 
 /**
- * @param {number} value
+ * @param {string} value
  * @return {!proto.io.bisq.protobuffer.PaymentMethod} returns this
  */
 proto.io.bisq.protobuffer.PaymentMethod.prototype.setMaxTradeLimit = function(value) {
-  return jspb.Message.setProto3IntField(this, 3, value);
+  return jspb.Message.setProto3StringIntField(this, 3, value);
 };
 
 

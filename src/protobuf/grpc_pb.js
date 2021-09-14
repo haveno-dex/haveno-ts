@@ -3757,10 +3757,10 @@ proto.io.bisq.protobuffer.CreateOfferRequest.toObject = function(includeInstance
     price: jspb.Message.getFieldWithDefault(msg, 3, ""),
     usemarketbasedprice: jspb.Message.getBooleanFieldWithDefault(msg, 4, false),
     marketpricemargin: jspb.Message.getFloatingPointFieldWithDefault(msg, 5, 0.0),
-    amount: jspb.Message.getFieldWithDefault(msg, 6, 0),
-    minamount: jspb.Message.getFieldWithDefault(msg, 7, 0),
+    amount: jspb.Message.getFieldWithDefault(msg, 6, "0"),
+    minamount: jspb.Message.getFieldWithDefault(msg, 7, "0"),
     buyersecuritydeposit: jspb.Message.getFloatingPointFieldWithDefault(msg, 8, 0.0),
-    triggerprice: jspb.Message.getFieldWithDefault(msg, 9, 0),
+    triggerprice: jspb.Message.getFieldWithDefault(msg, 9, "0"),
     paymentaccountid: jspb.Message.getFieldWithDefault(msg, 10, ""),
     makerfeecurrencycode: jspb.Message.getFieldWithDefault(msg, 11, "")
   };
@@ -3820,11 +3820,11 @@ proto.io.bisq.protobuffer.CreateOfferRequest.deserializeBinaryFromReader = funct
       msg.setMarketpricemargin(value);
       break;
     case 6:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {string} */ (reader.readUint64String());
       msg.setAmount(value);
       break;
     case 7:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {string} */ (reader.readUint64String());
       msg.setMinamount(value);
       break;
     case 8:
@@ -3832,7 +3832,7 @@ proto.io.bisq.protobuffer.CreateOfferRequest.deserializeBinaryFromReader = funct
       msg.setBuyersecuritydeposit(value);
       break;
     case 9:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {string} */ (reader.readUint64String());
       msg.setTriggerprice(value);
       break;
     case 10:
@@ -3908,15 +3908,15 @@ proto.io.bisq.protobuffer.CreateOfferRequest.serializeBinaryToWriter = function(
     );
   }
   f = message.getAmount();
-  if (f !== 0) {
-    writer.writeUint64(
+  if (parseInt(f, 10) !== 0) {
+    writer.writeUint64String(
       6,
       f
     );
   }
   f = message.getMinamount();
-  if (f !== 0) {
-    writer.writeUint64(
+  if (parseInt(f, 10) !== 0) {
+    writer.writeUint64String(
       7,
       f
     );
@@ -3929,8 +3929,8 @@ proto.io.bisq.protobuffer.CreateOfferRequest.serializeBinaryToWriter = function(
     );
   }
   f = message.getTriggerprice();
-  if (f !== 0) {
-    writer.writeUint64(
+  if (parseInt(f, 10) !== 0) {
+    writer.writeUint64String(
       9,
       f
     );
@@ -4044,37 +4044,37 @@ proto.io.bisq.protobuffer.CreateOfferRequest.prototype.setMarketpricemargin = fu
 
 /**
  * optional uint64 amount = 6;
- * @return {number}
+ * @return {string}
  */
 proto.io.bisq.protobuffer.CreateOfferRequest.prototype.getAmount = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, "0"));
 };
 
 
 /**
- * @param {number} value
+ * @param {string} value
  * @return {!proto.io.bisq.protobuffer.CreateOfferRequest} returns this
  */
 proto.io.bisq.protobuffer.CreateOfferRequest.prototype.setAmount = function(value) {
-  return jspb.Message.setProto3IntField(this, 6, value);
+  return jspb.Message.setProto3StringIntField(this, 6, value);
 };
 
 
 /**
  * optional uint64 minAmount = 7;
- * @return {number}
+ * @return {string}
  */
 proto.io.bisq.protobuffer.CreateOfferRequest.prototype.getMinamount = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, "0"));
 };
 
 
 /**
- * @param {number} value
+ * @param {string} value
  * @return {!proto.io.bisq.protobuffer.CreateOfferRequest} returns this
  */
 proto.io.bisq.protobuffer.CreateOfferRequest.prototype.setMinamount = function(value) {
-  return jspb.Message.setProto3IntField(this, 7, value);
+  return jspb.Message.setProto3StringIntField(this, 7, value);
 };
 
 
@@ -4098,19 +4098,19 @@ proto.io.bisq.protobuffer.CreateOfferRequest.prototype.setBuyersecuritydeposit =
 
 /**
  * optional uint64 triggerPrice = 9;
- * @return {number}
+ * @return {string}
  */
 proto.io.bisq.protobuffer.CreateOfferRequest.prototype.getTriggerprice = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 9, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 9, "0"));
 };
 
 
 /**
- * @param {number} value
+ * @param {string} value
  * @return {!proto.io.bisq.protobuffer.CreateOfferRequest} returns this
  */
 proto.io.bisq.protobuffer.CreateOfferRequest.prototype.setTriggerprice = function(value) {
-  return jspb.Message.setProto3IntField(this, 9, value);
+  return jspb.Message.setProto3StringIntField(this, 9, value);
 };
 
 
@@ -16533,10 +16533,10 @@ proto.io.bisq.protobuffer.XmrBalanceInfo.prototype.toObject = function(opt_inclu
  */
 proto.io.bisq.protobuffer.XmrBalanceInfo.toObject = function(includeInstance, msg) {
   var f, obj = {
-    unlockedbalance: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    lockedbalance: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    reservedofferbalance: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    reservedtradebalance: jspb.Message.getFieldWithDefault(msg, 4, 0)
+    unlockedbalance: jspb.Message.getFieldWithDefault(msg, 1, "0"),
+    lockedbalance: jspb.Message.getFieldWithDefault(msg, 2, "0"),
+    reservedofferbalance: jspb.Message.getFieldWithDefault(msg, 3, "0"),
+    reservedtradebalance: jspb.Message.getFieldWithDefault(msg, 4, "0")
   };
 
   if (includeInstance) {
@@ -16574,19 +16574,19 @@ proto.io.bisq.protobuffer.XmrBalanceInfo.deserializeBinaryFromReader = function(
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {string} */ (reader.readUint64String());
       msg.setUnlockedbalance(value);
       break;
     case 2:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {string} */ (reader.readUint64String());
       msg.setLockedbalance(value);
       break;
     case 3:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {string} */ (reader.readUint64String());
       msg.setReservedofferbalance(value);
       break;
     case 4:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {string} */ (reader.readUint64String());
       msg.setReservedtradebalance(value);
       break;
     default:
@@ -16619,29 +16619,29 @@ proto.io.bisq.protobuffer.XmrBalanceInfo.prototype.serializeBinary = function() 
 proto.io.bisq.protobuffer.XmrBalanceInfo.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getUnlockedbalance();
-  if (f !== 0) {
-    writer.writeUint64(
+  if (parseInt(f, 10) !== 0) {
+    writer.writeUint64String(
       1,
       f
     );
   }
   f = message.getLockedbalance();
-  if (f !== 0) {
-    writer.writeUint64(
+  if (parseInt(f, 10) !== 0) {
+    writer.writeUint64String(
       2,
       f
     );
   }
   f = message.getReservedofferbalance();
-  if (f !== 0) {
-    writer.writeUint64(
+  if (parseInt(f, 10) !== 0) {
+    writer.writeUint64String(
       3,
       f
     );
   }
   f = message.getReservedtradebalance();
-  if (f !== 0) {
-    writer.writeUint64(
+  if (parseInt(f, 10) !== 0) {
+    writer.writeUint64String(
       4,
       f
     );
@@ -16651,73 +16651,73 @@ proto.io.bisq.protobuffer.XmrBalanceInfo.serializeBinaryToWriter = function(mess
 
 /**
  * optional uint64 unlockedBalance = 1;
- * @return {number}
+ * @return {string}
  */
 proto.io.bisq.protobuffer.XmrBalanceInfo.prototype.getUnlockedbalance = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, "0"));
 };
 
 
 /**
- * @param {number} value
+ * @param {string} value
  * @return {!proto.io.bisq.protobuffer.XmrBalanceInfo} returns this
  */
 proto.io.bisq.protobuffer.XmrBalanceInfo.prototype.setUnlockedbalance = function(value) {
-  return jspb.Message.setProto3IntField(this, 1, value);
+  return jspb.Message.setProto3StringIntField(this, 1, value);
 };
 
 
 /**
  * optional uint64 lockedBalance = 2;
- * @return {number}
+ * @return {string}
  */
 proto.io.bisq.protobuffer.XmrBalanceInfo.prototype.getLockedbalance = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, "0"));
 };
 
 
 /**
- * @param {number} value
+ * @param {string} value
  * @return {!proto.io.bisq.protobuffer.XmrBalanceInfo} returns this
  */
 proto.io.bisq.protobuffer.XmrBalanceInfo.prototype.setLockedbalance = function(value) {
-  return jspb.Message.setProto3IntField(this, 2, value);
+  return jspb.Message.setProto3StringIntField(this, 2, value);
 };
 
 
 /**
  * optional uint64 reservedOfferBalance = 3;
- * @return {number}
+ * @return {string}
  */
 proto.io.bisq.protobuffer.XmrBalanceInfo.prototype.getReservedofferbalance = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, "0"));
 };
 
 
 /**
- * @param {number} value
+ * @param {string} value
  * @return {!proto.io.bisq.protobuffer.XmrBalanceInfo} returns this
  */
 proto.io.bisq.protobuffer.XmrBalanceInfo.prototype.setReservedofferbalance = function(value) {
-  return jspb.Message.setProto3IntField(this, 3, value);
+  return jspb.Message.setProto3StringIntField(this, 3, value);
 };
 
 
 /**
  * optional uint64 reservedTradeBalance = 4;
- * @return {number}
+ * @return {string}
  */
 proto.io.bisq.protobuffer.XmrBalanceInfo.prototype.getReservedtradebalance = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, "0"));
 };
 
 
 /**
- * @param {number} value
+ * @param {string} value
  * @return {!proto.io.bisq.protobuffer.XmrBalanceInfo} returns this
  */
 proto.io.bisq.protobuffer.XmrBalanceInfo.prototype.setReservedtradebalance = function(value) {
-  return jspb.Message.setProto3IntField(this, 4, value);
+  return jspb.Message.setProto3StringIntField(this, 4, value);
 };
 
 
