@@ -4,11 +4,11 @@ import * as pb_pb from './pb_pb';
 
 
 export class RegisterDisputeAgentRequest extends jspb.Message {
-  getDisputeagenttype(): string;
-  setDisputeagenttype(value: string): RegisterDisputeAgentRequest;
+  getDisputeAgentType(): string;
+  setDisputeAgentType(value: string): RegisterDisputeAgentRequest;
 
-  getRegistrationkey(): string;
-  setRegistrationkey(value: string): RegisterDisputeAgentRequest;
+  getRegistrationKey(): string;
+  setRegistrationKey(value: string): RegisterDisputeAgentRequest;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): RegisterDisputeAgentRequest.AsObject;
@@ -20,8 +20,8 @@ export class RegisterDisputeAgentRequest extends jspb.Message {
 
 export namespace RegisterDisputeAgentRequest {
   export type AsObject = {
-    disputeagenttype: string,
-    registrationkey: string,
+    disputeAgentType: string,
+    registrationKey: string,
   }
 }
 
@@ -40,8 +40,8 @@ export namespace RegisterDisputeAgentReply {
 }
 
 export class GetMethodHelpRequest extends jspb.Message {
-  getMethodname(): string;
-  setMethodname(value: string): GetMethodHelpRequest;
+  getMethodName(): string;
+  setMethodName(value: string): GetMethodHelpRequest;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GetMethodHelpRequest.AsObject;
@@ -53,13 +53,13 @@ export class GetMethodHelpRequest extends jspb.Message {
 
 export namespace GetMethodHelpRequest {
   export type AsObject = {
-    methodname: string,
+    methodName: string,
   }
 }
 
 export class GetMethodHelpReply extends jspb.Message {
-  getMethodhelp(): string;
-  setMethodhelp(value: string): GetMethodHelpReply;
+  getMethodHelp(): string;
+  setMethodHelp(value: string): GetMethodHelpReply;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GetMethodHelpReply.AsObject;
@@ -71,7 +71,7 @@ export class GetMethodHelpReply extends jspb.Message {
 
 export namespace GetMethodHelpReply {
   export type AsObject = {
-    methodhelp: string,
+    methodHelp: string,
   }
 }
 
@@ -155,8 +155,8 @@ export class GetOffersRequest extends jspb.Message {
   getDirection(): string;
   setDirection(value: string): GetOffersRequest;
 
-  getCurrencycode(): string;
-  setCurrencycode(value: string): GetOffersRequest;
+  getCurrencyCode(): string;
+  setCurrencyCode(value: string): GetOffersRequest;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GetOffersRequest.AsObject;
@@ -169,7 +169,7 @@ export class GetOffersRequest extends jspb.Message {
 export namespace GetOffersRequest {
   export type AsObject = {
     direction: string,
-    currencycode: string,
+    currencyCode: string,
   }
 }
 
@@ -197,8 +197,8 @@ export class GetMyOffersRequest extends jspb.Message {
   getDirection(): string;
   setDirection(value: string): GetMyOffersRequest;
 
-  getCurrencycode(): string;
-  setCurrencycode(value: string): GetMyOffersRequest;
+  getCurrencyCode(): string;
+  setCurrencyCode(value: string): GetMyOffersRequest;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GetMyOffersRequest.AsObject;
@@ -211,7 +211,7 @@ export class GetMyOffersRequest extends jspb.Message {
 export namespace GetMyOffersRequest {
   export type AsObject = {
     direction: string,
-    currencycode: string,
+    currencyCode: string,
   }
 }
 
@@ -236,8 +236,8 @@ export namespace GetMyOffersReply {
 }
 
 export class CreateOfferRequest extends jspb.Message {
-  getCurrencycode(): string;
-  setCurrencycode(value: string): CreateOfferRequest;
+  getCurrencyCode(): string;
+  setCurrencyCode(value: string): CreateOfferRequest;
 
   getDirection(): string;
   setDirection(value: string): CreateOfferRequest;
@@ -245,29 +245,29 @@ export class CreateOfferRequest extends jspb.Message {
   getPrice(): string;
   setPrice(value: string): CreateOfferRequest;
 
-  getUsemarketbasedprice(): boolean;
-  setUsemarketbasedprice(value: boolean): CreateOfferRequest;
+  getUseMarketBasedPrice(): boolean;
+  setUseMarketBasedPrice(value: boolean): CreateOfferRequest;
 
-  getMarketpricemargin(): number;
-  setMarketpricemargin(value: number): CreateOfferRequest;
+  getMarketPriceMargin(): number;
+  setMarketPriceMargin(value: number): CreateOfferRequest;
 
   getAmount(): string;
   setAmount(value: string): CreateOfferRequest;
 
-  getMinamount(): string;
-  setMinamount(value: string): CreateOfferRequest;
+  getMinAmount(): string;
+  setMinAmount(value: string): CreateOfferRequest;
 
-  getBuyersecuritydeposit(): number;
-  setBuyersecuritydeposit(value: number): CreateOfferRequest;
+  getBuyerSecurityDeposit(): number;
+  setBuyerSecurityDeposit(value: number): CreateOfferRequest;
 
-  getTriggerprice(): string;
-  setTriggerprice(value: string): CreateOfferRequest;
+  getTriggerPrice(): string;
+  setTriggerPrice(value: string): CreateOfferRequest;
 
-  getPaymentaccountid(): string;
-  setPaymentaccountid(value: string): CreateOfferRequest;
+  getPaymentAccountId(): string;
+  setPaymentAccountId(value: string): CreateOfferRequest;
 
-  getMakerfeecurrencycode(): string;
-  setMakerfeecurrencycode(value: string): CreateOfferRequest;
+  getMakerFeeCurrencyCode(): string;
+  setMakerFeeCurrencyCode(value: string): CreateOfferRequest;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): CreateOfferRequest.AsObject;
@@ -279,17 +279,17 @@ export class CreateOfferRequest extends jspb.Message {
 
 export namespace CreateOfferRequest {
   export type AsObject = {
-    currencycode: string,
+    currencyCode: string,
     direction: string,
     price: string,
-    usemarketbasedprice: boolean,
-    marketpricemargin: number,
+    useMarketBasedPrice: boolean,
+    marketPriceMargin: number,
     amount: string,
-    minamount: string,
-    buyersecuritydeposit: number,
-    triggerprice: string,
-    paymentaccountid: string,
-    makerfeecurrencycode: string,
+    minAmount: string,
+    buyerSecurityDeposit: number,
+    triggerPrice: string,
+    paymentAccountId: string,
+    makerFeeCurrencyCode: string,
   }
 }
 
@@ -355,47 +355,47 @@ export class OfferInfo extends jspb.Message {
   getPrice(): number;
   setPrice(value: number): OfferInfo;
 
-  getUsemarketbasedprice(): boolean;
-  setUsemarketbasedprice(value: boolean): OfferInfo;
+  getUseMarketBasedPrice(): boolean;
+  setUseMarketBasedPrice(value: boolean): OfferInfo;
 
-  getMarketpricemargin(): number;
-  setMarketpricemargin(value: number): OfferInfo;
+  getMarketPriceMargin(): number;
+  setMarketPriceMargin(value: number): OfferInfo;
 
   getAmount(): number;
   setAmount(value: number): OfferInfo;
 
-  getMinamount(): number;
-  setMinamount(value: number): OfferInfo;
+  getMinAmount(): number;
+  setMinAmount(value: number): OfferInfo;
 
   getVolume(): number;
   setVolume(value: number): OfferInfo;
 
-  getMinvolume(): number;
-  setMinvolume(value: number): OfferInfo;
+  getMinVolume(): number;
+  setMinVolume(value: number): OfferInfo;
 
-  getBuyersecuritydeposit(): number;
-  setBuyersecuritydeposit(value: number): OfferInfo;
+  getBuyerSecurityDeposit(): number;
+  setBuyerSecurityDeposit(value: number): OfferInfo;
 
-  getTriggerprice(): number;
-  setTriggerprice(value: number): OfferInfo;
+  getTriggerPrice(): number;
+  setTriggerPrice(value: number): OfferInfo;
 
-  getIscurrencyformakerfeebtc(): boolean;
-  setIscurrencyformakerfeebtc(value: boolean): OfferInfo;
+  getIsCurrencyForMakerFeeBtc(): boolean;
+  setIsCurrencyForMakerFeeBtc(value: boolean): OfferInfo;
 
-  getPaymentaccountid(): string;
-  setPaymentaccountid(value: string): OfferInfo;
+  getPaymentAccountId(): string;
+  setPaymentAccountId(value: string): OfferInfo;
 
-  getPaymentmethodid(): string;
-  setPaymentmethodid(value: string): OfferInfo;
+  getPaymentMethodId(): string;
+  setPaymentMethodId(value: string): OfferInfo;
 
-  getPaymentmethodshortname(): string;
-  setPaymentmethodshortname(value: string): OfferInfo;
+  getPaymentMethodShortName(): string;
+  setPaymentMethodShortName(value: string): OfferInfo;
 
-  getBasecurrencycode(): string;
-  setBasecurrencycode(value: string): OfferInfo;
+  getBaseCurrencyCode(): string;
+  setBaseCurrencyCode(value: string): OfferInfo;
 
-  getCountercurrencycode(): string;
-  setCountercurrencycode(value: string): OfferInfo;
+  getCounterCurrencyCode(): string;
+  setCounterCurrencyCode(value: string): OfferInfo;
 
   getDate(): number;
   setDate(value: number): OfferInfo;
@@ -403,17 +403,17 @@ export class OfferInfo extends jspb.Message {
   getState(): string;
   setState(value: string): OfferInfo;
 
-  getSellersecuritydeposit(): number;
-  setSellersecuritydeposit(value: number): OfferInfo;
+  getSellerSecurityDeposit(): number;
+  setSellerSecurityDeposit(value: number): OfferInfo;
 
-  getOfferfeepaymenttxid(): string;
-  setOfferfeepaymenttxid(value: string): OfferInfo;
+  getOfferFeePaymentTxId(): string;
+  setOfferFeePaymentTxId(value: string): OfferInfo;
 
-  getTxfee(): number;
-  setTxfee(value: number): OfferInfo;
+  getTxFee(): number;
+  setTxFee(value: number): OfferInfo;
 
-  getMakerfee(): number;
-  setMakerfee(value: number): OfferInfo;
+  getMakerFee(): number;
+  setMakerFee(value: number): OfferInfo;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): OfferInfo.AsObject;
@@ -428,32 +428,32 @@ export namespace OfferInfo {
     id: string,
     direction: string,
     price: number,
-    usemarketbasedprice: boolean,
-    marketpricemargin: number,
+    useMarketBasedPrice: boolean,
+    marketPriceMargin: number,
     amount: number,
-    minamount: number,
+    minAmount: number,
     volume: number,
-    minvolume: number,
-    buyersecuritydeposit: number,
-    triggerprice: number,
-    iscurrencyformakerfeebtc: boolean,
-    paymentaccountid: string,
-    paymentmethodid: string,
-    paymentmethodshortname: string,
-    basecurrencycode: string,
-    countercurrencycode: string,
+    minVolume: number,
+    buyerSecurityDeposit: number,
+    triggerPrice: number,
+    isCurrencyForMakerFeeBtc: boolean,
+    paymentAccountId: string,
+    paymentMethodId: string,
+    paymentMethodShortName: string,
+    baseCurrencyCode: string,
+    counterCurrencyCode: string,
     date: number,
     state: string,
-    sellersecuritydeposit: number,
-    offerfeepaymenttxid: string,
-    txfee: number,
-    makerfee: number,
+    sellerSecurityDeposit: number,
+    offerFeePaymentTxId: string,
+    txFee: number,
+    makerFee: number,
   }
 }
 
 export class AvailabilityResultWithDescription extends jspb.Message {
-  getAvailabilityresult(): pb_pb.AvailabilityResult;
-  setAvailabilityresult(value: pb_pb.AvailabilityResult): AvailabilityResultWithDescription;
+  getAvailabilityResult(): pb_pb.AvailabilityResult;
+  setAvailabilityResult(value: pb_pb.AvailabilityResult): AvailabilityResultWithDescription;
 
   getDescription(): string;
   setDescription(value: string): AvailabilityResultWithDescription;
@@ -468,14 +468,14 @@ export class AvailabilityResultWithDescription extends jspb.Message {
 
 export namespace AvailabilityResultWithDescription {
   export type AsObject = {
-    availabilityresult: pb_pb.AvailabilityResult,
+    availabilityResult: pb_pb.AvailabilityResult,
     description: string,
   }
 }
 
 export class CreatePaymentAccountRequest extends jspb.Message {
-  getPaymentaccountform(): string;
-  setPaymentaccountform(value: string): CreatePaymentAccountRequest;
+  getPaymentAccountForm(): string;
+  setPaymentAccountForm(value: string): CreatePaymentAccountRequest;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): CreatePaymentAccountRequest.AsObject;
@@ -487,15 +487,15 @@ export class CreatePaymentAccountRequest extends jspb.Message {
 
 export namespace CreatePaymentAccountRequest {
   export type AsObject = {
-    paymentaccountform: string,
+    paymentAccountForm: string,
   }
 }
 
 export class CreatePaymentAccountReply extends jspb.Message {
-  getPaymentaccount(): pb_pb.PaymentAccount | undefined;
-  setPaymentaccount(value?: pb_pb.PaymentAccount): CreatePaymentAccountReply;
-  hasPaymentaccount(): boolean;
-  clearPaymentaccount(): CreatePaymentAccountReply;
+  getPaymentAccount(): pb_pb.PaymentAccount | undefined;
+  setPaymentAccount(value?: pb_pb.PaymentAccount): CreatePaymentAccountReply;
+  hasPaymentAccount(): boolean;
+  clearPaymentAccount(): CreatePaymentAccountReply;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): CreatePaymentAccountReply.AsObject;
@@ -507,7 +507,7 @@ export class CreatePaymentAccountReply extends jspb.Message {
 
 export namespace CreatePaymentAccountReply {
   export type AsObject = {
-    paymentaccount?: pb_pb.PaymentAccount.AsObject,
+    paymentAccount?: pb_pb.PaymentAccount.AsObject,
   }
 }
 
@@ -526,10 +526,10 @@ export namespace GetPaymentAccountsRequest {
 }
 
 export class GetPaymentAccountsReply extends jspb.Message {
-  getPaymentaccountsList(): Array<pb_pb.PaymentAccount>;
-  setPaymentaccountsList(value: Array<pb_pb.PaymentAccount>): GetPaymentAccountsReply;
-  clearPaymentaccountsList(): GetPaymentAccountsReply;
-  addPaymentaccounts(value?: pb_pb.PaymentAccount, index?: number): pb_pb.PaymentAccount;
+  getPaymentAccountsList(): Array<pb_pb.PaymentAccount>;
+  setPaymentAccountsList(value: Array<pb_pb.PaymentAccount>): GetPaymentAccountsReply;
+  clearPaymentAccountsList(): GetPaymentAccountsReply;
+  addPaymentAccounts(value?: pb_pb.PaymentAccount, index?: number): pb_pb.PaymentAccount;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GetPaymentAccountsReply.AsObject;
@@ -541,7 +541,7 @@ export class GetPaymentAccountsReply extends jspb.Message {
 
 export namespace GetPaymentAccountsReply {
   export type AsObject = {
-    paymentaccountsList: Array<pb_pb.PaymentAccount.AsObject>,
+    paymentAccountsList: Array<pb_pb.PaymentAccount.AsObject>,
   }
 }
 
@@ -560,10 +560,10 @@ export namespace GetPaymentMethodsRequest {
 }
 
 export class GetPaymentMethodsReply extends jspb.Message {
-  getPaymentmethodsList(): Array<pb_pb.PaymentMethod>;
-  setPaymentmethodsList(value: Array<pb_pb.PaymentMethod>): GetPaymentMethodsReply;
-  clearPaymentmethodsList(): GetPaymentMethodsReply;
-  addPaymentmethods(value?: pb_pb.PaymentMethod, index?: number): pb_pb.PaymentMethod;
+  getPaymentMethodsList(): Array<pb_pb.PaymentMethod>;
+  setPaymentMethodsList(value: Array<pb_pb.PaymentMethod>): GetPaymentMethodsReply;
+  clearPaymentMethodsList(): GetPaymentMethodsReply;
+  addPaymentMethods(value?: pb_pb.PaymentMethod, index?: number): pb_pb.PaymentMethod;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GetPaymentMethodsReply.AsObject;
@@ -575,13 +575,13 @@ export class GetPaymentMethodsReply extends jspb.Message {
 
 export namespace GetPaymentMethodsReply {
   export type AsObject = {
-    paymentmethodsList: Array<pb_pb.PaymentMethod.AsObject>,
+    paymentMethodsList: Array<pb_pb.PaymentMethod.AsObject>,
   }
 }
 
 export class GetPaymentAccountFormRequest extends jspb.Message {
-  getPaymentmethodid(): string;
-  setPaymentmethodid(value: string): GetPaymentAccountFormRequest;
+  getPaymentMethodId(): string;
+  setPaymentMethodId(value: string): GetPaymentAccountFormRequest;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GetPaymentAccountFormRequest.AsObject;
@@ -593,13 +593,13 @@ export class GetPaymentAccountFormRequest extends jspb.Message {
 
 export namespace GetPaymentAccountFormRequest {
   export type AsObject = {
-    paymentmethodid: string,
+    paymentMethodId: string,
   }
 }
 
 export class GetPaymentAccountFormReply extends jspb.Message {
-  getPaymentaccountformjson(): string;
-  setPaymentaccountformjson(value: string): GetPaymentAccountFormReply;
+  getPaymentAccountFormJson(): string;
+  setPaymentAccountFormJson(value: string): GetPaymentAccountFormReply;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GetPaymentAccountFormReply.AsObject;
@@ -611,22 +611,22 @@ export class GetPaymentAccountFormReply extends jspb.Message {
 
 export namespace GetPaymentAccountFormReply {
   export type AsObject = {
-    paymentaccountformjson: string,
+    paymentAccountFormJson: string,
   }
 }
 
 export class CreateCryptoCurrencyPaymentAccountRequest extends jspb.Message {
-  getAccountname(): string;
-  setAccountname(value: string): CreateCryptoCurrencyPaymentAccountRequest;
+  getAccountName(): string;
+  setAccountName(value: string): CreateCryptoCurrencyPaymentAccountRequest;
 
-  getCurrencycode(): string;
-  setCurrencycode(value: string): CreateCryptoCurrencyPaymentAccountRequest;
+  getCurrencyCode(): string;
+  setCurrencyCode(value: string): CreateCryptoCurrencyPaymentAccountRequest;
 
   getAddress(): string;
   setAddress(value: string): CreateCryptoCurrencyPaymentAccountRequest;
 
-  getTradeinstant(): boolean;
-  setTradeinstant(value: boolean): CreateCryptoCurrencyPaymentAccountRequest;
+  getTradeInstant(): boolean;
+  setTradeInstant(value: boolean): CreateCryptoCurrencyPaymentAccountRequest;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): CreateCryptoCurrencyPaymentAccountRequest.AsObject;
@@ -638,18 +638,18 @@ export class CreateCryptoCurrencyPaymentAccountRequest extends jspb.Message {
 
 export namespace CreateCryptoCurrencyPaymentAccountRequest {
   export type AsObject = {
-    accountname: string,
-    currencycode: string,
+    accountName: string,
+    currencyCode: string,
     address: string,
-    tradeinstant: boolean,
+    tradeInstant: boolean,
   }
 }
 
 export class CreateCryptoCurrencyPaymentAccountReply extends jspb.Message {
-  getPaymentaccount(): pb_pb.PaymentAccount | undefined;
-  setPaymentaccount(value?: pb_pb.PaymentAccount): CreateCryptoCurrencyPaymentAccountReply;
-  hasPaymentaccount(): boolean;
-  clearPaymentaccount(): CreateCryptoCurrencyPaymentAccountReply;
+  getPaymentAccount(): pb_pb.PaymentAccount | undefined;
+  setPaymentAccount(value?: pb_pb.PaymentAccount): CreateCryptoCurrencyPaymentAccountReply;
+  hasPaymentAccount(): boolean;
+  clearPaymentAccount(): CreateCryptoCurrencyPaymentAccountReply;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): CreateCryptoCurrencyPaymentAccountReply.AsObject;
@@ -661,7 +661,7 @@ export class CreateCryptoCurrencyPaymentAccountReply extends jspb.Message {
 
 export namespace CreateCryptoCurrencyPaymentAccountReply {
   export type AsObject = {
-    paymentaccount?: pb_pb.PaymentAccount.AsObject,
+    paymentAccount?: pb_pb.PaymentAccount.AsObject,
   }
 }
 
@@ -680,10 +680,10 @@ export namespace GetCryptoCurrencyPaymentMethodsRequest {
 }
 
 export class GetCryptoCurrencyPaymentMethodsReply extends jspb.Message {
-  getPaymentmethodsList(): Array<pb_pb.PaymentMethod>;
-  setPaymentmethodsList(value: Array<pb_pb.PaymentMethod>): GetCryptoCurrencyPaymentMethodsReply;
-  clearPaymentmethodsList(): GetCryptoCurrencyPaymentMethodsReply;
-  addPaymentmethods(value?: pb_pb.PaymentMethod, index?: number): pb_pb.PaymentMethod;
+  getPaymentMethodsList(): Array<pb_pb.PaymentMethod>;
+  setPaymentMethodsList(value: Array<pb_pb.PaymentMethod>): GetCryptoCurrencyPaymentMethodsReply;
+  clearPaymentMethodsList(): GetCryptoCurrencyPaymentMethodsReply;
+  addPaymentMethods(value?: pb_pb.PaymentMethod, index?: number): pb_pb.PaymentMethod;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GetCryptoCurrencyPaymentMethodsReply.AsObject;
@@ -695,13 +695,13 @@ export class GetCryptoCurrencyPaymentMethodsReply extends jspb.Message {
 
 export namespace GetCryptoCurrencyPaymentMethodsReply {
   export type AsObject = {
-    paymentmethodsList: Array<pb_pb.PaymentMethod.AsObject>,
+    paymentMethodsList: Array<pb_pb.PaymentMethod.AsObject>,
   }
 }
 
 export class MarketPriceRequest extends jspb.Message {
-  getCurrencycode(): string;
-  setCurrencycode(value: string): MarketPriceRequest;
+  getCurrencyCode(): string;
+  setCurrencyCode(value: string): MarketPriceRequest;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MarketPriceRequest.AsObject;
@@ -713,7 +713,7 @@ export class MarketPriceRequest extends jspb.Message {
 
 export namespace MarketPriceRequest {
   export type AsObject = {
-    currencycode: string,
+    currencyCode: string,
   }
 }
 
@@ -750,10 +750,10 @@ export namespace GetTradeStatisticsRequest {
 }
 
 export class GetTradeStatisticsReply extends jspb.Message {
-  getTradestatisticsList(): Array<pb_pb.TradeStatistics3>;
-  setTradestatisticsList(value: Array<pb_pb.TradeStatistics3>): GetTradeStatisticsReply;
-  clearTradestatisticsList(): GetTradeStatisticsReply;
-  addTradestatistics(value?: pb_pb.TradeStatistics3, index?: number): pb_pb.TradeStatistics3;
+  getTradeStatisticsList(): Array<pb_pb.TradeStatistics3>;
+  setTradeStatisticsList(value: Array<pb_pb.TradeStatistics3>): GetTradeStatisticsReply;
+  clearTradeStatisticsList(): GetTradeStatisticsReply;
+  addTradeStatistics(value?: pb_pb.TradeStatistics3, index?: number): pb_pb.TradeStatistics3;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GetTradeStatisticsReply.AsObject;
@@ -765,7 +765,7 @@ export class GetTradeStatisticsReply extends jspb.Message {
 
 export namespace GetTradeStatisticsReply {
   export type AsObject = {
-    tradestatisticsList: Array<pb_pb.TradeStatistics3.AsObject>,
+    tradeStatisticsList: Array<pb_pb.TradeStatistics3.AsObject>,
   }
 }
 
@@ -798,14 +798,14 @@ export namespace StopReply {
 }
 
 export class TakeOfferRequest extends jspb.Message {
-  getOfferid(): string;
-  setOfferid(value: string): TakeOfferRequest;
+  getOfferId(): string;
+  setOfferId(value: string): TakeOfferRequest;
 
-  getPaymentaccountid(): string;
-  setPaymentaccountid(value: string): TakeOfferRequest;
+  getPaymentAccountId(): string;
+  setPaymentAccountId(value: string): TakeOfferRequest;
 
-  getTakerfeecurrencycode(): string;
-  setTakerfeecurrencycode(value: string): TakeOfferRequest;
+  getTakerFeeCurrencyCode(): string;
+  setTakerFeeCurrencyCode(value: string): TakeOfferRequest;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): TakeOfferRequest.AsObject;
@@ -817,9 +817,9 @@ export class TakeOfferRequest extends jspb.Message {
 
 export namespace TakeOfferRequest {
   export type AsObject = {
-    offerid: string,
-    paymentaccountid: string,
-    takerfeecurrencycode: string,
+    offerId: string,
+    paymentAccountId: string,
+    takerFeeCurrencyCode: string,
   }
 }
 
@@ -829,10 +829,10 @@ export class TakeOfferReply extends jspb.Message {
   hasTrade(): boolean;
   clearTrade(): TakeOfferReply;
 
-  getFailurereason(): AvailabilityResultWithDescription | undefined;
-  setFailurereason(value?: AvailabilityResultWithDescription): TakeOfferReply;
-  hasFailurereason(): boolean;
-  clearFailurereason(): TakeOfferReply;
+  getFailureReason(): AvailabilityResultWithDescription | undefined;
+  setFailureReason(value?: AvailabilityResultWithDescription): TakeOfferReply;
+  hasFailureReason(): boolean;
+  clearFailureReason(): TakeOfferReply;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): TakeOfferReply.AsObject;
@@ -845,13 +845,13 @@ export class TakeOfferReply extends jspb.Message {
 export namespace TakeOfferReply {
   export type AsObject = {
     trade?: TradeInfo.AsObject,
-    failurereason?: AvailabilityResultWithDescription.AsObject,
+    failureReason?: AvailabilityResultWithDescription.AsObject,
   }
 }
 
 export class ConfirmPaymentStartedRequest extends jspb.Message {
-  getTradeid(): string;
-  setTradeid(value: string): ConfirmPaymentStartedRequest;
+  getTradeId(): string;
+  setTradeId(value: string): ConfirmPaymentStartedRequest;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ConfirmPaymentStartedRequest.AsObject;
@@ -863,7 +863,7 @@ export class ConfirmPaymentStartedRequest extends jspb.Message {
 
 export namespace ConfirmPaymentStartedRequest {
   export type AsObject = {
-    tradeid: string,
+    tradeId: string,
   }
 }
 
@@ -882,8 +882,8 @@ export namespace ConfirmPaymentStartedReply {
 }
 
 export class ConfirmPaymentReceivedRequest extends jspb.Message {
-  getTradeid(): string;
-  setTradeid(value: string): ConfirmPaymentReceivedRequest;
+  getTradeId(): string;
+  setTradeId(value: string): ConfirmPaymentReceivedRequest;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ConfirmPaymentReceivedRequest.AsObject;
@@ -895,7 +895,7 @@ export class ConfirmPaymentReceivedRequest extends jspb.Message {
 
 export namespace ConfirmPaymentReceivedRequest {
   export type AsObject = {
-    tradeid: string,
+    tradeId: string,
   }
 }
 
@@ -914,8 +914,8 @@ export namespace ConfirmPaymentReceivedReply {
 }
 
 export class GetTradeRequest extends jspb.Message {
-  getTradeid(): string;
-  setTradeid(value: string): GetTradeRequest;
+  getTradeId(): string;
+  setTradeId(value: string): GetTradeRequest;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GetTradeRequest.AsObject;
@@ -927,7 +927,7 @@ export class GetTradeRequest extends jspb.Message {
 
 export namespace GetTradeRequest {
   export type AsObject = {
-    tradeid: string,
+    tradeId: string,
   }
 }
 
@@ -952,8 +952,8 @@ export namespace GetTradeReply {
 }
 
 export class KeepFundsRequest extends jspb.Message {
-  getTradeid(): string;
-  setTradeid(value: string): KeepFundsRequest;
+  getTradeId(): string;
+  setTradeId(value: string): KeepFundsRequest;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): KeepFundsRequest.AsObject;
@@ -965,7 +965,7 @@ export class KeepFundsRequest extends jspb.Message {
 
 export namespace KeepFundsRequest {
   export type AsObject = {
-    tradeid: string,
+    tradeId: string,
   }
 }
 
@@ -984,8 +984,8 @@ export namespace KeepFundsReply {
 }
 
 export class WithdrawFundsRequest extends jspb.Message {
-  getTradeid(): string;
-  setTradeid(value: string): WithdrawFundsRequest;
+  getTradeId(): string;
+  setTradeId(value: string): WithdrawFundsRequest;
 
   getAddress(): string;
   setAddress(value: string): WithdrawFundsRequest;
@@ -1003,7 +1003,7 @@ export class WithdrawFundsRequest extends jspb.Message {
 
 export namespace WithdrawFundsRequest {
   export type AsObject = {
-    tradeid: string,
+    tradeId: string,
     address: string,
     memo: string,
   }
@@ -1029,11 +1029,11 @@ export class TradeInfo extends jspb.Message {
   hasOffer(): boolean;
   clearOffer(): TradeInfo;
 
-  getTradeid(): string;
-  setTradeid(value: string): TradeInfo;
+  getTradeId(): string;
+  setTradeId(value: string): TradeInfo;
 
-  getShortid(): string;
-  setShortid(value: string): TradeInfo;
+  getShortId(): string;
+  setShortId(value: string): TradeInfo;
 
   getDate(): number;
   setDate(value: number): TradeInfo;
@@ -1041,26 +1041,26 @@ export class TradeInfo extends jspb.Message {
   getRole(): string;
   setRole(value: string): TradeInfo;
 
-  getTxfeeaslong(): number;
-  setTxfeeaslong(value: number): TradeInfo;
+  getTxFeeAsLong(): number;
+  setTxFeeAsLong(value: number): TradeInfo;
 
-  getTakerfeeaslong(): number;
-  setTakerfeeaslong(value: number): TradeInfo;
+  getTakerFeeAsLong(): number;
+  setTakerFeeAsLong(value: number): TradeInfo;
 
-  getTakerfeetxid(): string;
-  setTakerfeetxid(value: string): TradeInfo;
+  getTakerFeeTxId(): string;
+  setTakerFeeTxId(value: string): TradeInfo;
 
-  getPayouttxid(): string;
-  setPayouttxid(value: string): TradeInfo;
+  getPayoutTxId(): string;
+  setPayoutTxId(value: string): TradeInfo;
 
-  getTradeamountaslong(): number;
-  setTradeamountaslong(value: number): TradeInfo;
+  getTradeAmountAsLong(): number;
+  setTradeAmountAsLong(value: number): TradeInfo;
 
-  getTradeprice(): number;
-  setTradeprice(value: number): TradeInfo;
+  getTradePrice(): number;
+  setTradePrice(value: number): TradeInfo;
 
-  getTradingpeernodeaddress(): string;
-  setTradingpeernodeaddress(value: string): TradeInfo;
+  getTradingPeerNodeAddress(): string;
+  setTradingPeerNodeAddress(value: string): TradeInfo;
 
   getState(): string;
   setState(value: string): TradeInfo;
@@ -1068,40 +1068,40 @@ export class TradeInfo extends jspb.Message {
   getPhase(): string;
   setPhase(value: string): TradeInfo;
 
-  getTradeperiodstate(): string;
-  setTradeperiodstate(value: string): TradeInfo;
+  getTradePeriodState(): string;
+  setTradePeriodState(value: string): TradeInfo;
 
-  getIsdepositpublished(): boolean;
-  setIsdepositpublished(value: boolean): TradeInfo;
+  getIsDepositPublished(): boolean;
+  setIsDepositPublished(value: boolean): TradeInfo;
 
-  getIsdepositconfirmed(): boolean;
-  setIsdepositconfirmed(value: boolean): TradeInfo;
+  getIsDepositConfirmed(): boolean;
+  setIsDepositConfirmed(value: boolean): TradeInfo;
 
-  getIsfiatsent(): boolean;
-  setIsfiatsent(value: boolean): TradeInfo;
+  getIsFiatSent(): boolean;
+  setIsFiatSent(value: boolean): TradeInfo;
 
-  getIsfiatreceived(): boolean;
-  setIsfiatreceived(value: boolean): TradeInfo;
+  getIsFiatReceived(): boolean;
+  setIsFiatReceived(value: boolean): TradeInfo;
 
-  getIspayoutpublished(): boolean;
-  setIspayoutpublished(value: boolean): TradeInfo;
+  getIsPayoutPublished(): boolean;
+  setIsPayoutPublished(value: boolean): TradeInfo;
 
-  getIswithdrawn(): boolean;
-  setIswithdrawn(value: boolean): TradeInfo;
+  getIsWithdrawn(): boolean;
+  setIsWithdrawn(value: boolean): TradeInfo;
 
-  getContractasjson(): string;
-  setContractasjson(value: string): TradeInfo;
+  getContractAsJson(): string;
+  setContractAsJson(value: string): TradeInfo;
 
   getContract(): ContractInfo | undefined;
   setContract(value?: ContractInfo): TradeInfo;
   hasContract(): boolean;
   clearContract(): TradeInfo;
 
-  getMakerdeposittxid(): string;
-  setMakerdeposittxid(value: string): TradeInfo;
+  getMakerDepositTxId(): string;
+  setMakerDepositTxId(value: string): TradeInfo;
 
-  getTakerdeposittxid(): string;
-  setTakerdeposittxid(value: string): TradeInfo;
+  getTakerDepositTxId(): string;
+  setTakerDepositTxId(value: string): TradeInfo;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): TradeInfo.AsObject;
@@ -1114,70 +1114,70 @@ export class TradeInfo extends jspb.Message {
 export namespace TradeInfo {
   export type AsObject = {
     offer?: OfferInfo.AsObject,
-    tradeid: string,
-    shortid: string,
+    tradeId: string,
+    shortId: string,
     date: number,
     role: string,
-    txfeeaslong: number,
-    takerfeeaslong: number,
-    takerfeetxid: string,
-    payouttxid: string,
-    tradeamountaslong: number,
-    tradeprice: number,
-    tradingpeernodeaddress: string,
+    txFeeAsLong: number,
+    takerFeeAsLong: number,
+    takerFeeTxId: string,
+    payoutTxId: string,
+    tradeAmountAsLong: number,
+    tradePrice: number,
+    tradingPeerNodeAddress: string,
     state: string,
     phase: string,
-    tradeperiodstate: string,
-    isdepositpublished: boolean,
-    isdepositconfirmed: boolean,
-    isfiatsent: boolean,
-    isfiatreceived: boolean,
-    ispayoutpublished: boolean,
-    iswithdrawn: boolean,
-    contractasjson: string,
+    tradePeriodState: string,
+    isDepositPublished: boolean,
+    isDepositConfirmed: boolean,
+    isFiatSent: boolean,
+    isFiatReceived: boolean,
+    isPayoutPublished: boolean,
+    isWithdrawn: boolean,
+    contractAsJson: string,
     contract?: ContractInfo.AsObject,
-    makerdeposittxid: string,
-    takerdeposittxid: string,
+    makerDepositTxId: string,
+    takerDepositTxId: string,
   }
 }
 
 export class ContractInfo extends jspb.Message {
-  getBuyernodeaddress(): string;
-  setBuyernodeaddress(value: string): ContractInfo;
+  getBuyerNodeAddress(): string;
+  setBuyerNodeAddress(value: string): ContractInfo;
 
-  getSellernodeaddress(): string;
-  setSellernodeaddress(value: string): ContractInfo;
+  getSellerNodeAddress(): string;
+  setSellerNodeAddress(value: string): ContractInfo;
 
-  getIsbuyermakerandsellertaker(): boolean;
-  setIsbuyermakerandsellertaker(value: boolean): ContractInfo;
+  getIsBuyerMakerAndSellerTaker(): boolean;
+  setIsBuyerMakerAndSellerTaker(value: boolean): ContractInfo;
 
-  getMakeraccountid(): string;
-  setMakeraccountid(value: string): ContractInfo;
+  getMakerAccountId(): string;
+  setMakerAccountId(value: string): ContractInfo;
 
-  getTakeraccountid(): string;
-  setTakeraccountid(value: string): ContractInfo;
+  getTakerAccountId(): string;
+  setTakerAccountId(value: string): ContractInfo;
 
-  getMakerpaymentaccountpayload(): PaymentAccountPayloadInfo | undefined;
-  setMakerpaymentaccountpayload(value?: PaymentAccountPayloadInfo): ContractInfo;
-  hasMakerpaymentaccountpayload(): boolean;
-  clearMakerpaymentaccountpayload(): ContractInfo;
+  getMakerPaymentAccountPayload(): PaymentAccountPayloadInfo | undefined;
+  setMakerPaymentAccountPayload(value?: PaymentAccountPayloadInfo): ContractInfo;
+  hasMakerPaymentAccountPayload(): boolean;
+  clearMakerPaymentAccountPayload(): ContractInfo;
 
-  getTakerpaymentaccountpayload(): PaymentAccountPayloadInfo | undefined;
-  setTakerpaymentaccountpayload(value?: PaymentAccountPayloadInfo): ContractInfo;
-  hasTakerpaymentaccountpayload(): boolean;
-  clearTakerpaymentaccountpayload(): ContractInfo;
+  getTakerPaymentAccountPayload(): PaymentAccountPayloadInfo | undefined;
+  setTakerPaymentAccountPayload(value?: PaymentAccountPayloadInfo): ContractInfo;
+  hasTakerPaymentAccountPayload(): boolean;
+  clearTakerPaymentAccountPayload(): ContractInfo;
 
-  getMakerpayoutaddressstring(): string;
-  setMakerpayoutaddressstring(value: string): ContractInfo;
+  getMakerPayoutAddressString(): string;
+  setMakerPayoutAddressString(value: string): ContractInfo;
 
-  getTakerpayoutaddressstring(): string;
-  setTakerpayoutaddressstring(value: string): ContractInfo;
+  getTakerPayoutAddressString(): string;
+  setTakerPayoutAddressString(value: string): ContractInfo;
 
-  getLocktime(): number;
-  setLocktime(value: number): ContractInfo;
+  getLockTime(): number;
+  setLockTime(value: number): ContractInfo;
 
-  getArbitratornodeaddress(): string;
-  setArbitratornodeaddress(value: string): ContractInfo;
+  getArbitratorNodeAddress(): string;
+  setArbitratorNodeAddress(value: string): ContractInfo;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ContractInfo.AsObject;
@@ -1189,17 +1189,17 @@ export class ContractInfo extends jspb.Message {
 
 export namespace ContractInfo {
   export type AsObject = {
-    buyernodeaddress: string,
-    sellernodeaddress: string,
-    isbuyermakerandsellertaker: boolean,
-    makeraccountid: string,
-    takeraccountid: string,
-    makerpaymentaccountpayload?: PaymentAccountPayloadInfo.AsObject,
-    takerpaymentaccountpayload?: PaymentAccountPayloadInfo.AsObject,
-    makerpayoutaddressstring: string,
-    takerpayoutaddressstring: string,
-    locktime: number,
-    arbitratornodeaddress: string,
+    buyerNodeAddress: string,
+    sellerNodeAddress: string,
+    isBuyerMakerAndSellerTaker: boolean,
+    makerAccountId: string,
+    takerAccountId: string,
+    makerPaymentAccountPayload?: PaymentAccountPayloadInfo.AsObject,
+    takerPaymentAccountPayload?: PaymentAccountPayloadInfo.AsObject,
+    makerPayoutAddressString: string,
+    takerPayoutAddressString: string,
+    lockTime: number,
+    arbitratorNodeAddress: string,
   }
 }
 
@@ -1207,8 +1207,8 @@ export class PaymentAccountPayloadInfo extends jspb.Message {
   getId(): string;
   setId(value: string): PaymentAccountPayloadInfo;
 
-  getPaymentmethodid(): string;
-  setPaymentmethodid(value: string): PaymentAccountPayloadInfo;
+  getPaymentMethodId(): string;
+  setPaymentMethodId(value: string): PaymentAccountPayloadInfo;
 
   getAddress(): string;
   setAddress(value: string): PaymentAccountPayloadInfo;
@@ -1224,26 +1224,26 @@ export class PaymentAccountPayloadInfo extends jspb.Message {
 export namespace PaymentAccountPayloadInfo {
   export type AsObject = {
     id: string,
-    paymentmethodid: string,
+    paymentMethodId: string,
     address: string,
   }
 }
 
 export class TxFeeRateInfo extends jspb.Message {
-  getUsecustomtxfeerate(): boolean;
-  setUsecustomtxfeerate(value: boolean): TxFeeRateInfo;
+  getUseCustomTxFeeRate(): boolean;
+  setUseCustomTxFeeRate(value: boolean): TxFeeRateInfo;
 
-  getCustomtxfeerate(): number;
-  setCustomtxfeerate(value: number): TxFeeRateInfo;
+  getCustomTxFeeRate(): number;
+  setCustomTxFeeRate(value: number): TxFeeRateInfo;
 
-  getFeeservicerate(): number;
-  setFeeservicerate(value: number): TxFeeRateInfo;
+  getFeeServiceRate(): number;
+  setFeeServiceRate(value: number): TxFeeRateInfo;
 
-  getLastfeeservicerequestts(): number;
-  setLastfeeservicerequestts(value: number): TxFeeRateInfo;
+  getLastFeeServiceRequestTs(): number;
+  setLastFeeServiceRequestTs(value: number): TxFeeRateInfo;
 
-  getMinfeeservicerate(): number;
-  setMinfeeservicerate(value: number): TxFeeRateInfo;
+  getMinFeeServiceRate(): number;
+  setMinFeeServiceRate(value: number): TxFeeRateInfo;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): TxFeeRateInfo.AsObject;
@@ -1255,23 +1255,23 @@ export class TxFeeRateInfo extends jspb.Message {
 
 export namespace TxFeeRateInfo {
   export type AsObject = {
-    usecustomtxfeerate: boolean,
-    customtxfeerate: number,
-    feeservicerate: number,
-    lastfeeservicerequestts: number,
-    minfeeservicerate: number,
+    useCustomTxFeeRate: boolean,
+    customTxFeeRate: number,
+    feeServiceRate: number,
+    lastFeeServiceRequestTs: number,
+    minFeeServiceRate: number,
   }
 }
 
 export class TxInfo extends jspb.Message {
-  getTxid(): string;
-  setTxid(value: string): TxInfo;
+  getTxId(): string;
+  setTxId(value: string): TxInfo;
 
-  getInputsum(): number;
-  setInputsum(value: number): TxInfo;
+  getInputSum(): number;
+  setInputSum(value: number): TxInfo;
 
-  getOutputsum(): number;
-  setOutputsum(value: number): TxInfo;
+  getOutputSum(): number;
+  setOutputSum(value: number): TxInfo;
 
   getFee(): number;
   setFee(value: number): TxInfo;
@@ -1279,8 +1279,8 @@ export class TxInfo extends jspb.Message {
   getSize(): number;
   setSize(value: number): TxInfo;
 
-  getIspending(): boolean;
-  setIspending(value: boolean): TxInfo;
+  getIsPending(): boolean;
+  setIsPending(value: boolean): TxInfo;
 
   getMemo(): string;
   setMemo(value: string): TxInfo;
@@ -1295,19 +1295,19 @@ export class TxInfo extends jspb.Message {
 
 export namespace TxInfo {
   export type AsObject = {
-    txid: string,
-    inputsum: number,
-    outputsum: number,
+    txId: string,
+    inputSum: number,
+    outputSum: number,
     fee: number,
     size: number,
-    ispending: boolean,
+    isPending: boolean,
     memo: string,
   }
 }
 
 export class GetBalancesRequest extends jspb.Message {
-  getCurrencycode(): string;
-  setCurrencycode(value: string): GetBalancesRequest;
+  getCurrencyCode(): string;
+  setCurrencyCode(value: string): GetBalancesRequest;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GetBalancesRequest.AsObject;
@@ -1319,7 +1319,7 @@ export class GetBalancesRequest extends jspb.Message {
 
 export namespace GetBalancesRequest {
   export type AsObject = {
-    currencycode: string,
+    currencyCode: string,
   }
 }
 
@@ -1362,10 +1362,10 @@ export namespace GetAddressBalanceRequest {
 }
 
 export class GetAddressBalanceReply extends jspb.Message {
-  getAddressbalanceinfo(): AddressBalanceInfo | undefined;
-  setAddressbalanceinfo(value?: AddressBalanceInfo): GetAddressBalanceReply;
-  hasAddressbalanceinfo(): boolean;
-  clearAddressbalanceinfo(): GetAddressBalanceReply;
+  getAddressBalanceInfo(): AddressBalanceInfo | undefined;
+  setAddressBalanceInfo(value?: AddressBalanceInfo): GetAddressBalanceReply;
+  hasAddressBalanceInfo(): boolean;
+  clearAddressBalanceInfo(): GetAddressBalanceReply;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GetAddressBalanceReply.AsObject;
@@ -1377,7 +1377,7 @@ export class GetAddressBalanceReply extends jspb.Message {
 
 export namespace GetAddressBalanceReply {
   export type AsObject = {
-    addressbalanceinfo?: AddressBalanceInfo.AsObject,
+    addressBalanceInfo?: AddressBalanceInfo.AsObject,
   }
 }
 
@@ -1420,8 +1420,8 @@ export class SendBsqRequest extends jspb.Message {
   getAmount(): string;
   setAmount(value: string): SendBsqRequest;
 
-  getTxfeerate(): string;
-  setTxfeerate(value: string): SendBsqRequest;
+  getTxFeeRate(): string;
+  setTxFeeRate(value: string): SendBsqRequest;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): SendBsqRequest.AsObject;
@@ -1435,15 +1435,15 @@ export namespace SendBsqRequest {
   export type AsObject = {
     address: string,
     amount: string,
-    txfeerate: string,
+    txFeeRate: string,
   }
 }
 
 export class SendBsqReply extends jspb.Message {
-  getTxinfo(): TxInfo | undefined;
-  setTxinfo(value?: TxInfo): SendBsqReply;
-  hasTxinfo(): boolean;
-  clearTxinfo(): SendBsqReply;
+  getTxInfo(): TxInfo | undefined;
+  setTxInfo(value?: TxInfo): SendBsqReply;
+  hasTxInfo(): boolean;
+  clearTxInfo(): SendBsqReply;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): SendBsqReply.AsObject;
@@ -1455,7 +1455,7 @@ export class SendBsqReply extends jspb.Message {
 
 export namespace SendBsqReply {
   export type AsObject = {
-    txinfo?: TxInfo.AsObject,
+    txInfo?: TxInfo.AsObject,
   }
 }
 
@@ -1466,8 +1466,8 @@ export class SendBtcRequest extends jspb.Message {
   getAmount(): string;
   setAmount(value: string): SendBtcRequest;
 
-  getTxfeerate(): string;
-  setTxfeerate(value: string): SendBtcRequest;
+  getTxFeeRate(): string;
+  setTxFeeRate(value: string): SendBtcRequest;
 
   getMemo(): string;
   setMemo(value: string): SendBtcRequest;
@@ -1484,16 +1484,16 @@ export namespace SendBtcRequest {
   export type AsObject = {
     address: string,
     amount: string,
-    txfeerate: string,
+    txFeeRate: string,
     memo: string,
   }
 }
 
 export class SendBtcReply extends jspb.Message {
-  getTxinfo(): TxInfo | undefined;
-  setTxinfo(value?: TxInfo): SendBtcReply;
-  hasTxinfo(): boolean;
-  clearTxinfo(): SendBtcReply;
+  getTxInfo(): TxInfo | undefined;
+  setTxInfo(value?: TxInfo): SendBtcReply;
+  hasTxInfo(): boolean;
+  clearTxInfo(): SendBtcReply;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): SendBtcReply.AsObject;
@@ -1505,7 +1505,7 @@ export class SendBtcReply extends jspb.Message {
 
 export namespace SendBtcReply {
   export type AsObject = {
-    txinfo?: TxInfo.AsObject,
+    txInfo?: TxInfo.AsObject,
   }
 }
 
@@ -1532,8 +1532,8 @@ export namespace VerifyBsqSentToAddressRequest {
 }
 
 export class VerifyBsqSentToAddressReply extends jspb.Message {
-  getIsamountreceived(): boolean;
-  setIsamountreceived(value: boolean): VerifyBsqSentToAddressReply;
+  getIsAmountReceived(): boolean;
+  setIsAmountReceived(value: boolean): VerifyBsqSentToAddressReply;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): VerifyBsqSentToAddressReply.AsObject;
@@ -1545,7 +1545,7 @@ export class VerifyBsqSentToAddressReply extends jspb.Message {
 
 export namespace VerifyBsqSentToAddressReply {
   export type AsObject = {
-    isamountreceived: boolean,
+    isAmountReceived: boolean,
   }
 }
 
@@ -1564,10 +1564,10 @@ export namespace GetTxFeeRateRequest {
 }
 
 export class GetTxFeeRateReply extends jspb.Message {
-  getTxfeerateinfo(): TxFeeRateInfo | undefined;
-  setTxfeerateinfo(value?: TxFeeRateInfo): GetTxFeeRateReply;
-  hasTxfeerateinfo(): boolean;
-  clearTxfeerateinfo(): GetTxFeeRateReply;
+  getTxFeeRateInfo(): TxFeeRateInfo | undefined;
+  setTxFeeRateInfo(value?: TxFeeRateInfo): GetTxFeeRateReply;
+  hasTxFeeRateInfo(): boolean;
+  clearTxFeeRateInfo(): GetTxFeeRateReply;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GetTxFeeRateReply.AsObject;
@@ -1579,13 +1579,13 @@ export class GetTxFeeRateReply extends jspb.Message {
 
 export namespace GetTxFeeRateReply {
   export type AsObject = {
-    txfeerateinfo?: TxFeeRateInfo.AsObject,
+    txFeeRateInfo?: TxFeeRateInfo.AsObject,
   }
 }
 
 export class SetTxFeeRatePreferenceRequest extends jspb.Message {
-  getTxfeeratepreference(): number;
-  setTxfeeratepreference(value: number): SetTxFeeRatePreferenceRequest;
+  getTxFeeRatePreference(): number;
+  setTxFeeRatePreference(value: number): SetTxFeeRatePreferenceRequest;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): SetTxFeeRatePreferenceRequest.AsObject;
@@ -1597,15 +1597,15 @@ export class SetTxFeeRatePreferenceRequest extends jspb.Message {
 
 export namespace SetTxFeeRatePreferenceRequest {
   export type AsObject = {
-    txfeeratepreference: number,
+    txFeeRatePreference: number,
   }
 }
 
 export class SetTxFeeRatePreferenceReply extends jspb.Message {
-  getTxfeerateinfo(): TxFeeRateInfo | undefined;
-  setTxfeerateinfo(value?: TxFeeRateInfo): SetTxFeeRatePreferenceReply;
-  hasTxfeerateinfo(): boolean;
-  clearTxfeerateinfo(): SetTxFeeRatePreferenceReply;
+  getTxFeeRateInfo(): TxFeeRateInfo | undefined;
+  setTxFeeRateInfo(value?: TxFeeRateInfo): SetTxFeeRatePreferenceReply;
+  hasTxFeeRateInfo(): boolean;
+  clearTxFeeRateInfo(): SetTxFeeRatePreferenceReply;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): SetTxFeeRatePreferenceReply.AsObject;
@@ -1617,7 +1617,7 @@ export class SetTxFeeRatePreferenceReply extends jspb.Message {
 
 export namespace SetTxFeeRatePreferenceReply {
   export type AsObject = {
-    txfeerateinfo?: TxFeeRateInfo.AsObject,
+    txFeeRateInfo?: TxFeeRateInfo.AsObject,
   }
 }
 
@@ -1636,10 +1636,10 @@ export namespace UnsetTxFeeRatePreferenceRequest {
 }
 
 export class UnsetTxFeeRatePreferenceReply extends jspb.Message {
-  getTxfeerateinfo(): TxFeeRateInfo | undefined;
-  setTxfeerateinfo(value?: TxFeeRateInfo): UnsetTxFeeRatePreferenceReply;
-  hasTxfeerateinfo(): boolean;
-  clearTxfeerateinfo(): UnsetTxFeeRatePreferenceReply;
+  getTxFeeRateInfo(): TxFeeRateInfo | undefined;
+  setTxFeeRateInfo(value?: TxFeeRateInfo): UnsetTxFeeRatePreferenceReply;
+  hasTxFeeRateInfo(): boolean;
+  clearTxFeeRateInfo(): UnsetTxFeeRatePreferenceReply;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UnsetTxFeeRatePreferenceReply.AsObject;
@@ -1651,13 +1651,13 @@ export class UnsetTxFeeRatePreferenceReply extends jspb.Message {
 
 export namespace UnsetTxFeeRatePreferenceReply {
   export type AsObject = {
-    txfeerateinfo?: TxFeeRateInfo.AsObject,
+    txFeeRateInfo?: TxFeeRateInfo.AsObject,
   }
 }
 
 export class GetTransactionRequest extends jspb.Message {
-  getTxid(): string;
-  setTxid(value: string): GetTransactionRequest;
+  getTxId(): string;
+  setTxId(value: string): GetTransactionRequest;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GetTransactionRequest.AsObject;
@@ -1669,15 +1669,15 @@ export class GetTransactionRequest extends jspb.Message {
 
 export namespace GetTransactionRequest {
   export type AsObject = {
-    txid: string,
+    txId: string,
   }
 }
 
 export class GetTransactionReply extends jspb.Message {
-  getTxinfo(): TxInfo | undefined;
-  setTxinfo(value?: TxInfo): GetTransactionReply;
-  hasTxinfo(): boolean;
-  clearTxinfo(): GetTransactionReply;
+  getTxInfo(): TxInfo | undefined;
+  setTxInfo(value?: TxInfo): GetTransactionReply;
+  hasTxInfo(): boolean;
+  clearTxInfo(): GetTransactionReply;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GetTransactionReply.AsObject;
@@ -1689,7 +1689,7 @@ export class GetTransactionReply extends jspb.Message {
 
 export namespace GetTransactionReply {
   export type AsObject = {
-    txinfo?: TxInfo.AsObject,
+    txInfo?: TxInfo.AsObject,
   }
 }
 
@@ -1708,10 +1708,10 @@ export namespace GetFundingAddressesRequest {
 }
 
 export class GetFundingAddressesReply extends jspb.Message {
-  getAddressbalanceinfoList(): Array<AddressBalanceInfo>;
-  setAddressbalanceinfoList(value: Array<AddressBalanceInfo>): GetFundingAddressesReply;
-  clearAddressbalanceinfoList(): GetFundingAddressesReply;
-  addAddressbalanceinfo(value?: AddressBalanceInfo, index?: number): AddressBalanceInfo;
+  getAddressBalanceInfoList(): Array<AddressBalanceInfo>;
+  setAddressBalanceInfoList(value: Array<AddressBalanceInfo>): GetFundingAddressesReply;
+  clearAddressBalanceInfoList(): GetFundingAddressesReply;
+  addAddressBalanceInfo(value?: AddressBalanceInfo, index?: number): AddressBalanceInfo;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GetFundingAddressesReply.AsObject;
@@ -1723,7 +1723,7 @@ export class GetFundingAddressesReply extends jspb.Message {
 
 export namespace GetFundingAddressesReply {
   export type AsObject = {
-    addressbalanceinfoList: Array<AddressBalanceInfo.AsObject>,
+    addressBalanceInfoList: Array<AddressBalanceInfo.AsObject>,
   }
 }
 
@@ -1731,8 +1731,8 @@ export class SetWalletPasswordRequest extends jspb.Message {
   getPassword(): string;
   setPassword(value: string): SetWalletPasswordRequest;
 
-  getNewpassword(): string;
-  setNewpassword(value: string): SetWalletPasswordRequest;
+  getNewPassword(): string;
+  setNewPassword(value: string): SetWalletPasswordRequest;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): SetWalletPasswordRequest.AsObject;
@@ -1745,7 +1745,7 @@ export class SetWalletPasswordRequest extends jspb.Message {
 export namespace SetWalletPasswordRequest {
   export type AsObject = {
     password: string,
-    newpassword: string,
+    newPassword: string,
   }
 }
 
@@ -1892,23 +1892,23 @@ export namespace BalancesInfo {
 }
 
 export class BsqBalanceInfo extends jspb.Message {
-  getAvailableconfirmedbalance(): number;
-  setAvailableconfirmedbalance(value: number): BsqBalanceInfo;
+  getAvailableConfirmedBalance(): number;
+  setAvailableConfirmedBalance(value: number): BsqBalanceInfo;
 
-  getUnverifiedbalance(): number;
-  setUnverifiedbalance(value: number): BsqBalanceInfo;
+  getUnverifiedBalance(): number;
+  setUnverifiedBalance(value: number): BsqBalanceInfo;
 
-  getUnconfirmedchangebalance(): number;
-  setUnconfirmedchangebalance(value: number): BsqBalanceInfo;
+  getUnconfirmedChangeBalance(): number;
+  setUnconfirmedChangeBalance(value: number): BsqBalanceInfo;
 
-  getLockedforvotingbalance(): number;
-  setLockedforvotingbalance(value: number): BsqBalanceInfo;
+  getLockedForVotingBalance(): number;
+  setLockedForVotingBalance(value: number): BsqBalanceInfo;
 
-  getLockupbondsbalance(): number;
-  setLockupbondsbalance(value: number): BsqBalanceInfo;
+  getLockupBondsBalance(): number;
+  setLockupBondsBalance(value: number): BsqBalanceInfo;
 
-  getUnlockingbondsbalance(): number;
-  setUnlockingbondsbalance(value: number): BsqBalanceInfo;
+  getUnlockingBondsBalance(): number;
+  setUnlockingBondsBalance(value: number): BsqBalanceInfo;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): BsqBalanceInfo.AsObject;
@@ -1920,27 +1920,27 @@ export class BsqBalanceInfo extends jspb.Message {
 
 export namespace BsqBalanceInfo {
   export type AsObject = {
-    availableconfirmedbalance: number,
-    unverifiedbalance: number,
-    unconfirmedchangebalance: number,
-    lockedforvotingbalance: number,
-    lockupbondsbalance: number,
-    unlockingbondsbalance: number,
+    availableConfirmedBalance: number,
+    unverifiedBalance: number,
+    unconfirmedChangeBalance: number,
+    lockedForVotingBalance: number,
+    lockupBondsBalance: number,
+    unlockingBondsBalance: number,
   }
 }
 
 export class BtcBalanceInfo extends jspb.Message {
-  getAvailablebalance(): number;
-  setAvailablebalance(value: number): BtcBalanceInfo;
+  getAvailableBalance(): number;
+  setAvailableBalance(value: number): BtcBalanceInfo;
 
-  getReservedbalance(): number;
-  setReservedbalance(value: number): BtcBalanceInfo;
+  getReservedBalance(): number;
+  setReservedBalance(value: number): BtcBalanceInfo;
 
-  getTotalavailablebalance(): number;
-  setTotalavailablebalance(value: number): BtcBalanceInfo;
+  getTotalAvailableBalance(): number;
+  setTotalAvailableBalance(value: number): BtcBalanceInfo;
 
-  getLockedbalance(): number;
-  setLockedbalance(value: number): BtcBalanceInfo;
+  getLockedBalance(): number;
+  setLockedBalance(value: number): BtcBalanceInfo;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): BtcBalanceInfo.AsObject;
@@ -1952,25 +1952,25 @@ export class BtcBalanceInfo extends jspb.Message {
 
 export namespace BtcBalanceInfo {
   export type AsObject = {
-    availablebalance: number,
-    reservedbalance: number,
-    totalavailablebalance: number,
-    lockedbalance: number,
+    availableBalance: number,
+    reservedBalance: number,
+    totalAvailableBalance: number,
+    lockedBalance: number,
   }
 }
 
 export class XmrBalanceInfo extends jspb.Message {
-  getUnlockedbalance(): string;
-  setUnlockedbalance(value: string): XmrBalanceInfo;
+  getUnlockedBalance(): string;
+  setUnlockedBalance(value: string): XmrBalanceInfo;
 
-  getLockedbalance(): string;
-  setLockedbalance(value: string): XmrBalanceInfo;
+  getLockedBalance(): string;
+  setLockedBalance(value: string): XmrBalanceInfo;
 
-  getReservedofferbalance(): string;
-  setReservedofferbalance(value: string): XmrBalanceInfo;
+  getReservedOfferBalance(): string;
+  setReservedOfferBalance(value: string): XmrBalanceInfo;
 
-  getReservedtradebalance(): string;
-  setReservedtradebalance(value: string): XmrBalanceInfo;
+  getReservedTradeBalance(): string;
+  setReservedTradeBalance(value: string): XmrBalanceInfo;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): XmrBalanceInfo.AsObject;
@@ -1982,10 +1982,10 @@ export class XmrBalanceInfo extends jspb.Message {
 
 export namespace XmrBalanceInfo {
   export type AsObject = {
-    unlockedbalance: string,
-    lockedbalance: string,
-    reservedofferbalance: string,
-    reservedtradebalance: string,
+    unlockedBalance: string,
+    lockedBalance: string,
+    reservedOfferBalance: string,
+    reservedTradeBalance: string,
   }
 }
 
@@ -1996,11 +1996,11 @@ export class AddressBalanceInfo extends jspb.Message {
   getBalance(): number;
   setBalance(value: number): AddressBalanceInfo;
 
-  getNumconfirmations(): number;
-  setNumconfirmations(value: number): AddressBalanceInfo;
+  getNumConfirmations(): number;
+  setNumConfirmations(value: number): AddressBalanceInfo;
 
-  getIsaddressunused(): boolean;
-  setIsaddressunused(value: boolean): AddressBalanceInfo;
+  getIsAddressUnused(): boolean;
+  setIsAddressUnused(value: boolean): AddressBalanceInfo;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AddressBalanceInfo.AsObject;
@@ -2014,8 +2014,8 @@ export namespace AddressBalanceInfo {
   export type AsObject = {
     address: string,
     balance: number,
-    numconfirmations: number,
-    isaddressunused: boolean,
+    numConfirmations: number,
+    isAddressUnused: boolean,
   }
 }
 

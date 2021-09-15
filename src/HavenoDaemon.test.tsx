@@ -15,10 +15,10 @@ test("Can get the version", async () => {
 
 test("Can get the user's balances", async () => {
   let balances: XmrBalanceInfo = await daemon.getBalances();
-  expect(balances.getUnlockedbalance()); // TODO: correct camelcase in grpc
-  expect(balances.getLockedbalance());
-  expect(balances.getReservedofferbalance());
-  expect(balances.getReservedtradebalance());
+  expect(balances.getUnlockedBalance());
+  expect(balances.getLockedBalance());
+  expect(balances.getReservedOfferBalance());
+  expect(balances.getReservedTradeBalance());
 });
 
 test("Can get offers", async () => {
@@ -64,7 +64,7 @@ test("Can post and remove an offer", async () => {
   if (!ethPaymentAccount) throw new Error("Test requires ethereum payment account to post offer");
   
   // get unlocked balance before reserving offer
-  let unlockedBalanceBefore: bigint = BigInt((await daemon.getBalances()).getUnlockedbalance()); // TODO: correct camelcase
+  let unlockedBalanceBefore: bigint = BigInt((await daemon.getBalances()).getUnlockedBalance());
   
   // post offer
   let amount: bigint = BigInt("250000000000");
@@ -88,7 +88,7 @@ test("Can post and remove an offer", async () => {
   testOffer(offer);
 
   // unlocked balance has decreased
-  let unlockedBalanceAfter: bigint = BigInt((await daemon.getBalances()).getUnlockedbalance());
+  let unlockedBalanceAfter: bigint = BigInt((await daemon.getBalances()).getUnlockedBalance());
   expect(unlockedBalanceAfter).toBeLessThan(unlockedBalanceBefore);
   
   // offer is included in my offers only
@@ -102,7 +102,7 @@ test("Can post and remove an offer", async () => {
   if (getOffer(await daemon.getOffers("buy"), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in my offers after removal");
   
   // reserved balance restored
-  expect(unlockedBalanceBefore).toEqual(BigInt((await daemon.getBalances()).getUnlockedbalance()));
+  expect(unlockedBalanceBefore).toEqual(BigInt((await daemon.getBalances()).getUnlockedBalance()));
 });
 
 // ------------------------------- HELPERS ------------------------------------
