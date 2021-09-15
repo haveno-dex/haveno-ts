@@ -58,7 +58,7 @@ class HavenoDaemon {
     return new Promise(function(resolve, reject) {
       that._walletsClient.getBalances(request, {password: that._password}, function(err: grpcWeb.Error, response: GetBalancesReply) {
         if (err) reject(err);
-        else resolve(response.getBalances()?.getXmr());
+        else resolve(response.getBalances()!.getXmr()!);
       });
     });
   }
@@ -73,7 +73,7 @@ class HavenoDaemon {
   async getOffers(direction: string): Promise<OfferInfo[]> {
     let request = new GetOffersRequest()
             .setDirection(direction)
-            .setCurrencycode("XMR");
+            .setCurrencyCode("XMR");
     let that = this;
     return new Promise(function(resolve, reject) {
       that._offersClient.getOffers(request, {password: that._password}, function(err: grpcWeb.Error, response: GetOffersReply) {
@@ -94,7 +94,7 @@ class HavenoDaemon {
     let that = this;
     let request = new GetOffersRequest()
             .setDirection(direction)
-            .setCurrencycode("XMR");
+            .setCurrencyCode("XMR");
     return new Promise(function(resolve, reject) {
       that._offersClient.getMyOffers(request, {password: that._password}, function(err: grpcWeb.Error, response: GetOffersReply) {
         if (err) reject(err);
@@ -113,7 +113,7 @@ class HavenoDaemon {
     return new Promise(function(resolve, reject) {
       that._paymentAccountsClient.getPaymentAccounts(new GetPaymentAccountsRequest(), {password: that._password}, function(err: grpcWeb.Error, response: GetPaymentAccountsReply) {
         if (err) reject(err);
-        else resolve(response.getPaymentaccountsList());
+        else resolve(response.getPaymentAccountsList());
       });
     });
   }
@@ -133,14 +133,14 @@ class HavenoDaemon {
         tradeInstant: boolean): Promise<PaymentAccount> {
     let that = this;
     let request = new CreateCryptoCurrencyPaymentAccountRequest()
-            .setAccountname(accountName)
-            .setCurrencycode(currencyCode)
+            .setAccountName(accountName)
+            .setCurrencyCode(currencyCode)
             .setAddress(address)
-            .setTradeinstant(tradeInstant);
+            .setTradeInstant(tradeInstant);
     return new Promise(function(resolve, reject) {
       that._paymentAccountsClient.createCryptoCurrencyPaymentAccount(request, {password: that._password}, function(err: grpcWeb.Error, response: CreateCryptoCurrencyPaymentAccountReply) {
         if (err) reject(err);
-        else resolve(response.getPaymentaccount());
+        else resolve(response.getPaymentAccount()!);
       });
     });
   }
@@ -172,21 +172,21 @@ class HavenoDaemon {
         triggerPrice?: number): Promise<OfferInfo> {
     let that = this;
     let request = new CreateOfferRequest()
-            .setCurrencycode(currencyCode)
+            .setCurrencyCode(currencyCode)
             .setDirection(direction)
             .setPrice(price.toString())
-            .setUsemarketbasedprice(useMarketBasedPrice)
-            .setMarketpricemargin(marketPriceMargin)
+            .setUseMarketBasedPrice(useMarketBasedPrice)
+            .setMarketPriceMargin(marketPriceMargin)
             .setAmount(amount.toString())
-            .setMinamount(minAmount.toString())
-            .setBuyersecuritydeposit(buyerSecurityDeposit)
-            .setPaymentaccountid(paymentAccountId)
-            .setMakerfeecurrencycode("XMR");
-    if (triggerPrice) request.setTriggerprice(BigInt(triggerPrice.toString()).toString());
+            .setMinAmount(minAmount.toString())
+            .setBuyerSecurityDeposit(buyerSecurityDeposit)
+            .setPaymentAccountId(paymentAccountId)
+            .setMakerFeeCurrencyCode("XMR");
+    if (triggerPrice) request.setTriggerPrice(BigInt(triggerPrice.toString()).toString());
     return new Promise(function(resolve, reject) {
       that._offersClient.createOffer(request, {password: that._password}, function(err: grpcWeb.Error, response: CreateOfferReply) {
         if (err) reject(err);
-        else resolve(response.getOffer());
+        else resolve(response.getOffer()!);
       });
     });
   }
@@ -196,7 +196,7 @@ class HavenoDaemon {
    * 
    * @param {string} id - the offer id to cancel
    */
-  async cancelOffer(id: string) {
+  async cancelOffer(id: string): Promise<void> {
     let that = this;
     return new Promise(function(resolve, reject) {
       that._offersClient.cancelOffer(new CancelOfferRequest().setId(id), {password: that._password}, function(err: grpcWeb.Error) {
