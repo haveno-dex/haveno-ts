@@ -2,11 +2,11 @@
 
 A proof of concept to fetch and render data from Haveno's daemon in ReactJS.
 
-This application is a basic [create-react-app](https://github.com/facebook/create-react-app) with typescript using [grpc-web](https://github.com/grpc/grpc-web) and a proxy ([envoy](https://www.envoyproxy.io/)) for Haveno's gRPC daemon.
+This application is a lightly modified [create-react-app](https://github.com/facebook/create-react-app) with typescript using [envoy proxy](https://www.envoyproxy.io/) and [grpc-web](https://github.com/grpc/grpc-web) to use Haveno's gRPC API.
 
-## How to Run in a Browser
+## Run in a Browser
 
-1. [Run a local Haveno test network](https://github.com/woodser/haveno#running-a-local-haveno-test-network) except replace `./haveno-desktop` with `./haveno-daemon` when starting Alice at port 9999.
+1. [Run a local Haveno test network](https://github.com/haveno-dex/haveno/blob/master/docs/installing.md) except replace `./haveno-desktop` with `./haveno-daemon` when starting Alice at port 9999.
 2. `git clone https://github.com/haveno-dex/haveno-ui-poc`
 4. Start envoy with the config in ./config/envoy.yaml<br>
   Example: `docker run --rm -it -v ~/git/haveno-ui-poc/config/envoy.yaml:/envoy.yaml -p 8080:8080 envoyproxy/envoy-dev:8a2143613d43d17d1eb35a24b4a4a4c432215606 -c /envoy.yaml`
@@ -18,7 +18,24 @@ This application is a basic [create-react-app](https://github.com/facebook/creat
     <img src="haveno-ui-poc.png" width="500"/><br>
 </p>
 
+## Run Tests
+
+Running the [top-level API tests](./src/HavenoDaemon.test.tsx) is a great way to develop and test Haveno end-to-end.
+
+[`HavenoDaemon`](./src/HavenoDaemon.tsx) provides the interface to the Haveno daemon's gRPC API.
+
+1. [Run a local Haveno test network](https://github.com/haveno-dex/haveno/blob/master/docs/installing.md) except replace `./haveno-desktop` with `./haveno-daemon` when starting Alice at port 9999 and Bob at port 10000.
+2. `git clone https://github.com/haveno-dex/haveno-ui-poc`
+4. Start envoy with the test config in ./config/envoy.test.yaml.<br>
+  Example: `docker run --rm -it -v ~/git/haveno-ui-poc/config/envoy.test.yaml:/envoy.test.yaml -p 8080:8080 -p 8081:8081 envoyproxy/envoy-dev:8a2143613d43d17d1eb35a24b4a4a4c432215606 -c /envoy.test.yaml`
+5. `npm install`
+6. Modify test config as needed in [HavenoDaemon.test.tsx](./src/HavenoDaemon.test.tsx).
+7. `npm test`
+8. Run all tests: `a`
+
 ## How to Update the Protobuf Client
+
+If the protobuf definitions in haveno-dex/haveno are updated, the typescript imports must be regenerated:
 
 1. Copy grpc.proto and pb.proto from Haveno's [protobuf definitions](https://github.com/haveno-dex/haveno/tree/master/proto/src/main/proto) to ./config.
 2. Install protobuf for your system, e.g. on mac: `brew install protobuf`

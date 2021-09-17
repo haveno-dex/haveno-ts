@@ -788,6 +788,11 @@ export class SignOfferRequest extends jspb.Message {
   getReserveTxKey(): string;
   setReserveTxKey(value: string): SignOfferRequest;
 
+  getReserveTxKeyImagesList(): Array<string>;
+  setReserveTxKeyImagesList(value: Array<string>): SignOfferRequest;
+  clearReserveTxKeyImagesList(): SignOfferRequest;
+  addReserveTxKeyImages(value: string, index?: number): SignOfferRequest;
+
   getPayoutAddress(): string;
   setPayoutAddress(value: string): SignOfferRequest;
 
@@ -811,6 +816,7 @@ export namespace SignOfferRequest {
     reserveTxHash: string,
     reserveTxHex: string,
     reserveTxKey: string,
+    reserveTxKeyImagesList: Array<string>,
     payoutAddress: string,
   }
 }
@@ -4138,6 +4144,11 @@ export class OfferPayload extends jspb.Message {
   getArbitratorSignature(): string;
   setArbitratorSignature(value: string): OfferPayload;
 
+  getReserveTxKeyImagesList(): Array<string>;
+  setReserveTxKeyImagesList(value: Array<string>): OfferPayload;
+  clearReserveTxKeyImagesList(): OfferPayload;
+  addReserveTxKeyImages(value: string, index?: number): OfferPayload;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): OfferPayload.AsObject;
   static toObject(includeInstance: boolean, msg: OfferPayload): OfferPayload.AsObject;
@@ -4186,6 +4197,7 @@ export namespace OfferPayload {
     protocolVersion: number,
     arbitratorNodeAddress?: NodeAddress.AsObject,
     arbitratorSignature: string,
+    reserveTxKeyImagesList: Array<string>,
   }
 
   export enum Direction { 
