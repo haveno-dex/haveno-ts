@@ -192,11 +192,11 @@ class HavenoDaemon {
   }
   
   /**
-   * Remove a posted offer, unreserving its funds.
+   * Remove a posted offer, releasing its reserved funds.
    * 
    * @param {string} id - the offer id to cancel
    */
-  async cancelOffer(id: string): Promise<void> {
+  async removeOffer(id: string): Promise<void> {
     let that = this;
     return new Promise(function(resolve, reject) {
       that._offersClient.cancelOffer(new CancelOfferRequest().setId(id), {password: that._password}, function(err: grpcWeb.Error) {

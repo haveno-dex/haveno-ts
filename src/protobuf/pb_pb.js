@@ -537,7 +537,7 @@ if (goog.DEBUG && !COMPILED) {
  * @constructor
  */
 proto.io.bisq.protobuffer.SignOfferRequest = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.io.bisq.protobuffer.SignOfferRequest.repeatedFields_, null);
 };
 goog.inherits(proto.io.bisq.protobuffer.SignOfferRequest, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -11148,6 +11148,13 @@ proto.io.bisq.protobuffer.GetInventoryResponse.prototype.clearInventoryMap = fun
 
 
 
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.io.bisq.protobuffer.SignOfferRequest.repeatedFields_ = [11];
+
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -11189,7 +11196,8 @@ proto.io.bisq.protobuffer.SignOfferRequest.toObject = function(includeInstance, 
     reserveTxHash: jspb.Message.getFieldWithDefault(msg, 8, ""),
     reserveTxHex: jspb.Message.getFieldWithDefault(msg, 9, ""),
     reserveTxKey: jspb.Message.getFieldWithDefault(msg, 10, ""),
-    payoutAddress: jspb.Message.getFieldWithDefault(msg, 11, "")
+    reserveTxKeyImagesList: (f = jspb.Message.getRepeatedField(msg, 11)) == null ? undefined : f,
+    payoutAddress: jspb.Message.getFieldWithDefault(msg, 12, "")
   };
 
   if (includeInstance) {
@@ -11270,6 +11278,10 @@ proto.io.bisq.protobuffer.SignOfferRequest.deserializeBinaryFromReader = functio
       msg.setReserveTxKey(value);
       break;
     case 11:
+      var value = /** @type {string} */ (reader.readString());
+      msg.addReserveTxKeyImages(value);
+      break;
+    case 12:
       var value = /** @type {string} */ (reader.readString());
       msg.setPayoutAddress(value);
       break;
@@ -11375,10 +11387,17 @@ proto.io.bisq.protobuffer.SignOfferRequest.serializeBinaryToWriter = function(me
       f
     );
   }
+  f = message.getReserveTxKeyImagesList();
+  if (f.length > 0) {
+    writer.writeRepeatedString(
+      11,
+      f
+    );
+  }
   f = message.getPayoutAddress();
   if (f.length > 0) {
     writer.writeString(
-      11,
+      12,
       f
     );
   }
@@ -11623,11 +11642,48 @@ proto.io.bisq.protobuffer.SignOfferRequest.prototype.setReserveTxKey = function(
 
 
 /**
- * optional string payout_address = 11;
+ * repeated string reserve_tx_key_images = 11;
+ * @return {!Array<string>}
+ */
+proto.io.bisq.protobuffer.SignOfferRequest.prototype.getReserveTxKeyImagesList = function() {
+  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 11));
+};
+
+
+/**
+ * @param {!Array<string>} value
+ * @return {!proto.io.bisq.protobuffer.SignOfferRequest} returns this
+ */
+proto.io.bisq.protobuffer.SignOfferRequest.prototype.setReserveTxKeyImagesList = function(value) {
+  return jspb.Message.setField(this, 11, value || []);
+};
+
+
+/**
+ * @param {string} value
+ * @param {number=} opt_index
+ * @return {!proto.io.bisq.protobuffer.SignOfferRequest} returns this
+ */
+proto.io.bisq.protobuffer.SignOfferRequest.prototype.addReserveTxKeyImages = function(value, opt_index) {
+  return jspb.Message.addToRepeatedField(this, 11, value, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.io.bisq.protobuffer.SignOfferRequest} returns this
+ */
+proto.io.bisq.protobuffer.SignOfferRequest.prototype.clearReserveTxKeyImagesList = function() {
+  return this.setReserveTxKeyImagesList([]);
+};
+
+
+/**
+ * optional string payout_address = 12;
  * @return {string}
  */
 proto.io.bisq.protobuffer.SignOfferRequest.prototype.getPayoutAddress = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 11, ""));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 12, ""));
 };
 
 
@@ -11636,7 +11692,7 @@ proto.io.bisq.protobuffer.SignOfferRequest.prototype.getPayoutAddress = function
  * @return {!proto.io.bisq.protobuffer.SignOfferRequest} returns this
  */
 proto.io.bisq.protobuffer.SignOfferRequest.prototype.setPayoutAddress = function(value) {
-  return jspb.Message.setProto3StringField(this, 11, value);
+  return jspb.Message.setProto3StringField(this, 12, value);
 };
 
 
@@ -36401,7 +36457,7 @@ proto.io.bisq.protobuffer.MailboxStoragePayload.prototype.clearExtraDataMap = fu
  * @private {!Array<number>}
  * @const
  */
-proto.io.bisq.protobuffer.OfferPayload.repeatedFields_ = [17,19];
+proto.io.bisq.protobuffer.OfferPayload.repeatedFields_ = [17,19,1003];
 
 
 
@@ -36471,7 +36527,8 @@ proto.io.bisq.protobuffer.OfferPayload.toObject = function(includeInstance, msg)
     extraDataMap: (f = msg.getExtraDataMap()) ? f.toObject(includeInstance, undefined) : [],
     protocolVersion: jspb.Message.getFieldWithDefault(msg, 36, 0),
     arbitratorNodeAddress: (f = msg.getArbitratorNodeAddress()) && proto.io.bisq.protobuffer.NodeAddress.toObject(includeInstance, f),
-    arbitratorSignature: jspb.Message.getFieldWithDefault(msg, 1002, "")
+    arbitratorSignature: jspb.Message.getFieldWithDefault(msg, 1002, ""),
+    reserveTxKeyImagesList: (f = jspb.Message.getRepeatedField(msg, 1003)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -36664,6 +36721,10 @@ proto.io.bisq.protobuffer.OfferPayload.deserializeBinaryFromReader = function(ms
     case 1002:
       var value = /** @type {string} */ (reader.readString());
       msg.setArbitratorSignature(value);
+      break;
+    case 1003:
+      var value = /** @type {string} */ (reader.readString());
+      msg.addReserveTxKeyImages(value);
       break;
     default:
       reader.skipField();
@@ -36957,6 +37018,13 @@ proto.io.bisq.protobuffer.OfferPayload.serializeBinaryToWriter = function(messag
   if (f.length > 0) {
     writer.writeString(
       1002,
+      f
+    );
+  }
+  f = message.getReserveTxKeyImagesList();
+  if (f.length > 0) {
+    writer.writeRepeatedString(
+      1003,
       f
     );
   }
@@ -37752,6 +37820,43 @@ proto.io.bisq.protobuffer.OfferPayload.prototype.getArbitratorSignature = functi
  */
 proto.io.bisq.protobuffer.OfferPayload.prototype.setArbitratorSignature = function(value) {
   return jspb.Message.setProto3StringField(this, 1002, value);
+};
+
+
+/**
+ * repeated string reserve_tx_key_images = 1003;
+ * @return {!Array<string>}
+ */
+proto.io.bisq.protobuffer.OfferPayload.prototype.getReserveTxKeyImagesList = function() {
+  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 1003));
+};
+
+
+/**
+ * @param {!Array<string>} value
+ * @return {!proto.io.bisq.protobuffer.OfferPayload} returns this
+ */
+proto.io.bisq.protobuffer.OfferPayload.prototype.setReserveTxKeyImagesList = function(value) {
+  return jspb.Message.setField(this, 1003, value || []);
+};
+
+
+/**
+ * @param {string} value
+ * @param {number=} opt_index
+ * @return {!proto.io.bisq.protobuffer.OfferPayload} returns this
+ */
+proto.io.bisq.protobuffer.OfferPayload.prototype.addReserveTxKeyImages = function(value, opt_index) {
+  return jspb.Message.addToRepeatedField(this, 1003, value, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.io.bisq.protobuffer.OfferPayload} returns this
+ */
+proto.io.bisq.protobuffer.OfferPayload.prototype.clearReserveTxKeyImagesList = function() {
+  return this.setReserveTxKeyImagesList([]);
 };
 
 
