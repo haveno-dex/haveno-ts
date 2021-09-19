@@ -1,7 +1,7 @@
 import * as grpcWeb from 'grpc-web';
-import {GetVersionClient, WalletsClient, OffersClient, PaymentAccountsClient} from './protobuf/GrpcServiceClientPb';
-import {GetVersionRequest, GetVersionReply, GetBalancesRequest, GetBalancesReply, XmrBalanceInfo, GetOffersRequest, GetOffersReply, OfferInfo, GetPaymentAccountsRequest, GetPaymentAccountsReply, CreateCryptoCurrencyPaymentAccountRequest, CreateCryptoCurrencyPaymentAccountReply, CreateOfferRequest, CreateOfferReply, CancelOfferRequest} from './protobuf/grpc_pb';
-import {PaymentAccount} from './protobuf/pb_pb';
+import {GetVersionClient, WalletsClient, OffersClient, PaymentAccountsClient, TradesClient} from './protobuf/GrpcServiceClientPb';
+import {GetVersionRequest, GetVersionReply, GetBalancesRequest, GetBalancesReply, XmrBalanceInfo, GetOffersRequest, GetOffersReply, OfferInfo, GetPaymentAccountsRequest, GetPaymentAccountsReply, CreateCryptoCurrencyPaymentAccountRequest, CreateCryptoCurrencyPaymentAccountReply, CreateOfferRequest, CreateOfferReply, CancelOfferRequest, TakeOfferRequest, TakeOfferReply, TradeInfo, GetTradeRequest, GetTradeReply, GetNewDepositSubaddressRequest, GetNewDepositSubaddressReply, ConfirmPaymentStartedRequest, ConfirmPaymentReceivedRequest} from './protobuf/grpc_pb';
+import {PaymentAccount, AvailabilityResult} from './protobuf/pb_pb';
 
 /**
  * Haveno daemon client using gRPC.
@@ -13,8 +13,9 @@ class HavenoDaemon {
   _password: string;
   _getVersionClient: GetVersionClient;
   _walletsClient: WalletsClient;
-  _offersClient: OffersClient;
   _paymentAccountsClient: PaymentAccountsClient;
+  _offersClient: OffersClient;
+  _tradesClient: TradesClient;
   
   /**
    * Construct a client connected to a Haveno daemon.
@@ -27,8 +28,9 @@ class HavenoDaemon {
     this._password = password;
     this._getVersionClient = new GetVersionClient(this._url);
     this._walletsClient = new WalletsClient(this._url);
-    this._offersClient = new OffersClient(this._url);
     this._paymentAccountsClient = new PaymentAccountsClient(this._url);
+    this._offersClient = new OffersClient(this._url);
+    this._tradesClient = new TradesClient(this._url);
   }
   
   /**
@@ -38,9 +40,8 @@ class HavenoDaemon {
    */
   async getVersion(): Promise<string> {
     let that = this;
-    let request = new GetVersionRequest();
     return new Promise(function(resolve, reject) {
-      that._getVersionClient.getVersion(request, {password: that._password}, function(err: grpcWeb.Error, response: GetVersionReply) {
+      that._getVersionClient.getVersion(new GetVersionRequest(), {password: that._password}, function(err: grpcWeb.Error, response: GetVersionReply) {
         if (err) reject(err);
         else resolve(response.getVersion());
       });
@@ -54,9 +55,8 @@ class HavenoDaemon {
    */
   async getBalances(): Promise<XmrBalanceInfo> {
     let that = this;
-    let request = new GetBalancesRequest();
     return new Promise(function(resolve, reject) {
-      that._walletsClient.getBalances(request, {password: that._password}, function(err: grpcWeb.Error, response: GetBalancesReply) {
+      that._walletsClient.getBalances(new GetBalancesRequest(), {password: that._password}, function(err: grpcWeb.Error, response: GetBalancesReply) {
         if (err) reject(err);
         else resolve(response.getBalances()!.getXmr()!);
       });
@@ -64,41 +64,16 @@ class HavenoDaemon {
   }
   
   /**
-   * Get available offers to buy or sell XMR.
+   * Get a new subaddress in the Haveno wallet to receive deposits.
    * 
-   * @param {string} direction - one of "BUY" or "SELL"
-   * 
-   * @return {OfferInfo[]} available offers
+   * @return {string} the deposit address (a subaddress in the Haveno wallet)
    */
-  async getOffers(direction: string): Promise<OfferInfo[]> {
-    let request = new GetOffersRequest()
-            .setDirection(direction)
-            .setCurrencyCode("XMR");
+  async getNewDepositSubaddress(): Promise<string> {
     let that = this;
     return new Promise(function(resolve, reject) {
-      that._offersClient.getOffers(request, {password: that._password}, function(err: grpcWeb.Error, response: GetOffersReply) {
+      that._walletsClient.getNewDepositSubaddress(new GetNewDepositSubaddressRequest(), {password: that._password}, function(err: grpcWeb.Error, response: GetNewDepositSubaddressReply) {
         if (err) reject(err);
-        else resolve(response.getOffersList());
-      });
-    });
-  }
-  
-  /**
-   * Get user's created offers to buy or sell XMR.
-   * 
-   * @param {string} direction - one of "BUY" or "SELL"
-   * 
-   * @return {OfferInfo[]} the user's created offers
-   */
-  async getMyOffers(direction: string): Promise<OfferInfo[]> {
-    let that = this;
-    let request = new GetOffersRequest()
-            .setDirection(direction)
-            .setCurrencyCode("XMR");
-    return new Promise(function(resolve, reject) {
-      that._offersClient.getMyOffers(request, {password: that._password}, function(err: grpcWeb.Error, response: GetOffersReply) {
-        if (err) reject(err);
-        else resolve(response.getOffersList());
+        else resolve(response.getSubaddress());
       });
     });
   }
@@ -146,6 +121,40 @@ class HavenoDaemon {
   }
   
   /**
+   * Get available offers to buy or sell XMR.
+   * 
+   * @param {string} direction - one of "BUY" or "SELL"
+   * 
+   * @return {OfferInfo[]} available offers
+   */
+  async getOffers(direction: string): Promise<OfferInfo[]> {
+    let that = this;
+    return new Promise(function(resolve, reject) {
+      that._offersClient.getOffers(new GetOffersRequest().setDirection(direction).setCurrencyCode("XMR"), {password: that._password}, function(err: grpcWeb.Error, response: GetOffersReply) {
+        if (err) reject(err);
+        else resolve(response.getOffersList());
+      });
+    });
+  }
+  
+  /**
+   * Get user's created offers to buy or sell XMR.
+   * 
+   * @param {string} direction - one of "BUY" or "SELL"
+   * 
+   * @return {OfferInfo[]} the user's created offers
+   */
+  async getMyOffers(direction: string): Promise<OfferInfo[]> {
+    let that = this;
+    return new Promise(function(resolve, reject) {
+      that._offersClient.getMyOffers(new GetOffersRequest().setDirection(direction).setCurrencyCode("XMR"), {password: that._password}, function(err: grpcWeb.Error, response: GetOffersReply) {
+        if (err) reject(err);
+        else resolve(response.getOffersList());
+      });
+    });
+  }
+  
+  /**
    * Post an offer.
    * 
    * @param {string} currencyCode - currency code of traded pair
@@ -158,7 +167,7 @@ class HavenoDaemon {
    * @param {number} buyerSecurityDeposit - buyer security deposit as % of trade amount
    * @param {string} paymentAccountId - payment account id
    * @param {number} triggerPrice - price to remove offer
-   * @return {HavenoOffer[]} created offers
+   * @return {OfferInfo} the created offer
    */
   async postOffer(currencyCode: string,
         direction: string,
@@ -194,12 +203,80 @@ class HavenoDaemon {
   /**
    * Remove a posted offer, releasing its reserved funds.
    * 
-   * @param {string} id - the offer id to cancel
+   * @param {string} offerId - the offer id to cancel
    */
-  async removeOffer(id: string): Promise<void> {
+  async removeOffer(offerId: string): Promise<void> {
     let that = this;
     return new Promise(function(resolve, reject) {
-      that._offersClient.cancelOffer(new CancelOfferRequest().setId(id), {password: that._password}, function(err: grpcWeb.Error) {
+      that._offersClient.cancelOffer(new CancelOfferRequest().setId(offerId), {password: that._password}, function(err: grpcWeb.Error) {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+  }
+  
+  /**
+   * Take an offer.
+   * 
+   * @param {string} offerId - id of the offer to take
+   * @param {string} paymentAccountId - id of the payment account
+   * @return {TradeInfo} the initialized trade
+   */
+  async takeOffer(offerId: string, paymentAccountId: string): Promise<TradeInfo> {
+    let that = this;
+    let request = new TakeOfferRequest()
+        .setOfferId(offerId)
+        .setPaymentAccountId(paymentAccountId)
+        .setTakerFeeCurrencyCode("XMR");
+    return new Promise(function(resolve, reject) {
+      that._tradesClient.takeOffer(request, {password: that._password}, function(err: grpcWeb.Error, response: TakeOfferReply) {
+        if (err) reject(err);
+        else if (response.getFailureReason() && response.getFailureReason()!.getAvailabilityResult() !== AvailabilityResult.AVAILABLE) reject(response.getFailureReason()!.getDescription());
+        else resolve(response.getTrade());
+      });
+    });
+  }
+  
+  /**
+   * Get a trade by id.
+   * 
+   * @param {string} tradeId - the id of the trade and its offer
+   * @return {TradeInfo} the trade with the given id
+   */
+  async getTrade(tradeId: string): Promise<TradeInfo> {
+    let that = this;
+    return new Promise(function(resolve, reject) {
+      that._tradesClient.getTrade(new GetTradeRequest().setTradeId(tradeId), {password: that._password}, function(err: grpcWeb.Error, response: GetTradeReply) {
+        if (err) reject(err);
+        else resolve(response.getTrade());
+      });
+    });
+  }
+  
+  /**
+   * Confirm a payment is started.
+   * 
+   * @param {string} tradeId - the id of the trade
+   */
+  async confirmPaymentStarted(tradeId: string): Promise<void> {
+    let that = this;
+    return new Promise(function(resolve, reject) {
+      that._tradesClient.confirmPaymentStarted(new ConfirmPaymentStartedRequest().setTradeId(tradeId), {password: that._password}, function(err: grpcWeb.Error) {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+  }
+  
+  /**
+   * Confirm a payment is received.
+   * 
+   * @param {string} tradeId - the id of the trade
+   */
+  async confirmPaymentReceived(tradeId: string): Promise<void> {
+    let that = this;
+    return new Promise(function(resolve, reject) {
+      that._tradesClient.confirmPaymentReceived(new ConfirmPaymentReceivedRequest().setTradeId(tradeId), {password: that._password}, function(err: grpcWeb.Error) {
         if (err) reject(err);
         else resolve();
       });
