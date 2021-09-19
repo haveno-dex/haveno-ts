@@ -1,23 +1,26 @@
 // import haveno types
 import {HavenoDaemon} from "./HavenoDaemon";
-import {XmrBalanceInfo, OfferInfo} from './protobuf/grpc_pb'; // TODO (woodser): better names; haveno_grpc_pb, haveno_pb
+import {XmrBalanceInfo, OfferInfo, TradeInfo} from './protobuf/grpc_pb'; // TODO (woodser): better names; haveno_grpc_pb, haveno_pb
 import {PaymentAccount} from './protobuf/pb_pb';
 
 // import monero-javascript
 const monerojs = require("monero-javascript"); // TODO (woodser): support typescript and `npm install @types/monero-javascript` in monero-javascript
-const MoneroDaemonRpc = monerojs.MoneroDaemonRpc;
-const MoneroWalletRpc = monerojs.MoneroWalletRpc;
+const MoneroTxConfig = monerojs.MoneroTxConfig;
+const TaskLooper = monerojs.TaskLooper;
+
+// import console because jest swallows messages in real time
+const console = require('console');
 
 // alice config
 const havenoVersion = "1.6.2";
 const aliceDaemonUrl = "http://localhost:8080";
 const aliceDaemonPassword = "apitest";
 const alice: HavenoDaemon = new HavenoDaemon(aliceDaemonUrl, aliceDaemonPassword);
-const aliceWalletUrl = "http://127.0.0.1:51743"; // alice's internal haveno wallet for direct testing // TODO (woodser): make configurable rather than randomly generated
+const aliceWalletUrl = "http://127.0.0.1:57983"; // alice's internal haveno wallet for direct testing // TODO (woodser): make configurable rather than randomly generated
 const aliceWalletUsername = "rpc_user";
 const aliceWalletPassword = "abc123";
-const aliceWallet = new MoneroWalletRpc(aliceWalletUrl, aliceWalletUsername, aliceWalletPassword);
 const aliceWalletSyncPeriod = 5000;
+let aliceWallet: any;
 
 // bob config
 const bobDaemonUrl = "http://localhost:8081";
@@ -27,15 +30,35 @@ const bob: HavenoDaemon = new HavenoDaemon(bobDaemonUrl, bobDaemonPassword);
 // monero daemon config
 const moneroDaemonUrl = "http://localhost:38081"
 const moneroDaemonUsername = "superuser";
-const moneroDaemonPassword = "abctesting123"; 
+const moneroDaemonPassword = "abctesting123";
+const miningAddress = "59M2dSSmrKiimFavjWQ8zFGWe6ziHr9XUjhHcMVEj9ut4EdkcmcqawfgMrtEERipUJA8iNzU65eaELoFYcor1c4jK4FRj1N"; 
 let monerod: any;
 
+// source funding wallet
+const fundingWalletUrl = "http://localhost:38084";
+const fundingWalletUsername = "rpc_user";
+const fundingWalletPassword = "abc123";
+let fundingWallet: any;
+
+// other test config
+const MAX_TIME_PEER_NOTICE = 3000;
+
 beforeAll(async () => {
-  await monerojs.LibraryUtils.setWorkerDistPath("./node_modules/monero-javascript/src/main/js/common/MoneroWebWorker.js"); // TODO (woodser): remove this when update to monero-javascript-v0.5.6 which correctly detects node environment
+  
+  // TODO (woodser): remove this when update to monero-javascript-v0.5.6 which correctly detects node environment
+  await monerojs.LibraryUtils.setWorkerDistPath("./node_modules/monero-javascript/src/main/js/common/MoneroWebWorker.js");
+  
+  // initialize clients of wallet and daemon rpc
+  aliceWallet = await monerojs.connectToWalletRpc(aliceWalletUrl, aliceWalletUsername, aliceWalletPassword);
+  fundingWallet = await monerojs.connectToWalletRpc(fundingWalletUrl, fundingWalletUsername, fundingWalletPassword);
   monerod = await monerojs.connectToDaemonRpc(moneroDaemonUrl, moneroDaemonUsername, moneroDaemonPassword);
+  
+  // debug tools
   //for (let offer of await alice.getMyOffers("BUY")) await alice.removeOffer(offer.getId());
   //for (let offer of await alice.getMyOffers("SELL")) await alice.removeOffer(offer.getId());
   //for (let frozenOutput of await aliceWallet.getOutputs({isFrozen: true})) await aliceWallet.thawOutput(frozenOutput.getKeyImage().getHex());
+  //console.log((await alice.getBalances()).getUnlockedBalance() + ", " + (await alice.getBalances()).getLockedBalance());
+  //console.log((await bob.getBalances()).getUnlockedBalance() + ", " + (await bob.getBalances()).getLockedBalance());
 });
 
 test("Can get the version", async () => {
@@ -119,7 +142,7 @@ test("Invalidates offers when reserved funds are spent", async () => {
   }
   
   // offer is available to peers
-  await wait(3000);
+  await wait(MAX_TIME_PEER_NOTICE);
   if (!getOffer(await bob.getOffers("buy"), offer.getId())) throw new Error("Offer " + offer.getId() + " was not found in peer's offers after posting");
   
   // spend one of offer's reserved outputs
@@ -149,18 +172,86 @@ test("Invalidates offers when reserved funds are spent", async () => {
   await monerod.flushTxPool(tx.getHash());
 });
 
+jest.setTimeout(120000);
 test("Can complete a trade", async () => {
-  
+    
+  console.log("Alice balances: " + getBalancesStr(await alice.getBalances()));
+    
   // wait for alice and bob to have unlocked balance for trade
   let tradeAmount: bigint = BigInt("250000000000");
   await waitForUnlockedBalance(tradeAmount, alice, bob);
   
-  // TODO: finish this test
+  // alice posts offer to buy xmr
+  console.log("Alice posting offer");
+  let offer: OfferInfo = await postOffer();
+  console.log("Alice done posting offer");
+  
+  // bob sees offer
+  await wait(MAX_TIME_PEER_NOTICE);
+  
+  // get bob's ethereum payment account
+  let ethPaymentAccount: PaymentAccount | undefined;
+  for (let paymentAccount of await bob.getPaymentAccounts()) {
+    if (paymentAccount.getSelectedTradeCurrency()?.getCode() === "ETH") {
+      ethPaymentAccount = paymentAccount;
+      break;
+    }
+  }
+  if (!ethPaymentAccount) throw new Error("Bob must have ethereum payment account to take offer");
+  
+  // bob takes offer
+  let startTime = Date.now();
+  let bobBalancesBefore: XmrBalanceInfo = await bob.getBalances();
+  console.log("Bob taking offer");
+  let trade: TradeInfo = await bob.takeOffer(offer.getId(), ethPaymentAccount.getId()); // TODO (woodser): this returns before trade is fully initialized
+  console.log("Bob done taking offer in " + (Date.now() - startTime) + " ms");
+  
+  // bob can get trade
+  let fetchedTrade: TradeInfo = await bob.getTrade(trade.getTradeId());
+  // TODO: test fetched trade
+  
+  // test bob's balances after taking trade
+  let bobBalancesAfter: XmrBalanceInfo = await bob.getBalances();
+  expect(BigInt(bobBalancesAfter.getUnlockedBalance())).toBeLessThan(BigInt(bobBalancesBefore.getUnlockedBalance()));
+  expect(BigInt(bobBalancesAfter.getReservedOfferBalance()) + BigInt(bobBalancesAfter.getReservedTradeBalance())).toBeGreaterThan(BigInt(bobBalancesBefore.getReservedOfferBalance()) + BigInt(bobBalancesBefore.getReservedTradeBalance()));
+  
+  // bob is notified of balance change
+  
+  // alice notified of balance changes and that offer is taken
+  await wait(MAX_TIME_PEER_NOTICE);
+  
+  // alice can get trade
+  fetchedTrade = await alice.getTrade(trade.getTradeId());
+  
+  // mine until deposit txs unlock
+  console.log("Mining to unlock deposit txs");
+  await waitForUnlockedTxs(fetchedTrade.getMakerDepositTxId(), fetchedTrade.getTakerDepositTxId());
+  console.log("Done mining to unlock deposit txs");
+    
+  // alice notified to send payment
+  await wait(5000);
+  
+  // alice indicates payment is sent
+  await alice.confirmPaymentStarted(trade.getTradeId());
+  
+  // bob notified payment is sent
+  await wait(MAX_TIME_PEER_NOTICE);
+  
+  // bob confirms payment is received
+  await bob.confirmPaymentReceived(trade.getTradeId());
+  
+  // bob notified trade is complete
+  fetchedTrade = await bob.getTrade(trade.getTradeId());
+  console.log(fetchedTrade.getState()); // TODO (woodser): this should be complete state
+  
+  // test bob's balances after confirming payment
+  
+  // alice notified trade is complete and of balance changes
 });
 
 // ------------------------------- HELPERS ------------------------------------
 
-async function postOffer() {
+async function postOffer() { // TODO (woodser): postOffer(maker, peer) 
     
   // test requires ethereum payment account
   let ethPaymentAccount: PaymentAccount | undefined;
@@ -177,7 +268,7 @@ async function postOffer() {
   
   // post offer
   // TODO: don't define variables, just document in comments
-  let amount: bigint = BigInt("250000000000");
+  let amount: bigint = BigInt("200000000000");
   let minAmount: bigint = BigInt("150000000000");
   let price: number = 12.378981; // TODO: price is optional? price string gets converted to long?
   let useMarketBasedPrice: boolean = true;
@@ -208,8 +299,8 @@ async function postOffer() {
   return offer;
 }
 
-async function waitForUnlockedBalance(amount: bigint, ...clients: HavenoDaemon[]) {
-  throw new Error("waitForUnlockedFunds() not implemented"); // TODO: implement
+function getBalancesStr(balances: XmrBalanceInfo) {
+  return "[unlocked balance=" + balances.getUnlockedBalance() + ", locked balance=" + balances.getLockedBalance() + ", reserved offer balance=" + balances.getReservedOfferBalance() + ", reserved trade balance: " + balances.getReservedTradeBalance() + "]";
 }
 
 function getOffer(offers: OfferInfo[], id: string): OfferInfo | undefined {
@@ -228,4 +319,71 @@ function testOffer(offer: OfferInfo) {
 
 async function wait(durationMs: number) {
   return new Promise(function(resolve) { setTimeout(resolve, durationMs); });
+}
+
+async function startMining() {
+  try {
+    await monerod.startMining(miningAddress, 1);
+  } catch (err) {
+    if (err.message !== "Already mining") throw err;
+  }
+}
+
+async function waitForUnlockedBalance(amount: bigint, ...clients: HavenoDaemon[]) {
+  
+  // fund haveno clients with insufficient balance
+  let miningNeeded = false;
+  let fundConfig = new MoneroTxConfig().setAccountIndex(0).setRelay(true);
+  for (let client of clients) {
+    let balances = await client.getBalances();
+    if (BigInt(balances.getUnlockedBalance()) < amount) miningNeeded = true;
+    let depositNeeded: BigInt = amount - BigInt(balances.getUnlockedBalance()) - BigInt(balances.getLockedBalance());
+    if (depositNeeded > BigInt("0")) fundConfig.addDestination(await client.getNewDepositSubaddress(), depositNeeded);
+  }
+  if (fundConfig.getDestinations()) {
+    try { await fundingWallet.createTx(fundConfig); }
+    catch (err) { throw new Error("Error funding haveno daemons: " + err.message); }
+  }
+  
+  // done if all clients have sufficient unlocked balance
+  if (!miningNeeded) return;
+  
+  // wait for funds to unlock
+  console.log("Mining for unlocked trader balances")
+  await startMining();
+  let promises: Promise<void>[] = []
+  for (let client of clients) {
+    promises.push(new Promise(async function(resolve, reject) {
+      let taskLooper: any = new TaskLooper(async function() {
+        let balances: XmrBalanceInfo = await client.getBalances();
+        if (BigInt(balances.getUnlockedBalance()) >= amount) {
+          taskLooper.stop();
+          resolve();
+        }
+      });
+      taskLooper.start(5000);
+    }));
+  }
+  await Promise.all(promises);
+  await monerod.stopMining();
+  console.log("Funds unlocked, done mining");
+};
+
+async function waitForUnlockedTxs(...txHashes: string[]) {
+  await startMining();
+  let promises: Promise<void>[] = []
+  for (let txHash of txHashes) {
+    promises.push(new Promise(async function(resolve, reject) {
+      let taskLooper: any = new TaskLooper(async function() {
+        let tx = await monerod.getTx(txHash);
+        if (tx.isConfirmed() && tx.getBlock().getHeight() <= await monerod.getHeight() - 10) {
+          taskLooper.stop();
+          resolve();
+        }
+      });
+      taskLooper.start(5000);
+    }));
+  }
+  await Promise.all(promises);
+  await monerod.stopMining();
 }

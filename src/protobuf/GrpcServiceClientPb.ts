@@ -1163,6 +1163,46 @@ export class WalletsClient {
     this.methodInfoGetBalances);
   }
 
+  methodInfoGetNewDepositSubaddress = new grpcWeb.AbstractClientBase.MethodInfo(
+    grpc_pb.GetNewDepositSubaddressReply,
+    (request: grpc_pb.GetNewDepositSubaddressRequest) => {
+      return request.serializeBinary();
+    },
+    grpc_pb.GetNewDepositSubaddressReply.deserializeBinary
+  );
+
+  getNewDepositSubaddress(
+    request: grpc_pb.GetNewDepositSubaddressRequest,
+    metadata: grpcWeb.Metadata | null): Promise<grpc_pb.GetNewDepositSubaddressReply>;
+
+  getNewDepositSubaddress(
+    request: grpc_pb.GetNewDepositSubaddressRequest,
+    metadata: grpcWeb.Metadata | null,
+    callback: (err: grpcWeb.Error,
+               response: grpc_pb.GetNewDepositSubaddressReply) => void): grpcWeb.ClientReadableStream<grpc_pb.GetNewDepositSubaddressReply>;
+
+  getNewDepositSubaddress(
+    request: grpc_pb.GetNewDepositSubaddressRequest,
+    metadata: grpcWeb.Metadata | null,
+    callback?: (err: grpcWeb.Error,
+               response: grpc_pb.GetNewDepositSubaddressReply) => void) {
+    if (callback !== undefined) {
+      return this.client_.rpcCall(
+        this.hostname_ +
+          '/io.bisq.protobuffer.Wallets/GetNewDepositSubaddress',
+        request,
+        metadata || {},
+        this.methodInfoGetNewDepositSubaddress,
+        callback);
+    }
+    return this.client_.unaryCall(
+    this.hostname_ +
+      '/io.bisq.protobuffer.Wallets/GetNewDepositSubaddress',
+    request,
+    metadata || {},
+    this.methodInfoGetNewDepositSubaddress);
+  }
+
   methodInfoGetAddressBalance = new grpcWeb.AbstractClientBase.MethodInfo(
     grpc_pb.GetAddressBalanceReply,
     (request: grpc_pb.GetAddressBalanceRequest) => {

@@ -1343,6 +1343,38 @@ export namespace GetBalancesReply {
   }
 }
 
+export class GetNewDepositSubaddressRequest extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GetNewDepositSubaddressRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: GetNewDepositSubaddressRequest): GetNewDepositSubaddressRequest.AsObject;
+  static serializeBinaryToWriter(message: GetNewDepositSubaddressRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GetNewDepositSubaddressRequest;
+  static deserializeBinaryFromReader(message: GetNewDepositSubaddressRequest, reader: jspb.BinaryReader): GetNewDepositSubaddressRequest;
+}
+
+export namespace GetNewDepositSubaddressRequest {
+  export type AsObject = {
+  }
+}
+
+export class GetNewDepositSubaddressReply extends jspb.Message {
+  getSubaddress(): string;
+  setSubaddress(value: string): GetNewDepositSubaddressReply;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GetNewDepositSubaddressReply.AsObject;
+  static toObject(includeInstance: boolean, msg: GetNewDepositSubaddressReply): GetNewDepositSubaddressReply.AsObject;
+  static serializeBinaryToWriter(message: GetNewDepositSubaddressReply, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GetNewDepositSubaddressReply;
+  static deserializeBinaryFromReader(message: GetNewDepositSubaddressReply, reader: jspb.BinaryReader): GetNewDepositSubaddressReply;
+}
+
+export namespace GetNewDepositSubaddressReply {
+  export type AsObject = {
+    subaddress: string,
+  }
+}
+
 export class GetAddressBalanceRequest extends jspb.Message {
   getAddress(): string;
   setAddress(value: string): GetAddressBalanceRequest;
