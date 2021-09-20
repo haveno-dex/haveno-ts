@@ -45,9 +45,6 @@ const MAX_TIME_PEER_NOTICE = 3000;
 
 beforeAll(async () => {
   
-  // TODO (woodser): remove this when update to monero-javascript-v0.5.6 which correctly detects node environment
-  await monerojs.LibraryUtils.setWorkerDistPath("./node_modules/monero-javascript/src/main/js/common/MoneroWebWorker.js");
-  
   // initialize clients of wallet and daemon rpc
   aliceWallet = await monerojs.connectToWalletRpc(aliceWalletUrl, aliceWalletUsername, aliceWalletPassword);
   fundingWallet = await monerojs.connectToWalletRpc(fundingWalletUrl, fundingWalletUsername, fundingWalletPassword);
