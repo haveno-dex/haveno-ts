@@ -16,10 +16,9 @@ const havenoVersion = "1.6.2";
 const aliceDaemonUrl = "http://localhost:8080";
 const aliceDaemonPassword = "apitest";
 const alice: HavenoDaemon = new HavenoDaemon(aliceDaemonUrl, aliceDaemonPassword);
-const aliceWalletUrl = "http://127.0.0.1:57983"; // alice's internal haveno wallet for direct testing // TODO (woodser): make configurable rather than randomly generated
+const aliceWalletUrl = "http://127.0.0.1:56627"; // alice's internal haveno wallet for direct testing // TODO (woodser): make configurable rather than randomly generated
 const aliceWalletUsername = "rpc_user";
 const aliceWalletPassword = "abc123";
-const aliceWalletSyncPeriod = 5000;
 let aliceWallet: any;
 
 // bob config
@@ -31,7 +30,6 @@ const bob: HavenoDaemon = new HavenoDaemon(bobDaemonUrl, bobDaemonPassword);
 const moneroDaemonUrl = "http://localhost:38081"
 const moneroDaemonUsername = "superuser";
 const moneroDaemonPassword = "abctesting123";
-const miningAddress = "59M2dSSmrKiimFavjWQ8zFGWe6ziHr9XUjhHcMVEj9ut4EdkcmcqawfgMrtEERipUJA8iNzU65eaELoFYcor1c4jK4FRj1N"; 
 let monerod: any;
 
 // source funding wallet
@@ -41,14 +39,16 @@ const fundingWalletPassword = "abc123";
 let fundingWallet: any;
 
 // other test config
+const WALLET_SYNC_PERIOD = 5000;
 const MAX_TIME_PEER_NOTICE = 3000;
 
 beforeAll(async () => {
   
-  // initialize clients of wallet and daemon rpc
-  aliceWallet = await monerojs.connectToWalletRpc(aliceWalletUrl, aliceWalletUsername, aliceWalletPassword);
-  fundingWallet = await monerojs.connectToWalletRpc(fundingWalletUrl, fundingWalletUsername, fundingWalletPassword);
+  // initialize clients of daemon and wallet rpc
   monerod = await monerojs.connectToDaemonRpc(moneroDaemonUrl, moneroDaemonUsername, moneroDaemonPassword);
+  fundingWallet = await monerojs.connectToWalletRpc(fundingWalletUrl, fundingWalletUsername, fundingWalletPassword);
+  aliceWallet = await monerojs.connectToWalletRpc(aliceWalletUrl, aliceWalletUsername, aliceWalletPassword);
+  await aliceWallet.startSyncing(WALLET_SYNC_PERIOD);
   
   // debug tools
   //for (let offer of await alice.getMyOffers("BUY")) await alice.removeOffer(offer.getId());
@@ -93,15 +93,32 @@ test("Can get payment accounts", async () => {
 });
 
 test("Can create a crypto payment account", async () => {
+  const ethAddress = "0xdBdAb835Acd6fC84cF5F9aDD3c0B5a1E25fbd99f";
   let ethPaymentAccount: PaymentAccount = await alice.createCryptoPaymentAccount(
         "my eth account",
         "eth",
         "0xdBdAb835Acd6fC84cF5F9aDD3c0B5a1E25fbd99f",
         true);
-   testPaymentAccount(ethPaymentAccount);
+  expect(ethPaymentAccount.getPaymentAccountPayload()!.getInstantCryptoCurrencyAccountPayload()!.getAddress()).toEqual(ethAddress);
+  let found = false; 
+  for (let paymentAccount of await alice.getPaymentAccounts()) {
+    if (paymentAccount.getId() === ethPaymentAccount.getId()) {
+      found = true;
+      ethPaymentAccount = paymentAccount;
+      break;
+    }
+  }
+  if (!found) throw new Error("Payment account not found after being added");
+  expect(ethPaymentAccount.getAccountName()).toEqual("my eth account");
+  expect(ethPaymentAccount.getPaymentAccountPayload()!.getInstantCryptoCurrencyAccountPayload()!.getAddress()).toEqual("0xdBdAb835Acd6fC84cF5F9aDD3c0B5a1E25fbd99f");
+  //expect(ethPaymentAccount.getSelectedTradeCurrency()!.getCode()).toEqual("ETH"); // TODO: selected trade currency missing or interferes with other tests
 });
 
 test("Can post and remove an offer", async () => {
+    
+  // wait for alice and bob to have unlocked balance for trade
+  let tradeAmount: bigint = BigInt("250000000000");
+  await waitForUnlockedBalance(tradeAmount, alice, bob);
   
   // get unlocked balance before reserving funds for offer
   let unlockedBalanceBefore: bigint = BigInt((await alice.getBalances()).getUnlockedBalance());
@@ -121,6 +138,10 @@ test("Can post and remove an offer", async () => {
 
 jest.setTimeout(15000);
 test("Invalidates offers when reserved funds are spent", async () => {
+
+  // wait for alice and bob to have unlocked balance for trade
+  let tradeAmount: bigint = BigInt("250000000000");
+  await waitForUnlockedBalance(tradeAmount, alice, bob);
     
   // get frozen key images before posting offer
   let frozenKeyImagesBefore = [];
@@ -139,7 +160,7 @@ test("Invalidates offers when reserved funds are spent", async () => {
   }
   
   // offer is available to peers
-  await wait(MAX_TIME_PEER_NOTICE);
+  await wait(WALLET_SYNC_PERIOD * 2);
   if (!getOffer(await bob.getOffers("buy"), offer.getId())) throw new Error("Offer " + offer.getId() + " was not found in peer's offers after posting");
   
   // spend one of offer's reserved outputs
@@ -149,7 +170,7 @@ test("Invalidates offers when reserved funds are spent", async () => {
   await monerod.submitTxHex(tx.getFullHex(), true);
   
   // wait for spend to be seen
-  await wait(aliceWalletSyncPeriod * 2); // TODO (woodser): need place for common test utilities
+  await wait(WALLET_SYNC_PERIOD * 2); // TODO (woodser): need place for common test utilities
   
   // offer is removed from peer offers
   if (getOffer(await bob.getOffers("buy"), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in peer's offers after reserved funds spent");
@@ -172,22 +193,13 @@ test("Invalidates offers when reserved funds are spent", async () => {
 jest.setTimeout(120000);
 test("Can complete a trade", async () => {
     
-  console.log("Alice balances: " + getBalancesStr(await alice.getBalances()));
-    
   // wait for alice and bob to have unlocked balance for trade
   let tradeAmount: bigint = BigInt("250000000000");
   await waitForUnlockedBalance(tradeAmount, alice, bob);
   
-  // alice posts offer to buy xmr
-  console.log("Alice posting offer");
-  let offer: OfferInfo = await postOffer();
-  console.log("Alice done posting offer");
-  
-  // bob sees offer
-  await wait(MAX_TIME_PEER_NOTICE);
-  
   // get bob's ethereum payment account
   let ethPaymentAccount: PaymentAccount | undefined;
+  console.log("Getting bob's payment accounts");
   for (let paymentAccount of await bob.getPaymentAccounts()) {
     if (paymentAccount.getSelectedTradeCurrency()?.getCode() === "ETH") {
       ethPaymentAccount = paymentAccount;
@@ -196,11 +208,20 @@ test("Can complete a trade", async () => {
   }
   if (!ethPaymentAccount) throw new Error("Bob must have ethereum payment account to take offer");
   
+  // alice posts offer to buy xmr
+  console.log("Alice posting offer");
+  let offer: OfferInfo = await postOffer();
+  console.log("Alice done posting offer");
+  
+  // bob sees offer
+  await wait(WALLET_SYNC_PERIOD * 2);
+  if (!getOffer(await bob.getOffers("buy"), offer.getId())) throw new Error("Offer " + offer.getId() + " was not found in peer's offers after posting");
+  
   // bob takes offer
   let startTime = Date.now();
   let bobBalancesBefore: XmrBalanceInfo = await bob.getBalances();
   console.log("Bob taking offer");
-  let trade: TradeInfo = await bob.takeOffer(offer.getId(), ethPaymentAccount.getId()); // TODO (woodser): this returns before trade is fully initialized
+  let trade: TradeInfo = await bob.takeOffer(offer.getId(), ethPaymentAccount.getId()); // TODO (woodser): this returns before trade is fully initialized. this fails with bad error message if trade is not yet seen by peer
   console.log("Bob done taking offer in " + (Date.now() - startTime) + " ms");
   
   // bob can get trade
@@ -226,7 +247,7 @@ test("Can complete a trade", async () => {
   console.log("Done mining to unlock deposit txs");
     
   // alice notified to send payment
-  await wait(5000);
+  await wait(WALLET_SYNC_PERIOD);
   
   // alice indicates payment is sent
   await alice.confirmPaymentStarted(trade.getTradeId());
@@ -287,7 +308,7 @@ async function postOffer() { // TODO (woodser): postOffer(maker, peer)
 
   // unlocked balance has decreased
   let unlockedBalanceAfter: bigint = BigInt((await alice.getBalances()).getUnlockedBalance());
-  expect(unlockedBalanceAfter).toBeLessThan(unlockedBalanceBefore);
+  if (unlockedBalanceAfter === unlockedBalanceBefore) throw new Error("unlocked balance did not change after posting offer");
   
   // offer is included in my offers only
   if (!getOffer(await alice.getMyOffers("buy"), offer.getId())) throw new Error("Offer " + offer.getId() + " was not found in my offers");
@@ -320,7 +341,7 @@ async function wait(durationMs: number) {
 
 async function startMining() {
   try {
-    await monerod.startMining(miningAddress, 1);
+    await monerod.startMining(await fundingWallet.getPrimaryAddress(), 1);
   } catch (err) {
     if (err.message !== "Already mining") throw err;
   }
@@ -346,7 +367,7 @@ async function waitForUnlockedBalance(amount: bigint, ...clients: HavenoDaemon[]
   if (!miningNeeded) return;
   
   // wait for funds to unlock
-  console.log("Mining for unlocked trader balances")
+  console.log("Mining for unlocked trader balances of " + amount);
   await startMining();
   let promises: Promise<void>[] = []
   for (let client of clients) {

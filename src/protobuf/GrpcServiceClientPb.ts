@@ -35,7 +35,10 @@ export class DisputeAgentsClient {
     this.options_ = options;
   }
 
-  methodInfoRegisterDisputeAgent = new grpcWeb.AbstractClientBase.MethodInfo(
+  methodInfoRegisterDisputeAgent = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.DisputeAgents/RegisterDisputeAgent',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.RegisterDisputeAgentRequest,
     grpc_pb.RegisterDisputeAgentReply,
     (request: grpc_pb.RegisterDisputeAgentRequest) => {
       return request.serializeBinary();
@@ -50,13 +53,13 @@ export class DisputeAgentsClient {
   registerDisputeAgent(
     request: grpc_pb.RegisterDisputeAgentRequest,
     metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.Error,
+    callback: (err: grpcWeb.RpcError,
                response: grpc_pb.RegisterDisputeAgentReply) => void): grpcWeb.ClientReadableStream<grpc_pb.RegisterDisputeAgentReply>;
 
   registerDisputeAgent(
     request: grpc_pb.RegisterDisputeAgentRequest,
     metadata: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.Error,
+    callback?: (err: grpcWeb.RpcError,
                response: grpc_pb.RegisterDisputeAgentReply) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
@@ -96,7 +99,10 @@ export class HelpClient {
     this.options_ = options;
   }
 
-  methodInfoGetMethodHelp = new grpcWeb.AbstractClientBase.MethodInfo(
+  methodInfoGetMethodHelp = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.Help/GetMethodHelp',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.GetMethodHelpRequest,
     grpc_pb.GetMethodHelpReply,
     (request: grpc_pb.GetMethodHelpRequest) => {
       return request.serializeBinary();
@@ -111,13 +117,13 @@ export class HelpClient {
   getMethodHelp(
     request: grpc_pb.GetMethodHelpRequest,
     metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.Error,
+    callback: (err: grpcWeb.RpcError,
                response: grpc_pb.GetMethodHelpReply) => void): grpcWeb.ClientReadableStream<grpc_pb.GetMethodHelpReply>;
 
   getMethodHelp(
     request: grpc_pb.GetMethodHelpRequest,
     metadata: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.Error,
+    callback?: (err: grpcWeb.RpcError,
                response: grpc_pb.GetMethodHelpReply) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
@@ -157,7 +163,10 @@ export class OffersClient {
     this.options_ = options;
   }
 
-  methodInfoGetOffer = new grpcWeb.AbstractClientBase.MethodInfo(
+  methodInfoGetOffer = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.Offers/GetOffer',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.GetOfferRequest,
     grpc_pb.GetOfferReply,
     (request: grpc_pb.GetOfferRequest) => {
       return request.serializeBinary();
@@ -172,13 +181,13 @@ export class OffersClient {
   getOffer(
     request: grpc_pb.GetOfferRequest,
     metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.Error,
+    callback: (err: grpcWeb.RpcError,
                response: grpc_pb.GetOfferReply) => void): grpcWeb.ClientReadableStream<grpc_pb.GetOfferReply>;
 
   getOffer(
     request: grpc_pb.GetOfferRequest,
     metadata: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.Error,
+    callback?: (err: grpcWeb.RpcError,
                response: grpc_pb.GetOfferReply) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
@@ -197,7 +206,10 @@ export class OffersClient {
     this.methodInfoGetOffer);
   }
 
-  methodInfoGetMyOffer = new grpcWeb.AbstractClientBase.MethodInfo(
+  methodInfoGetMyOffer = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.Offers/GetMyOffer',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.GetMyOfferRequest,
     grpc_pb.GetMyOfferReply,
     (request: grpc_pb.GetMyOfferRequest) => {
       return request.serializeBinary();
@@ -212,13 +224,13 @@ export class OffersClient {
   getMyOffer(
     request: grpc_pb.GetMyOfferRequest,
     metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.Error,
+    callback: (err: grpcWeb.RpcError,
                response: grpc_pb.GetMyOfferReply) => void): grpcWeb.ClientReadableStream<grpc_pb.GetMyOfferReply>;
 
   getMyOffer(
     request: grpc_pb.GetMyOfferRequest,
     metadata: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.Error,
+    callback?: (err: grpcWeb.RpcError,
                response: grpc_pb.GetMyOfferReply) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
@@ -237,7 +249,10 @@ export class OffersClient {
     this.methodInfoGetMyOffer);
   }
 
-  methodInfoGetOffers = new grpcWeb.AbstractClientBase.MethodInfo(
+  methodInfoGetOffers = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.Offers/GetOffers',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.GetOffersRequest,
     grpc_pb.GetOffersReply,
     (request: grpc_pb.GetOffersRequest) => {
       return request.serializeBinary();
@@ -252,13 +267,13 @@ export class OffersClient {
   getOffers(
     request: grpc_pb.GetOffersRequest,
     metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.Error,
+    callback: (err: grpcWeb.RpcError,
                response: grpc_pb.GetOffersReply) => void): grpcWeb.ClientReadableStream<grpc_pb.GetOffersReply>;
 
   getOffers(
     request: grpc_pb.GetOffersRequest,
     metadata: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.Error,
+    callback?: (err: grpcWeb.RpcError,
                response: grpc_pb.GetOffersReply) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
@@ -277,7 +292,10 @@ export class OffersClient {
     this.methodInfoGetOffers);
   }
 
-  methodInfoGetMyOffers = new grpcWeb.AbstractClientBase.MethodInfo(
+  methodInfoGetMyOffers = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.Offers/GetMyOffers',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.GetMyOffersRequest,
     grpc_pb.GetMyOffersReply,
     (request: grpc_pb.GetMyOffersRequest) => {
       return request.serializeBinary();
@@ -292,13 +310,13 @@ export class OffersClient {
   getMyOffers(
     request: grpc_pb.GetMyOffersRequest,
     metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.Error,
+    callback: (err: grpcWeb.RpcError,
                response: grpc_pb.GetMyOffersReply) => void): grpcWeb.ClientReadableStream<grpc_pb.GetMyOffersReply>;
 
   getMyOffers(
     request: grpc_pb.GetMyOffersRequest,
     metadata: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.Error,
+    callback?: (err: grpcWeb.RpcError,
                response: grpc_pb.GetMyOffersReply) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
@@ -317,7 +335,10 @@ export class OffersClient {
     this.methodInfoGetMyOffers);
   }
 
-  methodInfoCreateOffer = new grpcWeb.AbstractClientBase.MethodInfo(
+  methodInfoCreateOffer = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.Offers/CreateOffer',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.CreateOfferRequest,
     grpc_pb.CreateOfferReply,
     (request: grpc_pb.CreateOfferRequest) => {
       return request.serializeBinary();
@@ -332,13 +353,13 @@ export class OffersClient {
   createOffer(
     request: grpc_pb.CreateOfferRequest,
     metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.Error,
+    callback: (err: grpcWeb.RpcError,
                response: grpc_pb.CreateOfferReply) => void): grpcWeb.ClientReadableStream<grpc_pb.CreateOfferReply>;
 
   createOffer(
     request: grpc_pb.CreateOfferRequest,
     metadata: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.Error,
+    callback?: (err: grpcWeb.RpcError,
                response: grpc_pb.CreateOfferReply) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
@@ -357,7 +378,10 @@ export class OffersClient {
     this.methodInfoCreateOffer);
   }
 
-  methodInfoCancelOffer = new grpcWeb.AbstractClientBase.MethodInfo(
+  methodInfoCancelOffer = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.Offers/CancelOffer',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.CancelOfferRequest,
     grpc_pb.CancelOfferReply,
     (request: grpc_pb.CancelOfferRequest) => {
       return request.serializeBinary();
@@ -372,13 +396,13 @@ export class OffersClient {
   cancelOffer(
     request: grpc_pb.CancelOfferRequest,
     metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.Error,
+    callback: (err: grpcWeb.RpcError,
                response: grpc_pb.CancelOfferReply) => void): grpcWeb.ClientReadableStream<grpc_pb.CancelOfferReply>;
 
   cancelOffer(
     request: grpc_pb.CancelOfferRequest,
     metadata: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.Error,
+    callback?: (err: grpcWeb.RpcError,
                response: grpc_pb.CancelOfferReply) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
@@ -418,7 +442,10 @@ export class PaymentAccountsClient {
     this.options_ = options;
   }
 
-  methodInfoCreatePaymentAccount = new grpcWeb.AbstractClientBase.MethodInfo(
+  methodInfoCreatePaymentAccount = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.PaymentAccounts/CreatePaymentAccount',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.CreatePaymentAccountRequest,
     grpc_pb.CreatePaymentAccountReply,
     (request: grpc_pb.CreatePaymentAccountRequest) => {
       return request.serializeBinary();
@@ -433,13 +460,13 @@ export class PaymentAccountsClient {
   createPaymentAccount(
     request: grpc_pb.CreatePaymentAccountRequest,
     metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.Error,
+    callback: (err: grpcWeb.RpcError,
                response: grpc_pb.CreatePaymentAccountReply) => void): grpcWeb.ClientReadableStream<grpc_pb.CreatePaymentAccountReply>;
 
   createPaymentAccount(
     request: grpc_pb.CreatePaymentAccountRequest,
     metadata: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.Error,
+    callback?: (err: grpcWeb.RpcError,
                response: grpc_pb.CreatePaymentAccountReply) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
@@ -458,7 +485,10 @@ export class PaymentAccountsClient {
     this.methodInfoCreatePaymentAccount);
   }
 
-  methodInfoGetPaymentAccounts = new grpcWeb.AbstractClientBase.MethodInfo(
+  methodInfoGetPaymentAccounts = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.PaymentAccounts/GetPaymentAccounts',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.GetPaymentAccountsRequest,
     grpc_pb.GetPaymentAccountsReply,
     (request: grpc_pb.GetPaymentAccountsRequest) => {
       return request.serializeBinary();
@@ -473,13 +503,13 @@ export class PaymentAccountsClient {
   getPaymentAccounts(
     request: grpc_pb.GetPaymentAccountsRequest,
     metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.Error,
+    callback: (err: grpcWeb.RpcError,
                response: grpc_pb.GetPaymentAccountsReply) => void): grpcWeb.ClientReadableStream<grpc_pb.GetPaymentAccountsReply>;
 
   getPaymentAccounts(
     request: grpc_pb.GetPaymentAccountsRequest,
     metadata: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.Error,
+    callback?: (err: grpcWeb.RpcError,
                response: grpc_pb.GetPaymentAccountsReply) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
@@ -498,7 +528,10 @@ export class PaymentAccountsClient {
     this.methodInfoGetPaymentAccounts);
   }
 
-  methodInfoGetPaymentMethods = new grpcWeb.AbstractClientBase.MethodInfo(
+  methodInfoGetPaymentMethods = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.PaymentAccounts/GetPaymentMethods',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.GetPaymentMethodsRequest,
     grpc_pb.GetPaymentMethodsReply,
     (request: grpc_pb.GetPaymentMethodsRequest) => {
       return request.serializeBinary();
@@ -513,13 +546,13 @@ export class PaymentAccountsClient {
   getPaymentMethods(
     request: grpc_pb.GetPaymentMethodsRequest,
     metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.Error,
+    callback: (err: grpcWeb.RpcError,
                response: grpc_pb.GetPaymentMethodsReply) => void): grpcWeb.ClientReadableStream<grpc_pb.GetPaymentMethodsReply>;
 
   getPaymentMethods(
     request: grpc_pb.GetPaymentMethodsRequest,
     metadata: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.Error,
+    callback?: (err: grpcWeb.RpcError,
                response: grpc_pb.GetPaymentMethodsReply) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
@@ -538,7 +571,10 @@ export class PaymentAccountsClient {
     this.methodInfoGetPaymentMethods);
   }
 
-  methodInfoGetPaymentAccountForm = new grpcWeb.AbstractClientBase.MethodInfo(
+  methodInfoGetPaymentAccountForm = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.PaymentAccounts/GetPaymentAccountForm',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.GetPaymentAccountFormRequest,
     grpc_pb.GetPaymentAccountFormReply,
     (request: grpc_pb.GetPaymentAccountFormRequest) => {
       return request.serializeBinary();
@@ -553,13 +589,13 @@ export class PaymentAccountsClient {
   getPaymentAccountForm(
     request: grpc_pb.GetPaymentAccountFormRequest,
     metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.Error,
+    callback: (err: grpcWeb.RpcError,
                response: grpc_pb.GetPaymentAccountFormReply) => void): grpcWeb.ClientReadableStream<grpc_pb.GetPaymentAccountFormReply>;
 
   getPaymentAccountForm(
     request: grpc_pb.GetPaymentAccountFormRequest,
     metadata: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.Error,
+    callback?: (err: grpcWeb.RpcError,
                response: grpc_pb.GetPaymentAccountFormReply) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
@@ -578,7 +614,10 @@ export class PaymentAccountsClient {
     this.methodInfoGetPaymentAccountForm);
   }
 
-  methodInfoCreateCryptoCurrencyPaymentAccount = new grpcWeb.AbstractClientBase.MethodInfo(
+  methodInfoCreateCryptoCurrencyPaymentAccount = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.PaymentAccounts/CreateCryptoCurrencyPaymentAccount',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.CreateCryptoCurrencyPaymentAccountRequest,
     grpc_pb.CreateCryptoCurrencyPaymentAccountReply,
     (request: grpc_pb.CreateCryptoCurrencyPaymentAccountRequest) => {
       return request.serializeBinary();
@@ -593,13 +632,13 @@ export class PaymentAccountsClient {
   createCryptoCurrencyPaymentAccount(
     request: grpc_pb.CreateCryptoCurrencyPaymentAccountRequest,
     metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.Error,
+    callback: (err: grpcWeb.RpcError,
                response: grpc_pb.CreateCryptoCurrencyPaymentAccountReply) => void): grpcWeb.ClientReadableStream<grpc_pb.CreateCryptoCurrencyPaymentAccountReply>;
 
   createCryptoCurrencyPaymentAccount(
     request: grpc_pb.CreateCryptoCurrencyPaymentAccountRequest,
     metadata: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.Error,
+    callback?: (err: grpcWeb.RpcError,
                response: grpc_pb.CreateCryptoCurrencyPaymentAccountReply) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
@@ -618,7 +657,10 @@ export class PaymentAccountsClient {
     this.methodInfoCreateCryptoCurrencyPaymentAccount);
   }
 
-  methodInfoGetCryptoCurrencyPaymentMethods = new grpcWeb.AbstractClientBase.MethodInfo(
+  methodInfoGetCryptoCurrencyPaymentMethods = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.PaymentAccounts/GetCryptoCurrencyPaymentMethods',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.GetCryptoCurrencyPaymentMethodsRequest,
     grpc_pb.GetCryptoCurrencyPaymentMethodsReply,
     (request: grpc_pb.GetCryptoCurrencyPaymentMethodsRequest) => {
       return request.serializeBinary();
@@ -633,13 +675,13 @@ export class PaymentAccountsClient {
   getCryptoCurrencyPaymentMethods(
     request: grpc_pb.GetCryptoCurrencyPaymentMethodsRequest,
     metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.Error,
+    callback: (err: grpcWeb.RpcError,
                response: grpc_pb.GetCryptoCurrencyPaymentMethodsReply) => void): grpcWeb.ClientReadableStream<grpc_pb.GetCryptoCurrencyPaymentMethodsReply>;
 
   getCryptoCurrencyPaymentMethods(
     request: grpc_pb.GetCryptoCurrencyPaymentMethodsRequest,
     metadata: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.Error,
+    callback?: (err: grpcWeb.RpcError,
                response: grpc_pb.GetCryptoCurrencyPaymentMethodsReply) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
@@ -679,7 +721,10 @@ export class PriceClient {
     this.options_ = options;
   }
 
-  methodInfoGetMarketPrice = new grpcWeb.AbstractClientBase.MethodInfo(
+  methodInfoGetMarketPrice = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.Price/GetMarketPrice',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.MarketPriceRequest,
     grpc_pb.MarketPriceReply,
     (request: grpc_pb.MarketPriceRequest) => {
       return request.serializeBinary();
@@ -694,13 +739,13 @@ export class PriceClient {
   getMarketPrice(
     request: grpc_pb.MarketPriceRequest,
     metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.Error,
+    callback: (err: grpcWeb.RpcError,
                response: grpc_pb.MarketPriceReply) => void): grpcWeb.ClientReadableStream<grpc_pb.MarketPriceReply>;
 
   getMarketPrice(
     request: grpc_pb.MarketPriceRequest,
     metadata: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.Error,
+    callback?: (err: grpcWeb.RpcError,
                response: grpc_pb.MarketPriceReply) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
@@ -740,7 +785,10 @@ export class GetTradeStatisticsClient {
     this.options_ = options;
   }
 
-  methodInfoGetTradeStatistics = new grpcWeb.AbstractClientBase.MethodInfo(
+  methodInfoGetTradeStatistics = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.GetTradeStatistics/GetTradeStatistics',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.GetTradeStatisticsRequest,
     grpc_pb.GetTradeStatisticsReply,
     (request: grpc_pb.GetTradeStatisticsRequest) => {
       return request.serializeBinary();
@@ -755,13 +803,13 @@ export class GetTradeStatisticsClient {
   getTradeStatistics(
     request: grpc_pb.GetTradeStatisticsRequest,
     metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.Error,
+    callback: (err: grpcWeb.RpcError,
                response: grpc_pb.GetTradeStatisticsReply) => void): grpcWeb.ClientReadableStream<grpc_pb.GetTradeStatisticsReply>;
 
   getTradeStatistics(
     request: grpc_pb.GetTradeStatisticsRequest,
     metadata: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.Error,
+    callback?: (err: grpcWeb.RpcError,
                response: grpc_pb.GetTradeStatisticsReply) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
@@ -801,7 +849,10 @@ export class ShutdownServerClient {
     this.options_ = options;
   }
 
-  methodInfoStop = new grpcWeb.AbstractClientBase.MethodInfo(
+  methodInfoStop = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.ShutdownServer/Stop',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.StopRequest,
     grpc_pb.StopReply,
     (request: grpc_pb.StopRequest) => {
       return request.serializeBinary();
@@ -816,13 +867,13 @@ export class ShutdownServerClient {
   stop(
     request: grpc_pb.StopRequest,
     metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.Error,
+    callback: (err: grpcWeb.RpcError,
                response: grpc_pb.StopReply) => void): grpcWeb.ClientReadableStream<grpc_pb.StopReply>;
 
   stop(
     request: grpc_pb.StopRequest,
     metadata: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.Error,
+    callback?: (err: grpcWeb.RpcError,
                response: grpc_pb.StopReply) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
@@ -862,7 +913,10 @@ export class TradesClient {
     this.options_ = options;
   }
 
-  methodInfoGetTrade = new grpcWeb.AbstractClientBase.MethodInfo(
+  methodInfoGetTrade = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.Trades/GetTrade',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.GetTradeRequest,
     grpc_pb.GetTradeReply,
     (request: grpc_pb.GetTradeRequest) => {
       return request.serializeBinary();
@@ -877,13 +931,13 @@ export class TradesClient {
   getTrade(
     request: grpc_pb.GetTradeRequest,
     metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.Error,
+    callback: (err: grpcWeb.RpcError,
                response: grpc_pb.GetTradeReply) => void): grpcWeb.ClientReadableStream<grpc_pb.GetTradeReply>;
 
   getTrade(
     request: grpc_pb.GetTradeRequest,
     metadata: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.Error,
+    callback?: (err: grpcWeb.RpcError,
                response: grpc_pb.GetTradeReply) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
@@ -902,7 +956,10 @@ export class TradesClient {
     this.methodInfoGetTrade);
   }
 
-  methodInfoTakeOffer = new grpcWeb.AbstractClientBase.MethodInfo(
+  methodInfoTakeOffer = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.Trades/TakeOffer',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.TakeOfferRequest,
     grpc_pb.TakeOfferReply,
     (request: grpc_pb.TakeOfferRequest) => {
       return request.serializeBinary();
@@ -917,13 +974,13 @@ export class TradesClient {
   takeOffer(
     request: grpc_pb.TakeOfferRequest,
     metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.Error,
+    callback: (err: grpcWeb.RpcError,
                response: grpc_pb.TakeOfferReply) => void): grpcWeb.ClientReadableStream<grpc_pb.TakeOfferReply>;
 
   takeOffer(
     request: grpc_pb.TakeOfferRequest,
     metadata: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.Error,
+    callback?: (err: grpcWeb.RpcError,
                response: grpc_pb.TakeOfferReply) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
@@ -942,7 +999,10 @@ export class TradesClient {
     this.methodInfoTakeOffer);
   }
 
-  methodInfoConfirmPaymentStarted = new grpcWeb.AbstractClientBase.MethodInfo(
+  methodInfoConfirmPaymentStarted = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.Trades/ConfirmPaymentStarted',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.ConfirmPaymentStartedRequest,
     grpc_pb.ConfirmPaymentStartedReply,
     (request: grpc_pb.ConfirmPaymentStartedRequest) => {
       return request.serializeBinary();
@@ -957,13 +1017,13 @@ export class TradesClient {
   confirmPaymentStarted(
     request: grpc_pb.ConfirmPaymentStartedRequest,
     metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.Error,
+    callback: (err: grpcWeb.RpcError,
                response: grpc_pb.ConfirmPaymentStartedReply) => void): grpcWeb.ClientReadableStream<grpc_pb.ConfirmPaymentStartedReply>;
 
   confirmPaymentStarted(
     request: grpc_pb.ConfirmPaymentStartedRequest,
     metadata: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.Error,
+    callback?: (err: grpcWeb.RpcError,
                response: grpc_pb.ConfirmPaymentStartedReply) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
@@ -982,7 +1042,10 @@ export class TradesClient {
     this.methodInfoConfirmPaymentStarted);
   }
 
-  methodInfoConfirmPaymentReceived = new grpcWeb.AbstractClientBase.MethodInfo(
+  methodInfoConfirmPaymentReceived = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.Trades/ConfirmPaymentReceived',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.ConfirmPaymentReceivedRequest,
     grpc_pb.ConfirmPaymentReceivedReply,
     (request: grpc_pb.ConfirmPaymentReceivedRequest) => {
       return request.serializeBinary();
@@ -997,13 +1060,13 @@ export class TradesClient {
   confirmPaymentReceived(
     request: grpc_pb.ConfirmPaymentReceivedRequest,
     metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.Error,
+    callback: (err: grpcWeb.RpcError,
                response: grpc_pb.ConfirmPaymentReceivedReply) => void): grpcWeb.ClientReadableStream<grpc_pb.ConfirmPaymentReceivedReply>;
 
   confirmPaymentReceived(
     request: grpc_pb.ConfirmPaymentReceivedRequest,
     metadata: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.Error,
+    callback?: (err: grpcWeb.RpcError,
                response: grpc_pb.ConfirmPaymentReceivedReply) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
@@ -1022,7 +1085,10 @@ export class TradesClient {
     this.methodInfoConfirmPaymentReceived);
   }
 
-  methodInfoKeepFunds = new grpcWeb.AbstractClientBase.MethodInfo(
+  methodInfoKeepFunds = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.Trades/KeepFunds',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.KeepFundsRequest,
     grpc_pb.KeepFundsReply,
     (request: grpc_pb.KeepFundsRequest) => {
       return request.serializeBinary();
@@ -1037,13 +1103,13 @@ export class TradesClient {
   keepFunds(
     request: grpc_pb.KeepFundsRequest,
     metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.Error,
+    callback: (err: grpcWeb.RpcError,
                response: grpc_pb.KeepFundsReply) => void): grpcWeb.ClientReadableStream<grpc_pb.KeepFundsReply>;
 
   keepFunds(
     request: grpc_pb.KeepFundsRequest,
     metadata: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.Error,
+    callback?: (err: grpcWeb.RpcError,
                response: grpc_pb.KeepFundsReply) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
@@ -1062,7 +1128,10 @@ export class TradesClient {
     this.methodInfoKeepFunds);
   }
 
-  methodInfoWithdrawFunds = new grpcWeb.AbstractClientBase.MethodInfo(
+  methodInfoWithdrawFunds = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.Trades/WithdrawFunds',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.WithdrawFundsRequest,
     grpc_pb.WithdrawFundsReply,
     (request: grpc_pb.WithdrawFundsRequest) => {
       return request.serializeBinary();
@@ -1077,13 +1146,13 @@ export class TradesClient {
   withdrawFunds(
     request: grpc_pb.WithdrawFundsRequest,
     metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.Error,
+    callback: (err: grpcWeb.RpcError,
                response: grpc_pb.WithdrawFundsReply) => void): grpcWeb.ClientReadableStream<grpc_pb.WithdrawFundsReply>;
 
   withdrawFunds(
     request: grpc_pb.WithdrawFundsRequest,
     metadata: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.Error,
+    callback?: (err: grpcWeb.RpcError,
                response: grpc_pb.WithdrawFundsReply) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
@@ -1123,7 +1192,10 @@ export class WalletsClient {
     this.options_ = options;
   }
 
-  methodInfoGetBalances = new grpcWeb.AbstractClientBase.MethodInfo(
+  methodInfoGetBalances = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.Wallets/GetBalances',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.GetBalancesRequest,
     grpc_pb.GetBalancesReply,
     (request: grpc_pb.GetBalancesRequest) => {
       return request.serializeBinary();
@@ -1138,13 +1210,13 @@ export class WalletsClient {
   getBalances(
     request: grpc_pb.GetBalancesRequest,
     metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.Error,
+    callback: (err: grpcWeb.RpcError,
                response: grpc_pb.GetBalancesReply) => void): grpcWeb.ClientReadableStream<grpc_pb.GetBalancesReply>;
 
   getBalances(
     request: grpc_pb.GetBalancesRequest,
     metadata: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.Error,
+    callback?: (err: grpcWeb.RpcError,
                response: grpc_pb.GetBalancesReply) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
@@ -1163,7 +1235,10 @@ export class WalletsClient {
     this.methodInfoGetBalances);
   }
 
-  methodInfoGetNewDepositSubaddress = new grpcWeb.AbstractClientBase.MethodInfo(
+  methodInfoGetNewDepositSubaddress = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.Wallets/GetNewDepositSubaddress',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.GetNewDepositSubaddressRequest,
     grpc_pb.GetNewDepositSubaddressReply,
     (request: grpc_pb.GetNewDepositSubaddressRequest) => {
       return request.serializeBinary();
@@ -1178,13 +1253,13 @@ export class WalletsClient {
   getNewDepositSubaddress(
     request: grpc_pb.GetNewDepositSubaddressRequest,
     metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.Error,
+    callback: (err: grpcWeb.RpcError,
                response: grpc_pb.GetNewDepositSubaddressReply) => void): grpcWeb.ClientReadableStream<grpc_pb.GetNewDepositSubaddressReply>;
 
   getNewDepositSubaddress(
     request: grpc_pb.GetNewDepositSubaddressRequest,
     metadata: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.Error,
+    callback?: (err: grpcWeb.RpcError,
                response: grpc_pb.GetNewDepositSubaddressReply) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
@@ -1203,7 +1278,10 @@ export class WalletsClient {
     this.methodInfoGetNewDepositSubaddress);
   }
 
-  methodInfoGetAddressBalance = new grpcWeb.AbstractClientBase.MethodInfo(
+  methodInfoGetAddressBalance = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.Wallets/GetAddressBalance',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.GetAddressBalanceRequest,
     grpc_pb.GetAddressBalanceReply,
     (request: grpc_pb.GetAddressBalanceRequest) => {
       return request.serializeBinary();
@@ -1218,13 +1296,13 @@ export class WalletsClient {
   getAddressBalance(
     request: grpc_pb.GetAddressBalanceRequest,
     metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.Error,
+    callback: (err: grpcWeb.RpcError,
                response: grpc_pb.GetAddressBalanceReply) => void): grpcWeb.ClientReadableStream<grpc_pb.GetAddressBalanceReply>;
 
   getAddressBalance(
     request: grpc_pb.GetAddressBalanceRequest,
     metadata: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.Error,
+    callback?: (err: grpcWeb.RpcError,
                response: grpc_pb.GetAddressBalanceReply) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
@@ -1243,87 +1321,10 @@ export class WalletsClient {
     this.methodInfoGetAddressBalance);
   }
 
-  methodInfoGetUnusedBsqAddress = new grpcWeb.AbstractClientBase.MethodInfo(
-    grpc_pb.GetUnusedBsqAddressReply,
-    (request: grpc_pb.GetUnusedBsqAddressRequest) => {
-      return request.serializeBinary();
-    },
-    grpc_pb.GetUnusedBsqAddressReply.deserializeBinary
-  );
-
-  getUnusedBsqAddress(
-    request: grpc_pb.GetUnusedBsqAddressRequest,
-    metadata: grpcWeb.Metadata | null): Promise<grpc_pb.GetUnusedBsqAddressReply>;
-
-  getUnusedBsqAddress(
-    request: grpc_pb.GetUnusedBsqAddressRequest,
-    metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.Error,
-               response: grpc_pb.GetUnusedBsqAddressReply) => void): grpcWeb.ClientReadableStream<grpc_pb.GetUnusedBsqAddressReply>;
-
-  getUnusedBsqAddress(
-    request: grpc_pb.GetUnusedBsqAddressRequest,
-    metadata: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.Error,
-               response: grpc_pb.GetUnusedBsqAddressReply) => void) {
-    if (callback !== undefined) {
-      return this.client_.rpcCall(
-        this.hostname_ +
-          '/io.bisq.protobuffer.Wallets/GetUnusedBsqAddress',
-        request,
-        metadata || {},
-        this.methodInfoGetUnusedBsqAddress,
-        callback);
-    }
-    return this.client_.unaryCall(
-    this.hostname_ +
-      '/io.bisq.protobuffer.Wallets/GetUnusedBsqAddress',
-    request,
-    metadata || {},
-    this.methodInfoGetUnusedBsqAddress);
-  }
-
-  methodInfoSendBsq = new grpcWeb.AbstractClientBase.MethodInfo(
-    grpc_pb.SendBsqReply,
-    (request: grpc_pb.SendBsqRequest) => {
-      return request.serializeBinary();
-    },
-    grpc_pb.SendBsqReply.deserializeBinary
-  );
-
-  sendBsq(
-    request: grpc_pb.SendBsqRequest,
-    metadata: grpcWeb.Metadata | null): Promise<grpc_pb.SendBsqReply>;
-
-  sendBsq(
-    request: grpc_pb.SendBsqRequest,
-    metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.Error,
-               response: grpc_pb.SendBsqReply) => void): grpcWeb.ClientReadableStream<grpc_pb.SendBsqReply>;
-
-  sendBsq(
-    request: grpc_pb.SendBsqRequest,
-    metadata: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.Error,
-               response: grpc_pb.SendBsqReply) => void) {
-    if (callback !== undefined) {
-      return this.client_.rpcCall(
-        this.hostname_ +
-          '/io.bisq.protobuffer.Wallets/SendBsq',
-        request,
-        metadata || {},
-        this.methodInfoSendBsq,
-        callback);
-    }
-    return this.client_.unaryCall(
-    this.hostname_ +
-      '/io.bisq.protobuffer.Wallets/SendBsq',
-    request,
-    metadata || {},
-    this.methodInfoSendBsq);
-  }
-
-  methodInfoSendBtc = new grpcWeb.AbstractClientBase.MethodInfo(
+  methodInfoSendBtc = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.Wallets/SendBtc',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.SendBtcRequest,
     grpc_pb.SendBtcReply,
     (request: grpc_pb.SendBtcRequest) => {
       return request.serializeBinary();
@@ -1338,13 +1339,13 @@ export class WalletsClient {
   sendBtc(
     request: grpc_pb.SendBtcRequest,
     metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.Error,
+    callback: (err: grpcWeb.RpcError,
                response: grpc_pb.SendBtcReply) => void): grpcWeb.ClientReadableStream<grpc_pb.SendBtcReply>;
 
   sendBtc(
     request: grpc_pb.SendBtcRequest,
     metadata: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.Error,
+    callback?: (err: grpcWeb.RpcError,
                response: grpc_pb.SendBtcReply) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
@@ -1363,47 +1364,10 @@ export class WalletsClient {
     this.methodInfoSendBtc);
   }
 
-  methodInfoVerifyBsqSentToAddress = new grpcWeb.AbstractClientBase.MethodInfo(
-    grpc_pb.VerifyBsqSentToAddressReply,
-    (request: grpc_pb.VerifyBsqSentToAddressRequest) => {
-      return request.serializeBinary();
-    },
-    grpc_pb.VerifyBsqSentToAddressReply.deserializeBinary
-  );
-
-  verifyBsqSentToAddress(
-    request: grpc_pb.VerifyBsqSentToAddressRequest,
-    metadata: grpcWeb.Metadata | null): Promise<grpc_pb.VerifyBsqSentToAddressReply>;
-
-  verifyBsqSentToAddress(
-    request: grpc_pb.VerifyBsqSentToAddressRequest,
-    metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.Error,
-               response: grpc_pb.VerifyBsqSentToAddressReply) => void): grpcWeb.ClientReadableStream<grpc_pb.VerifyBsqSentToAddressReply>;
-
-  verifyBsqSentToAddress(
-    request: grpc_pb.VerifyBsqSentToAddressRequest,
-    metadata: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.Error,
-               response: grpc_pb.VerifyBsqSentToAddressReply) => void) {
-    if (callback !== undefined) {
-      return this.client_.rpcCall(
-        this.hostname_ +
-          '/io.bisq.protobuffer.Wallets/VerifyBsqSentToAddress',
-        request,
-        metadata || {},
-        this.methodInfoVerifyBsqSentToAddress,
-        callback);
-    }
-    return this.client_.unaryCall(
-    this.hostname_ +
-      '/io.bisq.protobuffer.Wallets/VerifyBsqSentToAddress',
-    request,
-    metadata || {},
-    this.methodInfoVerifyBsqSentToAddress);
-  }
-
-  methodInfoGetTxFeeRate = new grpcWeb.AbstractClientBase.MethodInfo(
+  methodInfoGetTxFeeRate = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.Wallets/GetTxFeeRate',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.GetTxFeeRateRequest,
     grpc_pb.GetTxFeeRateReply,
     (request: grpc_pb.GetTxFeeRateRequest) => {
       return request.serializeBinary();
@@ -1418,13 +1382,13 @@ export class WalletsClient {
   getTxFeeRate(
     request: grpc_pb.GetTxFeeRateRequest,
     metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.Error,
+    callback: (err: grpcWeb.RpcError,
                response: grpc_pb.GetTxFeeRateReply) => void): grpcWeb.ClientReadableStream<grpc_pb.GetTxFeeRateReply>;
 
   getTxFeeRate(
     request: grpc_pb.GetTxFeeRateRequest,
     metadata: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.Error,
+    callback?: (err: grpcWeb.RpcError,
                response: grpc_pb.GetTxFeeRateReply) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
@@ -1443,7 +1407,10 @@ export class WalletsClient {
     this.methodInfoGetTxFeeRate);
   }
 
-  methodInfoSetTxFeeRatePreference = new grpcWeb.AbstractClientBase.MethodInfo(
+  methodInfoSetTxFeeRatePreference = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.Wallets/SetTxFeeRatePreference',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.SetTxFeeRatePreferenceRequest,
     grpc_pb.SetTxFeeRatePreferenceReply,
     (request: grpc_pb.SetTxFeeRatePreferenceRequest) => {
       return request.serializeBinary();
@@ -1458,13 +1425,13 @@ export class WalletsClient {
   setTxFeeRatePreference(
     request: grpc_pb.SetTxFeeRatePreferenceRequest,
     metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.Error,
+    callback: (err: grpcWeb.RpcError,
                response: grpc_pb.SetTxFeeRatePreferenceReply) => void): grpcWeb.ClientReadableStream<grpc_pb.SetTxFeeRatePreferenceReply>;
 
   setTxFeeRatePreference(
     request: grpc_pb.SetTxFeeRatePreferenceRequest,
     metadata: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.Error,
+    callback?: (err: grpcWeb.RpcError,
                response: grpc_pb.SetTxFeeRatePreferenceReply) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
@@ -1483,7 +1450,10 @@ export class WalletsClient {
     this.methodInfoSetTxFeeRatePreference);
   }
 
-  methodInfoUnsetTxFeeRatePreference = new grpcWeb.AbstractClientBase.MethodInfo(
+  methodInfoUnsetTxFeeRatePreference = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.Wallets/UnsetTxFeeRatePreference',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.UnsetTxFeeRatePreferenceRequest,
     grpc_pb.UnsetTxFeeRatePreferenceReply,
     (request: grpc_pb.UnsetTxFeeRatePreferenceRequest) => {
       return request.serializeBinary();
@@ -1498,13 +1468,13 @@ export class WalletsClient {
   unsetTxFeeRatePreference(
     request: grpc_pb.UnsetTxFeeRatePreferenceRequest,
     metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.Error,
+    callback: (err: grpcWeb.RpcError,
                response: grpc_pb.UnsetTxFeeRatePreferenceReply) => void): grpcWeb.ClientReadableStream<grpc_pb.UnsetTxFeeRatePreferenceReply>;
 
   unsetTxFeeRatePreference(
     request: grpc_pb.UnsetTxFeeRatePreferenceRequest,
     metadata: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.Error,
+    callback?: (err: grpcWeb.RpcError,
                response: grpc_pb.UnsetTxFeeRatePreferenceReply) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
@@ -1523,7 +1493,10 @@ export class WalletsClient {
     this.methodInfoUnsetTxFeeRatePreference);
   }
 
-  methodInfoGetTransaction = new grpcWeb.AbstractClientBase.MethodInfo(
+  methodInfoGetTransaction = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.Wallets/GetTransaction',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.GetTransactionRequest,
     grpc_pb.GetTransactionReply,
     (request: grpc_pb.GetTransactionRequest) => {
       return request.serializeBinary();
@@ -1538,13 +1511,13 @@ export class WalletsClient {
   getTransaction(
     request: grpc_pb.GetTransactionRequest,
     metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.Error,
+    callback: (err: grpcWeb.RpcError,
                response: grpc_pb.GetTransactionReply) => void): grpcWeb.ClientReadableStream<grpc_pb.GetTransactionReply>;
 
   getTransaction(
     request: grpc_pb.GetTransactionRequest,
     metadata: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.Error,
+    callback?: (err: grpcWeb.RpcError,
                response: grpc_pb.GetTransactionReply) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
@@ -1563,7 +1536,10 @@ export class WalletsClient {
     this.methodInfoGetTransaction);
   }
 
-  methodInfoGetFundingAddresses = new grpcWeb.AbstractClientBase.MethodInfo(
+  methodInfoGetFundingAddresses = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.Wallets/GetFundingAddresses',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.GetFundingAddressesRequest,
     grpc_pb.GetFundingAddressesReply,
     (request: grpc_pb.GetFundingAddressesRequest) => {
       return request.serializeBinary();
@@ -1578,13 +1554,13 @@ export class WalletsClient {
   getFundingAddresses(
     request: grpc_pb.GetFundingAddressesRequest,
     metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.Error,
+    callback: (err: grpcWeb.RpcError,
                response: grpc_pb.GetFundingAddressesReply) => void): grpcWeb.ClientReadableStream<grpc_pb.GetFundingAddressesReply>;
 
   getFundingAddresses(
     request: grpc_pb.GetFundingAddressesRequest,
     metadata: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.Error,
+    callback?: (err: grpcWeb.RpcError,
                response: grpc_pb.GetFundingAddressesReply) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
@@ -1603,7 +1579,10 @@ export class WalletsClient {
     this.methodInfoGetFundingAddresses);
   }
 
-  methodInfoSetWalletPassword = new grpcWeb.AbstractClientBase.MethodInfo(
+  methodInfoSetWalletPassword = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.Wallets/SetWalletPassword',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.SetWalletPasswordRequest,
     grpc_pb.SetWalletPasswordReply,
     (request: grpc_pb.SetWalletPasswordRequest) => {
       return request.serializeBinary();
@@ -1618,13 +1597,13 @@ export class WalletsClient {
   setWalletPassword(
     request: grpc_pb.SetWalletPasswordRequest,
     metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.Error,
+    callback: (err: grpcWeb.RpcError,
                response: grpc_pb.SetWalletPasswordReply) => void): grpcWeb.ClientReadableStream<grpc_pb.SetWalletPasswordReply>;
 
   setWalletPassword(
     request: grpc_pb.SetWalletPasswordRequest,
     metadata: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.Error,
+    callback?: (err: grpcWeb.RpcError,
                response: grpc_pb.SetWalletPasswordReply) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
@@ -1643,7 +1622,10 @@ export class WalletsClient {
     this.methodInfoSetWalletPassword);
   }
 
-  methodInfoRemoveWalletPassword = new grpcWeb.AbstractClientBase.MethodInfo(
+  methodInfoRemoveWalletPassword = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.Wallets/RemoveWalletPassword',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.RemoveWalletPasswordRequest,
     grpc_pb.RemoveWalletPasswordReply,
     (request: grpc_pb.RemoveWalletPasswordRequest) => {
       return request.serializeBinary();
@@ -1658,13 +1640,13 @@ export class WalletsClient {
   removeWalletPassword(
     request: grpc_pb.RemoveWalletPasswordRequest,
     metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.Error,
+    callback: (err: grpcWeb.RpcError,
                response: grpc_pb.RemoveWalletPasswordReply) => void): grpcWeb.ClientReadableStream<grpc_pb.RemoveWalletPasswordReply>;
 
   removeWalletPassword(
     request: grpc_pb.RemoveWalletPasswordRequest,
     metadata: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.Error,
+    callback?: (err: grpcWeb.RpcError,
                response: grpc_pb.RemoveWalletPasswordReply) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
@@ -1683,7 +1665,10 @@ export class WalletsClient {
     this.methodInfoRemoveWalletPassword);
   }
 
-  methodInfoLockWallet = new grpcWeb.AbstractClientBase.MethodInfo(
+  methodInfoLockWallet = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.Wallets/LockWallet',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.LockWalletRequest,
     grpc_pb.LockWalletReply,
     (request: grpc_pb.LockWalletRequest) => {
       return request.serializeBinary();
@@ -1698,13 +1683,13 @@ export class WalletsClient {
   lockWallet(
     request: grpc_pb.LockWalletRequest,
     metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.Error,
+    callback: (err: grpcWeb.RpcError,
                response: grpc_pb.LockWalletReply) => void): grpcWeb.ClientReadableStream<grpc_pb.LockWalletReply>;
 
   lockWallet(
     request: grpc_pb.LockWalletRequest,
     metadata: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.Error,
+    callback?: (err: grpcWeb.RpcError,
                response: grpc_pb.LockWalletReply) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
@@ -1723,7 +1708,10 @@ export class WalletsClient {
     this.methodInfoLockWallet);
   }
 
-  methodInfoUnlockWallet = new grpcWeb.AbstractClientBase.MethodInfo(
+  methodInfoUnlockWallet = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.Wallets/UnlockWallet',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.UnlockWalletRequest,
     grpc_pb.UnlockWalletReply,
     (request: grpc_pb.UnlockWalletRequest) => {
       return request.serializeBinary();
@@ -1738,13 +1726,13 @@ export class WalletsClient {
   unlockWallet(
     request: grpc_pb.UnlockWalletRequest,
     metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.Error,
+    callback: (err: grpcWeb.RpcError,
                response: grpc_pb.UnlockWalletReply) => void): grpcWeb.ClientReadableStream<grpc_pb.UnlockWalletReply>;
 
   unlockWallet(
     request: grpc_pb.UnlockWalletRequest,
     metadata: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.Error,
+    callback?: (err: grpcWeb.RpcError,
                response: grpc_pb.UnlockWalletReply) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
@@ -1784,7 +1772,10 @@ export class GetVersionClient {
     this.options_ = options;
   }
 
-  methodInfoGetVersion = new grpcWeb.AbstractClientBase.MethodInfo(
+  methodInfoGetVersion = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.GetVersion/GetVersion',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.GetVersionRequest,
     grpc_pb.GetVersionReply,
     (request: grpc_pb.GetVersionRequest) => {
       return request.serializeBinary();
@@ -1799,13 +1790,13 @@ export class GetVersionClient {
   getVersion(
     request: grpc_pb.GetVersionRequest,
     metadata: grpcWeb.Metadata | null,
-    callback: (err: grpcWeb.Error,
+    callback: (err: grpcWeb.RpcError,
                response: grpc_pb.GetVersionReply) => void): grpcWeb.ClientReadableStream<grpc_pb.GetVersionReply>;
 
   getVersion(
     request: grpc_pb.GetVersionRequest,
     metadata: grpcWeb.Metadata | null,
-    callback?: (err: grpcWeb.Error,
+    callback?: (err: grpcWeb.RpcError,
                response: grpc_pb.GetVersionReply) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
