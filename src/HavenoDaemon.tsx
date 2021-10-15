@@ -189,8 +189,7 @@ class HavenoDaemon {
             .setAmount(amount.toString())
             .setMinAmount(minAmount.toString())
             .setBuyerSecurityDeposit(buyerSecurityDeposit)
-            .setPaymentAccountId(paymentAccountId)
-            .setMakerFeeCurrencyCode("XMR");
+            .setPaymentAccountId(paymentAccountId);
     if (triggerPrice) request.setTriggerPrice(BigInt(triggerPrice.toString()).toString());
     return new Promise(function(resolve, reject) {
       that._offersClient.createOffer(request, {password: that._password}, function(err: grpcWeb.Error, response: CreateOfferReply) {
@@ -226,8 +225,7 @@ class HavenoDaemon {
     let that = this;
     let request = new TakeOfferRequest()
         .setOfferId(offerId)
-        .setPaymentAccountId(paymentAccountId)
-        .setTakerFeeCurrencyCode("XMR");
+        .setPaymentAccountId(paymentAccountId);
     return new Promise(function(resolve, reject) {
       that._tradesClient.takeOffer(request, {password: that._password}, function(err: grpcWeb.Error, response: TakeOfferReply) {
         if (err) reject(err);

@@ -6,7 +6,7 @@ This application is a lightly modified [create-react-app](https://github.com/fac
 
 ## Run in a Browser
 
-1. [Run a local Haveno test network](https://github.com/haveno-dex/haveno/blob/master/docs/installing.md) except replace `./haveno-desktop` with `./haveno-daemon` when starting Alice at port 9999.
+1. [Run a local Haveno test network](https://github.com/haveno-dex/haveno/blob/master/docs/installing.md), running Alice as a daemon with `make alice-daemon`.
 2. `git clone https://github.com/haveno-dex/haveno-ui-poc`
 4. Start envoy with the config in ./config/envoy.yaml<br>
   Example: `docker run --rm -it -v ~/git/haveno-ui-poc/config/envoy.yaml:/envoy.yaml -p 8080:8080 envoyproxy/envoy-dev:8a2143613d43d17d1eb35a24b4a4a4c432215606 -c /envoy.yaml`
@@ -24,14 +24,13 @@ Running the [top-level API tests](./src/HavenoDaemon.test.tsx) is a great way to
 
 [`HavenoDaemon`](./src/HavenoDaemon.tsx) provides the interface to the Haveno daemon's gRPC API.
 
-1. [Run a local Haveno test network](https://github.com/haveno-dex/haveno/blob/master/docs/installing.md) except replace `./haveno-desktop` with `./haveno-daemon` when starting Alice at port 9999 and Bob at port 10000.
+1. [Run a local Haveno test network](https://github.com/haveno-dex/haveno/blob/master/docs/installing.md), running Alice and Bob as daemons with `make alice-daemon` and `make bob-daemon`.
 2. `git clone https://github.com/haveno-dex/haveno-ui-poc`
 4. Start envoy with the test config in ./config/envoy.test.yaml.<br>
   Example: `docker run --rm -it -v ~/git/haveno-ui-poc/config/envoy.test.yaml:/envoy.test.yaml -p 8080:8080 -p 8081:8081 envoyproxy/envoy-dev:8a2143613d43d17d1eb35a24b4a4a4c432215606 -c /envoy.test.yaml`
 5. `npm install`
 6. Modify test config as needed in [HavenoDaemon.test.tsx](./src/HavenoDaemon.test.tsx).
 7. `npm test`
-8. Run all tests: `a`
 
 ## How to Update the Protobuf Client
 
