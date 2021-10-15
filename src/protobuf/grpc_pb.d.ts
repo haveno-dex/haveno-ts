@@ -266,9 +266,6 @@ export class CreateOfferRequest extends jspb.Message {
   getPaymentAccountId(): string;
   setPaymentAccountId(value: string): CreateOfferRequest;
 
-  getMakerFeeCurrencyCode(): string;
-  setMakerFeeCurrencyCode(value: string): CreateOfferRequest;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): CreateOfferRequest.AsObject;
   static toObject(includeInstance: boolean, msg: CreateOfferRequest): CreateOfferRequest.AsObject;
@@ -289,7 +286,6 @@ export namespace CreateOfferRequest {
     buyerSecurityDeposit: number,
     triggerPrice: string,
     paymentAccountId: string,
-    makerFeeCurrencyCode: string,
   }
 }
 
@@ -379,9 +375,6 @@ export class OfferInfo extends jspb.Message {
   getTriggerPrice(): number;
   setTriggerPrice(value: number): OfferInfo;
 
-  getIsCurrencyForMakerFeeBtc(): boolean;
-  setIsCurrencyForMakerFeeBtc(value: boolean): OfferInfo;
-
   getPaymentAccountId(): string;
   setPaymentAccountId(value: string): OfferInfo;
 
@@ -436,7 +429,6 @@ export namespace OfferInfo {
     minVolume: number,
     buyerSecurityDeposit: number,
     triggerPrice: number,
-    isCurrencyForMakerFeeBtc: boolean,
     paymentAccountId: string,
     paymentMethodId: string,
     paymentMethodShortName: string,
@@ -804,9 +796,6 @@ export class TakeOfferRequest extends jspb.Message {
   getPaymentAccountId(): string;
   setPaymentAccountId(value: string): TakeOfferRequest;
 
-  getTakerFeeCurrencyCode(): string;
-  setTakerFeeCurrencyCode(value: string): TakeOfferRequest;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): TakeOfferRequest.AsObject;
   static toObject(includeInstance: boolean, msg: TakeOfferRequest): TakeOfferRequest.AsObject;
@@ -819,7 +808,6 @@ export namespace TakeOfferRequest {
   export type AsObject = {
     offerId: string,
     paymentAccountId: string,
-    takerFeeCurrencyCode: string,
   }
 }
 
@@ -1413,84 +1401,6 @@ export namespace GetAddressBalanceReply {
   }
 }
 
-export class GetUnusedBsqAddressRequest extends jspb.Message {
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): GetUnusedBsqAddressRequest.AsObject;
-  static toObject(includeInstance: boolean, msg: GetUnusedBsqAddressRequest): GetUnusedBsqAddressRequest.AsObject;
-  static serializeBinaryToWriter(message: GetUnusedBsqAddressRequest, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): GetUnusedBsqAddressRequest;
-  static deserializeBinaryFromReader(message: GetUnusedBsqAddressRequest, reader: jspb.BinaryReader): GetUnusedBsqAddressRequest;
-}
-
-export namespace GetUnusedBsqAddressRequest {
-  export type AsObject = {
-  }
-}
-
-export class GetUnusedBsqAddressReply extends jspb.Message {
-  getAddress(): string;
-  setAddress(value: string): GetUnusedBsqAddressReply;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): GetUnusedBsqAddressReply.AsObject;
-  static toObject(includeInstance: boolean, msg: GetUnusedBsqAddressReply): GetUnusedBsqAddressReply.AsObject;
-  static serializeBinaryToWriter(message: GetUnusedBsqAddressReply, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): GetUnusedBsqAddressReply;
-  static deserializeBinaryFromReader(message: GetUnusedBsqAddressReply, reader: jspb.BinaryReader): GetUnusedBsqAddressReply;
-}
-
-export namespace GetUnusedBsqAddressReply {
-  export type AsObject = {
-    address: string,
-  }
-}
-
-export class SendBsqRequest extends jspb.Message {
-  getAddress(): string;
-  setAddress(value: string): SendBsqRequest;
-
-  getAmount(): string;
-  setAmount(value: string): SendBsqRequest;
-
-  getTxFeeRate(): string;
-  setTxFeeRate(value: string): SendBsqRequest;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): SendBsqRequest.AsObject;
-  static toObject(includeInstance: boolean, msg: SendBsqRequest): SendBsqRequest.AsObject;
-  static serializeBinaryToWriter(message: SendBsqRequest, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): SendBsqRequest;
-  static deserializeBinaryFromReader(message: SendBsqRequest, reader: jspb.BinaryReader): SendBsqRequest;
-}
-
-export namespace SendBsqRequest {
-  export type AsObject = {
-    address: string,
-    amount: string,
-    txFeeRate: string,
-  }
-}
-
-export class SendBsqReply extends jspb.Message {
-  getTxInfo(): TxInfo | undefined;
-  setTxInfo(value?: TxInfo): SendBsqReply;
-  hasTxInfo(): boolean;
-  clearTxInfo(): SendBsqReply;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): SendBsqReply.AsObject;
-  static toObject(includeInstance: boolean, msg: SendBsqReply): SendBsqReply.AsObject;
-  static serializeBinaryToWriter(message: SendBsqReply, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): SendBsqReply;
-  static deserializeBinaryFromReader(message: SendBsqReply, reader: jspb.BinaryReader): SendBsqReply;
-}
-
-export namespace SendBsqReply {
-  export type AsObject = {
-    txInfo?: TxInfo.AsObject,
-  }
-}
-
 export class SendBtcRequest extends jspb.Message {
   getAddress(): string;
   setAddress(value: string): SendBtcRequest;
@@ -1538,46 +1448,6 @@ export class SendBtcReply extends jspb.Message {
 export namespace SendBtcReply {
   export type AsObject = {
     txInfo?: TxInfo.AsObject,
-  }
-}
-
-export class VerifyBsqSentToAddressRequest extends jspb.Message {
-  getAddress(): string;
-  setAddress(value: string): VerifyBsqSentToAddressRequest;
-
-  getAmount(): string;
-  setAmount(value: string): VerifyBsqSentToAddressRequest;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): VerifyBsqSentToAddressRequest.AsObject;
-  static toObject(includeInstance: boolean, msg: VerifyBsqSentToAddressRequest): VerifyBsqSentToAddressRequest.AsObject;
-  static serializeBinaryToWriter(message: VerifyBsqSentToAddressRequest, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): VerifyBsqSentToAddressRequest;
-  static deserializeBinaryFromReader(message: VerifyBsqSentToAddressRequest, reader: jspb.BinaryReader): VerifyBsqSentToAddressRequest;
-}
-
-export namespace VerifyBsqSentToAddressRequest {
-  export type AsObject = {
-    address: string,
-    amount: string,
-  }
-}
-
-export class VerifyBsqSentToAddressReply extends jspb.Message {
-  getIsAmountReceived(): boolean;
-  setIsAmountReceived(value: boolean): VerifyBsqSentToAddressReply;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): VerifyBsqSentToAddressReply.AsObject;
-  static toObject(includeInstance: boolean, msg: VerifyBsqSentToAddressReply): VerifyBsqSentToAddressReply.AsObject;
-  static serializeBinaryToWriter(message: VerifyBsqSentToAddressReply, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): VerifyBsqSentToAddressReply;
-  static deserializeBinaryFromReader(message: VerifyBsqSentToAddressReply, reader: jspb.BinaryReader): VerifyBsqSentToAddressReply;
-}
-
-export namespace VerifyBsqSentToAddressReply {
-  export type AsObject = {
-    isAmountReceived: boolean,
   }
 }
 
@@ -1892,11 +1762,6 @@ export namespace UnlockWalletReply {
 }
 
 export class BalancesInfo extends jspb.Message {
-  getBsq(): BsqBalanceInfo | undefined;
-  setBsq(value?: BsqBalanceInfo): BalancesInfo;
-  hasBsq(): boolean;
-  clearBsq(): BalancesInfo;
-
   getBtc(): BtcBalanceInfo | undefined;
   setBtc(value?: BtcBalanceInfo): BalancesInfo;
   hasBtc(): boolean;
@@ -1917,47 +1782,8 @@ export class BalancesInfo extends jspb.Message {
 
 export namespace BalancesInfo {
   export type AsObject = {
-    bsq?: BsqBalanceInfo.AsObject,
     btc?: BtcBalanceInfo.AsObject,
     xmr?: XmrBalanceInfo.AsObject,
-  }
-}
-
-export class BsqBalanceInfo extends jspb.Message {
-  getAvailableConfirmedBalance(): number;
-  setAvailableConfirmedBalance(value: number): BsqBalanceInfo;
-
-  getUnverifiedBalance(): number;
-  setUnverifiedBalance(value: number): BsqBalanceInfo;
-
-  getUnconfirmedChangeBalance(): number;
-  setUnconfirmedChangeBalance(value: number): BsqBalanceInfo;
-
-  getLockedForVotingBalance(): number;
-  setLockedForVotingBalance(value: number): BsqBalanceInfo;
-
-  getLockupBondsBalance(): number;
-  setLockupBondsBalance(value: number): BsqBalanceInfo;
-
-  getUnlockingBondsBalance(): number;
-  setUnlockingBondsBalance(value: number): BsqBalanceInfo;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): BsqBalanceInfo.AsObject;
-  static toObject(includeInstance: boolean, msg: BsqBalanceInfo): BsqBalanceInfo.AsObject;
-  static serializeBinaryToWriter(message: BsqBalanceInfo, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): BsqBalanceInfo;
-  static deserializeBinaryFromReader(message: BsqBalanceInfo, reader: jspb.BinaryReader): BsqBalanceInfo;
-}
-
-export namespace BsqBalanceInfo {
-  export type AsObject = {
-    availableConfirmedBalance: number,
-    unverifiedBalance: number,
-    unconfirmedChangeBalance: number,
-    lockedForVotingBalance: number,
-    lockupBondsBalance: number,
-    unlockingBondsBalance: number,
   }
 }
 
