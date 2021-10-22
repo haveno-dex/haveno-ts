@@ -5,6 +5,7 @@ import {PaymentAccount} from './protobuf/pb_pb';
 
 // import monero-javascript
 const monerojs = require("monero-javascript"); // TODO (woodser): support typescript and `npm install @types/monero-javascript` in monero-javascript
+const GenUtils = monerojs.GenUtils;
 const MoneroTxConfig = monerojs.MoneroTxConfig;
 const TaskLooper = monerojs.TaskLooper;
 
@@ -16,7 +17,7 @@ const havenoVersion = "1.6.2";
 const aliceDaemonUrl = "http://localhost:8080";
 const aliceDaemonPassword = "apitest";
 const alice: HavenoDaemon = new HavenoDaemon(aliceDaemonUrl, aliceDaemonPassword);
-const aliceWalletUrl = "http://127.0.0.1:56627"; // alice's internal haveno wallet for direct testing // TODO (woodser): make configurable rather than randomly generated
+const aliceWalletUrl = "http://127.0.0.1:51743"; // alice's internal haveno wallet for direct testing // TODO (woodser): make configurable rather than randomly generated
 const aliceWalletUsername = "rpc_user";
 const aliceWalletPassword = "abc123";
 let aliceWallet: any;
@@ -41,6 +42,16 @@ let fundingWallet: any;
 // other test config
 const WALLET_SYNC_PERIOD = 5000;
 const MAX_TIME_PEER_NOTICE = 3000;
+const TEST_CRYPTO_ACCOUNTS = [ // TODO (woodser): test other cryptos, fiat
+  {
+    currencyCode: "eth",
+    address: "0xdBdAb835Acd6fC84cF5F9aDD3c0B5a1E25fbd99f"
+  },
+  {
+    currencyCode: "btc",
+    address: "bcrt1q6j90vywv8x7eyevcnn2tn2wrlg3vsjlsvt46qz"
+  }
+];
 
 beforeAll(async () => {
   
@@ -61,6 +72,22 @@ beforeAll(async () => {
 test("Can get the version", async () => {
   let version = await alice.getVersion();
   expect(version).toEqual(havenoVersion);
+});
+
+test("Can get market prices", async () => {
+  
+  // test crypto prices  
+  for (let testAccount of TEST_CRYPTO_ACCOUNTS) {
+    let price = await alice.getPrice(testAccount.currencyCode);
+    console.log(testAccount.currencyCode + " price: " + price);
+    expect(price).toBeGreaterThan(0);
+    await GenUtils.waitFor(1000); // wait before next request // TODO (woodser): disable price throttle?
+  }
+    
+  // test fiat price
+  let price = await alice.getPrice("USD");
+  console.log("usd price: " + price);
+  expect(price).toBeGreaterThan(0);
 });
 
 test("Can get balances", async () => {
@@ -88,30 +115,49 @@ test("Can get my offers", async () => {
 test("Can get payment accounts", async () => {
   let paymentAccounts: PaymentAccount[] = await alice.getPaymentAccounts();
   for (let paymentAccount of paymentAccounts) {
-    testPaymentAccount(paymentAccount);
+    testCryptoPaymentAccount(paymentAccount);
   }
 });
 
-test("Can create a crypto payment account", async () => {
-  const ethAddress = "0xdBdAb835Acd6fC84cF5F9aDD3c0B5a1E25fbd99f";
-  let ethPaymentAccount: PaymentAccount = await alice.createCryptoPaymentAccount(
-        "my eth account",
-        "eth",
-        "0xdBdAb835Acd6fC84cF5F9aDD3c0B5a1E25fbd99f",
-        true);
-  expect(ethPaymentAccount.getPaymentAccountPayload()!.getInstantCryptoCurrencyAccountPayload()!.getAddress()).toEqual(ethAddress);
-  let found = false; 
-  for (let paymentAccount of await alice.getPaymentAccounts()) {
-    if (paymentAccount.getId() === ethPaymentAccount.getId()) {
-      found = true;
-      ethPaymentAccount = paymentAccount;
-      break;
+test("Can create crypto payment accounts", async () => {
+    
+  // test each stagenet crypto account
+  for (let testAccount of TEST_CRYPTO_ACCOUNTS) {
+    
+    // create payment account
+    let name = testAccount.currencyCode + " " + testAccount.address.substr(0, 8) + "... " + GenUtils.getUUID();
+    let paymentAccount: PaymentAccount = await alice.createCryptoPaymentAccount(
+      name,
+      testAccount.currencyCode,
+      testAccount.address);
+    testCryptoPaymentAccount(paymentAccount);
+    testCryptoPaymentAccountEquals(paymentAccount, testAccount, name);
+    
+    // fetch and test payment account
+    let fetchedAccount: PaymentAccount | undefined;
+    for (let account of await alice.getPaymentAccounts()) {
+      if (paymentAccount.getId() === account.getId()) {
+        fetchedAccount = account;
+        break;
+      }
     }
+    if (!fetchedAccount) throw new Error("Payment account not found after being added");
+    testCryptoPaymentAccount(paymentAccount);
+    testCryptoPaymentAccountEquals(fetchedAccount, testAccount, name);
+    
+    // wait before creating next account
+    await GenUtils.waitFor(1000);
+
+    // TODO (woodser): test rejecting account with invalid currency code
+    // TODO (woodser): test rejecting account with invalid address
+    // TODO (woodser): test rejecting account with duplicate name
   }
-  if (!found) throw new Error("Payment account not found after being added");
-  expect(ethPaymentAccount.getAccountName()).toEqual("my eth account");
-  expect(ethPaymentAccount.getPaymentAccountPayload()!.getInstantCryptoCurrencyAccountPayload()!.getAddress()).toEqual("0xdBdAb835Acd6fC84cF5F9aDD3c0B5a1E25fbd99f");
-  //expect(ethPaymentAccount.getSelectedTradeCurrency()!.getCode()).toEqual("ETH"); // TODO: selected trade currency missing or interferes with other tests
+  
+  function testCryptoPaymentAccountEquals(paymentAccount: PaymentAccount, testAccount: any, name: string) {
+    expect(paymentAccount.getAccountName()).toEqual(name);
+    expect(paymentAccount.getPaymentAccountPayload()!.getCryptoCurrencyAccountPayload()!.getAddress()).toEqual(testAccount.address);
+    expect(paymentAccount.getSelectedTradeCurrency()!.getCode()).toEqual(testAccount.currencyCode.toUpperCase());
+  }
 });
 
 test("Can post and remove an offer", async () => {
@@ -197,16 +243,12 @@ test("Can complete a trade", async () => {
   let tradeAmount: bigint = BigInt("250000000000");
   await waitForUnlockedBalance(tradeAmount, alice, bob);
   
-  // get bob's ethereum payment account
-  let ethPaymentAccount: PaymentAccount | undefined;
-  console.log("Getting bob's payment accounts");
-  for (let paymentAccount of await bob.getPaymentAccounts()) {
-    if (paymentAccount.getSelectedTradeCurrency()?.getCode() === "ETH") {
-      ethPaymentAccount = paymentAccount;
-      break;
-    }
-  }
-  if (!ethPaymentAccount) throw new Error("Bob must have ethereum payment account to take offer");
+  // create bob's ethereum payment account
+  let testAccount =  TEST_CRYPTO_ACCOUNTS[0];
+  let ethPaymentAccount: PaymentAccount = await bob.createCryptoPaymentAccount(
+      testAccount.currencyCode + " " +  testAccount.address.substr(0, 8) + "... " + GenUtils.getUUID(),
+      testAccount.currencyCode,
+      testAccount.address);
   
   // alice posts offer to buy xmr
   console.log("Alice posting offer");
@@ -325,9 +367,15 @@ function getOffer(offers: OfferInfo[], id: string): OfferInfo | undefined {
   return offers.find(offer => offer.getId() === id);
 }
 
-function testPaymentAccount(paymentAccount: PaymentAccount) {
+function testCryptoPaymentAccount(paymentAccount: PaymentAccount) {
   expect(paymentAccount.getId()).toHaveLength;
-  // TODO: test rest of payment account
+  expect(paymentAccount.getAccountName()).toHaveLength;
+  expect(paymentAccount.getPaymentAccountPayload()!.getCryptoCurrencyAccountPayload()!.getAddress()).toHaveLength;
+  expect(paymentAccount.getSelectedTradeCurrency()!.getCode()).toHaveLength;
+  expect(paymentAccount.getTradeCurrenciesList().length).toEqual(1);
+  let tradeCurrency = paymentAccount.getTradeCurrenciesList()[0];
+  expect(tradeCurrency.getName()).toHaveLength;
+  expect(tradeCurrency.getCode()).toEqual(paymentAccount.getSelectedTradeCurrency()!.getCode());
 }
 
 function testOffer(offer: OfferInfo) {

@@ -1,6 +1,6 @@
 import * as grpcWeb from 'grpc-web';
-import {GetVersionClient, WalletsClient, OffersClient, PaymentAccountsClient, TradesClient} from './protobuf/GrpcServiceClientPb';
-import {GetVersionRequest, GetVersionReply, GetBalancesRequest, GetBalancesReply, XmrBalanceInfo, GetOffersRequest, GetOffersReply, OfferInfo, GetPaymentAccountsRequest, GetPaymentAccountsReply, CreateCryptoCurrencyPaymentAccountRequest, CreateCryptoCurrencyPaymentAccountReply, CreateOfferRequest, CreateOfferReply, CancelOfferRequest, TakeOfferRequest, TakeOfferReply, TradeInfo, GetTradeRequest, GetTradeReply, GetNewDepositSubaddressRequest, GetNewDepositSubaddressReply, ConfirmPaymentStartedRequest, ConfirmPaymentReceivedRequest} from './protobuf/grpc_pb';
+import {GetVersionClient, PriceClient, WalletsClient, OffersClient, PaymentAccountsClient, TradesClient} from './protobuf/GrpcServiceClientPb';
+import {GetVersionRequest, GetVersionReply, MarketPriceRequest, MarketPriceReply, GetBalancesRequest, GetBalancesReply, XmrBalanceInfo, GetOffersRequest, GetOffersReply, OfferInfo, GetPaymentAccountsRequest, GetPaymentAccountsReply, CreateCryptoCurrencyPaymentAccountRequest, CreateCryptoCurrencyPaymentAccountReply, CreateOfferRequest, CreateOfferReply, CancelOfferRequest, TakeOfferRequest, TakeOfferReply, TradeInfo, GetTradeRequest, GetTradeReply, GetNewDepositSubaddressRequest, GetNewDepositSubaddressReply, ConfirmPaymentStartedRequest, ConfirmPaymentReceivedRequest} from './protobuf/grpc_pb';
 import {PaymentAccount, AvailabilityResult} from './protobuf/pb_pb';
 
 /**
@@ -12,6 +12,7 @@ class HavenoDaemon {
   _url: string;
   _password: string;
   _getVersionClient: GetVersionClient;
+  _priceClient: PriceClient;
   _walletsClient: WalletsClient;
   _paymentAccountsClient: PaymentAccountsClient;
   _offersClient: OffersClient;
@@ -27,6 +28,7 @@ class HavenoDaemon {
     this._url = url;
     this._password = password;
     this._getVersionClient = new GetVersionClient(this._url);
+    this._priceClient = new PriceClient(this._url);
     this._walletsClient = new WalletsClient(this._url);
     this._paymentAccountsClient = new PaymentAccountsClient(this._url);
     this._offersClient = new OffersClient(this._url);
@@ -44,6 +46,22 @@ class HavenoDaemon {
       that._getVersionClient.getVersion(new GetVersionRequest(), {password: that._password}, function(err: grpcWeb.Error, response: GetVersionReply) {
         if (err) reject(err);
         else resolve(response.getVersion());
+      });
+    });
+  }
+  
+  /**
+   * Get the current market price of the given currency code as a ratio, e.g. ETH/XMR.
+   * 
+   * @param {string} currencyCode - currency code to get the price of
+   * @return {number} the current market price of the given currency code as a ratio, e.g. XMR/ETH
+   */
+  async getPrice(currencyCode: string) {
+    let that = this;
+    return new Promise(function(resolve, reject) {
+      that._priceClient.getMarketPrice(new MarketPriceRequest().setCurrencyCode(currencyCode), {password: that._password}, function(err: grpcWeb.Error, response: MarketPriceReply) {
+        if (err) reject(err);
+        else resolve(response.getPrice());
       });
     });
   }
@@ -99,19 +117,17 @@ class HavenoDaemon {
    * @param {string} accountName - description of the account
    * @param {string} currencyCode - currency code of the account
    * @param {string} address - payment address of the account
-   * @param {boolean} tradeInstant - whether or not trade can be completed quickly
    * @return {PaymentAccount} the created payment account
    */
   async createCryptoPaymentAccount(accountName: string,
         currencyCode: string,
-        address: string,
-        tradeInstant: boolean): Promise<PaymentAccount> {
+        address: string): Promise<PaymentAccount> {
     let that = this;
     let request = new CreateCryptoCurrencyPaymentAccountRequest()
             .setAccountName(accountName)
             .setCurrencyCode(currencyCode)
             .setAddress(address)
-            .setTradeInstant(tradeInstant);
+            false; // not using instant trades
     return new Promise(function(resolve, reject) {
       that._paymentAccountsClient.createCryptoCurrencyPaymentAccount(request, {password: that._password}, function(err: grpcWeb.Error, response: CreateCryptoCurrencyPaymentAccountReply) {
         if (err) reject(err);
