@@ -56,7 +56,7 @@ class HavenoDaemon {
    * @param {string} currencyCode - currency code to get the price of
    * @return {number} the current market price of the given currency code as a ratio, e.g. XMR/ETH
    */
-  async getPrice(currencyCode: string) {
+  async getPrice(currencyCode: string): Promise<number> {
     let that = this;
     return new Promise(function(resolve, reject) {
       that._priceClient.getMarketPrice(new MarketPriceRequest().setCurrencyCode(currencyCode), {password: that._password}, function(err: grpcWeb.Error, response: MarketPriceReply) {
