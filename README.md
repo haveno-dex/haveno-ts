@@ -30,7 +30,7 @@ Running the [top-level API tests](./src/HavenoDaemon.test.tsx) is a great way to
   Example: `docker run --rm -it -v ~/git/haveno-ui-poc/config/envoy.test.yaml:/envoy.test.yaml -p 8080:8080 -p 8081:8081 envoyproxy/envoy-dev:8a2143613d43d17d1eb35a24b4a4a4c432215606 -c /envoy.test.yaml`
 5. `npm install`
 6. Modify test config as needed in [HavenoDaemon.test.tsx](./src/HavenoDaemon.test.tsx).
-7. `npm test` to run all tests or `npm run test -- -t 'my test'` to run tests by name
+7. `npm test` to run all tests or `npm run test -- -t 'my test'` to run tests by name.
 
 ## How to Update the Protobuf Client
 
