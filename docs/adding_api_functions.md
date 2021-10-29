@@ -1,7 +1,7 @@
 # How to add and test new gRPC API functions in Haveno
 
 1. Follow [instructions](https://github.com/haveno-dex/haveno-ui-poc#run-tests) to run Haveno's existing API tests successfully.
-2. Define the new service or message in Haveno's [protobuf definition](../proto/src/main/proto/grpc.proto).
+2. Define the new service or message in Haveno's [protobuf definition](https://github.com/haveno-dex/haveno/blob/master/proto/src/main/proto/grpc.proto).
 3. Clean and build Haveno after modifying the protobuf definition: `make clean && make`
 4. Implement the new service in Haveno's backend, following existing patterns.<br>
    For example, the gRPC function to get offers is implemented by [`GrpcServer`](https://github.com/haveno-dex/haveno/blob/master/daemon/src/main/java/bisq/daemon/grpc/GrpcServer.java) > [`GrpcOffersService.getOffers(...)`](https://github.com/haveno-dex/haveno/blob/b761dbfd378faf49d95090c126318b419af7926b/daemon/src/main/java/bisq/daemon/grpc/GrpcOffersService.java#L104) > [`CoreApi.getOffers(...)`](https://github.com/haveno-dex/haveno/blob/b761dbfd378faf49d95090c126318b419af7926b/core/src/main/java/bisq/core/api/CoreApi.java#L128) > [`CoreOffersService.getOffers(...)`](https://github.com/haveno-dex/haveno/blob/b761dbfd378faf49d95090c126318b419af7926b/core/src/main/java/bisq/core/api/CoreOffersService.java#L126) > [`OfferBookService.getOffers()`](https://github.com/haveno-dex/haveno/blob/b761dbfd378faf49d95090c126318b419af7926b/core/src/main/java/bisq/core/offer/OfferBookService.java#L193).
