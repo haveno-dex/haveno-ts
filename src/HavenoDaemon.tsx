@@ -127,7 +127,7 @@ class HavenoDaemon {
             .setAccountName(accountName)
             .setCurrencyCode(currencyCode)
             .setAddress(address)
-            false; // not using instant trades
+            .setTradeInstant(false); // not using instant trades
     return new Promise(function(resolve, reject) {
       that._paymentAccountsClient.createCryptoCurrencyPaymentAccount(request, {password: that._password}, function(err: grpcWeb.Error, response: CreateCryptoCurrencyPaymentAccountReply) {
         if (err) reject(err);
