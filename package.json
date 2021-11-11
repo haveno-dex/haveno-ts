@@ -14,7 +14,7 @@
     "grpc-web": "^1.2.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-scripts": "4.0.3",
+    "react-scripts": "^4.0.3",
     "typescript": "^4.2.4",
     "web-vitals": "^1.1.1"
   },
@@ -43,6 +43,6 @@
     ]
   },
   "devDependencies": {
-    "monero-javascript": "^0.5.6"
+    "monero-javascript": "^0.5.8"
   }
 }
