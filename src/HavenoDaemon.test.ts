@@ -17,7 +17,7 @@ const havenoVersion = "1.6.2";
 const aliceDaemonUrl = "http://localhost:8080";
 const aliceDaemonPassword = "apitest";
 const alice: HavenoDaemon = new HavenoDaemon(aliceDaemonUrl, aliceDaemonPassword);
-const aliceWalletUrl = "http://127.0.0.1:51743"; // alice's internal haveno wallet for direct testing // TODO (woodser): make configurable rather than randomly generated
+const aliceWalletUrl = "http://127.0.0.1:63773"; // alice's internal haveno wallet for direct testing // TODO (woodser): make configurable rather than randomly generated
 const aliceWalletUsername = "rpc_user";
 const aliceWalletPassword = "abc123";
 let aliceWallet: any;
@@ -92,10 +92,10 @@ test("Can get market prices", async () => {
 
 test("Can get balances", async () => {
   let balances: XmrBalanceInfo = await alice.getBalances();
-  expect(balances.getUnlockedBalance());
-  expect(balances.getLockedBalance());
-  expect(balances.getReservedOfferBalance());
-  expect(balances.getReservedTradeBalance());
+  expect(BigInt(balances.getUnlockedBalance())).toBeGreaterThanOrEqual(0);
+  expect(BigInt(balances.getLockedBalance())).toBeGreaterThanOrEqual(0);
+  expect(BigInt(balances.getReservedOfferBalance())).toBeGreaterThanOrEqual(0);
+  expect(BigInt(balances.getReservedTradeBalance())).toBeGreaterThanOrEqual(0);
 });
 
 test("Can get offers", async () => {
@@ -368,18 +368,18 @@ function getOffer(offers: OfferInfo[], id: string): OfferInfo | undefined {
 }
 
 function testCryptoPaymentAccount(paymentAccount: PaymentAccount) {
-  expect(paymentAccount.getId()).toHaveLength;
-  expect(paymentAccount.getAccountName()).toHaveLength;
-  expect(paymentAccount.getPaymentAccountPayload()!.getCryptoCurrencyAccountPayload()!.getAddress()).toHaveLength;
-  expect(paymentAccount.getSelectedTradeCurrency()!.getCode()).toHaveLength;
+  expect(paymentAccount.getId().length).toBeGreaterThan(0);
+  expect(paymentAccount.getAccountName().length).toBeGreaterThan(0);
+  expect(paymentAccount.getPaymentAccountPayload()!.getCryptoCurrencyAccountPayload()!.getAddress().length).toBeGreaterThan(0);
+  expect(paymentAccount.getSelectedTradeCurrency()!.getCode().length).toBeGreaterThan(0);
   expect(paymentAccount.getTradeCurrenciesList().length).toEqual(1);
   let tradeCurrency = paymentAccount.getTradeCurrenciesList()[0];
-  expect(tradeCurrency.getName()).toHaveLength;
+  expect(tradeCurrency.getName().length).toBeGreaterThan(0);
   expect(tradeCurrency.getCode()).toEqual(paymentAccount.getSelectedTradeCurrency()!.getCode());
 }
 
 function testOffer(offer: OfferInfo) {
-  expect(offer.getId()).toHaveLength;
+  expect(offer.getId().length).toBeGreaterThan(0);
   // TODO: test rest of offer
 }
 

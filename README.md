@@ -22,7 +22,7 @@ This application is a lightly modified [create-react-app](https://github.com/fac
 
 Running the [top-level API tests](./src/HavenoDaemon.test.tsx) is a great way to develop and test Haveno end-to-end.
 
-[`HavenoDaemon`](./src/HavenoDaemon.tsx) provides the interface to the Haveno daemon's gRPC API.
+[`HavenoDaemon`](./src/HavenoDaemon.ts) provides the interface to the Haveno daemon's gRPC API.
 
 1. [Run a local Haveno test network](https://github.com/haveno-dex/haveno/blob/master/docs/installing.md), running Alice and Bob as daemons with `make alice-daemon` and `make bob-daemon`.
 2. `git clone https://github.com/haveno-dex/haveno-ui-poc`
