@@ -1,3 +1,5 @@
+// --------------------------------- IMPORTS ----------------------------------
+    
 // import haveno types
 import {HavenoDaemon} from "./HavenoDaemon";
 import {XmrBalanceInfo, OfferInfo, TradeInfo} from './protobuf/grpc_pb'; // TODO (woodser): better names; haveno_grpc_pb, haveno_pb
@@ -12,12 +14,22 @@ const TaskLooper = monerojs.TaskLooper;
 // import console because jest swallows messages in real time
 const console = require('console');
 
+// --------------------------- TEST CONFIGURATION -----------------------------
+
+// wallet to fund alice and bob during tests
+const fundingWalletUrl = "http://localhost:38084";
+const fundingWalletUsername = "rpc_user";
+const fundingWalletPassword = "abc123";
+const defaultFundingWalletPath = "test_funding_wallet";
+const minimumFunding = BigInt("5000000000000");
+let fundingWallet: any;
+
 // alice config
 const havenoVersion = "1.6.2";
 const aliceDaemonUrl = "http://localhost:8080";
 const aliceDaemonPassword = "apitest";
 const alice: HavenoDaemon = new HavenoDaemon(aliceDaemonUrl, aliceDaemonPassword);
-const aliceWalletUrl = "http://127.0.0.1:63773"; // alice's internal haveno wallet for direct testing // TODO (woodser): make configurable rather than randomly generated
+const aliceWalletUrl = "http://127.0.0.1:64840"; // alice's internal haveno wallet for direct testing // TODO (woodser): make configurable rather than randomly generated
 const aliceWalletUsername = "rpc_user";
 const aliceWalletPassword = "abc123";
 let aliceWallet: any;
@@ -33,12 +45,6 @@ const moneroDaemonUsername = "superuser";
 const moneroDaemonPassword = "abctesting123";
 let monerod: any;
 
-// source funding wallet
-const fundingWalletUrl = "http://localhost:38084";
-const fundingWalletUsername = "rpc_user";
-const fundingWalletPassword = "abc123";
-let fundingWallet: any;
-
 // other test config
 const WALLET_SYNC_PERIOD = 5000;
 const MAX_TIME_PEER_NOTICE = 3000;
@@ -53,11 +59,17 @@ const TEST_CRYPTO_ACCOUNTS = [ // TODO (woodser): test other cryptos, fiat
   }
 ];
 
+// ----------------------------------- TESTS ----------------------------------
+
 beforeAll(async () => {
   
-  // initialize clients of daemon and wallet rpc
+  // initialize client of monerod
   monerod = await monerojs.connectToDaemonRpc(moneroDaemonUrl, moneroDaemonUsername, moneroDaemonPassword);
-  fundingWallet = await monerojs.connectToWalletRpc(fundingWalletUrl, fundingWalletUsername, fundingWalletPassword);
+  
+  // initialize funding wallet
+  await initFundingWallet();
+  
+  // create client connected to alice's internal wallet
   aliceWallet = await monerojs.connectToWalletRpc(aliceWalletUrl, aliceWalletUsername, aliceWalletPassword);
   await aliceWallet.startSyncing(WALLET_SYNC_PERIOD);
   
@@ -69,6 +81,7 @@ beforeAll(async () => {
   //console.log((await bob.getBalances()).getUnlockedBalance() + ", " + (await bob.getBalances()).getLockedBalance());
 });
 
+jest.setTimeout(300000);
 test("Can get the version", async () => {
   let version = await alice.getVersion();
   expect(version).toEqual(havenoVersion);
@@ -162,9 +175,9 @@ test("Can create crypto payment accounts", async () => {
 
 test("Can post and remove an offer", async () => {
     
-  // wait for alice and bob to have unlocked balance for trade
+  // wait for alice to have unlocked balance to post offer
   let tradeAmount: bigint = BigInt("250000000000");
-  await waitForUnlockedBalance(tradeAmount, alice, bob);
+  await waitForUnlockedBalance(tradeAmount, alice);
   
   // get unlocked balance before reserving funds for offer
   let unlockedBalanceBefore: bigint = BigInt((await alice.getBalances()).getUnlockedBalance());
@@ -182,7 +195,6 @@ test("Can post and remove an offer", async () => {
   expect(unlockedBalanceBefore).toEqual(BigInt((await alice.getBalances()).getUnlockedBalance()));
 });
 
-jest.setTimeout(15000);
 test("Invalidates offers when reserved funds are spent", async () => {
 
   // wait for alice and bob to have unlocked balance for trade
@@ -236,7 +248,6 @@ test("Invalidates offers when reserved funds are spent", async () => {
   await monerod.flushTxPool(tx.getHash());
 });
 
-jest.setTimeout(120000);
 test("Can complete a trade", async () => {
     
   // wait for alice and bob to have unlocked balance for trade
@@ -311,6 +322,144 @@ test("Can complete a trade", async () => {
 
 // ------------------------------- HELPERS ------------------------------------
 
+/**
+ * Open or create funding wallet.
+ */
+async function initFundingWallet() {
+  
+  // init client connected to monero-wallet-rpc
+  fundingWallet = await monerojs.connectToWalletRpc(fundingWalletUrl, fundingWalletUsername, fundingWalletPassword);
+  
+  // check if wallet is open
+  let walletIsOpen = false
+  try {
+    await fundingWallet.getPrimaryAddress();
+    walletIsOpen = true;
+  } catch (err) { }
+  
+  // open wallet if necessary
+  if (!walletIsOpen) {
+    
+    // attempt to open funding wallet
+    try {
+      await fundingWallet.openWallet({path: defaultFundingWalletPath, password: fundingWalletPassword});
+    } catch (e) {
+      if (!(e instanceof monerojs.MoneroRpcError)) throw e;
+      
+      // -1 returned when wallet does not exist or fails to open e.g. it's already open by another application
+      if (e.getCode() === -1) {
+        
+        // create wallet
+        await fundingWallet.createWallet({path: defaultFundingWalletPath, password: fundingWalletPassword});
+      } else {
+        throw e;
+      }
+    }
+  }
+}
+
+/**
+ * Wait for unlocked balance in wallet or Haveno daemon.
+ */
+async function waitForUnlockedBalance(amount: bigint, ...wallets: any[]) {
+  
+  // wrap common wallet functionality for tests
+  class WalletWrapper {
+    
+    _wallet: any;
+    
+    constructor(wallet: any) {
+      this._wallet = wallet;
+    }
+    
+    async getUnlockedBalance(): Promise<bigint> {
+      if (this._wallet instanceof HavenoDaemon) return BigInt((await this._wallet.getBalances()).getUnlockedBalance());
+      else return BigInt((await this._wallet.getUnlockedBalance()).toString());
+    }
+    
+    async getLockedBalance(): Promise<bigint> {
+      if (this._wallet instanceof HavenoDaemon) return BigInt((await this._wallet.getBalances()).getLockedBalance());
+      else return BigInt((await this._wallet.getBalance()).toString()) - await this.getUnlockedBalance();
+    }
+    
+    async getDepositAddress(): Promise<string> {
+      if (this._wallet instanceof HavenoDaemon) return await this._wallet.getNewDepositSubaddress();
+      else return await this._wallet.getPrimaryAddress();
+    }
+  }
+  
+  // wrap wallets
+  for (let i = 0; i < wallets.length; i++) wallets[i] = new WalletWrapper(wallets[i]);
+  
+  // fund wallets with insufficient balance
+  let miningNeeded = false;
+  let fundConfig = new MoneroTxConfig().setAccountIndex(0).setRelay(true);
+  for (let wallet of wallets) {
+    let unlockedBalance = await wallet.getUnlockedBalance();
+    if (unlockedBalance < amount) miningNeeded = true;
+    let depositNeeded: bigint = amount - unlockedBalance - await wallet.getLockedBalance();
+    if (depositNeeded > BigInt("0") && wallet._wallet !== fundingWallet) fundConfig.addDestination(await wallet.getDepositAddress(), depositNeeded);
+  }
+  if (fundConfig.getDestinations()) {
+    await waitForUnlockedBalance(minimumFunding, fundingWallet); // TODO (woodser): wait for enough to cover tx amount + fee
+    try { await fundingWallet.createTx(fundConfig); }
+    catch (err) { throw new Error("Error funding wallets: " + err.message); }
+  }
+  
+  // done if all wallets have sufficient unlocked balance
+  if (!miningNeeded) return;
+  
+  // wait for funds to unlock
+  console.log("Mining for unlocked balance of " + amount);
+  await startMining();
+  let promises: Promise<void>[] = []
+  for (let wallet of wallets) {
+    promises.push(new Promise(async function(resolve, reject) {
+      let taskLooper: any = new TaskLooper(async function() {
+        if (await wallet.getUnlockedBalance() >= amount) {
+          taskLooper.stop();
+          resolve();
+        }
+      });
+      taskLooper.start(5000);
+    }));
+  }
+  await Promise.all(promises);
+  await monerod.stopMining();
+  console.log("Funds unlocked, done mining");
+};
+
+async function waitForUnlockedTxs(...txHashes: string[]) {
+  await startMining();
+  let promises: Promise<void>[] = []
+  for (let txHash of txHashes) {
+    promises.push(new Promise(async function(resolve, reject) {
+      let taskLooper: any = new TaskLooper(async function() {
+        let tx = await monerod.getTx(txHash);
+        if (tx.isConfirmed() && tx.getBlock().getHeight() <= await monerod.getHeight() - 10) {
+          taskLooper.stop();
+          resolve();
+        }
+      });
+      taskLooper.start(5000);
+    }));
+  }
+  await Promise.all(promises);
+  await monerod.stopMining();
+}
+
+async function startMining() {
+  try {
+    await monerod.startMining(await fundingWallet.getPrimaryAddress(), 1);
+  } catch (err) {
+    if (err.message !== "Already mining") throw err;
+  }
+}
+
+async function wait(durationMs: number) {
+  return new Promise(function(resolve) { setTimeout(resolve, durationMs); });
+}
+
 async function postOffer() { // TODO (woodser): postOffer(maker, peer) 
     
   // test requires ethereum payment account
@@ -381,75 +530,4 @@ function testCryptoPaymentAccount(paymentAccount: PaymentAccount) {
 function testOffer(offer: OfferInfo) {
   expect(offer.getId().length).toBeGreaterThan(0);
   // TODO: test rest of offer
-}
-
-async function wait(durationMs: number) {
-  return new Promise(function(resolve) { setTimeout(resolve, durationMs); });
-}
-
-async function startMining() {
-  try {
-    await monerod.startMining(await fundingWallet.getPrimaryAddress(), 1);
-  } catch (err) {
-    if (err.message !== "Already mining") throw err;
-  }
-}
-
-async function waitForUnlockedBalance(amount: bigint, ...clients: HavenoDaemon[]) {
-  
-  // fund haveno clients with insufficient balance
-  let miningNeeded = false;
-  let fundConfig = new MoneroTxConfig().setAccountIndex(0).setRelay(true);
-  for (let client of clients) {
-    let balances = await client.getBalances();
-    if (BigInt(balances.getUnlockedBalance()) < amount) miningNeeded = true;
-    let depositNeeded: BigInt = amount - BigInt(balances.getUnlockedBalance()) - BigInt(balances.getLockedBalance());
-    if (depositNeeded > BigInt("0")) fundConfig.addDestination(await client.getNewDepositSubaddress(), depositNeeded);
-  }
-  if (fundConfig.getDestinations()) {
-    try { await fundingWallet.createTx(fundConfig); }
-    catch (err) { throw new Error("Error funding haveno daemons: " + err.message); }
-  }
-  
-  // done if all clients have sufficient unlocked balance
-  if (!miningNeeded) return;
-  
-  // wait for funds to unlock
-  console.log("Mining for unlocked trader balances of " + amount);
-  await startMining();
-  let promises: Promise<void>[] = []
-  for (let client of clients) {
-    promises.push(new Promise(async function(resolve, reject) {
-      let taskLooper: any = new TaskLooper(async function() {
-        let balances: XmrBalanceInfo = await client.getBalances();
-        if (BigInt(balances.getUnlockedBalance()) >= amount) {
-          taskLooper.stop();
-          resolve();
-        }
-      });
-      taskLooper.start(5000);
-    }));
-  }
-  await Promise.all(promises);
-  await monerod.stopMining();
-  console.log("Funds unlocked, done mining");
-};
-
-async function waitForUnlockedTxs(...txHashes: string[]) {
-  await startMining();
-  let promises: Promise<void>[] = []
-  for (let txHash of txHashes) {
-    promises.push(new Promise(async function(resolve, reject) {
-      let taskLooper: any = new TaskLooper(async function() {
-        let tx = await monerod.getTx(txHash);
-        if (tx.isConfirmed() && tx.getBlock().getHeight() <= await monerod.getHeight() - 10) {
-          taskLooper.stop();
-          resolve();
-        }
-      });
-      taskLooper.start(5000);
-    }));
-  }
-  await Promise.all(promises);
-  await monerod.stopMining();
 }
