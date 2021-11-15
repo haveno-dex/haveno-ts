@@ -71,7 +71,6 @@ beforeAll(async () => {
   
   // create client connected to alice's internal wallet
   aliceWallet = await monerojs.connectToWalletRpc(aliceWalletUrl, aliceWalletUsername, aliceWalletPassword);
-  await aliceWallet.startSyncing(WALLET_SYNC_PERIOD);
   
   // debug tools
   //for (let offer of await alice.getMyOffers("BUY")) await alice.removeOffer(offer.getId());
@@ -177,7 +176,7 @@ test("Can post and remove an offer", async () => {
     
   // wait for alice to have unlocked balance to post offer
   let tradeAmount: bigint = BigInt("250000000000");
-  await waitForUnlockedBalance(tradeAmount, alice);
+  await waitForUnlockedBalance(tradeAmount * BigInt("5"), alice);
   
   // get unlocked balance before reserving funds for offer
   let unlockedBalanceBefore: bigint = BigInt((await alice.getBalances()).getUnlockedBalance());
@@ -199,7 +198,7 @@ test("Invalidates offers when reserved funds are spent", async () => {
 
   // wait for alice and bob to have unlocked balance for trade
   let tradeAmount: bigint = BigInt("250000000000");
-  await waitForUnlockedBalance(tradeAmount, alice, bob);
+  await waitForUnlockedBalance(tradeAmount * BigInt("5"), alice);
     
   // get frozen key images before posting offer
   let frozenKeyImagesBefore = [];
@@ -252,7 +251,7 @@ test("Can complete a trade", async () => {
     
   // wait for alice and bob to have unlocked balance for trade
   let tradeAmount: bigint = BigInt("250000000000");
-  await waitForUnlockedBalance(tradeAmount, alice, bob);
+  await waitForUnlockedBalance(tradeAmount * BigInt("5"), alice, bob);
   
   // create bob's ethereum payment account
   let testAccount =  TEST_CRYPTO_ACCOUNTS[0];
