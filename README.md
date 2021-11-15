@@ -30,8 +30,8 @@ Running the [top-level API tests](./src/HavenoDaemon.test.tsx) is a great way to
 4. In a new terminal, start an instance of monero-wallet-rpc at port 38084. This wallet will be automatically funded in order to fund Alice and Bob during the tests.<br>For example: `cd ~/git/haveno/.localnet/ && ./monero-wallet-rpc --daemon-address http://localhost:38081 --daemon-login superuser:abctesting123 --stagenet --rpc-bind-port 38084 --rpc-login rpc_user:abc123 --wallet-dir ./ --rpc-access-control-origins http://localhost:8080`
 5. `cd haveno-ui-poc`
 6. `npm install`
-7. Modify test config as needed in [HavenoDaemon.test.ts](./src/HavenoDaemon.test.ts).<br>The tests need to know the port of Alice's wallet, which is printed to Alice's console. Currently the port needs to be manually copied to the test configuration.
-8. `npm test` to run all tests or `npm run test -- -t 'my test'` to run tests by name.
+7. `npm test` to run all tests or `npm run test -- -t 'my test'` to run tests by name.
+
 
 ## How to Update the Protobuf Client
 
