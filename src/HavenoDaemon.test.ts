@@ -29,7 +29,7 @@ const havenoVersion = "1.6.2";
 const aliceDaemonUrl = "http://localhost:8080";
 const aliceDaemonPassword = "apitest";
 const alice: HavenoDaemon = new HavenoDaemon(aliceDaemonUrl, aliceDaemonPassword);
-const aliceWalletUrl = "http://127.0.0.1:64840"; // alice's internal haveno wallet for direct testing // TODO (woodser): make configurable rather than randomly generated
+const aliceWalletUrl = "http://127.0.0.1:38091"; // alice's internal haveno wallet for direct testing
 const aliceWalletUsername = "rpc_user";
 const aliceWalletPassword = "abc123";
 let aliceWallet: any;
