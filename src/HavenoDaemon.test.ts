@@ -128,7 +128,9 @@ test("Can get my offers", async () => {
 test("Can get payment accounts", async () => {
   let paymentAccounts: PaymentAccount[] = await alice.getPaymentAccounts();
   for (let paymentAccount of paymentAccounts) {
-    testCryptoPaymentAccount(paymentAccount);
+    if (paymentAccount.getPaymentAccountPayload()!.getCryptoCurrencyAccountPayload()) { // TODO (woodser): test non-crypto
+       testCryptoPaymentAccount(paymentAccount);
+    }
   }
 });
 
