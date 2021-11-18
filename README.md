@@ -12,11 +12,10 @@ This application is a lightly modified [create-react-app](https://github.com/fac
 4. Install protobuf for your system:<br>
     mac: `brew install protobuf`<br>
     linux: `apt install protobuf-compiler`
-5.  Download `protoc-gen-grpc-web` plugin and make executable as [shown here](https://github.com/grpc/grpc-web#code-generator-plugin).
-6. `cd haveno-ui-poc`
-7. `npm install`
-8. `npm start` to open http://localhost:3000 in a browser
-9. Confirm that the Haveno daemon version is displayed (1.6.2)
+5. `cd haveno-ui-poc`
+6. `npm install`
+7. `npm start` to open http://localhost:3000 in a browser
+8. Confirm that the Haveno daemon version is displayed (1.6.2)
 
 <p align="center">
     <img src="haveno-ui-poc.png" width="500"/><br>
@@ -35,7 +34,6 @@ Running the [top-level API tests](./src/HavenoDaemon.test.ts) is a great way to 
 5. Install protobuf for your system:<br>
     mac: `brew install protobuf`<br>
     linux: `apt install protobuf-compiler`
-6. Download `protoc-gen-grpc-web` plugin and make executable as [shown here](https://github.com/grpc/grpc-web#code-generator-plugin).
-7. `cd haveno-ui-poc`
-8. `npm install`
-9. `npm test` to run all tests or `npm run test -- -t 'my test'` to run tests by name.
+6. `cd haveno-ui-poc`
+7. `npm install`
+8. `npm test` to run all tests or `npm run test -- -t 'my test'` to run tests by name.

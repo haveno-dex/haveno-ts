@@ -1,7 +1,7 @@
 import * as grpcWeb from 'grpc-web';
-import {GetVersionClient, PriceClient, WalletsClient, OffersClient, PaymentAccountsClient, TradesClient} from './protobuf/GrpcServiceClientPb';
-import {GetVersionRequest, GetVersionReply, MarketPriceRequest, MarketPriceReply, MarketPricesRequest, MarketPricesReply, MarketPriceInfo, GetBalancesRequest, GetBalancesReply, XmrBalanceInfo, GetOffersRequest, GetOffersReply, OfferInfo, GetPaymentAccountsRequest, GetPaymentAccountsReply, CreateCryptoCurrencyPaymentAccountRequest, CreateCryptoCurrencyPaymentAccountReply, CreateOfferRequest, CreateOfferReply, CancelOfferRequest, TakeOfferRequest, TakeOfferReply, TradeInfo, GetTradeRequest, GetTradeReply, GetNewDepositSubaddressRequest, GetNewDepositSubaddressReply, ConfirmPaymentStartedRequest, ConfirmPaymentReceivedRequest} from './protobuf/grpc_pb';
-import {PaymentAccount, AvailabilityResult} from './protobuf/pb_pb';
+import {GetVersionClient, PriceClient, WalletsClient, OffersClient, PaymentAccountsClient, TradesClient, AccountClient} from './protobuf/GrpcServiceClientPb';
+import {GetVersionRequest, GetVersionReply, MarketPriceRequest, MarketPriceReply, MarketPricesRequest, MarketPricesReply, MarketPriceInfo, GetBalancesRequest, GetBalancesReply, XmrBalanceInfo, GetOffersRequest, GetOffersReply, OfferInfo, GetPaymentAccountsRequest, GetPaymentAccountsReply, CreateCryptoCurrencyPaymentAccountRequest, CreateCryptoCurrencyPaymentAccountReply, CreateOfferRequest, CreateOfferReply, CancelOfferRequest, TakeOfferRequest, TakeOfferReply, TradeInfo, GetTradeRequest, GetTradeReply, GetNewDepositSubaddressRequest, GetNewDepositSubaddressReply, ConfirmPaymentStartedRequest, ConfirmPaymentReceivedRequest, AccountExistsRequest, AccountExistsReply, IsAccountOpenRequest, IsAccountOpenReply, CreateAccountRequest, CreateAccountReply, OpenAccountRequest, OpenAccountReply, CloseAccountRequest, CloseAccountReply, BackupAccountRequest, BackupAccountReply, DeleteAccountRequest, DeleteAccountReply, ChangePasswordRequest, ChangePasswordReply, RestoreAccountRequest, RestoreAccountReply} from './protobuf/grpc_pb';
+import {PaymentAccount, AvailabilityResult, Attachment} from './protobuf/pb_pb';
 
 /**
  * Haveno daemon client using gRPC.
@@ -17,7 +17,8 @@ class HavenoDaemon {
   _paymentAccountsClient: PaymentAccountsClient;
   _offersClient: OffersClient;
   _tradesClient: TradesClient;
-  
+  _accountClient: AccountClient;
+
   /**
    * Construct a client connected to a Haveno daemon.
    * 
@@ -33,6 +34,7 @@ class HavenoDaemon {
     this._paymentAccountsClient = new PaymentAccountsClient(this._url);
     this._offersClient = new OffersClient(this._url);
     this._tradesClient = new TradesClient(this._url);
+	  this._accountClient = new AccountClient(this._url);
   }
   
   /**
@@ -56,7 +58,7 @@ class HavenoDaemon {
    * @param {string} currencyCode - currency code (fiat or crypto) to get the price of
    * @return {number} the current market price per 1 XMR in the given currency
    */
-  async getPrice(currencyCode: string): Promise<number> {
+   async getPrice(currencyCode: string): Promise<number> {
     let that = this;
     return new Promise(function(resolve, reject) {
       that._priceClient.getMarketPrice(new MarketPriceRequest().setCurrencyCode(currencyCode), {password: that._password}, function(err: grpcWeb.RpcError, response: MarketPriceReply) {
@@ -66,21 +68,21 @@ class HavenoDaemon {
     });
   }
 
-  /**
+    /**
    * Get the current market prices of all the currencies.
    * 
    * @return {MarketPrice[]} price per 1 XMR in all supported currencies (fiat & crypto)
    */
-  async getPrices(): Promise<MarketPriceInfo[]> {
-    let that = this;
-    return new Promise(function(resolve, reject) {
-      that._priceClient.getMarketPrices(new MarketPricesRequest(), {password: that._password}, function(err: grpcWeb.RpcError, response: MarketPricesReply) {
-        if (err) reject(err);
-        else resolve(response.getMarketPriceList());
+     async getPrices(): Promise<MarketPriceInfo[]> {
+      let that = this;
+      return new Promise(function(resolve, reject) {
+        that._priceClient.getMarketPrices(new MarketPricesRequest(), {password: that._password}, function(err: grpcWeb.RpcError, response: MarketPricesReply) {
+          if (err) reject(err);
+          else resolve(response.getMarketPriceList());
+        });
       });
-    });
-  }
-
+    }
+  
   /**
    * Get the user's balances.
    * 
@@ -306,6 +308,140 @@ class HavenoDaemon {
     let that = this;
     return new Promise(function(resolve, reject) {
       that._tradesClient.confirmPaymentReceived(new ConfirmPaymentReceivedRequest().setTradeId(tradeId), {password: that._password}, function(err: grpcWeb.RpcError) {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+  }
+
+  ///////////////////////////////////////////////
+  // Account
+  ///////////////////////////////////////////////
+
+  /**
+   * Determine if an account exists.
+   * 
+   * @return {boolean} whether an account exists
+   */
+  async accountExists(): Promise<boolean> {
+    let that = this;
+    return new Promise(function(resolve, reject) {
+      that._accountClient.accountExists(new AccountExistsRequest(), {password: that._password}, function(err: grpcWeb.RpcError, response: AccountExistsReply) {
+        if (err) reject(err);
+        else resolve(response.getAccountExists());
+      });
+    });
+  }
+
+  /**
+   * Determine if an account is open.
+   * 
+   * @return {boolean} whether an account is open
+   */
+  async isAccountOpen(): Promise<boolean> {
+    let that = this;
+    return new Promise(function(resolve, reject) {
+      that._accountClient.isAccountOpen(new IsAccountOpenRequest(), {password: that._password}, function(err: grpcWeb.RpcError, response: IsAccountOpenReply) {
+        if (err) reject(err);
+        else resolve(response.getIsAccountOpen());
+      });
+    });
+  }
+
+  /**
+   * Create an account.
+   * 
+   * @param {string} password - the password for the Account
+   */
+  async createAccount(password: string): Promise<void> {
+    let that = this;
+    return new Promise(function(resolve, reject) {
+      that._accountClient.createAccount(new CreateAccountRequest().setPassword(password), {password: that._password}, function(err: grpcWeb.RpcError, response: CreateAccountReply) {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+  }
+
+  /**
+   * Create an account.
+   * 
+   * @param {string} password - the password for the Account
+   */
+  async openAccount(password: string): Promise<void> {
+    let that = this;
+    return new Promise(function(resolve, reject) {
+      that._accountClient.openAccount(new OpenAccountRequest().setPassword(password), {password: that._password}, function(err: grpcWeb.RpcError, response: OpenAccountReply) {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+  }
+
+  /**
+   * Close an account.
+   * 
+   */
+  async closeAccount(): Promise<void> {
+    let that = this;
+    return new Promise(function(resolve, reject) {
+      that._accountClient.closeAccount(new CloseAccountRequest(), {password: that._password}, function(err: grpcWeb.RpcError, response: CloseAccountReply) {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+  }
+
+  /**
+   * Backupup an account.
+   * 
+   */
+  async backupAccount(): Promise<Attachment | undefined> {
+    let that = this;
+    return new Promise(function(resolve, reject) {
+      that._accountClient.backupAccount(new BackupAccountRequest(), {password: that._password}, function(err: grpcWeb.RpcError, response: BackupAccountReply) {
+        if (err) reject(err);
+        else resolve(response.getAttachment());
+      });
+    });
+  }
+
+  /**
+   * Delete an account.
+   * 
+   */
+  async deleteAccount(): Promise<void> {
+    let that = this;
+    return new Promise(function(resolve, reject) {
+      that._accountClient.deleteAccount(new DeleteAccountRequest(), {password: that._password}, function(err: grpcWeb.RpcError, response: DeleteAccountReply) {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+  }
+
+  /**
+   * restore an account.
+   * 
+   */
+  async restoreAccount(attachment: Attachment): Promise<void> {
+    let that = this;
+    return new Promise(function(resolve, reject) {
+      that._accountClient.restoreAccount(new RestoreAccountRequest().setAttachment(attachment), {password: that._password}, function(err: grpcWeb.RpcError, response: RestoreAccountReply) {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+  }
+
+  /**
+   * change account password.
+   * 
+   */
+  async changePassword(password: string): Promise<void> {
+    let that = this;
+    return new Promise(function(resolve, reject) {
+      that._accountClient.changePassword(new ChangePasswordRequest().setPassword(password), {password: that._password}, function(err: grpcWeb.RpcError, response: ChangePasswordReply) {
         if (err) reject(err);
         else resolve();
       });

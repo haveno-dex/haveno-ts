@@ -3,7 +3,7 @@
 // import haveno types
 import {HavenoDaemon} from "./HavenoDaemon";
 import {XmrBalanceInfo, OfferInfo, TradeInfo, MarketPriceInfo} from './protobuf/grpc_pb'; // TODO (woodser): better names; haveno_grpc_pb, haveno_pb
-import {PaymentAccount, Offer} from './protobuf/pb_pb';
+import {Attachment, Offer, PaymentAccount} from './protobuf/pb_pb';
 
 // import monero-javascript
 const monerojs = require("monero-javascript"); // TODO (woodser): support typescript and `npm install @types/monero-javascript` in monero-javascript
@@ -38,14 +38,17 @@ let aliceWallet: any;
 const bobDaemonUrl = "http://localhost:8081";
 const bobDaemonPassword = "apitest";
 const bob: HavenoDaemon = new HavenoDaemon(bobDaemonUrl, bobDaemonPassword);
+const bobWalletPassword = "abc123";
 
 // monero daemon config
-const moneroDaemonUrl = "http://localhost:38081"
+const moneroDaemonUrl = "http://localhost:8080"
 const moneroDaemonUsername = "superuser";
 const moneroDaemonPassword = "abctesting123";
 let monerod: any;
 
 // other test config
+const WALLET_CREATE_PERIOD = 10000;
+const WALLET_DELETE_PERIOD = 5000;
 const MAX_FEE = BigInt("75000000000");
 const WALLET_SYNC_PERIOD = 5000;
 const MAX_TIME_PEER_NOTICE = 3000;
@@ -66,18 +69,21 @@ beforeAll(async () => {
   
   // initialize client of monerod
   monerod = await monerojs.connectToDaemonRpc(moneroDaemonUrl, moneroDaemonUsername, moneroDaemonPassword);
-  
+     
   // create client connected to alice's internal wallet
   aliceWallet = await monerojs.connectToWalletRpc(aliceWalletUrl, aliceWalletUsername, aliceWalletPassword);
-  
+
   // initialize funding wallet
   await initFundingWallet();
-  
+
+  //await openAccountsIfNeeded();
+
   // debug tools
-  //for (let offer of await alice.getMyOffers("BUY")) await alice.removeOffer(offer.getId());
-  //for (let offer of await alice.getMyOffers("SELL")) await alice.removeOffer(offer.getId());
-  //console.log((await alice.getBalances()).getUnlockedBalance() + ", " + (await alice.getBalances()).getLockedBalance());
-  //console.log((await bob.getBalances()).getUnlockedBalance() + ", " + (await bob.getBalances()).getLockedBalance());
+  // for (let offer of await alice.getMyOffers("BUY")) await alice.removeOffer(offer.getId());
+  // for (let offer of await alice.getMyOffers("SELL")) await alice.removeOffer(offer.getId());
+  // for (let frozenOutput of await aliceWallet.getOutputs({isFrozen: true})) await aliceWallet.thawOutput(frozenOutput.getKeyImage().getHex());
+  // console.log((await alice.getBalances()).getUnlockedBalance() + ", " + (await alice.getBalances()).getLockedBalance());
+  // console.log((await bob.getBalances()).getUnlockedBalance() + ", " + (await bob.getBalances()).getLockedBalance());
 });
 
 jest.setTimeout(300000);
@@ -87,7 +93,7 @@ test("Can get the version", async () => {
 });
 
 test("Can get market prices", async () => {
-  
+
   // get all market prices
   let prices: MarketPriceInfo[] = await alice.getPrices();
   expect(prices.length).toBeGreaterThan(1);
@@ -151,7 +157,6 @@ test("Can get payment accounts", async () => {
 });
 
 test("Can create crypto payment accounts", async () => {
-    
   // test each stagenet crypto account
   for (let testAccount of TEST_CRYPTO_ACCOUNTS) {
     
@@ -192,7 +197,7 @@ test("Can create crypto payment accounts", async () => {
 });
 
 test("Can post and remove an offer", async () => {
-    
+  
   // wait for alice to have unlocked balance to post offer
   let tradeAmount: bigint = BigInt("250000000000");
   await waitForUnlockedBalance(tradeAmount * BigInt("2"), alice);
@@ -268,7 +273,8 @@ test("Invalidates offers when reserved funds are spent", async () => {
 
 // TODO (woodser): test grpc notifications
 test("Can complete a trade", async () => {
-    
+  
+  // await openAccountsIfNeeded();
   // wait for alice and bob to have unlocked balance for trade
   let tradeAmount: bigint = BigInt("250000000000");
   await waitForUnlockedBalance(tradeAmount * BigInt("2"), alice, bob);
@@ -366,8 +372,187 @@ test("Can complete a trade", async () => {
   expect(bobFee).toBeGreaterThan(BigInt("0"));
 });
 
+
+test("should throw exception when attempting to create account and account exits", async () => {
+  let e = null;
+  await openAccountsIfNeeded();
+  try {
+    await alice.createAccount(aliceWalletPassword)
+  } catch (error) {
+    e = error
+  }
+  expect(e).not.toBeNull();
+});
+
+test("should open an account when account exits", async () => {
+  let e = null;
+  await openAccountsIfNeeded();
+  await closeAccountsIfNeeded();
+  try {
+    await alice.openAccount(aliceWalletPassword)
+  } catch (error) {
+    e = error
+  }
+  expect(e).toBeNull();
+});
+
+test("should throw exception opening an account when account does not exist", async () => {
+  let e = null;
+  await openAccountsIfNeeded();
+  await alice.deleteAccount();
+  await wait(WALLET_DELETE_PERIOD)
+  try {
+    await alice.openAccount(aliceWalletPassword)
+  } catch (error) {
+    e = error
+  }
+  expect(e).not.toBeNull();
+});
+
+test("can backup an account when account does exit", async () => {
+  let e = null;
+  await openAccountsIfNeeded();
+  try {
+    const attachment = await alice.backupAccount();
+    expect(attachment).toBeTruthy();
+  } catch (error) {
+    e = error;
+  }
+  expect(e).toBeNull();
+});
+
+test("should close an account when account is open", async () => {
+  let e = null;
+  await openAccountsIfNeeded();
+  try {
+    await alice.closeAccount();
+  } catch (error) {
+    e = error;
+  }
+  expect(e).toBeNull();
+});
+
+test("should throw exception closing an account when account is closed", async () => {
+  let e = null;
+  await closeAccountsIfNeeded();
+  try {
+    await alice.closeAccount();
+  } catch (error) {
+    e = error;
+  }
+  expect(e).not.toBeNull();
+});
+
+test("should delete an account", async () => {
+  let e = null;
+  await openAccountsIfNeeded();
+  await closeAccountsIfNeeded();
+  try {
+    await deleteAccountsIfNeeded();
+    const actual = await alice.accountExists();
+    expect(actual).toBe(false);
+  } catch (error) {
+    e = error;
+  }
+  expect(e).toBeNull();
+});
+
+test("should throw exception restoring an account when account exits", async () => {
+  let e = null;
+  await openAccountsIfNeeded();
+  try {
+    const attachment = await alice.backupAccount();
+    expect(attachment).not.toBeNull();
+    if (attachment)
+      await alice.restoreAccount(attachment);
+  } catch (error) {
+    e = error;
+  }
+  expect(e).not.toBeNull();
+});
+
+test("should not throw exception restoring an account when account does not exits", async () => {
+  let e = null;
+  await openAccountsIfNeeded();
+  try {
+    const attachment = await alice.backupAccount();
+    expect(attachment).not.toBeNull();
+    await deleteAccountsIfNeeded();
+    if (attachment)
+      await alice.restoreAccount(attachment);
+  } catch (error) {
+    e = error;
+  }
+  expect(e).toBeNull();
+});
+
+// test("should change password when account is open", async () => {
+//   let e = null;
+//   await openAccountsIfNeeded();
+//   try {
+//     await alice.changePassword("123456");
+//     await alice.changePassword(aliceWalletPassword)
+//   } catch (error) {
+//     e = error;
+//   }
+//   expect(e).toBeNull();
+// });
+
+test("should throw exception changing password when account is closed", async () => {
+  let e = null;
+  await closeAccountsIfNeeded();
+  try {
+    await alice.changePassword("123456");
+  } catch (error) {
+    e = error;
+  }
+  expect(e).not.toBeNull();
+});
+
 // ------------------------------- HELPERS ------------------------------------
 
+/**
+ * Utility function to create an account
+ */
+async function openAccountsIfNeeded(andBob: boolean = false) {
+  if (!await alice.accountExists()) {
+    await alice.createAccount(aliceWalletPassword);
+    if (bob) {
+      if (!await bob.accountExists()) {
+        await bob.createAccount(bobWalletPassword);
+      }
+    }
+    await wait(WALLET_CREATE_PERIOD);
+  }
+  if (!await alice.isAccountOpen()) {
+    await alice.openAccount(aliceWalletPassword);
+    await wait(WALLET_CREATE_PERIOD);
+  }
+}
+
+/**
+ * Utility function to close an account
+ */
+ async function closeAccountsIfNeeded() {
+  if (await alice.isAccountOpen()) {
+    await alice.closeAccount();
+    await wait(WALLET_CREATE_PERIOD);
+  }
+}
+
+/**
+ * Utility function to close an account
+ */
+ async function deleteAccountsIfNeeded() {
+    await alice.deleteAccount();
+    await wait(WALLET_DELETE_PERIOD);
+}
+/**
+ * Create a dumby attachment
+ */
+function createAttachment(): Attachment {
+  return new Attachment();
+}
 /**
  * Open or create funding wallet.
  */
@@ -382,10 +567,9 @@ async function initFundingWallet() {
     await fundingWallet.getPrimaryAddress();
     walletIsOpen = true;
   } catch (err) { }
-  
+
   // open wallet if necessary
   if (!walletIsOpen) {
-    
     // attempt to open funding wallet
     try {
       await fundingWallet.openWallet({path: defaultFundingWalletPath, password: fundingWalletPassword});
