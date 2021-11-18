@@ -80,6 +80,371 @@ export class DisputeAgentsClient {
 
 }
 
+export class AccountClient {
+  client_: grpcWeb.AbstractClientBase;
+  hostname_: string;
+  credentials_: null | { [index: string]: string; };
+  options_: null | { [index: string]: any; };
+
+  constructor (hostname: string,
+               credentials?: null | { [index: string]: string; },
+               options?: null | { [index: string]: any; }) {
+    if (!options) options = {};
+    if (!credentials) credentials = {};
+    options['format'] = 'text';
+
+    this.client_ = new grpcWeb.GrpcWebClientBase(options);
+    this.hostname_ = hostname;
+    this.credentials_ = credentials;
+    this.options_ = options;
+  }
+
+  methodInfoAccountExists = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.Account/AccountExists',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.AccountExistsRequest,
+    grpc_pb.AccountExistsReply,
+    (request: grpc_pb.AccountExistsRequest) => {
+      return request.serializeBinary();
+    },
+    grpc_pb.AccountExistsReply.deserializeBinary
+  );
+
+  accountExists(
+    request: grpc_pb.AccountExistsRequest,
+    metadata: grpcWeb.Metadata | null): Promise<grpc_pb.AccountExistsReply>;
+
+  accountExists(
+    request: grpc_pb.AccountExistsRequest,
+    metadata: grpcWeb.Metadata | null,
+    callback: (err: grpcWeb.RpcError,
+               response: grpc_pb.AccountExistsReply) => void): grpcWeb.ClientReadableStream<grpc_pb.AccountExistsReply>;
+
+  accountExists(
+    request: grpc_pb.AccountExistsRequest,
+    metadata: grpcWeb.Metadata | null,
+    callback?: (err: grpcWeb.RpcError,
+               response: grpc_pb.AccountExistsReply) => void) {
+    if (callback !== undefined) {
+      return this.client_.rpcCall(
+        this.hostname_ +
+          '/io.bisq.protobuffer.Account/AccountExists',
+        request,
+        metadata || {},
+        this.methodInfoAccountExists,
+        callback);
+    }
+    return this.client_.unaryCall(
+    this.hostname_ +
+      '/io.bisq.protobuffer.Account/AccountExists',
+    request,
+    metadata || {},
+    this.methodInfoAccountExists);
+  }
+
+  methodInfoIsAccountOpen = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.Account/IsAccountOpen',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.IsAccountOpenRequest,
+    grpc_pb.IsAccountOpenReply,
+    (request: grpc_pb.IsAccountOpenRequest) => {
+      return request.serializeBinary();
+    },
+    grpc_pb.IsAccountOpenReply.deserializeBinary
+  );
+
+  isAccountOpen(
+    request: grpc_pb.IsAccountOpenRequest,
+    metadata: grpcWeb.Metadata | null): Promise<grpc_pb.IsAccountOpenReply>;
+
+  isAccountOpen(
+    request: grpc_pb.IsAccountOpenRequest,
+    metadata: grpcWeb.Metadata | null,
+    callback: (err: grpcWeb.RpcError,
+               response: grpc_pb.IsAccountOpenReply) => void): grpcWeb.ClientReadableStream<grpc_pb.IsAccountOpenReply>;
+
+  isAccountOpen(
+    request: grpc_pb.IsAccountOpenRequest,
+    metadata: grpcWeb.Metadata | null,
+    callback?: (err: grpcWeb.RpcError,
+               response: grpc_pb.IsAccountOpenReply) => void) {
+    if (callback !== undefined) {
+      return this.client_.rpcCall(
+        this.hostname_ +
+          '/io.bisq.protobuffer.Account/IsAccountOpen',
+        request,
+        metadata || {},
+        this.methodInfoIsAccountOpen,
+        callback);
+    }
+    return this.client_.unaryCall(
+    this.hostname_ +
+      '/io.bisq.protobuffer.Account/IsAccountOpen',
+    request,
+    metadata || {},
+    this.methodInfoIsAccountOpen);
+  }
+
+  methodInfoCreateAccount = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.Account/CreateAccount',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.CreateAccountRequest,
+    grpc_pb.CreateAccountReply,
+    (request: grpc_pb.CreateAccountRequest) => {
+      return request.serializeBinary();
+    },
+    grpc_pb.CreateAccountReply.deserializeBinary
+  );
+
+  createAccount(
+    request: grpc_pb.CreateAccountRequest,
+    metadata: grpcWeb.Metadata | null): Promise<grpc_pb.CreateAccountReply>;
+
+  createAccount(
+    request: grpc_pb.CreateAccountRequest,
+    metadata: grpcWeb.Metadata | null,
+    callback: (err: grpcWeb.RpcError,
+               response: grpc_pb.CreateAccountReply) => void): grpcWeb.ClientReadableStream<grpc_pb.CreateAccountReply>;
+
+  createAccount(
+    request: grpc_pb.CreateAccountRequest,
+    metadata: grpcWeb.Metadata | null,
+    callback?: (err: grpcWeb.RpcError,
+               response: grpc_pb.CreateAccountReply) => void) {
+    if (callback !== undefined) {
+      return this.client_.rpcCall(
+        this.hostname_ +
+          '/io.bisq.protobuffer.Account/CreateAccount',
+        request,
+        metadata || {},
+        this.methodInfoCreateAccount,
+        callback);
+    }
+    return this.client_.unaryCall(
+    this.hostname_ +
+      '/io.bisq.protobuffer.Account/CreateAccount',
+    request,
+    metadata || {},
+    this.methodInfoCreateAccount);
+  }
+
+  methodInfoOpenAccount = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.Account/OpenAccount',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.OpenAccountRequest,
+    grpc_pb.OpenAccountReply,
+    (request: grpc_pb.OpenAccountRequest) => {
+      return request.serializeBinary();
+    },
+    grpc_pb.OpenAccountReply.deserializeBinary
+  );
+
+  openAccount(
+    request: grpc_pb.OpenAccountRequest,
+    metadata: grpcWeb.Metadata | null): Promise<grpc_pb.OpenAccountReply>;
+
+  openAccount(
+    request: grpc_pb.OpenAccountRequest,
+    metadata: grpcWeb.Metadata | null,
+    callback: (err: grpcWeb.RpcError,
+               response: grpc_pb.OpenAccountReply) => void): grpcWeb.ClientReadableStream<grpc_pb.OpenAccountReply>;
+
+  openAccount(
+    request: grpc_pb.OpenAccountRequest,
+    metadata: grpcWeb.Metadata | null,
+    callback?: (err: grpcWeb.RpcError,
+               response: grpc_pb.OpenAccountReply) => void) {
+    if (callback !== undefined) {
+      return this.client_.rpcCall(
+        this.hostname_ +
+          '/io.bisq.protobuffer.Account/OpenAccount',
+        request,
+        metadata || {},
+        this.methodInfoOpenAccount,
+        callback);
+    }
+    return this.client_.unaryCall(
+    this.hostname_ +
+      '/io.bisq.protobuffer.Account/OpenAccount',
+    request,
+    metadata || {},
+    this.methodInfoOpenAccount);
+  }
+
+  methodInfoCloseAccount = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.Account/CloseAccount',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.CloseAccountRequest,
+    grpc_pb.CloseAccountReply,
+    (request: grpc_pb.CloseAccountRequest) => {
+      return request.serializeBinary();
+    },
+    grpc_pb.CloseAccountReply.deserializeBinary
+  );
+
+  closeAccount(
+    request: grpc_pb.CloseAccountRequest,
+    metadata: grpcWeb.Metadata | null): Promise<grpc_pb.CloseAccountReply>;
+
+  closeAccount(
+    request: grpc_pb.CloseAccountRequest,
+    metadata: grpcWeb.Metadata | null,
+    callback: (err: grpcWeb.RpcError,
+               response: grpc_pb.CloseAccountReply) => void): grpcWeb.ClientReadableStream<grpc_pb.CloseAccountReply>;
+
+  closeAccount(
+    request: grpc_pb.CloseAccountRequest,
+    metadata: grpcWeb.Metadata | null,
+    callback?: (err: grpcWeb.RpcError,
+               response: grpc_pb.CloseAccountReply) => void) {
+    if (callback !== undefined) {
+      return this.client_.rpcCall(
+        this.hostname_ +
+          '/io.bisq.protobuffer.Account/CloseAccount',
+        request,
+        metadata || {},
+        this.methodInfoCloseAccount,
+        callback);
+    }
+    return this.client_.unaryCall(
+    this.hostname_ +
+      '/io.bisq.protobuffer.Account/CloseAccount',
+    request,
+    metadata || {},
+    this.methodInfoCloseAccount);
+  }
+
+  methodInfoBackupAccount = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.Account/BackupAccount',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.BackupAccountRequest,
+    grpc_pb.BackupAccountReply,
+    (request: grpc_pb.BackupAccountRequest) => {
+      return request.serializeBinary();
+    },
+    grpc_pb.BackupAccountReply.deserializeBinary
+  );
+
+  backupAccount(
+    request: grpc_pb.BackupAccountRequest,
+    metadata: grpcWeb.Metadata | null): Promise<grpc_pb.BackupAccountReply>;
+
+  backupAccount(
+    request: grpc_pb.BackupAccountRequest,
+    metadata: grpcWeb.Metadata | null,
+    callback: (err: grpcWeb.RpcError,
+               response: grpc_pb.BackupAccountReply) => void): grpcWeb.ClientReadableStream<grpc_pb.BackupAccountReply>;
+
+  backupAccount(
+    request: grpc_pb.BackupAccountRequest,
+    metadata: grpcWeb.Metadata | null,
+    callback?: (err: grpcWeb.RpcError,
+               response: grpc_pb.BackupAccountReply) => void) {
+    if (callback !== undefined) {
+      return this.client_.rpcCall(
+        this.hostname_ +
+          '/io.bisq.protobuffer.Account/BackupAccount',
+        request,
+        metadata || {},
+        this.methodInfoBackupAccount,
+        callback);
+    }
+    return this.client_.unaryCall(
+    this.hostname_ +
+      '/io.bisq.protobuffer.Account/BackupAccount',
+    request,
+    metadata || {},
+    this.methodInfoBackupAccount);
+  }
+
+  methodInfoDeleteAccount = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.Account/DeleteAccount',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.DeleteAccountRequest,
+    grpc_pb.DeleteAccountReply,
+    (request: grpc_pb.DeleteAccountRequest) => {
+      return request.serializeBinary();
+    },
+    grpc_pb.DeleteAccountReply.deserializeBinary
+  );
+
+  deleteAccount(
+    request: grpc_pb.DeleteAccountRequest,
+    metadata: grpcWeb.Metadata | null): Promise<grpc_pb.DeleteAccountReply>;
+
+  deleteAccount(
+    request: grpc_pb.DeleteAccountRequest,
+    metadata: grpcWeb.Metadata | null,
+    callback: (err: grpcWeb.RpcError,
+               response: grpc_pb.DeleteAccountReply) => void): grpcWeb.ClientReadableStream<grpc_pb.DeleteAccountReply>;
+
+  deleteAccount(
+    request: grpc_pb.DeleteAccountRequest,
+    metadata: grpcWeb.Metadata | null,
+    callback?: (err: grpcWeb.RpcError,
+               response: grpc_pb.DeleteAccountReply) => void) {
+    if (callback !== undefined) {
+      return this.client_.rpcCall(
+        this.hostname_ +
+          '/io.bisq.protobuffer.Account/DeleteAccount',
+        request,
+        metadata || {},
+        this.methodInfoDeleteAccount,
+        callback);
+    }
+    return this.client_.unaryCall(
+    this.hostname_ +
+      '/io.bisq.protobuffer.Account/DeleteAccount',
+    request,
+    metadata || {},
+    this.methodInfoDeleteAccount);
+  }
+
+  methodInfoChangePassword = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.Account/ChangePassword',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.ChangePasswordRequest,
+    grpc_pb.ChangePasswordReply,
+    (request: grpc_pb.ChangePasswordRequest) => {
+      return request.serializeBinary();
+    },
+    grpc_pb.ChangePasswordReply.deserializeBinary
+  );
+
+  changePassword(
+    request: grpc_pb.ChangePasswordRequest,
+    metadata: grpcWeb.Metadata | null): Promise<grpc_pb.ChangePasswordReply>;
+
+  changePassword(
+    request: grpc_pb.ChangePasswordRequest,
+    metadata: grpcWeb.Metadata | null,
+    callback: (err: grpcWeb.RpcError,
+               response: grpc_pb.ChangePasswordReply) => void): grpcWeb.ClientReadableStream<grpc_pb.ChangePasswordReply>;
+
+  changePassword(
+    request: grpc_pb.ChangePasswordRequest,
+    metadata: grpcWeb.Metadata | null,
+    callback?: (err: grpcWeb.RpcError,
+               response: grpc_pb.ChangePasswordReply) => void) {
+    if (callback !== undefined) {
+      return this.client_.rpcCall(
+        this.hostname_ +
+          '/io.bisq.protobuffer.Account/ChangePassword',
+        request,
+        metadata || {},
+        this.methodInfoChangePassword,
+        callback);
+    }
+    return this.client_.unaryCall(
+    this.hostname_ +
+      '/io.bisq.protobuffer.Account/ChangePassword',
+    request,
+    metadata || {},
+    this.methodInfoChangePassword);
+  }
+
+}
+
 export class HelpClient {
   client_: grpcWeb.AbstractClientBase;
   hostname_: string;

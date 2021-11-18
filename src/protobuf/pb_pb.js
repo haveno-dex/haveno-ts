@@ -35281,6 +35281,7 @@ proto.io.bisq.protobuffer.DisputeResult.toObject = function(includeInstance, msg
     screenCast: jspb.Message.getBooleanFieldWithDefault(msg, 7, false),
     summaryNotes: jspb.Message.getFieldWithDefault(msg, 8, ""),
     chatMessage: (f = msg.getChatMessage()) && proto.io.bisq.protobuffer.ChatMessage.toObject(includeInstance, f),
+    arbitratorSignature: msg.getArbitratorSignature_asB64(),
     buyerPayoutAmount: jspb.Message.getFieldWithDefault(msg, 11, 0),
     sellerPayoutAmount: jspb.Message.getFieldWithDefault(msg, 12, 0),
     arbitratorPubKey: msg.getArbitratorPubKey_asB64(),
@@ -35360,6 +35361,10 @@ proto.io.bisq.protobuffer.DisputeResult.deserializeBinaryFromReader = function(m
       var value = new proto.io.bisq.protobuffer.ChatMessage;
       reader.readMessage(value,proto.io.bisq.protobuffer.ChatMessage.deserializeBinaryFromReader);
       msg.setChatMessage(value);
+      break;
+    case 10:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setArbitratorSignature(value);
       break;
     case 11:
       var value = /** @type {number} */ (reader.readInt64());
@@ -35480,6 +35485,13 @@ proto.io.bisq.protobuffer.DisputeResult.serializeBinaryToWriter = function(messa
       9,
       f,
       proto.io.bisq.protobuffer.ChatMessage.serializeBinaryToWriter
+    );
+  }
+  f = message.getArbitratorSignature_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
+      10,
+      f
     );
   }
   f = message.getBuyerPayoutAmount();
@@ -35740,6 +35752,48 @@ proto.io.bisq.protobuffer.DisputeResult.prototype.clearChatMessage = function() 
  */
 proto.io.bisq.protobuffer.DisputeResult.prototype.hasChatMessage = function() {
   return jspb.Message.getField(this, 9) != null;
+};
+
+
+/**
+ * optional bytes arbitrator_signature = 10;
+ * @return {!(string|Uint8Array)}
+ */
+proto.io.bisq.protobuffer.DisputeResult.prototype.getArbitratorSignature = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 10, ""));
+};
+
+
+/**
+ * optional bytes arbitrator_signature = 10;
+ * This is a type-conversion wrapper around `getArbitratorSignature()`
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.DisputeResult.prototype.getArbitratorSignature_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getArbitratorSignature()));
+};
+
+
+/**
+ * optional bytes arbitrator_signature = 10;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getArbitratorSignature()`
+ * @return {!Uint8Array}
+ */
+proto.io.bisq.protobuffer.DisputeResult.prototype.getArbitratorSignature_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getArbitratorSignature()));
+};
+
+
+/**
+ * @param {!(string|Uint8Array)} value
+ * @return {!proto.io.bisq.protobuffer.DisputeResult} returns this
+ */
+proto.io.bisq.protobuffer.DisputeResult.prototype.setArbitratorSignature = function(value) {
+  return jspb.Message.setProto3BytesField(this, 10, value);
 };
 
 

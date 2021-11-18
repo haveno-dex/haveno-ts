@@ -4097,6 +4097,11 @@ export class DisputeResult extends jspb.Message {
   hasChatMessage(): boolean;
   clearChatMessage(): DisputeResult;
 
+  getArbitratorSignature(): Uint8Array | string;
+  getArbitratorSignature_asU8(): Uint8Array;
+  getArbitratorSignature_asB64(): string;
+  setArbitratorSignature(value: Uint8Array | string): DisputeResult;
+
   getBuyerPayoutAmount(): number;
   setBuyerPayoutAmount(value: number): DisputeResult;
 
@@ -4139,6 +4144,7 @@ export namespace DisputeResult {
     screenCast: boolean,
     summaryNotes: string,
     chatMessage?: ChatMessage.AsObject,
+    arbitratorSignature: Uint8Array | string,
     buyerPayoutAmount: number,
     sellerPayoutAmount: number,
     arbitratorPubKey: Uint8Array | string,

@@ -39,6 +39,250 @@ export namespace RegisterDisputeAgentReply {
   }
 }
 
+export class AccountExistsRequest extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AccountExistsRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: AccountExistsRequest): AccountExistsRequest.AsObject;
+  static serializeBinaryToWriter(message: AccountExistsRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AccountExistsRequest;
+  static deserializeBinaryFromReader(message: AccountExistsRequest, reader: jspb.BinaryReader): AccountExistsRequest;
+}
+
+export namespace AccountExistsRequest {
+  export type AsObject = {
+  }
+}
+
+export class AccountExistsReply extends jspb.Message {
+  getAccountExists(): boolean;
+  setAccountExists(value: boolean): AccountExistsReply;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AccountExistsReply.AsObject;
+  static toObject(includeInstance: boolean, msg: AccountExistsReply): AccountExistsReply.AsObject;
+  static serializeBinaryToWriter(message: AccountExistsReply, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AccountExistsReply;
+  static deserializeBinaryFromReader(message: AccountExistsReply, reader: jspb.BinaryReader): AccountExistsReply;
+}
+
+export namespace AccountExistsReply {
+  export type AsObject = {
+    accountExists: boolean,
+  }
+}
+
+export class IsAccountOpenRequest extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): IsAccountOpenRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: IsAccountOpenRequest): IsAccountOpenRequest.AsObject;
+  static serializeBinaryToWriter(message: IsAccountOpenRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): IsAccountOpenRequest;
+  static deserializeBinaryFromReader(message: IsAccountOpenRequest, reader: jspb.BinaryReader): IsAccountOpenRequest;
+}
+
+export namespace IsAccountOpenRequest {
+  export type AsObject = {
+  }
+}
+
+export class IsAccountOpenReply extends jspb.Message {
+  getIsAccountOpen(): boolean;
+  setIsAccountOpen(value: boolean): IsAccountOpenReply;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): IsAccountOpenReply.AsObject;
+  static toObject(includeInstance: boolean, msg: IsAccountOpenReply): IsAccountOpenReply.AsObject;
+  static serializeBinaryToWriter(message: IsAccountOpenReply, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): IsAccountOpenReply;
+  static deserializeBinaryFromReader(message: IsAccountOpenReply, reader: jspb.BinaryReader): IsAccountOpenReply;
+}
+
+export namespace IsAccountOpenReply {
+  export type AsObject = {
+    isAccountOpen: boolean,
+  }
+}
+
+export class CreateAccountRequest extends jspb.Message {
+  getPassword(): string;
+  setPassword(value: string): CreateAccountRequest;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): CreateAccountRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: CreateAccountRequest): CreateAccountRequest.AsObject;
+  static serializeBinaryToWriter(message: CreateAccountRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): CreateAccountRequest;
+  static deserializeBinaryFromReader(message: CreateAccountRequest, reader: jspb.BinaryReader): CreateAccountRequest;
+}
+
+export namespace CreateAccountRequest {
+  export type AsObject = {
+    password: string,
+  }
+}
+
+export class CreateAccountReply extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): CreateAccountReply.AsObject;
+  static toObject(includeInstance: boolean, msg: CreateAccountReply): CreateAccountReply.AsObject;
+  static serializeBinaryToWriter(message: CreateAccountReply, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): CreateAccountReply;
+  static deserializeBinaryFromReader(message: CreateAccountReply, reader: jspb.BinaryReader): CreateAccountReply;
+}
+
+export namespace CreateAccountReply {
+  export type AsObject = {
+  }
+}
+
+export class OpenAccountRequest extends jspb.Message {
+  getPassword(): string;
+  setPassword(value: string): OpenAccountRequest;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): OpenAccountRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: OpenAccountRequest): OpenAccountRequest.AsObject;
+  static serializeBinaryToWriter(message: OpenAccountRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): OpenAccountRequest;
+  static deserializeBinaryFromReader(message: OpenAccountRequest, reader: jspb.BinaryReader): OpenAccountRequest;
+}
+
+export namespace OpenAccountRequest {
+  export type AsObject = {
+    password: string,
+  }
+}
+
+export class OpenAccountReply extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): OpenAccountReply.AsObject;
+  static toObject(includeInstance: boolean, msg: OpenAccountReply): OpenAccountReply.AsObject;
+  static serializeBinaryToWriter(message: OpenAccountReply, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): OpenAccountReply;
+  static deserializeBinaryFromReader(message: OpenAccountReply, reader: jspb.BinaryReader): OpenAccountReply;
+}
+
+export namespace OpenAccountReply {
+  export type AsObject = {
+  }
+}
+
+export class CloseAccountRequest extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): CloseAccountRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: CloseAccountRequest): CloseAccountRequest.AsObject;
+  static serializeBinaryToWriter(message: CloseAccountRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): CloseAccountRequest;
+  static deserializeBinaryFromReader(message: CloseAccountRequest, reader: jspb.BinaryReader): CloseAccountRequest;
+}
+
+export namespace CloseAccountRequest {
+  export type AsObject = {
+  }
+}
+
+export class CloseAccountReply extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): CloseAccountReply.AsObject;
+  static toObject(includeInstance: boolean, msg: CloseAccountReply): CloseAccountReply.AsObject;
+  static serializeBinaryToWriter(message: CloseAccountReply, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): CloseAccountReply;
+  static deserializeBinaryFromReader(message: CloseAccountReply, reader: jspb.BinaryReader): CloseAccountReply;
+}
+
+export namespace CloseAccountReply {
+  export type AsObject = {
+  }
+}
+
+export class BackupAccountRequest extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): BackupAccountRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: BackupAccountRequest): BackupAccountRequest.AsObject;
+  static serializeBinaryToWriter(message: BackupAccountRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): BackupAccountRequest;
+  static deserializeBinaryFromReader(message: BackupAccountRequest, reader: jspb.BinaryReader): BackupAccountRequest;
+}
+
+export namespace BackupAccountRequest {
+  export type AsObject = {
+  }
+}
+
+export class BackupAccountReply extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): BackupAccountReply.AsObject;
+  static toObject(includeInstance: boolean, msg: BackupAccountReply): BackupAccountReply.AsObject;
+  static serializeBinaryToWriter(message: BackupAccountReply, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): BackupAccountReply;
+  static deserializeBinaryFromReader(message: BackupAccountReply, reader: jspb.BinaryReader): BackupAccountReply;
+}
+
+export namespace BackupAccountReply {
+  export type AsObject = {
+  }
+}
+
+export class DeleteAccountRequest extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): DeleteAccountRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: DeleteAccountRequest): DeleteAccountRequest.AsObject;
+  static serializeBinaryToWriter(message: DeleteAccountRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): DeleteAccountRequest;
+  static deserializeBinaryFromReader(message: DeleteAccountRequest, reader: jspb.BinaryReader): DeleteAccountRequest;
+}
+
+export namespace DeleteAccountRequest {
+  export type AsObject = {
+  }
+}
+
+export class DeleteAccountReply extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): DeleteAccountReply.AsObject;
+  static toObject(includeInstance: boolean, msg: DeleteAccountReply): DeleteAccountReply.AsObject;
+  static serializeBinaryToWriter(message: DeleteAccountReply, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): DeleteAccountReply;
+  static deserializeBinaryFromReader(message: DeleteAccountReply, reader: jspb.BinaryReader): DeleteAccountReply;
+}
+
+export namespace DeleteAccountReply {
+  export type AsObject = {
+  }
+}
+
+export class ChangePasswordRequest extends jspb.Message {
+  getPassword(): string;
+  setPassword(value: string): ChangePasswordRequest;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ChangePasswordRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: ChangePasswordRequest): ChangePasswordRequest.AsObject;
+  static serializeBinaryToWriter(message: ChangePasswordRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ChangePasswordRequest;
+  static deserializeBinaryFromReader(message: ChangePasswordRequest, reader: jspb.BinaryReader): ChangePasswordRequest;
+}
+
+export namespace ChangePasswordRequest {
+  export type AsObject = {
+    password: string,
+  }
+}
+
+export class ChangePasswordReply extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ChangePasswordReply.AsObject;
+  static toObject(includeInstance: boolean, msg: ChangePasswordReply): ChangePasswordReply.AsObject;
+  static serializeBinaryToWriter(message: ChangePasswordReply, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ChangePasswordReply;
+  static deserializeBinaryFromReader(message: ChangePasswordReply, reader: jspb.BinaryReader): ChangePasswordReply;
+}
+
+export namespace ChangePasswordReply {
+  export type AsObject = {
+  }
+}
+
 export class GetMethodHelpRequest extends jspb.Message {
   getMethodName(): string;
   setMethodName(value: string): GetMethodHelpRequest;
