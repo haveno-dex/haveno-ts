@@ -3294,7 +3294,7 @@ if (goog.DEBUG && !COMPILED) {
  * @constructor
  */
 proto.io.bisq.protobuffer.OpenOffer = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.io.bisq.protobuffer.OpenOffer.repeatedFields_, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
 goog.inherits(proto.io.bisq.protobuffer.OpenOffer, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -10086,7 +10086,7 @@ proto.io.bisq.protobuffer.OfferAvailabilityResponse.toObject = function(includeI
     supportedCapabilitiesList: (f = jspb.Message.getRepeatedField(msg, 3)) == null ? undefined : f,
     uid: jspb.Message.getFieldWithDefault(msg, 4, ""),
     makerSignature: jspb.Message.getFieldWithDefault(msg, 5, ""),
-    arbitratorNodeAddress: (f = msg.getArbitratorNodeAddress()) && proto.io.bisq.protobuffer.NodeAddress.toObject(includeInstance, f)
+    backupArbitrator: (f = msg.getBackupArbitrator()) && proto.io.bisq.protobuffer.NodeAddress.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -10148,7 +10148,7 @@ proto.io.bisq.protobuffer.OfferAvailabilityResponse.deserializeBinaryFromReader 
     case 6:
       var value = new proto.io.bisq.protobuffer.NodeAddress;
       reader.readMessage(value,proto.io.bisq.protobuffer.NodeAddress.deserializeBinaryFromReader);
-      msg.setArbitratorNodeAddress(value);
+      msg.setBackupArbitrator(value);
       break;
     default:
       reader.skipField();
@@ -10214,7 +10214,7 @@ proto.io.bisq.protobuffer.OfferAvailabilityResponse.serializeBinaryToWriter = fu
       f
     );
   }
-  f = message.getArbitratorNodeAddress();
+  f = message.getBackupArbitrator();
   if (f != null) {
     writer.writeMessage(
       6,
@@ -10335,10 +10335,10 @@ proto.io.bisq.protobuffer.OfferAvailabilityResponse.prototype.setMakerSignature 
 
 
 /**
- * optional NodeAddress arbitrator_node_address = 6;
+ * optional NodeAddress backup_arbitrator = 6;
  * @return {?proto.io.bisq.protobuffer.NodeAddress}
  */
-proto.io.bisq.protobuffer.OfferAvailabilityResponse.prototype.getArbitratorNodeAddress = function() {
+proto.io.bisq.protobuffer.OfferAvailabilityResponse.prototype.getBackupArbitrator = function() {
   return /** @type{?proto.io.bisq.protobuffer.NodeAddress} */ (
     jspb.Message.getWrapperField(this, proto.io.bisq.protobuffer.NodeAddress, 6));
 };
@@ -10348,7 +10348,7 @@ proto.io.bisq.protobuffer.OfferAvailabilityResponse.prototype.getArbitratorNodeA
  * @param {?proto.io.bisq.protobuffer.NodeAddress|undefined} value
  * @return {!proto.io.bisq.protobuffer.OfferAvailabilityResponse} returns this
 */
-proto.io.bisq.protobuffer.OfferAvailabilityResponse.prototype.setArbitratorNodeAddress = function(value) {
+proto.io.bisq.protobuffer.OfferAvailabilityResponse.prototype.setBackupArbitrator = function(value) {
   return jspb.Message.setWrapperField(this, 6, value);
 };
 
@@ -10357,8 +10357,8 @@ proto.io.bisq.protobuffer.OfferAvailabilityResponse.prototype.setArbitratorNodeA
  * Clears the message field making it undefined.
  * @return {!proto.io.bisq.protobuffer.OfferAvailabilityResponse} returns this
  */
-proto.io.bisq.protobuffer.OfferAvailabilityResponse.prototype.clearArbitratorNodeAddress = function() {
-  return this.setArbitratorNodeAddress(undefined);
+proto.io.bisq.protobuffer.OfferAvailabilityResponse.prototype.clearBackupArbitrator = function() {
+  return this.setBackupArbitrator(undefined);
 };
 
 
@@ -10366,7 +10366,7 @@ proto.io.bisq.protobuffer.OfferAvailabilityResponse.prototype.clearArbitratorNod
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.io.bisq.protobuffer.OfferAvailabilityResponse.prototype.hasArbitratorNodeAddress = function() {
+proto.io.bisq.protobuffer.OfferAvailabilityResponse.prototype.hasBackupArbitrator = function() {
   return jspb.Message.getField(this, 6) != null;
 };
 
@@ -31820,7 +31820,7 @@ proto.io.bisq.protobuffer.OfferPayload.toObject = function(includeInstance, msg)
     hashOfChallenge: jspb.Message.getFieldWithDefault(msg, 33, ""),
     extraDataMap: (f = msg.getExtraDataMap()) ? f.toObject(includeInstance, undefined) : [],
     protocolVersion: jspb.Message.getFieldWithDefault(msg, 35, 0),
-    arbitratorNodeAddress: (f = msg.getArbitratorNodeAddress()) && proto.io.bisq.protobuffer.NodeAddress.toObject(includeInstance, f),
+    arbitratorSigner: (f = msg.getArbitratorSigner()) && proto.io.bisq.protobuffer.NodeAddress.toObject(includeInstance, f),
     arbitratorSignature: jspb.Message.getFieldWithDefault(msg, 1002, ""),
     reserveTxKeyImagesList: (f = jspb.Message.getRepeatedField(msg, 1003)) == null ? undefined : f
   };
@@ -32006,7 +32006,7 @@ proto.io.bisq.protobuffer.OfferPayload.deserializeBinaryFromReader = function(ms
     case 1001:
       var value = new proto.io.bisq.protobuffer.NodeAddress;
       reader.readMessage(value,proto.io.bisq.protobuffer.NodeAddress.deserializeBinaryFromReader);
-      msg.setArbitratorNodeAddress(value);
+      msg.setArbitratorSigner(value);
       break;
     case 1002:
       var value = /** @type {string} */ (reader.readString());
@@ -32289,7 +32289,7 @@ proto.io.bisq.protobuffer.OfferPayload.serializeBinaryToWriter = function(messag
       f
     );
   }
-  f = message.getArbitratorNodeAddress();
+  f = message.getArbitratorSigner();
   if (f != null) {
     writer.writeMessage(
       1001,
@@ -33034,10 +33034,10 @@ proto.io.bisq.protobuffer.OfferPayload.prototype.setProtocolVersion = function(v
 
 
 /**
- * optional NodeAddress arbitrator_node_address = 1001;
+ * optional NodeAddress arbitrator_signer = 1001;
  * @return {?proto.io.bisq.protobuffer.NodeAddress}
  */
-proto.io.bisq.protobuffer.OfferPayload.prototype.getArbitratorNodeAddress = function() {
+proto.io.bisq.protobuffer.OfferPayload.prototype.getArbitratorSigner = function() {
   return /** @type{?proto.io.bisq.protobuffer.NodeAddress} */ (
     jspb.Message.getWrapperField(this, proto.io.bisq.protobuffer.NodeAddress, 1001));
 };
@@ -33047,7 +33047,7 @@ proto.io.bisq.protobuffer.OfferPayload.prototype.getArbitratorNodeAddress = func
  * @param {?proto.io.bisq.protobuffer.NodeAddress|undefined} value
  * @return {!proto.io.bisq.protobuffer.OfferPayload} returns this
 */
-proto.io.bisq.protobuffer.OfferPayload.prototype.setArbitratorNodeAddress = function(value) {
+proto.io.bisq.protobuffer.OfferPayload.prototype.setArbitratorSigner = function(value) {
   return jspb.Message.setWrapperField(this, 1001, value);
 };
 
@@ -33056,8 +33056,8 @@ proto.io.bisq.protobuffer.OfferPayload.prototype.setArbitratorNodeAddress = func
  * Clears the message field making it undefined.
  * @return {!proto.io.bisq.protobuffer.OfferPayload} returns this
  */
-proto.io.bisq.protobuffer.OfferPayload.prototype.clearArbitratorNodeAddress = function() {
-  return this.setArbitratorNodeAddress(undefined);
+proto.io.bisq.protobuffer.OfferPayload.prototype.clearArbitratorSigner = function() {
+  return this.setArbitratorSigner(undefined);
 };
 
 
@@ -33065,7 +33065,7 @@ proto.io.bisq.protobuffer.OfferPayload.prototype.clearArbitratorNodeAddress = fu
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.io.bisq.protobuffer.OfferPayload.prototype.hasArbitratorNodeAddress = function() {
+proto.io.bisq.protobuffer.OfferPayload.prototype.hasArbitratorSigner = function() {
   return jspb.Message.getField(this, 1001) != null;
 };
 
@@ -35281,6 +35281,7 @@ proto.io.bisq.protobuffer.DisputeResult.toObject = function(includeInstance, msg
     screenCast: jspb.Message.getBooleanFieldWithDefault(msg, 7, false),
     summaryNotes: jspb.Message.getFieldWithDefault(msg, 8, ""),
     chatMessage: (f = msg.getChatMessage()) && proto.io.bisq.protobuffer.ChatMessage.toObject(includeInstance, f),
+    arbitratorSignature: msg.getArbitratorSignature_asB64(),
     buyerPayoutAmount: jspb.Message.getFieldWithDefault(msg, 11, 0),
     sellerPayoutAmount: jspb.Message.getFieldWithDefault(msg, 12, 0),
     arbitratorPubKey: msg.getArbitratorPubKey_asB64(),
@@ -35360,6 +35361,10 @@ proto.io.bisq.protobuffer.DisputeResult.deserializeBinaryFromReader = function(m
       var value = new proto.io.bisq.protobuffer.ChatMessage;
       reader.readMessage(value,proto.io.bisq.protobuffer.ChatMessage.deserializeBinaryFromReader);
       msg.setChatMessage(value);
+      break;
+    case 10:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setArbitratorSignature(value);
       break;
     case 11:
       var value = /** @type {number} */ (reader.readInt64());
@@ -35480,6 +35485,13 @@ proto.io.bisq.protobuffer.DisputeResult.serializeBinaryToWriter = function(messa
       9,
       f,
       proto.io.bisq.protobuffer.ChatMessage.serializeBinaryToWriter
+    );
+  }
+  f = message.getArbitratorSignature_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
+      10,
+      f
     );
   }
   f = message.getBuyerPayoutAmount();
@@ -35740,6 +35752,48 @@ proto.io.bisq.protobuffer.DisputeResult.prototype.clearChatMessage = function() 
  */
 proto.io.bisq.protobuffer.DisputeResult.prototype.hasChatMessage = function() {
   return jspb.Message.getField(this, 9) != null;
+};
+
+
+/**
+ * optional bytes arbitrator_signature = 10;
+ * @return {!(string|Uint8Array)}
+ */
+proto.io.bisq.protobuffer.DisputeResult.prototype.getArbitratorSignature = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 10, ""));
+};
+
+
+/**
+ * optional bytes arbitrator_signature = 10;
+ * This is a type-conversion wrapper around `getArbitratorSignature()`
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.DisputeResult.prototype.getArbitratorSignature_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getArbitratorSignature()));
+};
+
+
+/**
+ * optional bytes arbitrator_signature = 10;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getArbitratorSignature()`
+ * @return {!Uint8Array}
+ */
+proto.io.bisq.protobuffer.DisputeResult.prototype.getArbitratorSignature_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getArbitratorSignature()));
+};
+
+
+/**
+ * @param {!(string|Uint8Array)} value
+ * @return {!proto.io.bisq.protobuffer.DisputeResult} returns this
+ */
+proto.io.bisq.protobuffer.DisputeResult.prototype.setArbitratorSignature = function(value) {
+  return jspb.Message.setProto3BytesField(this, 10, value);
 };
 
 
@@ -50420,13 +50474,6 @@ proto.io.bisq.protobuffer.SignedOffer.prototype.setArbitratorSignature = functio
 
 
 
-/**
- * List of repeated fields within this message type.
- * @private {!Array<number>}
- * @const
- */
-proto.io.bisq.protobuffer.OpenOffer.repeatedFields_ = [5];
-
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -50460,9 +50507,11 @@ proto.io.bisq.protobuffer.OpenOffer.toObject = function(includeInstance, msg) {
   var f, obj = {
     offer: (f = msg.getOffer()) && proto.io.bisq.protobuffer.Offer.toObject(includeInstance, f),
     state: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    arbitratorNodeAddress: (f = msg.getArbitratorNodeAddress()) && proto.io.bisq.protobuffer.NodeAddress.toObject(includeInstance, f),
+    backupArbitrator: (f = msg.getBackupArbitrator()) && proto.io.bisq.protobuffer.NodeAddress.toObject(includeInstance, f),
     triggerPrice: jspb.Message.getFieldWithDefault(msg, 4, 0),
-    frozenKeyImagesList: (f = jspb.Message.getRepeatedField(msg, 5)) == null ? undefined : f
+    reserveTxHash: jspb.Message.getFieldWithDefault(msg, 5, ""),
+    reserveTxHex: jspb.Message.getFieldWithDefault(msg, 6, ""),
+    reserveTxKey: jspb.Message.getFieldWithDefault(msg, 7, "")
   };
 
   if (includeInstance) {
@@ -50511,7 +50560,7 @@ proto.io.bisq.protobuffer.OpenOffer.deserializeBinaryFromReader = function(msg, 
     case 3:
       var value = new proto.io.bisq.protobuffer.NodeAddress;
       reader.readMessage(value,proto.io.bisq.protobuffer.NodeAddress.deserializeBinaryFromReader);
-      msg.setArbitratorNodeAddress(value);
+      msg.setBackupArbitrator(value);
       break;
     case 4:
       var value = /** @type {number} */ (reader.readInt64());
@@ -50519,7 +50568,15 @@ proto.io.bisq.protobuffer.OpenOffer.deserializeBinaryFromReader = function(msg, 
       break;
     case 5:
       var value = /** @type {string} */ (reader.readString());
-      msg.addFrozenKeyImages(value);
+      msg.setReserveTxHash(value);
+      break;
+    case 6:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setReserveTxHex(value);
+      break;
+    case 7:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setReserveTxKey(value);
       break;
     default:
       reader.skipField();
@@ -50565,7 +50622,7 @@ proto.io.bisq.protobuffer.OpenOffer.serializeBinaryToWriter = function(message, 
       f
     );
   }
-  f = message.getArbitratorNodeAddress();
+  f = message.getBackupArbitrator();
   if (f != null) {
     writer.writeMessage(
       3,
@@ -50580,10 +50637,24 @@ proto.io.bisq.protobuffer.OpenOffer.serializeBinaryToWriter = function(message, 
       f
     );
   }
-  f = message.getFrozenKeyImagesList();
+  f = message.getReserveTxHash();
   if (f.length > 0) {
-    writer.writeRepeatedString(
+    writer.writeString(
       5,
+      f
+    );
+  }
+  f = message.getReserveTxHex();
+  if (f.length > 0) {
+    writer.writeString(
+      6,
+      f
+    );
+  }
+  f = message.getReserveTxKey();
+  if (f.length > 0) {
+    writer.writeString(
+      7,
       f
     );
   }
@@ -50658,10 +50729,10 @@ proto.io.bisq.protobuffer.OpenOffer.prototype.setState = function(value) {
 
 
 /**
- * optional NodeAddress arbitrator_node_address = 3;
+ * optional NodeAddress backup_arbitrator = 3;
  * @return {?proto.io.bisq.protobuffer.NodeAddress}
  */
-proto.io.bisq.protobuffer.OpenOffer.prototype.getArbitratorNodeAddress = function() {
+proto.io.bisq.protobuffer.OpenOffer.prototype.getBackupArbitrator = function() {
   return /** @type{?proto.io.bisq.protobuffer.NodeAddress} */ (
     jspb.Message.getWrapperField(this, proto.io.bisq.protobuffer.NodeAddress, 3));
 };
@@ -50671,7 +50742,7 @@ proto.io.bisq.protobuffer.OpenOffer.prototype.getArbitratorNodeAddress = functio
  * @param {?proto.io.bisq.protobuffer.NodeAddress|undefined} value
  * @return {!proto.io.bisq.protobuffer.OpenOffer} returns this
 */
-proto.io.bisq.protobuffer.OpenOffer.prototype.setArbitratorNodeAddress = function(value) {
+proto.io.bisq.protobuffer.OpenOffer.prototype.setBackupArbitrator = function(value) {
   return jspb.Message.setWrapperField(this, 3, value);
 };
 
@@ -50680,8 +50751,8 @@ proto.io.bisq.protobuffer.OpenOffer.prototype.setArbitratorNodeAddress = functio
  * Clears the message field making it undefined.
  * @return {!proto.io.bisq.protobuffer.OpenOffer} returns this
  */
-proto.io.bisq.protobuffer.OpenOffer.prototype.clearArbitratorNodeAddress = function() {
-  return this.setArbitratorNodeAddress(undefined);
+proto.io.bisq.protobuffer.OpenOffer.prototype.clearBackupArbitrator = function() {
+  return this.setBackupArbitrator(undefined);
 };
 
 
@@ -50689,7 +50760,7 @@ proto.io.bisq.protobuffer.OpenOffer.prototype.clearArbitratorNodeAddress = funct
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.io.bisq.protobuffer.OpenOffer.prototype.hasArbitratorNodeAddress = function() {
+proto.io.bisq.protobuffer.OpenOffer.prototype.hasBackupArbitrator = function() {
   return jspb.Message.getField(this, 3) != null;
 };
 
@@ -50713,39 +50784,56 @@ proto.io.bisq.protobuffer.OpenOffer.prototype.setTriggerPrice = function(value) 
 
 
 /**
- * repeated string frozen_key_images = 5;
- * @return {!Array<string>}
+ * optional string reserve_tx_hash = 5;
+ * @return {string}
  */
-proto.io.bisq.protobuffer.OpenOffer.prototype.getFrozenKeyImagesList = function() {
-  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 5));
-};
-
-
-/**
- * @param {!Array<string>} value
- * @return {!proto.io.bisq.protobuffer.OpenOffer} returns this
- */
-proto.io.bisq.protobuffer.OpenOffer.prototype.setFrozenKeyImagesList = function(value) {
-  return jspb.Message.setField(this, 5, value || []);
+proto.io.bisq.protobuffer.OpenOffer.prototype.getReserveTxHash = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
 };
 
 
 /**
  * @param {string} value
- * @param {number=} opt_index
  * @return {!proto.io.bisq.protobuffer.OpenOffer} returns this
  */
-proto.io.bisq.protobuffer.OpenOffer.prototype.addFrozenKeyImages = function(value, opt_index) {
-  return jspb.Message.addToRepeatedField(this, 5, value, opt_index);
+proto.io.bisq.protobuffer.OpenOffer.prototype.setReserveTxHash = function(value) {
+  return jspb.Message.setProto3StringField(this, 5, value);
 };
 
 
 /**
- * Clears the list making it empty but non-null.
+ * optional string reserve_tx_hex = 6;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.OpenOffer.prototype.getReserveTxHex = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+};
+
+
+/**
+ * @param {string} value
  * @return {!proto.io.bisq.protobuffer.OpenOffer} returns this
  */
-proto.io.bisq.protobuffer.OpenOffer.prototype.clearFrozenKeyImagesList = function() {
-  return this.setFrozenKeyImagesList([]);
+proto.io.bisq.protobuffer.OpenOffer.prototype.setReserveTxHex = function(value) {
+  return jspb.Message.setProto3StringField(this, 6, value);
+};
+
+
+/**
+ * optional string reserve_tx_key = 7;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.OpenOffer.prototype.getReserveTxKey = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.OpenOffer} returns this
+ */
+proto.io.bisq.protobuffer.OpenOffer.prototype.setReserveTxKey = function(value) {
+  return jspb.Message.setProto3StringField(this, 7, value);
 };
 
 
@@ -53693,7 +53781,7 @@ proto.io.bisq.protobuffer.ArbitratorTrade.prototype.hasTrade = function() {
  * @private {!Array<number>}
  * @const
  */
-proto.io.bisq.protobuffer.ProcessModel.repeatedFields_ = [10,1008];
+proto.io.bisq.protobuffer.ProcessModel.repeatedFields_ = [10];
 
 
 
@@ -53743,18 +53831,16 @@ proto.io.bisq.protobuffer.ProcessModel.toObject = function(includeInstance, msg)
     buyerPayoutAmountFromMediation: jspb.Message.getFieldWithDefault(msg, 19, 0),
     sellerPayoutAmountFromMediation: jspb.Message.getFieldWithDefault(msg, 20, 0),
     makerSignature: jspb.Message.getFieldWithDefault(msg, 1001, ""),
-    arbitratorNodeAddress: (f = msg.getArbitratorNodeAddress()) && proto.io.bisq.protobuffer.NodeAddress.toObject(includeInstance, f),
+    backupArbitrator: (f = msg.getBackupArbitrator()) && proto.io.bisq.protobuffer.NodeAddress.toObject(includeInstance, f),
     maker: (f = msg.getMaker()) && proto.io.bisq.protobuffer.TradingPeer.toObject(includeInstance, f),
     taker: (f = msg.getTaker()) && proto.io.bisq.protobuffer.TradingPeer.toObject(includeInstance, f),
     arbitrator: (f = msg.getArbitrator()) && proto.io.bisq.protobuffer.TradingPeer.toObject(includeInstance, f),
     tempTradingPeerNodeAddress: (f = msg.getTempTradingPeerNodeAddress()) && proto.io.bisq.protobuffer.NodeAddress.toObject(includeInstance, f),
-    reserveTxHash: jspb.Message.getFieldWithDefault(msg, 1007, ""),
-    frozenKeyImagesList: (f = jspb.Message.getRepeatedField(msg, 1008)) == null ? undefined : f,
-    preparedMultisigHex: jspb.Message.getFieldWithDefault(msg, 1009, ""),
-    madeMultisigHex: jspb.Message.getFieldWithDefault(msg, 1010, ""),
-    multisigSetupComplete: jspb.Message.getBooleanFieldWithDefault(msg, 1011, false),
-    makerReadyToFundMultisig: jspb.Message.getBooleanFieldWithDefault(msg, 1012, false),
-    multisigDepositInitiated: jspb.Message.getBooleanFieldWithDefault(msg, 1013, false)
+    preparedMultisigHex: jspb.Message.getFieldWithDefault(msg, 1007, ""),
+    madeMultisigHex: jspb.Message.getFieldWithDefault(msg, 1008, ""),
+    multisigSetupComplete: jspb.Message.getBooleanFieldWithDefault(msg, 1009, false),
+    makerReadyToFundMultisig: jspb.Message.getBooleanFieldWithDefault(msg, 1010, false),
+    multisigDepositInitiated: jspb.Message.getBooleanFieldWithDefault(msg, 1011, false)
   };
 
   if (includeInstance) {
@@ -53860,7 +53946,7 @@ proto.io.bisq.protobuffer.ProcessModel.deserializeBinaryFromReader = function(ms
     case 1002:
       var value = new proto.io.bisq.protobuffer.NodeAddress;
       reader.readMessage(value,proto.io.bisq.protobuffer.NodeAddress.deserializeBinaryFromReader);
-      msg.setArbitratorNodeAddress(value);
+      msg.setBackupArbitrator(value);
       break;
     case 1003:
       var value = new proto.io.bisq.protobuffer.TradingPeer;
@@ -53884,29 +53970,21 @@ proto.io.bisq.protobuffer.ProcessModel.deserializeBinaryFromReader = function(ms
       break;
     case 1007:
       var value = /** @type {string} */ (reader.readString());
-      msg.setReserveTxHash(value);
+      msg.setPreparedMultisigHex(value);
       break;
     case 1008:
       var value = /** @type {string} */ (reader.readString());
-      msg.addFrozenKeyImages(value);
-      break;
-    case 1009:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setPreparedMultisigHex(value);
-      break;
-    case 1010:
-      var value = /** @type {string} */ (reader.readString());
       msg.setMadeMultisigHex(value);
       break;
-    case 1011:
+    case 1009:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setMultisigSetupComplete(value);
       break;
-    case 1012:
+    case 1010:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setMakerReadyToFundMultisig(value);
       break;
-    case 1013:
+    case 1011:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setMultisigDepositInitiated(value);
       break;
@@ -54053,7 +54131,7 @@ proto.io.bisq.protobuffer.ProcessModel.serializeBinaryToWriter = function(messag
       f
     );
   }
-  f = message.getArbitratorNodeAddress();
+  f = message.getBackupArbitrator();
   if (f != null) {
     writer.writeMessage(
       1002,
@@ -54093,52 +54171,38 @@ proto.io.bisq.protobuffer.ProcessModel.serializeBinaryToWriter = function(messag
       proto.io.bisq.protobuffer.NodeAddress.serializeBinaryToWriter
     );
   }
-  f = message.getReserveTxHash();
+  f = message.getPreparedMultisigHex();
   if (f.length > 0) {
     writer.writeString(
       1007,
       f
     );
   }
-  f = message.getFrozenKeyImagesList();
-  if (f.length > 0) {
-    writer.writeRepeatedString(
-      1008,
-      f
-    );
-  }
-  f = message.getPreparedMultisigHex();
-  if (f.length > 0) {
-    writer.writeString(
-      1009,
-      f
-    );
-  }
   f = message.getMadeMultisigHex();
   if (f.length > 0) {
     writer.writeString(
-      1010,
+      1008,
       f
     );
   }
   f = message.getMultisigSetupComplete();
   if (f) {
     writer.writeBool(
-      1011,
+      1009,
       f
     );
   }
   f = message.getMakerReadyToFundMultisig();
   if (f) {
     writer.writeBool(
-      1012,
+      1010,
       f
     );
   }
   f = message.getMultisigDepositInitiated();
   if (f) {
     writer.writeBool(
-      1013,
+      1011,
       f
     );
   }
@@ -54545,10 +54609,10 @@ proto.io.bisq.protobuffer.ProcessModel.prototype.setMakerSignature = function(va
 
 
 /**
- * optional NodeAddress arbitrator_node_address = 1002;
+ * optional NodeAddress backup_arbitrator = 1002;
  * @return {?proto.io.bisq.protobuffer.NodeAddress}
  */
-proto.io.bisq.protobuffer.ProcessModel.prototype.getArbitratorNodeAddress = function() {
+proto.io.bisq.protobuffer.ProcessModel.prototype.getBackupArbitrator = function() {
   return /** @type{?proto.io.bisq.protobuffer.NodeAddress} */ (
     jspb.Message.getWrapperField(this, proto.io.bisq.protobuffer.NodeAddress, 1002));
 };
@@ -54558,7 +54622,7 @@ proto.io.bisq.protobuffer.ProcessModel.prototype.getArbitratorNodeAddress = func
  * @param {?proto.io.bisq.protobuffer.NodeAddress|undefined} value
  * @return {!proto.io.bisq.protobuffer.ProcessModel} returns this
 */
-proto.io.bisq.protobuffer.ProcessModel.prototype.setArbitratorNodeAddress = function(value) {
+proto.io.bisq.protobuffer.ProcessModel.prototype.setBackupArbitrator = function(value) {
   return jspb.Message.setWrapperField(this, 1002, value);
 };
 
@@ -54567,8 +54631,8 @@ proto.io.bisq.protobuffer.ProcessModel.prototype.setArbitratorNodeAddress = func
  * Clears the message field making it undefined.
  * @return {!proto.io.bisq.protobuffer.ProcessModel} returns this
  */
-proto.io.bisq.protobuffer.ProcessModel.prototype.clearArbitratorNodeAddress = function() {
-  return this.setArbitratorNodeAddress(undefined);
+proto.io.bisq.protobuffer.ProcessModel.prototype.clearBackupArbitrator = function() {
+  return this.setBackupArbitrator(undefined);
 };
 
 
@@ -54576,7 +54640,7 @@ proto.io.bisq.protobuffer.ProcessModel.prototype.clearArbitratorNodeAddress = fu
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.io.bisq.protobuffer.ProcessModel.prototype.hasArbitratorNodeAddress = function() {
+proto.io.bisq.protobuffer.ProcessModel.prototype.hasBackupArbitrator = function() {
   return jspb.Message.getField(this, 1002) != null;
 };
 
@@ -54730,10 +54794,10 @@ proto.io.bisq.protobuffer.ProcessModel.prototype.hasTempTradingPeerNodeAddress =
 
 
 /**
- * optional string reserve_tx_hash = 1007;
+ * optional string prepared_multisig_hex = 1007;
  * @return {string}
  */
-proto.io.bisq.protobuffer.ProcessModel.prototype.getReserveTxHash = function() {
+proto.io.bisq.protobuffer.ProcessModel.prototype.getPreparedMultisigHex = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1007, ""));
 };
 
@@ -54742,72 +54806,17 @@ proto.io.bisq.protobuffer.ProcessModel.prototype.getReserveTxHash = function() {
  * @param {string} value
  * @return {!proto.io.bisq.protobuffer.ProcessModel} returns this
  */
-proto.io.bisq.protobuffer.ProcessModel.prototype.setReserveTxHash = function(value) {
+proto.io.bisq.protobuffer.ProcessModel.prototype.setPreparedMultisigHex = function(value) {
   return jspb.Message.setProto3StringField(this, 1007, value);
 };
 
 
 /**
- * repeated string frozen_key_images = 1008;
- * @return {!Array<string>}
- */
-proto.io.bisq.protobuffer.ProcessModel.prototype.getFrozenKeyImagesList = function() {
-  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 1008));
-};
-
-
-/**
- * @param {!Array<string>} value
- * @return {!proto.io.bisq.protobuffer.ProcessModel} returns this
- */
-proto.io.bisq.protobuffer.ProcessModel.prototype.setFrozenKeyImagesList = function(value) {
-  return jspb.Message.setField(this, 1008, value || []);
-};
-
-
-/**
- * @param {string} value
- * @param {number=} opt_index
- * @return {!proto.io.bisq.protobuffer.ProcessModel} returns this
- */
-proto.io.bisq.protobuffer.ProcessModel.prototype.addFrozenKeyImages = function(value, opt_index) {
-  return jspb.Message.addToRepeatedField(this, 1008, value, opt_index);
-};
-
-
-/**
- * Clears the list making it empty but non-null.
- * @return {!proto.io.bisq.protobuffer.ProcessModel} returns this
- */
-proto.io.bisq.protobuffer.ProcessModel.prototype.clearFrozenKeyImagesList = function() {
-  return this.setFrozenKeyImagesList([]);
-};
-
-
-/**
- * optional string prepared_multisig_hex = 1009;
- * @return {string}
- */
-proto.io.bisq.protobuffer.ProcessModel.prototype.getPreparedMultisigHex = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1009, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.io.bisq.protobuffer.ProcessModel} returns this
- */
-proto.io.bisq.protobuffer.ProcessModel.prototype.setPreparedMultisigHex = function(value) {
-  return jspb.Message.setProto3StringField(this, 1009, value);
-};
-
-
-/**
- * optional string made_multisig_hex = 1010;
+ * optional string made_multisig_hex = 1008;
  * @return {string}
  */
 proto.io.bisq.protobuffer.ProcessModel.prototype.getMadeMultisigHex = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1010, ""));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1008, ""));
 };
 
 
@@ -54816,16 +54825,16 @@ proto.io.bisq.protobuffer.ProcessModel.prototype.getMadeMultisigHex = function()
  * @return {!proto.io.bisq.protobuffer.ProcessModel} returns this
  */
 proto.io.bisq.protobuffer.ProcessModel.prototype.setMadeMultisigHex = function(value) {
-  return jspb.Message.setProto3StringField(this, 1010, value);
+  return jspb.Message.setProto3StringField(this, 1008, value);
 };
 
 
 /**
- * optional bool multisig_setup_complete = 1011;
+ * optional bool multisig_setup_complete = 1009;
  * @return {boolean}
  */
 proto.io.bisq.protobuffer.ProcessModel.prototype.getMultisigSetupComplete = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 1011, false));
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 1009, false));
 };
 
 
@@ -54834,16 +54843,16 @@ proto.io.bisq.protobuffer.ProcessModel.prototype.getMultisigSetupComplete = func
  * @return {!proto.io.bisq.protobuffer.ProcessModel} returns this
  */
 proto.io.bisq.protobuffer.ProcessModel.prototype.setMultisigSetupComplete = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 1011, value);
+  return jspb.Message.setProto3BooleanField(this, 1009, value);
 };
 
 
 /**
- * optional bool maker_ready_to_fund_multisig = 1012;
+ * optional bool maker_ready_to_fund_multisig = 1010;
  * @return {boolean}
  */
 proto.io.bisq.protobuffer.ProcessModel.prototype.getMakerReadyToFundMultisig = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 1012, false));
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 1010, false));
 };
 
 
@@ -54852,16 +54861,16 @@ proto.io.bisq.protobuffer.ProcessModel.prototype.getMakerReadyToFundMultisig = f
  * @return {!proto.io.bisq.protobuffer.ProcessModel} returns this
  */
 proto.io.bisq.protobuffer.ProcessModel.prototype.setMakerReadyToFundMultisig = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 1012, value);
+  return jspb.Message.setProto3BooleanField(this, 1010, value);
 };
 
 
 /**
- * optional bool multisig_deposit_initiated = 1013;
+ * optional bool multisig_deposit_initiated = 1011;
  * @return {boolean}
  */
 proto.io.bisq.protobuffer.ProcessModel.prototype.getMultisigDepositInitiated = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 1013, false));
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 1011, false));
 };
 
 
@@ -54870,7 +54879,7 @@ proto.io.bisq.protobuffer.ProcessModel.prototype.getMultisigDepositInitiated = f
  * @return {!proto.io.bisq.protobuffer.ProcessModel} returns this
  */
 proto.io.bisq.protobuffer.ProcessModel.prototype.setMultisigDepositInitiated = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 1013, value);
+  return jspb.Message.setProto3BooleanField(this, 1011, value);
 };
 
 
@@ -54880,7 +54889,7 @@ proto.io.bisq.protobuffer.ProcessModel.prototype.setMultisigDepositInitiated = f
  * @private {!Array<number>}
  * @const
  */
-proto.io.bisq.protobuffer.TradingPeer.repeatedFields_ = [12];
+proto.io.bisq.protobuffer.TradingPeer.repeatedFields_ = [12,1004];
 
 
 
@@ -54935,12 +54944,13 @@ proto.io.bisq.protobuffer.TradingPeer.toObject = function(includeInstance, msg) 
     reserveTxHash: jspb.Message.getFieldWithDefault(msg, 1001, ""),
     reserveTxHex: jspb.Message.getFieldWithDefault(msg, 1002, ""),
     reserveTxKey: jspb.Message.getFieldWithDefault(msg, 1003, ""),
-    preparedMultisigHex: jspb.Message.getFieldWithDefault(msg, 1004, ""),
-    madeMultisigHex: jspb.Message.getFieldWithDefault(msg, 1005, ""),
-    signedPayoutTxHex: jspb.Message.getFieldWithDefault(msg, 1006, ""),
-    depositTxHash: jspb.Message.getFieldWithDefault(msg, 1007, ""),
-    depositTxHex: jspb.Message.getFieldWithDefault(msg, 1008, ""),
-    depositTxKey: jspb.Message.getFieldWithDefault(msg, 1009, "")
+    reserveTxKeyImagesList: (f = jspb.Message.getRepeatedField(msg, 1004)) == null ? undefined : f,
+    preparedMultisigHex: jspb.Message.getFieldWithDefault(msg, 1005, ""),
+    madeMultisigHex: jspb.Message.getFieldWithDefault(msg, 1006, ""),
+    signedPayoutTxHex: jspb.Message.getFieldWithDefault(msg, 1007, ""),
+    depositTxHash: jspb.Message.getFieldWithDefault(msg, 1008, ""),
+    depositTxHex: jspb.Message.getFieldWithDefault(msg, 1009, ""),
+    depositTxKey: jspb.Message.getFieldWithDefault(msg, 1010, "")
   };
 
   if (includeInstance) {
@@ -55066,25 +55076,29 @@ proto.io.bisq.protobuffer.TradingPeer.deserializeBinaryFromReader = function(msg
       break;
     case 1004:
       var value = /** @type {string} */ (reader.readString());
-      msg.setPreparedMultisigHex(value);
+      msg.addReserveTxKeyImages(value);
       break;
     case 1005:
       var value = /** @type {string} */ (reader.readString());
-      msg.setMadeMultisigHex(value);
+      msg.setPreparedMultisigHex(value);
       break;
     case 1006:
       var value = /** @type {string} */ (reader.readString());
-      msg.setSignedPayoutTxHex(value);
+      msg.setMadeMultisigHex(value);
       break;
     case 1007:
       var value = /** @type {string} */ (reader.readString());
-      msg.setDepositTxHash(value);
+      msg.setSignedPayoutTxHex(value);
       break;
     case 1008:
       var value = /** @type {string} */ (reader.readString());
-      msg.setDepositTxHex(value);
+      msg.setDepositTxHash(value);
       break;
     case 1009:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setDepositTxHex(value);
+      break;
+    case 1010:
       var value = /** @type {string} */ (reader.readString());
       msg.setDepositTxKey(value);
       break;
@@ -55267,45 +55281,52 @@ proto.io.bisq.protobuffer.TradingPeer.serializeBinaryToWriter = function(message
       f
     );
   }
-  f = message.getPreparedMultisigHex();
+  f = message.getReserveTxKeyImagesList();
   if (f.length > 0) {
-    writer.writeString(
+    writer.writeRepeatedString(
       1004,
       f
     );
   }
-  f = message.getMadeMultisigHex();
+  f = message.getPreparedMultisigHex();
   if (f.length > 0) {
     writer.writeString(
       1005,
       f
     );
   }
-  f = message.getSignedPayoutTxHex();
+  f = message.getMadeMultisigHex();
   if (f.length > 0) {
     writer.writeString(
       1006,
       f
     );
   }
-  f = message.getDepositTxHash();
+  f = message.getSignedPayoutTxHex();
   if (f.length > 0) {
     writer.writeString(
       1007,
       f
     );
   }
-  f = message.getDepositTxHex();
+  f = message.getDepositTxHash();
   if (f.length > 0) {
     writer.writeString(
       1008,
       f
     );
   }
-  f = message.getDepositTxKey();
+  f = message.getDepositTxHex();
   if (f.length > 0) {
     writer.writeString(
       1009,
+      f
+    );
+  }
+  f = message.getDepositTxKey();
+  if (f.length > 0) {
+    writer.writeString(
+      1010,
       f
     );
   }
@@ -55893,28 +55914,47 @@ proto.io.bisq.protobuffer.TradingPeer.prototype.setReserveTxKey = function(value
 
 
 /**
- * optional string prepared_multisig_hex = 1004;
- * @return {string}
+ * repeated string reserve_tx_key_images = 1004;
+ * @return {!Array<string>}
  */
-proto.io.bisq.protobuffer.TradingPeer.prototype.getPreparedMultisigHex = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1004, ""));
+proto.io.bisq.protobuffer.TradingPeer.prototype.getReserveTxKeyImagesList = function() {
+  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 1004));
+};
+
+
+/**
+ * @param {!Array<string>} value
+ * @return {!proto.io.bisq.protobuffer.TradingPeer} returns this
+ */
+proto.io.bisq.protobuffer.TradingPeer.prototype.setReserveTxKeyImagesList = function(value) {
+  return jspb.Message.setField(this, 1004, value || []);
 };
 
 
 /**
  * @param {string} value
+ * @param {number=} opt_index
  * @return {!proto.io.bisq.protobuffer.TradingPeer} returns this
  */
-proto.io.bisq.protobuffer.TradingPeer.prototype.setPreparedMultisigHex = function(value) {
-  return jspb.Message.setProto3StringField(this, 1004, value);
+proto.io.bisq.protobuffer.TradingPeer.prototype.addReserveTxKeyImages = function(value, opt_index) {
+  return jspb.Message.addToRepeatedField(this, 1004, value, opt_index);
 };
 
 
 /**
- * optional string made_multisig_hex = 1005;
+ * Clears the list making it empty but non-null.
+ * @return {!proto.io.bisq.protobuffer.TradingPeer} returns this
+ */
+proto.io.bisq.protobuffer.TradingPeer.prototype.clearReserveTxKeyImagesList = function() {
+  return this.setReserveTxKeyImagesList([]);
+};
+
+
+/**
+ * optional string prepared_multisig_hex = 1005;
  * @return {string}
  */
-proto.io.bisq.protobuffer.TradingPeer.prototype.getMadeMultisigHex = function() {
+proto.io.bisq.protobuffer.TradingPeer.prototype.getPreparedMultisigHex = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1005, ""));
 };
 
@@ -55923,16 +55963,16 @@ proto.io.bisq.protobuffer.TradingPeer.prototype.getMadeMultisigHex = function() 
  * @param {string} value
  * @return {!proto.io.bisq.protobuffer.TradingPeer} returns this
  */
-proto.io.bisq.protobuffer.TradingPeer.prototype.setMadeMultisigHex = function(value) {
+proto.io.bisq.protobuffer.TradingPeer.prototype.setPreparedMultisigHex = function(value) {
   return jspb.Message.setProto3StringField(this, 1005, value);
 };
 
 
 /**
- * optional string signed_payout_tx_hex = 1006;
+ * optional string made_multisig_hex = 1006;
  * @return {string}
  */
-proto.io.bisq.protobuffer.TradingPeer.prototype.getSignedPayoutTxHex = function() {
+proto.io.bisq.protobuffer.TradingPeer.prototype.getMadeMultisigHex = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1006, ""));
 };
 
@@ -55941,16 +55981,16 @@ proto.io.bisq.protobuffer.TradingPeer.prototype.getSignedPayoutTxHex = function(
  * @param {string} value
  * @return {!proto.io.bisq.protobuffer.TradingPeer} returns this
  */
-proto.io.bisq.protobuffer.TradingPeer.prototype.setSignedPayoutTxHex = function(value) {
+proto.io.bisq.protobuffer.TradingPeer.prototype.setMadeMultisigHex = function(value) {
   return jspb.Message.setProto3StringField(this, 1006, value);
 };
 
 
 /**
- * optional string deposit_tx_hash = 1007;
+ * optional string signed_payout_tx_hex = 1007;
  * @return {string}
  */
-proto.io.bisq.protobuffer.TradingPeer.prototype.getDepositTxHash = function() {
+proto.io.bisq.protobuffer.TradingPeer.prototype.getSignedPayoutTxHex = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1007, ""));
 };
 
@@ -55959,16 +55999,16 @@ proto.io.bisq.protobuffer.TradingPeer.prototype.getDepositTxHash = function() {
  * @param {string} value
  * @return {!proto.io.bisq.protobuffer.TradingPeer} returns this
  */
-proto.io.bisq.protobuffer.TradingPeer.prototype.setDepositTxHash = function(value) {
+proto.io.bisq.protobuffer.TradingPeer.prototype.setSignedPayoutTxHex = function(value) {
   return jspb.Message.setProto3StringField(this, 1007, value);
 };
 
 
 /**
- * optional string deposit_tx_hex = 1008;
+ * optional string deposit_tx_hash = 1008;
  * @return {string}
  */
-proto.io.bisq.protobuffer.TradingPeer.prototype.getDepositTxHex = function() {
+proto.io.bisq.protobuffer.TradingPeer.prototype.getDepositTxHash = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1008, ""));
 };
 
@@ -55977,16 +56017,16 @@ proto.io.bisq.protobuffer.TradingPeer.prototype.getDepositTxHex = function() {
  * @param {string} value
  * @return {!proto.io.bisq.protobuffer.TradingPeer} returns this
  */
-proto.io.bisq.protobuffer.TradingPeer.prototype.setDepositTxHex = function(value) {
+proto.io.bisq.protobuffer.TradingPeer.prototype.setDepositTxHash = function(value) {
   return jspb.Message.setProto3StringField(this, 1008, value);
 };
 
 
 /**
- * optional string deposit_tx_key = 1009;
+ * optional string deposit_tx_hex = 1009;
  * @return {string}
  */
-proto.io.bisq.protobuffer.TradingPeer.prototype.getDepositTxKey = function() {
+proto.io.bisq.protobuffer.TradingPeer.prototype.getDepositTxHex = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1009, ""));
 };
 
@@ -55995,8 +56035,26 @@ proto.io.bisq.protobuffer.TradingPeer.prototype.getDepositTxKey = function() {
  * @param {string} value
  * @return {!proto.io.bisq.protobuffer.TradingPeer} returns this
  */
-proto.io.bisq.protobuffer.TradingPeer.prototype.setDepositTxKey = function(value) {
+proto.io.bisq.protobuffer.TradingPeer.prototype.setDepositTxHex = function(value) {
   return jspb.Message.setProto3StringField(this, 1009, value);
+};
+
+
+/**
+ * optional string deposit_tx_key = 1010;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.TradingPeer.prototype.getDepositTxKey = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1010, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.TradingPeer} returns this
+ */
+proto.io.bisq.protobuffer.TradingPeer.prototype.setDepositTxKey = function(value) {
+  return jspb.Message.setProto3StringField(this, 1010, value);
 };
 
 

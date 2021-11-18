@@ -824,10 +824,10 @@ export class OfferAvailabilityResponse extends jspb.Message {
   getMakerSignature(): string;
   setMakerSignature(value: string): OfferAvailabilityResponse;
 
-  getArbitratorNodeAddress(): NodeAddress | undefined;
-  setArbitratorNodeAddress(value?: NodeAddress): OfferAvailabilityResponse;
-  hasArbitratorNodeAddress(): boolean;
-  clearArbitratorNodeAddress(): OfferAvailabilityResponse;
+  getBackupArbitrator(): NodeAddress | undefined;
+  setBackupArbitrator(value?: NodeAddress): OfferAvailabilityResponse;
+  hasBackupArbitrator(): boolean;
+  clearBackupArbitrator(): OfferAvailabilityResponse;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): OfferAvailabilityResponse.AsObject;
@@ -844,7 +844,7 @@ export namespace OfferAvailabilityResponse {
     supportedCapabilitiesList: Array<number>,
     uid: string,
     makerSignature: string,
-    arbitratorNodeAddress?: NodeAddress.AsObject,
+    backupArbitrator?: NodeAddress.AsObject,
   }
 }
 
@@ -3719,10 +3719,10 @@ export class OfferPayload extends jspb.Message {
   getProtocolVersion(): number;
   setProtocolVersion(value: number): OfferPayload;
 
-  getArbitratorNodeAddress(): NodeAddress | undefined;
-  setArbitratorNodeAddress(value?: NodeAddress): OfferPayload;
-  hasArbitratorNodeAddress(): boolean;
-  clearArbitratorNodeAddress(): OfferPayload;
+  getArbitratorSigner(): NodeAddress | undefined;
+  setArbitratorSigner(value?: NodeAddress): OfferPayload;
+  hasArbitratorSigner(): boolean;
+  clearArbitratorSigner(): OfferPayload;
 
   getArbitratorSignature(): string;
   setArbitratorSignature(value: string): OfferPayload;
@@ -3777,7 +3777,7 @@ export namespace OfferPayload {
     hashOfChallenge: string,
     extraDataMap: Array<[string, string]>,
     protocolVersion: number,
-    arbitratorNodeAddress?: NodeAddress.AsObject,
+    arbitratorSigner?: NodeAddress.AsObject,
     arbitratorSignature: string,
     reserveTxKeyImagesList: Array<string>,
   }
@@ -4097,6 +4097,11 @@ export class DisputeResult extends jspb.Message {
   hasChatMessage(): boolean;
   clearChatMessage(): DisputeResult;
 
+  getArbitratorSignature(): Uint8Array | string;
+  getArbitratorSignature_asU8(): Uint8Array;
+  getArbitratorSignature_asB64(): string;
+  setArbitratorSignature(value: Uint8Array | string): DisputeResult;
+
   getBuyerPayoutAmount(): number;
   setBuyerPayoutAmount(value: number): DisputeResult;
 
@@ -4139,6 +4144,7 @@ export namespace DisputeResult {
     screenCast: boolean,
     summaryNotes: string,
     chatMessage?: ChatMessage.AsObject,
+    arbitratorSignature: Uint8Array | string,
     buyerPayoutAmount: number,
     sellerPayoutAmount: number,
     arbitratorPubKey: Uint8Array | string,
@@ -6154,18 +6160,22 @@ export class OpenOffer extends jspb.Message {
   getState(): OpenOffer.State;
   setState(value: OpenOffer.State): OpenOffer;
 
-  getArbitratorNodeAddress(): NodeAddress | undefined;
-  setArbitratorNodeAddress(value?: NodeAddress): OpenOffer;
-  hasArbitratorNodeAddress(): boolean;
-  clearArbitratorNodeAddress(): OpenOffer;
+  getBackupArbitrator(): NodeAddress | undefined;
+  setBackupArbitrator(value?: NodeAddress): OpenOffer;
+  hasBackupArbitrator(): boolean;
+  clearBackupArbitrator(): OpenOffer;
 
   getTriggerPrice(): number;
   setTriggerPrice(value: number): OpenOffer;
 
-  getFrozenKeyImagesList(): Array<string>;
-  setFrozenKeyImagesList(value: Array<string>): OpenOffer;
-  clearFrozenKeyImagesList(): OpenOffer;
-  addFrozenKeyImages(value: string, index?: number): OpenOffer;
+  getReserveTxHash(): string;
+  setReserveTxHash(value: string): OpenOffer;
+
+  getReserveTxHex(): string;
+  setReserveTxHex(value: string): OpenOffer;
+
+  getReserveTxKey(): string;
+  setReserveTxKey(value: string): OpenOffer;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): OpenOffer.AsObject;
@@ -6179,9 +6189,11 @@ export namespace OpenOffer {
   export type AsObject = {
     offer?: Offer.AsObject,
     state: OpenOffer.State,
-    arbitratorNodeAddress?: NodeAddress.AsObject,
+    backupArbitrator?: NodeAddress.AsObject,
     triggerPrice: number,
-    frozenKeyImagesList: Array<string>,
+    reserveTxHash: string,
+    reserveTxHex: string,
+    reserveTxKey: string,
   }
 
   export enum State { 
@@ -6690,10 +6702,10 @@ export class ProcessModel extends jspb.Message {
   getMakerSignature(): string;
   setMakerSignature(value: string): ProcessModel;
 
-  getArbitratorNodeAddress(): NodeAddress | undefined;
-  setArbitratorNodeAddress(value?: NodeAddress): ProcessModel;
-  hasArbitratorNodeAddress(): boolean;
-  clearArbitratorNodeAddress(): ProcessModel;
+  getBackupArbitrator(): NodeAddress | undefined;
+  setBackupArbitrator(value?: NodeAddress): ProcessModel;
+  hasBackupArbitrator(): boolean;
+  clearBackupArbitrator(): ProcessModel;
 
   getMaker(): TradingPeer | undefined;
   setMaker(value?: TradingPeer): ProcessModel;
@@ -6714,14 +6726,6 @@ export class ProcessModel extends jspb.Message {
   setTempTradingPeerNodeAddress(value?: NodeAddress): ProcessModel;
   hasTempTradingPeerNodeAddress(): boolean;
   clearTempTradingPeerNodeAddress(): ProcessModel;
-
-  getReserveTxHash(): string;
-  setReserveTxHash(value: string): ProcessModel;
-
-  getFrozenKeyImagesList(): Array<string>;
-  setFrozenKeyImagesList(value: Array<string>): ProcessModel;
-  clearFrozenKeyImagesList(): ProcessModel;
-  addFrozenKeyImages(value: string, index?: number): ProcessModel;
 
   getPreparedMultisigHex(): string;
   setPreparedMultisigHex(value: string): ProcessModel;
@@ -6764,13 +6768,11 @@ export namespace ProcessModel {
     buyerPayoutAmountFromMediation: number,
     sellerPayoutAmountFromMediation: number,
     makerSignature: string,
-    arbitratorNodeAddress?: NodeAddress.AsObject,
+    backupArbitrator?: NodeAddress.AsObject,
     maker?: TradingPeer.AsObject,
     taker?: TradingPeer.AsObject,
     arbitrator?: TradingPeer.AsObject,
     tempTradingPeerNodeAddress?: NodeAddress.AsObject,
-    reserveTxHash: string,
-    frozenKeyImagesList: Array<string>,
     preparedMultisigHex: string,
     madeMultisigHex: string,
     multisigSetupComplete: boolean,
@@ -6861,6 +6863,11 @@ export class TradingPeer extends jspb.Message {
   getReserveTxKey(): string;
   setReserveTxKey(value: string): TradingPeer;
 
+  getReserveTxKeyImagesList(): Array<string>;
+  setReserveTxKeyImagesList(value: Array<string>): TradingPeer;
+  clearReserveTxKeyImagesList(): TradingPeer;
+  addReserveTxKeyImages(value: string, index?: number): TradingPeer;
+
   getPreparedMultisigHex(): string;
   setPreparedMultisigHex(value: string): TradingPeer;
 
@@ -6910,6 +6917,7 @@ export namespace TradingPeer {
     reserveTxHash: string,
     reserveTxHex: string,
     reserveTxKey: string,
+    reserveTxKeyImagesList: Array<string>,
     preparedMultisigHex: string,
     madeMultisigHex: string,
     signedPayoutTxHex: string,

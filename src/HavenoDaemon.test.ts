@@ -66,16 +66,15 @@ beforeAll(async () => {
   // initialize client of monerod
   monerod = await monerojs.connectToDaemonRpc(moneroDaemonUrl, moneroDaemonUsername, moneroDaemonPassword);
   
-  // initialize funding wallet
-  await initFundingWallet();
-  
   // create client connected to alice's internal wallet
   aliceWallet = await monerojs.connectToWalletRpc(aliceWalletUrl, aliceWalletUsername, aliceWalletPassword);
+  
+  // initialize funding wallet
+  await initFundingWallet();
   
   // debug tools
   //for (let offer of await alice.getMyOffers("BUY")) await alice.removeOffer(offer.getId());
   //for (let offer of await alice.getMyOffers("SELL")) await alice.removeOffer(offer.getId());
-  //for (let frozenOutput of await aliceWallet.getOutputs({isFrozen: true})) await aliceWallet.thawOutput(frozenOutput.getKeyImage().getHex());
   //console.log((await alice.getBalances()).getUnlockedBalance() + ", " + (await alice.getBalances()).getLockedBalance());
   //console.log((await bob.getBalances()).getUnlockedBalance() + ", " + (await bob.getBalances()).getLockedBalance());
 });
