@@ -2,7 +2,7 @@
     
 // import haveno types
 import {HavenoDaemon} from "./HavenoDaemon";
-import {XmrBalanceInfo, OfferInfo, TradeInfo} from './protobuf/grpc_pb'; // TODO (woodser): better names; haveno_grpc_pb, haveno_pb
+import {XmrBalanceInfo, OfferInfo, TradeInfo, MarketPriceInfo} from './protobuf/grpc_pb'; // TODO (woodser): better names; haveno_grpc_pb, haveno_pb
 import {PaymentAccount, Offer} from './protobuf/pb_pb';
 
 // import monero-javascript
@@ -51,11 +51,11 @@ const WALLET_SYNC_PERIOD = 5000;
 const MAX_TIME_PEER_NOTICE = 3000;
 const TEST_CRYPTO_ACCOUNTS = [ // TODO (woodser): test other cryptos, fiat
   {
-    currencyCode: "eth",
+    currencyCode: "ETH",
     address: "0xdBdAb835Acd6fC84cF5F9aDD3c0B5a1E25fbd99f"
   },
   {
-    currencyCode: "btc",
+    currencyCode: "BTC",
     address: "bcrt1q6j90vywv8x7eyevcnn2tn2wrlg3vsjlsvt46qz"
   }
 ];
@@ -88,18 +88,35 @@ test("Can get the version", async () => {
 
 test("Can get market prices", async () => {
   
-  // test crypto prices  
+  // get all market prices
+  let prices: MarketPriceInfo[] = await alice.getPrices();
+  expect(prices.length).toBeGreaterThan(1);
+  for (let price of prices) {
+    expect(price.getCurrencyCode().length).toBeGreaterThan(0);
+    expect(price.getPrice()).toBeGreaterThanOrEqual(0);
+  }
+  
+  // get market prices of specific currencies
   for (let testAccount of TEST_CRYPTO_ACCOUNTS) {
     let price = await alice.getPrice(testAccount.currencyCode);
-    console.log(testAccount.currencyCode + " price: " + price);
     expect(price).toBeGreaterThan(0);
-    await GenUtils.waitFor(1000); // wait before next request // TODO (woodser): disable price throttle?
   }
     
-  // test fiat price
-  let price = await alice.getPrice("USD");
-  console.log("usd price: " + price);
-  expect(price).toBeGreaterThan(0);
+  // test that prices are reasonable
+  let usd = await alice.getPrice("USD");
+  expect(usd).toBeGreaterThan(50);
+  expect(usd).toBeLessThan(5000);
+  let doge = await alice.getPrice("DOGE");
+  expect(doge).toBeGreaterThan(200)
+  expect(doge).toBeLessThan(20000);
+  let btc = await alice.getPrice("BTC");
+  expect(btc).toBeGreaterThan(0.0004)
+  expect(btc).toBeLessThan(0.4);
+
+  // test invalid currency
+  await expect(async () => {await alice.getPrice("INVALID_CURRENCY")})
+    .rejects
+    .toThrow('Currency not found: INVALID_CURRENCY');
 });
 
 test("Can get balances", async () => {
