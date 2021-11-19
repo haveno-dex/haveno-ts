@@ -1818,6 +1818,9 @@ export namespace BtcBalanceInfo {
 }
 
 export class XmrBalanceInfo extends jspb.Message {
+  getBalance(): string;
+  setBalance(value: string): XmrBalanceInfo;
+
   getUnlockedBalance(): string;
   setUnlockedBalance(value: string): XmrBalanceInfo;
 
@@ -1840,6 +1843,7 @@ export class XmrBalanceInfo extends jspb.Message {
 
 export namespace XmrBalanceInfo {
   export type AsObject = {
+    balance: string,
     unlockedBalance: string,
     lockedBalance: string,
     reservedOfferBalance: string,

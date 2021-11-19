@@ -3,7 +3,7 @@
 // import haveno types
 import {HavenoDaemon} from "./HavenoDaemon";
 import {XmrBalanceInfo, OfferInfo, TradeInfo} from './protobuf/grpc_pb'; // TODO (woodser): better names; haveno_grpc_pb, haveno_pb
-import {PaymentAccount} from './protobuf/pb_pb';
+import {PaymentAccount, Offer} from './protobuf/pb_pb';
 
 // import monero-javascript
 const monerojs = require("monero-javascript"); // TODO (woodser): support typescript and `npm install @types/monero-javascript` in monero-javascript
@@ -46,6 +46,7 @@ const moneroDaemonPassword = "abctesting123";
 let monerod: any;
 
 // other test config
+const MAX_FEE = BigInt("75000000000");
 const WALLET_SYNC_PERIOD = 5000;
 const MAX_TIME_PEER_NOTICE = 3000;
 const TEST_CRYPTO_ACCOUNTS = [ // TODO (woodser): test other cryptos, fiat
@@ -177,13 +178,13 @@ test("Can post and remove an offer", async () => {
     
   // wait for alice to have unlocked balance to post offer
   let tradeAmount: bigint = BigInt("250000000000");
-  await waitForUnlockedBalance(tradeAmount * BigInt("5"), alice);
+  await waitForUnlockedBalance(tradeAmount * BigInt("2"), alice);
   
   // get unlocked balance before reserving funds for offer
   let unlockedBalanceBefore: bigint = BigInt((await alice.getBalances()).getUnlockedBalance());
 
   // post offer
-  let offer: OfferInfo = await postOffer();
+  let offer: OfferInfo = await postOffer(alice, "buy", BigInt("200000000000"));
   
   // cancel offer
   await alice.removeOffer(offer.getId());
@@ -199,7 +200,7 @@ test("Invalidates offers when reserved funds are spent", async () => {
 
   // wait for alice and bob to have unlocked balance for trade
   let tradeAmount: bigint = BigInt("250000000000");
-  await waitForUnlockedBalance(tradeAmount * BigInt("5"), alice);
+  await waitForUnlockedBalance(tradeAmount * BigInt("2"), alice);
     
   // get frozen key images before posting offer
   let frozenKeyImagesBefore = [];
@@ -207,7 +208,7 @@ test("Invalidates offers when reserved funds are spent", async () => {
   
   // post offer
   await wait(1000);
-  let offer: OfferInfo = await postOffer();
+  let offer: OfferInfo = await postOffer(alice, "buy", tradeAmount);
   
   // get key images reserved by offer
   let reservedKeyImages = [];
@@ -248,37 +249,45 @@ test("Invalidates offers when reserved funds are spent", async () => {
   await monerod.flushTxPool(tx.getHash());
 });
 
+// TODO (woodser): test grpc notifications
 test("Can complete a trade", async () => {
     
   // wait for alice and bob to have unlocked balance for trade
   let tradeAmount: bigint = BigInt("250000000000");
-  await waitForUnlockedBalance(tradeAmount * BigInt("5"), alice, bob);
+  await waitForUnlockedBalance(tradeAmount * BigInt("2"), alice, bob);
+  let aliceBalancesBefore = await alice.getBalances();
+  let bobBalancesBefore: XmrBalanceInfo = await bob.getBalances();
   
-  // create bob's ethereum payment account
+  // alice posts offer to buy xmr
+  console.log("Alice posting offer");
+  let direction = "buy";
+  let offer: OfferInfo = await postOffer(alice, direction, tradeAmount);
+  expect(offer.getState()).toEqual("AVAILABLE");
+  console.log("Alice done posting offer");
+  
+  // bob sees offer
+  await wait(WALLET_SYNC_PERIOD * 2);
+  let offerBob = getOffer(await bob.getOffers(direction), offer.getId());
+  if (!offerBob) throw new Error("Offer " + offer.getId() + " was not found in peer's offers after posting");
+  expect(offerBob.getState()).toEqual("UNKNOWN");
+  
+  // bob creates ethereum payment account
   let testAccount =  TEST_CRYPTO_ACCOUNTS[0];
   let ethPaymentAccount: PaymentAccount = await bob.createCryptoPaymentAccount(
       testAccount.currencyCode + " " +  testAccount.address.substr(0, 8) + "... " + GenUtils.getUUID(),
       testAccount.currencyCode,
       testAccount.address);
   
-  // alice posts offer to buy xmr
-  console.log("Alice posting offer");
-  let offer: OfferInfo = await postOffer();
-  console.log("Alice done posting offer");
-  
-  // bob sees offer
-  await wait(WALLET_SYNC_PERIOD * 2);
-  if (!getOffer(await bob.getOffers("buy"), offer.getId())) throw new Error("Offer " + offer.getId() + " was not found in peer's offers after posting");
-  
   // bob takes offer
   let startTime = Date.now();
-  let bobBalancesBefore: XmrBalanceInfo = await bob.getBalances();
   console.log("Bob taking offer");
   let trade: TradeInfo = await bob.takeOffer(offer.getId(), ethPaymentAccount.getId()); // TODO (woodser): this returns before trade is fully initialized. this fails with bad error message if trade is not yet seen by peer
+  expect(trade.getPhase()).toEqual("DEPOSIT_PUBLISHED");
   console.log("Bob done taking offer in " + (Date.now() - startTime) + " ms");
   
   // bob can get trade
   let fetchedTrade: TradeInfo = await bob.getTrade(trade.getTradeId());
+  expect(fetchedTrade.getPhase()).toEqual("DEPOSIT_PUBLISHED");
   // TODO: test fetched trade
   
   // test bob's balances after taking trade
@@ -293,31 +302,51 @@ test("Can complete a trade", async () => {
   
   // alice can get trade
   fetchedTrade = await alice.getTrade(trade.getTradeId());
+  expect(fetchedTrade.getPhase()).toEqual("DEPOSIT_PUBLISHED");
   
   // mine until deposit txs unlock
   console.log("Mining to unlock deposit txs");
   await waitForUnlockedTxs(fetchedTrade.getMakerDepositTxId(), fetchedTrade.getTakerDepositTxId());
   console.log("Done mining to unlock deposit txs");
-    
+  
   // alice notified to send payment
-  await wait(WALLET_SYNC_PERIOD);
+  await wait(WALLET_SYNC_PERIOD * 2);
+  fetchedTrade = await alice.getTrade(trade.getTradeId());
+  expect(fetchedTrade.getIsDepositConfirmed()).toBe(true);
+  expect(fetchedTrade.getPhase()).toEqual("DEPOSIT_CONFIRMED"); // TODO (woodser): rename to DEPOSIT_UNLOCKED, have phase for when deposit txs confirm?
+  fetchedTrade = await bob.getTrade(trade.getTradeId());
+  expect(fetchedTrade.getIsDepositConfirmed()).toBe(true);
+  expect(fetchedTrade.getPhase()).toEqual("DEPOSIT_CONFIRMED");
   
   // alice indicates payment is sent
   await alice.confirmPaymentStarted(trade.getTradeId());
+  fetchedTrade = await alice.getTrade(trade.getTradeId());
+  expect(fetchedTrade.getPhase()).toEqual("FIAT_SENT"); // TODO (woodser): rename to PAYMENT_SENT
   
   // bob notified payment is sent
   await wait(MAX_TIME_PEER_NOTICE);
+  fetchedTrade = await bob.getTrade(trade.getTradeId());
+  expect(fetchedTrade.getPhase()).toEqual("FIAT_SENT"); // TODO (woodser): rename to PAYMENT_SENT
   
   // bob confirms payment is received
   await bob.confirmPaymentReceived(trade.getTradeId());
-  
-  // bob notified trade is complete
   fetchedTrade = await bob.getTrade(trade.getTradeId());
-  console.log(fetchedTrade.getState()); // TODO (woodser): this should be complete state
-  
-  // test bob's balances after confirming payment
+  expect(fetchedTrade.getPhase()).toEqual("PAYOUT_PUBLISHED");
   
   // alice notified trade is complete and of balance changes
+  await wait(WALLET_SYNC_PERIOD * 2);
+  fetchedTrade = await alice.getTrade(trade.getTradeId());
+  expect(fetchedTrade.getPhase()).toEqual("PAYOUT_PUBLISHED");
+  
+  // test balances after payout tx
+  let aliceBalancesAfter = await alice.getBalances();
+  bobBalancesAfter = await bob.getBalances();
+  let aliceFee = BigInt(aliceBalancesBefore.getBalance()) + tradeAmount - BigInt(aliceBalancesAfter.getBalance());
+  let bobFee = BigInt(bobBalancesBefore.getBalance()) - tradeAmount - BigInt(bobBalancesAfter.getBalance());
+  expect(aliceFee).toBeLessThanOrEqual(MAX_FEE);
+  expect(aliceFee).toBeGreaterThan(BigInt("0"));
+  expect(bobFee).toBeLessThanOrEqual(MAX_FEE);
+  expect(bobFee).toBeGreaterThan(BigInt("0"));
 });
 
 // ------------------------------- HELPERS ------------------------------------
@@ -398,7 +427,7 @@ async function waitForUnlockedBalance(amount: bigint, ...wallets: any[]) {
     let unlockedBalance = await wallet.getUnlockedBalance();
     if (unlockedBalance < amount) miningNeeded = true;
     let depositNeeded: bigint = amount - unlockedBalance - await wallet.getLockedBalance();
-    if (depositNeeded > BigInt("0") && wallet._wallet !== fundingWallet) fundConfig.addDestination(await wallet.getDepositAddress(), depositNeeded);
+    if (depositNeeded > BigInt("0") && wallet._wallet !== fundingWallet) fundConfig.addDestination(await wallet.getDepositAddress(), depositNeeded * BigInt("10")); // deposit 10 times more than needed
   }
   if (fundConfig.getDestinations()) {
     await waitForUnlockedBalance(minimumFunding, fundingWallet); // TODO (woodser): wait for enough to cover tx amount + fee
@@ -450,7 +479,7 @@ async function waitForUnlockedTxs(...txHashes: string[]) {
 
 async function startMining() {
   try {
-    await monerod.startMining(await fundingWallet.getPrimaryAddress(), 1);
+    await monerod.startMining(await fundingWallet.getPrimaryAddress(), 3);
   } catch (err) {
     if (err.message !== "Already mining") throw err;
   }
@@ -460,56 +489,49 @@ async function wait(durationMs: number) {
   return new Promise(function(resolve) { setTimeout(resolve, durationMs); });
 }
 
-async function postOffer() { // TODO (woodser): postOffer(maker, peer) 
+async function postOffer(maker: HavenoDaemon, direction: string, amount: bigint) {
     
-  // test requires ethereum payment account
-  let ethPaymentAccount: PaymentAccount | undefined;
-  for (let paymentAccount of await alice.getPaymentAccounts()) {
-    if (paymentAccount.getSelectedTradeCurrency()?.getCode() === "ETH") {
-      ethPaymentAccount = paymentAccount;
-      break;
-    }
-  }
-  if (!ethPaymentAccount) throw new Error("Test requires ethereum payment account to post offer");
+  // maker creates ethereum payment account
+  let testAccount =  TEST_CRYPTO_ACCOUNTS[0];
+  let ethPaymentAccount: PaymentAccount = await maker.createCryptoPaymentAccount(
+      testAccount.currencyCode + " " +  testAccount.address.substr(0, 8) + "... " + GenUtils.getUUID(),
+      testAccount.currencyCode,
+      testAccount.address);
   
   // get unlocked balance before reserving offer
-  let unlockedBalanceBefore: bigint = BigInt((await alice.getBalances()).getUnlockedBalance());
+  let unlockedBalanceBefore: bigint = BigInt((await maker.getBalances()).getUnlockedBalance());
   
   // post offer
-  // TODO: don't define variables, just document in comments
-  let amount: bigint = BigInt("200000000000");
-  let minAmount: bigint = BigInt("150000000000");
-  let price: number = 12.378981; // TODO: price is optional? price string gets converted to long?
-  let useMarketBasedPrice: boolean = true;
-  let marketPriceMargin: number = 0.02; // within 2%
-  let buyerSecurityDeposit: number = 0.15; // 15%
-  let triggerPrice: number = 12; // TODO: fails if there is decimal, gets converted to long?
-  let paymentAccountId: string = ethPaymentAccount.getId();
-  let offer: OfferInfo = await alice.postOffer("eth",
-        "buy", // buy xmr for eth
-        price,
-        useMarketBasedPrice,
-        marketPriceMargin,
-        amount,
-        minAmount,
-        buyerSecurityDeposit,
-        paymentAccountId,
-        triggerPrice);
+  let offer: OfferInfo = await maker.postOffer("eth",
+        direction,                  // buy or sell xmr for eth
+        12.378981,                  // price TODO: price is optional? price string gets converted to long?
+        true,                       // use market price
+        0.02,                       // market price margin, e.g. within 2%
+        amount,                     // amount
+        BigInt("150000000000"),     // min amount
+        0.15,                       // buyer security deposit, e.g. 15%
+        ethPaymentAccount.getId(),  // payment account id
+        undefined);                 // trigger price // TODO: fails if there is a decimal, gets converted to long?
   testOffer(offer);
 
   // unlocked balance has decreased
-  let unlockedBalanceAfter: bigint = BigInt((await alice.getBalances()).getUnlockedBalance());
+  let unlockedBalanceAfter: bigint = BigInt((await maker.getBalances()).getUnlockedBalance());
   if (unlockedBalanceAfter === unlockedBalanceBefore) throw new Error("unlocked balance did not change after posting offer");
   
   // offer is included in my offers only
-  if (!getOffer(await alice.getMyOffers("buy"), offer.getId())) throw new Error("Offer " + offer.getId() + " was not found in my offers");
-  if (getOffer(await alice.getOffers("buy"), offer.getId())) throw new Error("My offer " + offer.getId() + " should not appear in available offers");
+  if (!getOffer(await maker.getMyOffers(direction), offer.getId())) {
+    console.log("OK, we couldn't get the offer, let's wait");
+    await wait(10000);
+    if (!getOffer(await maker.getMyOffers(direction), offer.getId())) throw new Error("Offer " + offer.getId() + " was not found in my offers");
+    else console.log("The offer finally posted!");
+  }
+  if (getOffer(await maker.getOffers(direction), offer.getId())) throw new Error("My offer " + offer.getId() + " should not appear in available offers");
   
   return offer;
 }
 
 function getBalancesStr(balances: XmrBalanceInfo) {
-  return "[unlocked balance=" + balances.getUnlockedBalance() + ", locked balance=" + balances.getLockedBalance() + ", reserved offer balance=" + balances.getReservedOfferBalance() + ", reserved trade balance: " + balances.getReservedTradeBalance() + "]";
+  return "[balance=" + balances.getBalance() + ", unlocked balance=" + balances.getUnlockedBalance() + ", locked balance=" + balances.getLockedBalance() + ", reserved offer balance=" + balances.getReservedOfferBalance() + ", reserved trade balance: " + balances.getReservedTradeBalance() + "]";
 }
 
 function getOffer(offers: OfferInfo[], id: string): OfferInfo | undefined {
