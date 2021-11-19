@@ -764,6 +764,49 @@ export class PriceClient {
     this.methodInfoGetMarketPrice);
   }
 
+  methodInfoGetMarketPrices = new grpcWeb.MethodDescriptor(
+    '/io.bisq.protobuffer.Price/GetMarketPrices',
+    grpcWeb.MethodType.UNARY,
+    grpc_pb.MarketPricesRequest,
+    grpc_pb.MarketPricesReply,
+    (request: grpc_pb.MarketPricesRequest) => {
+      return request.serializeBinary();
+    },
+    grpc_pb.MarketPricesReply.deserializeBinary
+  );
+
+  getMarketPrices(
+    request: grpc_pb.MarketPricesRequest,
+    metadata: grpcWeb.Metadata | null): Promise<grpc_pb.MarketPricesReply>;
+
+  getMarketPrices(
+    request: grpc_pb.MarketPricesRequest,
+    metadata: grpcWeb.Metadata | null,
+    callback: (err: grpcWeb.RpcError,
+               response: grpc_pb.MarketPricesReply) => void): grpcWeb.ClientReadableStream<grpc_pb.MarketPricesReply>;
+
+  getMarketPrices(
+    request: grpc_pb.MarketPricesRequest,
+    metadata: grpcWeb.Metadata | null,
+    callback?: (err: grpcWeb.RpcError,
+               response: grpc_pb.MarketPricesReply) => void) {
+    if (callback !== undefined) {
+      return this.client_.rpcCall(
+        this.hostname_ +
+          '/io.bisq.protobuffer.Price/GetMarketPrices',
+        request,
+        metadata || {},
+        this.methodInfoGetMarketPrices,
+        callback);
+    }
+    return this.client_.unaryCall(
+    this.hostname_ +
+      '/io.bisq.protobuffer.Price/GetMarketPrices',
+    request,
+    metadata || {},
+    this.methodInfoGetMarketPrices);
+  }
+
 }
 
 export class GetTradeStatisticsClient {
