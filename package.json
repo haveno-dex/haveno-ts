@@ -22,7 +22,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --runInBand",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "prepare": "bin/build_protobuf.sh",
+    "pretest": "bin/build_protobuf.sh"
   },
   "eslintConfig": {
     "extends": [
