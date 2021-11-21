@@ -1,5 +1,8 @@
 import React from 'react';
 import logo from './logo.png';
+
+import { saveAs } from 'file-saver'
+
 import './App.css';
 import {HavenoDaemon} from './HavenoDaemon';
 
@@ -18,6 +21,8 @@ class App extends React.Component<{}, {daemonVersion: string, exists: string, ac
 				  accountOpen: ""};
     this.daemon = new HavenoDaemon(HAVENO_DAEMON_URL, HAVENO_DAEMON_PASSWORD);
   }
+
+  
 
   render() {
     return (
@@ -70,9 +75,12 @@ class App extends React.Component<{}, {daemonVersion: string, exists: string, ac
 			</button>
 		  </div>
 		  <div>
-			<button
-			  onClick={async(e) => await this.restoreAccount()}>Restore Account
-			</button>
+			<input accept=".zip" id="file" multiple={false} type="file" onChange={async(e) => await this.restoreAccount()}/>
+			<label htmlFor="file">
+				<button
+				onClick={e => e.stopPropagation()}>Restore Account
+				</button>
+			</label>
 		  </div>
 		  <div>
 			<input type="password"></input>&nbsp;
@@ -146,7 +154,9 @@ class App extends React.Component<{}, {daemonVersion: string, exists: string, ac
 
   async backupAccount() {
 	try {
-		 await this.daemon.backupAccount();
+		const result = await this.daemon.backupAccount();
+		const blob = new Blob([result], {type: "application/octet-stream"});
+		saveAs(blob, 'accountBackup.zip')
 	} catch (err) {
 		console.error(err);
 	}
@@ -160,9 +170,9 @@ class App extends React.Component<{}, {daemonVersion: string, exists: string, ac
 	}
   }
 
-  async restoreAccount() {
+  async restoreAccount(file: File) {
 	try {
-		 //await this.daemon.restoreAccount();
+		 await this.daemon.restoreAccount();
 	} catch (err) {
 		console.error(err);
 	}

@@ -12,7 +12,7 @@ import {GetVersionRequest, GetVersionReply, MarketPriceRequest, MarketPriceReply
 		CloseAccountRequest,
 		CloseAccountReply,
 		BackupAccountRequest,
-		BackupAccountReply,
+    BackupAccountReply,
 		DeleteAccountRequest,
 		DeleteAccountReply,
 		ChangePasswordRequest,
@@ -394,18 +394,24 @@ class HavenoDaemon {
     });
   }
 
-  /**
-   * Backup an Account.
-   * 
-   */
-  async backupAccount(): Promise<void> {
+  async backupAccount(): Promise<Buffer> {
     let that = this;
     return new Promise(function(resolve, reject) {
-      that._accountClient.backupAccount(new BackupAccountRequest(), {password: that._password}, function(err: grpcWeb.RpcError, response: BackupAccountReply) {
-        if (err) reject(err);
-        else resolve();
-      });
-    });
+      const stream = that._accountClient.backupAccount(new BackupAccountRequest(), {password: that._password})
+      let result: Buffer[] = []
+      stream.on("data", (data)=> {
+        let backupAccountReply = data as BackupAccountReply
+        let chunk = Buffer.from(backupAccountReply.getData())
+        result.push(chunk)
+      })
+      stream.on("end", () => {
+        resolve(Buffer.concat(result))
+      })
+
+      stream.on("error", (error) => {
+        reject()
+      })
+    })
   }
 
   /**
