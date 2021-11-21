@@ -91,33 +91,33 @@ message DeleteAccountRequest {
 message DeleteAccountReply {
 }
 
-//message MetaData {
-//	string name = 1;
-//	string type = 2;
-//}
+message MetaData {
+	string name = 1;
+	string type = 2;
+}
 
-//message Zip {
-//	bytes content = 1;
-//}
+message Zip {
+	bytes content = 1;
+}
 
-//enum Status {
-//	PENDING = 0;
-//	IN_PROGRESS = 1;
-//	SUCCESS = 2;
-//	FAILED = 3;
-//}
+enum Status {
+	PENDING = 0;
+	IN_PROGRESS = 1;
+	SUCCESS = 2;
+	FAILED = 3;
+}
 
 message RestoreAccountRequest {
-//	oneof request {
-//    	MetaData metadata = 1;
-//    	Zip zip = 2;
-//    }
-	string foo = 1;
+	oneof request {
+    	MetaData metadata = 1;
+    	Zip zip = 2;
+    }
+	string foo = 3;
 }
 
 message RestoreAccountReply {
 	string name = 1;
-//	Status status = 2;
+	Status status = 2;
 }
 
 message ChangePasswordRequest {
@@ -142,7 +142,7 @@ service Account {
     }
     rpc IsAccountOpen (IsAccountOpenRequest) returns (IsAccountOpenReply) {
     }
-    rpc RestoreAccount(RestoreAccountRequest) returns (stream RestoreAccountReply) {
+    rpc RestoreAccount(stream RestoreAccountRequest) returns (RestoreAccountReply) {
     }
     rpc OpenAccount(OpenAccountRequest) returns (OpenAccountReply) {
     }

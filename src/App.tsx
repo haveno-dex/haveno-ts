@@ -74,14 +74,14 @@ class App extends React.Component<{}, {daemonVersion: string, exists: string, ac
 			  onClick={async(e) => await this.deleteAccount()}>Delete Account
 			</button>
 		  </div>
-		  <div>
+		  {/* <div>
 			<input accept=".zip" id="file" multiple={false} type="file" onChange={async(e) => await this.restoreAccount()}/>
 			<label htmlFor="file">
 				<button
 				onClick={e => e.stopPropagation()}>Restore Account
 				</button>
 			</label>
-		  </div>
+		  </div> */}
 		  <div>
 			<input type="password"></input>&nbsp;
 			<button
@@ -170,13 +170,13 @@ class App extends React.Component<{}, {daemonVersion: string, exists: string, ac
 	}
   }
 
-  async restoreAccount(file: File) {
-	try {
-		 await this.daemon.restoreAccount();
-	} catch (err) {
-		console.error(err);
-	}
-  }
+//   async restoreAccount(file: File) {
+// 	try {
+// 		 await this.daemon.restoreAccount();
+// 	} catch (err) {
+// 		console.error(err);
+// 	}
+//   }
 
   async changePassword() {
 	try {
