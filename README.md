@@ -24,7 +24,7 @@ This application is a lightly modified [create-react-app](https://github.com/fac
 
 ## Run Tests
 
-Running the [top-level API tests](./src/HavenoDaemon.test.tsx) is a great way to develop and test Haveno end-to-end.
+Running the [top-level API tests](./src/HavenoDaemon.test.ts) is a great way to develop and test Haveno end-to-end.
 
 [`HavenoDaemon`](./src/HavenoDaemon.ts) provides the interface to the Haveno daemon's gRPC API.
 
