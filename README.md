@@ -16,7 +16,7 @@ This application is a lightly modified [create-react-app](https://github.com/fac
 6. `cd haveno-ui-poc`
 7. `npm install`
 8. `npm start` to open http://localhost:3000 in a browser
-9. Confirm that the Haveno daemon version is displayed (1.6.2)
+9. Confirm that the Haveno daemon version is displayed (1.6.2).
 
 <p align="center">
     <img src="haveno-ui-poc.png" width="500"/><br>
