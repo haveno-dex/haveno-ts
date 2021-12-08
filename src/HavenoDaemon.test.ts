@@ -2,6 +2,8 @@
     
 // import haveno types
 import {HavenoDaemon} from "./HavenoDaemon";
+import {HavenoUtils} from "./HavenoUtils";
+import * as grpcWeb from 'grpc-web';
 import {XmrBalanceInfo, OfferInfo, TradeInfo, MarketPriceInfo} from './protobuf/grpc_pb'; // TODO (woodser): better names; haveno_grpc_pb, haveno_pb
 import {PaymentAccount, Offer} from './protobuf/pb_pb';
 
@@ -11,38 +13,45 @@ const GenUtils = monerojs.GenUtils;
 const MoneroTxConfig = monerojs.MoneroTxConfig;
 const TaskLooper = monerojs.TaskLooper;
 
-// import console because jest swallows messages in real time
-const console = require('console');
+// other required imports
+const console = require('console'); // import console because jest swallows messages in real time
+const assert = require("assert");
 
 // --------------------------- TEST CONFIGURATION -----------------------------
 
+// set log level (gets more verbose increasing from 0)
+HavenoUtils.setLogLevel(0);
+
+// path to directory with haveno binaries
+const HAVENO_PATH = "../haveno";
+
 // wallet to fund alice and bob during tests
-const fundingWalletUrl = "http://localhost:38084";
-const fundingWalletUsername = "rpc_user";
-const fundingWalletPassword = "abc123";
-const defaultFundingWalletPath = "test_funding_wallet";
-const minimumFunding = BigInt("5000000000000");
+const FUNDING_WALLET_URL = "http://localhost:38084";
+const FUNDING_WALLET_USERNAME = "rpc_user";
+const FUNDING_WALLET_PASSWORD = "abc123";
+const DEFAULT_FUNDING_WALLET_PATH = "test_funding_wallet";
+const MINIMUM_FUNDING = BigInt("5000000000000");
 let fundingWallet: any;
 
 // alice config
-const havenoVersion = "1.6.2";
-const aliceDaemonUrl = "http://localhost:8080";
-const aliceDaemonPassword = "apitest";
-const alice: HavenoDaemon = new HavenoDaemon(aliceDaemonUrl, aliceDaemonPassword);
-const aliceWalletUrl = "http://127.0.0.1:38091"; // alice's internal haveno wallet for direct testing
-const aliceWalletUsername = "rpc_user";
-const aliceWalletPassword = "abc123";
+const HAVENO_VERSION = "1.6.2";
+const ALICE_DAEMON_URL = "http://localhost:8080";
+const ALICE_DAEMON_PASSWORD = "apitest";
+const ALICE_WALLET_URL = "http://127.0.0.1:38091"; // alice's internal haveno wallet for direct testing
+const ALICE_WALLET_USERNAME = "rpc_user";
+const ALICE_WALLET_PASSWORD = "abc123";
+let alice: HavenoDaemon;
 let aliceWallet: any;
 
 // bob config
-const bobDaemonUrl = "http://localhost:8081";
-const bobDaemonPassword = "apitest";
-const bob: HavenoDaemon = new HavenoDaemon(bobDaemonUrl, bobDaemonPassword);
+const BOB_DAEMON_URL = "http://localhost:8081";
+const BOB_DAEMON_PASSWORD = "apitest";
+let bob: HavenoDaemon = new HavenoDaemon(BOB_DAEMON_URL, BOB_DAEMON_PASSWORD);
 
 // monero daemon config
-const moneroDaemonUrl = "http://localhost:38081"
-const moneroDaemonUsername = "superuser";
-const moneroDaemonPassword = "abctesting123";
+const MONERO_DAEMON_URL = "http://localhost:38081"
+const MONERO_DAEMON_USERNAME = "superuser";
+const MONERO_DAEMON_PASSWORD = "abctesting123";
 let monerod: any;
 
 // other test config
@@ -60,15 +69,29 @@ const TEST_CRYPTO_ACCOUNTS = [ // TODO (woodser): test other cryptos, fiat
   }
 ];
 
+// map proxied ports to havenod api and p2p ports
+const PROXY_PORTS = new Map<string, string[]>([
+  ["8080", ["9999", "5555"]],
+  ["8081", ["10000", "6666"]],
+  ["8082", ["10001", "7777"]],
+  ["8083", ["10002", "7778"]],
+  ["8084", ["10003", "7779"]],
+  ["8085", ["10004", "7780"]],
+  ["8086", ["10005", "7781"]],
+]);
+
+// track started haveno processes
+const HAVENO_PROCESSES: HavenoDaemon[] = [];
+
 // ----------------------------------- TESTS ----------------------------------
 
 beforeAll(async () => {
   
-  // initialize client of monerod
-  monerod = await monerojs.connectToDaemonRpc(moneroDaemonUrl, moneroDaemonUsername, moneroDaemonPassword);
-  
-  // create client connected to alice's internal wallet
-  aliceWallet = await monerojs.connectToWalletRpc(aliceWalletUrl, aliceWalletUsername, aliceWalletPassword);
+  // initialize clients
+  alice = new HavenoDaemon(ALICE_DAEMON_URL, ALICE_DAEMON_PASSWORD);
+  bob = new HavenoDaemon(BOB_DAEMON_URL, BOB_DAEMON_PASSWORD);
+  monerod = await monerojs.connectToDaemonRpc(MONERO_DAEMON_URL, MONERO_DAEMON_USERNAME, MONERO_DAEMON_PASSWORD);
+  aliceWallet = await monerojs.connectToWalletRpc(ALICE_WALLET_URL, ALICE_WALLET_USERNAME, ALICE_WALLET_PASSWORD);
   
   // initialize funding wallet
   await initFundingWallet();
@@ -83,7 +106,7 @@ beforeAll(async () => {
 jest.setTimeout(300000);
 test("Can get the version", async () => {
   let version = await alice.getVersion();
-  expect(version).toEqual(havenoVersion);
+  expect(version).toEqual(HAVENO_VERSION);
 });
 
 test("Can get market prices", async () => {
@@ -201,7 +224,7 @@ test("Can post and remove an offer", async () => {
   let unlockedBalanceBefore: bigint = BigInt((await alice.getBalances()).getUnlockedBalance());
 
   // post offer
-  let offer: OfferInfo = await postOffer(alice, "buy", BigInt("200000000000"));
+  let offer: OfferInfo = await postOffer(alice, "buy", BigInt("200000000000"), undefined);
   
   // cancel offer
   await alice.removeOffer(offer.getId());
@@ -225,7 +248,7 @@ test("Invalidates offers when reserved funds are spent", async () => {
   
   // post offer
   await wait(1000);
-  let offer: OfferInfo = await postOffer(alice, "buy", tradeAmount);
+  let offer: OfferInfo = await postOffer(alice, "buy", tradeAmount, undefined);
   
   // get key images reserved by offer
   let reservedKeyImages = [];
@@ -266,9 +289,73 @@ test("Invalidates offers when reserved funds are spent", async () => {
   await monerod.flushTxPool(tx.getHash());
 });
 
+test("Cannot make or take offer with insufficient unlocked funds", async () => {
+  let charlie: HavenoDaemon | undefined;
+  let err: any;
+  try {
+    
+    // start charlie
+    charlie = await startTraderProcess();
+    
+    // charlie creates ethereum payment account
+    let testAccount =  TEST_CRYPTO_ACCOUNTS[0];
+    let ethPaymentAccount: PaymentAccount = await charlie.createCryptoPaymentAccount(
+        testAccount.currencyCode + " " +  testAccount.address.substr(0, 8) + "... " + GenUtils.getUUID(),
+        testAccount.currencyCode,
+        testAccount.address);
+    
+    // charlie cannot make offer with insufficient funds
+    try {
+      await postOffer(charlie, "buy", BigInt("200000000000"), ethPaymentAccount.getId());
+      throw new Error("Should have failed making offer with insufficient funds")
+    } catch (err) {
+      let errTyped = err as grpcWeb.RpcError;
+      assert.equal(errTyped.code, 2);
+      assert(errTyped.message.includes("not enough money"));
+    }
+    
+    // alice posts offer
+    let offers: OfferInfo[] = await alice.getMyOffers("buy"); // TODO: support alice.getMyOffers() without direction
+    let offer: OfferInfo;
+    if (offers.length) offer = offers[0];
+    else {
+      let tradeAmount: bigint = BigInt("250000000000");
+      await waitForUnlockedBalance(tradeAmount * BigInt("2"), alice);
+      offer = await postOffer(alice, "buy", tradeAmount, undefined);
+      assert.equal(offer.getState(), "AVAILABLE");
+    }
+    
+    // charlie cannot take offer with insufficient funds
+    try {
+      await charlie.takeOffer(offer.getId(), ethPaymentAccount.getId()); // TODO (woodser): this returns before trade is fully initialized. this fails with bad error message if trade is not yet seen by peer
+      throw new Error("Should have failed taking offer with insufficient funds")
+    } catch (err) {
+      let errTyped = err as grpcWeb.RpcError;
+      assert.equal(errTyped.code, 2);
+      assert(errTyped.message.includes("not enough money")); // TODO (woodser): error message does not contain stacktrace
+    }
+    
+    // charlie does not have trade
+    try {
+      await charlie.getTrade(offer.getId());
+    } catch (err) {
+      let errTyped = err as grpcWeb.RpcError;
+      assert.equal(errTyped.code, 3);
+      assert(errTyped.message.includes("trade with id '" + offer.getId() + "' not found"));  // TODO (woodser): error message does not contain stacktrace
+    }
+  } catch (err2) {
+    err = err2;
+  }
+  
+  // stop charlie
+  if (charlie) await stopHavenoProcess(charlie);
+  // TODO: how to delete trader app folder at end of test?
+  if (err) throw err;
+});
+
 // TODO (woodser): test grpc notifications
 test("Can complete a trade", async () => {
-    
+  
   // wait for alice and bob to have unlocked balance for trade
   let tradeAmount: bigint = BigInt("250000000000");
   await waitForUnlockedBalance(tradeAmount * BigInt("2"), alice, bob);
@@ -278,7 +365,7 @@ test("Can complete a trade", async () => {
   // alice posts offer to buy xmr
   console.log("Alice posting offer");
   let direction = "buy";
-  let offer: OfferInfo = await postOffer(alice, direction, tradeAmount);
+  let offer: OfferInfo = await postOffer(alice, direction, tradeAmount, undefined);
   expect(offer.getState()).toEqual("AVAILABLE");
   console.log("Alice done posting offer");
   
@@ -369,12 +456,59 @@ test("Can complete a trade", async () => {
 // ------------------------------- HELPERS ------------------------------------
 
 /**
+ * Start a Haveno trader process.
+ * 
+ * @return {HavenoDaemon} the client connected to the started Haveno process
+ */
+async function startTraderProcess(): Promise<HavenoDaemon> {
+    
+  // iterate to find unused proxy port
+  for (let port of Array.from(PROXY_PORTS.keys())) {
+    if (port === "8080" || port === "8081") continue; // reserved for alice and bob
+    let used = false;
+    for (let havenod of HAVENO_PROCESSES) {
+      if (port === new URL(havenod.getUrl()).port) {
+        used = true;
+        break;
+      }
+    }
+    
+    // start haveno process on unused port
+    if (!used) {
+      let appName = "haveno-XMR_STAGENET_trader_" + GenUtils.getUUID();
+      let cmd: string[] = [
+        "./haveno-daemon",
+        "--baseCurrencyNetwork", "XMR_STAGENET",
+        "--useLocalhostForP2P", "true",
+        "--useDevPrivilegeKeys", "true",
+        "--nodePort", PROXY_PORTS.get(port)![1],
+        "--appName", appName,
+        "--apiPassword", "apitest",
+        "--apiPort", PROXY_PORTS.get(port)![0]
+      ];
+      let havenod = await HavenoDaemon.startProcess(HAVENO_PATH, cmd, "http://localhost:" + port);
+      HAVENO_PROCESSES.push(havenod);
+      return havenod;
+    }
+  }
+  throw new Error("No unused test ports available");
+}
+
+/**
+ * Stop a Haveno trader process and release its ports for reuse.
+ */
+async function stopHavenoProcess(havenod: HavenoDaemon) {
+  await havenod.stopProcess();
+  GenUtils.remove(HAVENO_PROCESSES, havenod);
+}
+
+/**
  * Open or create funding wallet.
  */
 async function initFundingWallet() {
   
   // init client connected to monero-wallet-rpc
-  fundingWallet = await monerojs.connectToWalletRpc(fundingWalletUrl, fundingWalletUsername, fundingWalletPassword);
+  fundingWallet = await monerojs.connectToWalletRpc(FUNDING_WALLET_URL, FUNDING_WALLET_USERNAME, FUNDING_WALLET_PASSWORD);
   
   // check if wallet is open
   let walletIsOpen = false
@@ -388,7 +522,7 @@ async function initFundingWallet() {
     
     // attempt to open funding wallet
     try {
-      await fundingWallet.openWallet({path: defaultFundingWalletPath, password: fundingWalletPassword});
+      await fundingWallet.openWallet({path: DEFAULT_FUNDING_WALLET_PATH, password: FUNDING_WALLET_PASSWORD});
     } catch (e) {
       if (!(e instanceof monerojs.MoneroRpcError)) throw e;
       
@@ -396,7 +530,7 @@ async function initFundingWallet() {
       if (e.getCode() === -1) {
         
         // create wallet
-        await fundingWallet.createWallet({path: defaultFundingWalletPath, password: fundingWalletPassword});
+        await fundingWallet.createWallet({path: DEFAULT_FUNDING_WALLET_PATH, password: FUNDING_WALLET_PASSWORD});
       } else {
         throw e;
       }
@@ -447,7 +581,7 @@ async function waitForUnlockedBalance(amount: bigint, ...wallets: any[]) {
     if (depositNeeded > BigInt("0") && wallet._wallet !== fundingWallet) fundConfig.addDestination(await wallet.getDepositAddress(), depositNeeded * BigInt("10")); // deposit 10 times more than needed
   }
   if (fundConfig.getDestinations()) {
-    await waitForUnlockedBalance(minimumFunding, fundingWallet); // TODO (woodser): wait for enough to cover tx amount + fee
+    await waitForUnlockedBalance(MINIMUM_FUNDING, fundingWallet); // TODO (woodser): wait for enough to cover tx amount + fee
     try { await fundingWallet.createTx(fundConfig); }
     catch (err) { throw new Error("Error funding wallets: " + err.message); }
   }
@@ -506,14 +640,17 @@ async function wait(durationMs: number) {
   return new Promise(function(resolve) { setTimeout(resolve, durationMs); });
 }
 
-async function postOffer(maker: HavenoDaemon, direction: string, amount: bigint) {
+async function postOffer(maker: HavenoDaemon, direction: string, amount: bigint, paymentAccountId: string|undefined) {
     
-  // maker creates ethereum payment account
-  let testAccount =  TEST_CRYPTO_ACCOUNTS[0];
-  let ethPaymentAccount: PaymentAccount = await maker.createCryptoPaymentAccount(
-      testAccount.currencyCode + " " +  testAccount.address.substr(0, 8) + "... " + GenUtils.getUUID(),
-      testAccount.currencyCode,
-      testAccount.address);
+  // create payment account if not given
+  if (!paymentAccountId) {
+    let testAccount =  TEST_CRYPTO_ACCOUNTS[0];
+    let ethPaymentAccount: PaymentAccount = await maker.createCryptoPaymentAccount(
+    testAccount.currencyCode + " " +  testAccount.address.substr(0, 8) + "... " + GenUtils.getUUID(),
+    testAccount.currencyCode,
+    testAccount.address);
+    paymentAccountId = ethPaymentAccount.getId();
+  }
   
   // get unlocked balance before reserving offer
   let unlockedBalanceBefore: bigint = BigInt((await maker.getBalances()).getUnlockedBalance());
@@ -527,7 +664,7 @@ async function postOffer(maker: HavenoDaemon, direction: string, amount: bigint)
         amount,                     // amount
         BigInt("150000000000"),     // min amount
         0.15,                       // buyer security deposit, e.g. 15%
-        ethPaymentAccount.getId(),  // payment account id
+        paymentAccountId,           // payment account id
         undefined);                 // trigger price // TODO: fails if there is a decimal, gets converted to long?
   testOffer(offer);
 
