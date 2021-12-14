@@ -1,7 +1,7 @@
 import {HavenoUtils} from "./HavenoUtils";
 import * as grpcWeb from 'grpc-web';
 import {GetVersionClient, PriceClient, WalletsClient, OffersClient, PaymentAccountsClient, TradesClient} from './protobuf/GrpcServiceClientPb';
-import {GetVersionRequest, GetVersionReply, MarketPriceRequest, MarketPriceReply, MarketPricesRequest, MarketPricesReply, MarketPriceInfo, GetBalancesRequest, GetBalancesReply, XmrBalanceInfo, GetOffersRequest, GetOffersReply, OfferInfo, GetPaymentAccountsRequest, GetPaymentAccountsReply, CreateCryptoCurrencyPaymentAccountRequest, CreateCryptoCurrencyPaymentAccountReply, CreateOfferRequest, CreateOfferReply, CancelOfferRequest, TakeOfferRequest, TakeOfferReply, TradeInfo, GetTradeRequest, GetTradeReply, GetNewDepositSubaddressRequest, GetNewDepositSubaddressReply, ConfirmPaymentStartedRequest, ConfirmPaymentReceivedRequest} from './protobuf/grpc_pb';
+import {GetVersionRequest, GetVersionReply, MarketPriceRequest, MarketPriceReply, MarketPricesRequest, MarketPricesReply, MarketPriceInfo, GetBalancesRequest, GetBalancesReply, XmrBalanceInfo, GetOffersRequest, GetOffersReply, OfferInfo, GetPaymentAccountsRequest, GetPaymentAccountsReply, CreateCryptoCurrencyPaymentAccountRequest, CreateCryptoCurrencyPaymentAccountReply, CreateOfferRequest, CreateOfferReply, CancelOfferRequest, TakeOfferRequest, TakeOfferReply, TradeInfo, GetTradeRequest, GetTradeReply, GetTradesRequest, GetTradesReply, GetNewDepositSubaddressRequest, GetNewDepositSubaddressReply, ConfirmPaymentStartedRequest, ConfirmPaymentReceivedRequest} from './protobuf/grpc_pb';
 import {PaymentAccount, AvailabilityResult} from './protobuf/pb_pb';
 const console = require('console');
 
@@ -14,6 +14,8 @@ class HavenoDaemon {
   _url: string;
   _password: string;
   _process: any;
+  _processLogging: boolean = false;
+  _walletRpcPort: number|undefined;
   _getVersionClient: GetVersionClient;
   _priceClient: PriceClient;
   _walletsClient: WalletsClient;
@@ -28,7 +30,7 @@ class HavenoDaemon {
    * @param {string} password - Haveno daemon password
    */
   constructor(url: string, password: string) {
-    HavenoUtils.log(1, "Creating HavenoDaemon(" + url + ", " + password + ")");
+    HavenoUtils.log(2, "Creating HavenoDaemon(" + url + ", " + password + ")");
     if (!url) throw new Error("Must provide URL of Haveno daemon");
     if (!password) throw new Error("Must provide password of Haveno daemon");
     this._url = url;
@@ -47,29 +49,33 @@ class HavenoDaemon {
    * @param {string} havenoPath - path to Haveno binaries
    * @param {string[]} cmd - command to start the process
    * @param {string} url - Haveno daemon url (must proxy to api port)
+   * @param {boolean} enableLogging - specifies if logging is enabled or disabled at log level 3
    * @return {HavenoDaemon} a client connected to the newly started Haveno process
    */
-  static async startProcess(havenoPath: string, cmd: string[], url: string): Promise<HavenoDaemon> {
-    HavenoUtils.log(1, "Starting Haveno process: " + cmd);
-    
-    // start process
-    let process = require('child_process').spawn(cmd[0], cmd.slice(1), {cwd: havenoPath});
-    process.stdout.setEncoding('utf8');
-    process.stderr.setEncoding('utf8');
+  static async startProcess(havenoPath: string, cmd: string[], url: string, enableLogging: boolean): Promise<HavenoDaemon> {
     
     // return promise which resolves after starting havenod
-    let output = "";
-    let isResolved = false;
     return new Promise(function(resolve, reject) {
-        
+      HavenoUtils.log(2, "Starting Haveno process: " + cmd + " on proxy url: " + url);
+      
+      // state variables
+      let output = "";
+      let isResolved = false;
+      let daemon: HavenoDaemon|undefined = undefined;
+      
+      // start process
+      let childProcess = require('child_process').spawn(cmd[0], cmd.slice(1), {cwd: havenoPath});
+      childProcess.stdout.setEncoding('utf8');
+      childProcess.stderr.setEncoding('utf8');
+      
       // handle stdout
-      process.stdout.on('data', async function(data: any) {
+      childProcess.stdout.on('data', async function(data: any) {
         let line = data.toString();
-        HavenoUtils.log(2, line);
+        if (HavenoUtils.getLogLevel() >= 3 && loggingEnabled()) process.stdout.write(line);
         output += line + '\n'; // capture output in case of error
         
         // read success message
-        if (line.indexOf("initDomainServices") >= 0) {
+        if (line.indexOf("BisqHeadlessAppMain: onSetupComplete") >= 0) { // TODO (woodser): rename class
           
           // get api password
           let passwordIdx = cmd.indexOf("--apiPassword");
@@ -78,10 +84,15 @@ class HavenoDaemon {
             return;
           }
           let password = cmd[passwordIdx + 1];
-          
+
           // create client connected to internal process
-          let daemon = new HavenoDaemon(url, password);
-          daemon._process = process;
+          daemon = new HavenoDaemon(url, password);
+          daemon._process = childProcess;
+          daemon._processLogging = enableLogging;
+          
+          // get wallet rpc port
+          let walletRpcPortIdx = cmd.indexOf("--walletRpcBindPort");
+          if (walletRpcPortIdx >= 0) daemon._walletRpcPort = parseInt(cmd[walletRpcPortIdx + 1]);
           
           // resolve promise with client connected to internal process
           isResolved = true;
@@ -90,27 +101,31 @@ class HavenoDaemon {
       });
       
       // handle stderr
-      process.stderr.on('data', function(data: any) {
-        if (HavenoUtils.getLogLevel() >= 2) console.error(data);
+      childProcess.stderr.on('data', function(data: any) {
+        if (HavenoUtils.getLogLevel() >= 2 && loggingEnabled()) process.stderr.write(data);
       });
       
       // handle exit
-      process.on("exit", function(code: any) {
+      childProcess.on("exit", function(code: any) {
         if (!isResolved) reject(new Error("Haveno process terminated with exit code " + code + (output ? ":\n\n" + output : "")));
       });
       
       // handle error
-      process.on("error", function(err: any) {
+      childProcess.on("error", function(err: any) {
         if (err.message.indexOf("ENOENT") >= 0) reject(new Error("haveno-daemon does not exist at path '" + cmd[0] + "'"));
         if (!isResolved) reject(err);
       });
       
       // handle uncaught exception
-      process.on("uncaughtException", function(err: any, origin: any) {
+      childProcess.on("uncaughtException", function(err: any, origin: any) {
         console.error("Uncaught exception in Haveno process: " + err.message);
         console.error(origin);
         reject(err);
       });
+      
+      function loggingEnabled(): boolean {
+        return (daemon && daemon._processLogging) || (!daemon && enableLogging);
+      }
     });
   }
   
@@ -128,12 +143,31 @@ class HavenoDaemon {
   }
   
   /**
+   * Enable or disable process logging.
+   * 
+   * @param {boolean} enabled - specifies if logging is enabled or disabled
+   */
+  setProcessLogging(enabled: boolean) {
+    if (this._process === undefined) throw new Error("HavenoDaemon instance not created from new process");
+    this._processLogging = enabled;
+  }
+  
+  /**
    * Get the URL of the Haveno daemon.
    * 
    * @return {string} the URL of the Haveno daemon
    */
   getUrl(): string {
     return this._url;
+  }
+  
+  /**
+   * Get the port of the primary wallet rpc instance if known.
+   * 
+   * @return {number|undefined} the port of the primary wallet rpc instance if known
+   */
+  getWalletRpcPort(): number|undefined {
+    return this._walletRpcPort;
   }
   
   /**
@@ -255,8 +289,7 @@ class HavenoDaemon {
   /**
    * Get available offers to buy or sell XMR.
    * 
-   * @param {string} direction - one of "BUY" or "SELL"
-   * 
+   * @param {string} direction - one of "BUY" or "SELL" // TODO (woodser): make optional
    * @return {OfferInfo[]} available offers
    */
   async getOffers(direction: string): Promise<OfferInfo[]> {
@@ -272,8 +305,7 @@ class HavenoDaemon {
   /**
    * Get user's created offers to buy or sell XMR.
    * 
-   * @param {string} direction - one of "BUY" or "SELL"
-   * 
+   * @param {string} direction - one of "BUY" or "SELL" // TODO (woodser): make optional
    * @return {OfferInfo[]} the user's created offers
    */
   async getMyOffers(direction: string): Promise<OfferInfo[]> {
@@ -284,6 +316,21 @@ class HavenoDaemon {
         else resolve(response.getOffersList());
       });
     });
+  }
+  
+  /**
+   * Get my offer by id.
+   * 
+   * @param {string} offerId - id of the user's created offer
+   * @return {OfferInfo} the user's created offer
+   */
+  async getMyOffer(offerId: string): Promise<OfferInfo> {
+    // TODO: implement this call on the backend
+    let offers = await this.getMyOffers("buy");
+    for (let offer of offers) if (offer.getId() === offerId) return offer;
+    offers = await this.getMyOffers("sell");
+    for (let offer of offers) if (offer.getId() === offerId) return offer;
+    throw new Error("No offer with id: " + offerId);
   }
   
   /**
@@ -379,6 +426,21 @@ class HavenoDaemon {
       that._tradesClient.getTrade(new GetTradeRequest().setTradeId(tradeId), {password: that._password}, function(err: grpcWeb.RpcError, response: GetTradeReply) {
         if (err) reject(err);
         else resolve(response.getTrade()!);
+      });
+    });
+  }
+  
+  /**
+   * Get all trades.
+   * 
+   * @return {TradeInfo[]} all user trades
+   */
+  async getTrades(): Promise<TradeInfo[]> {
+    let that = this;
+    return new Promise(function(resolve, reject) {
+      that._tradesClient.getTrades(new GetTradesRequest(), {password: that._password}, function(err: grpcWeb.RpcError, response: GetTradesReply) {
+        if (err) reject(err);
+        else resolve(response.getTradesList());
       });
     });
   }
