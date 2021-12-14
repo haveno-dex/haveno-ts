@@ -16,7 +16,7 @@ class HavenoUtils {
    */
   static log(level: number, msg: string) {
     assert(level === parseInt(level + "", 10) && level >= 0, "Log level must be an integer >= 0");
-    if (HavenoUtils.LOG_LEVEL >= level) process.stdout.write(msg);
+    if (HavenoUtils.LOG_LEVEL >= level) console.log(msg);
   }
   
   /**
