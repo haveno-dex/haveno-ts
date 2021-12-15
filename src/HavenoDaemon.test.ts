@@ -311,10 +311,10 @@ test("Handles unexpected errors during trade initialization", async () => {
   try {
     
     // start and fund 3 trader processes
-    let tradeAmount: bigint = BigInt("250000000000");
     console.log("Starting trader processes");
     traders = await startTraderProcesses(3, LOG_PROCESS_OUTPUT);
-    await traders[0].getBalances();
+    console.log("Funding traders");
+    let tradeAmount: bigint = BigInt("250000000000");
     await waitForUnlockedBalance(tradeAmount * BigInt("2"), traders[0], traders[1], traders[2]);
     
     // trader 0 posts offer
