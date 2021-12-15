@@ -75,7 +75,7 @@ class HavenoDaemon {
         output += line + '\n'; // capture output in case of error
         
         // read success message
-        if (line.indexOf("BisqHeadlessAppMain: onSetupComplete") >= 0) { // TODO (woodser): rename class
+        if (line.indexOf("HavenoHeadlessAppMain: onSetupComplete") >= 0) {
           
           // get api password
           let passwordIdx = cmd.indexOf("--apiPassword");
