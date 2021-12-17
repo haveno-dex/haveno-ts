@@ -98,6 +98,11 @@ class HavenoDaemon {
           isResolved = true;
           resolve(daemon);
         }
+        
+        // read error message
+        if (line.indexOf("[HavenoDaemonMain] ERROR") >= 0) {
+          if (!isResolved) await rejectProcess(new Error(line));
+        }
       });
       
       // handle stderr
@@ -106,22 +111,27 @@ class HavenoDaemon {
       });
       
       // handle exit
-      childProcess.on("exit", function(code: any) {
-        if (!isResolved) reject(new Error("Haveno process terminated with exit code " + code + (output ? ":\n\n" + output : "")));
+      childProcess.on("exit", async function(code: any) {
+        if (!isResolved) await rejectProcess(new Error("Haveno process terminated with exit code " + code + (output ? ":\n\n" + output : "")));
       });
       
       // handle error
-      childProcess.on("error", function(err: any) {
+      childProcess.on("error", async function(err: any) {
         if (err.message.indexOf("ENOENT") >= 0) reject(new Error("haveno-daemon does not exist at path '" + cmd[0] + "'"));
-        if (!isResolved) reject(err);
+        if (!isResolved) await rejectProcess(err);
       });
       
       // handle uncaught exception
-      childProcess.on("uncaughtException", function(err: any, origin: any) {
+      childProcess.on("uncaughtException", async function(err: any, origin: any) {
         console.error("Uncaught exception in Haveno process: " + err.message);
         console.error(origin);
-        reject(err);
+        await rejectProcess(err);
       });
+      
+      async function rejectProcess(err: any) {
+        await HavenoUtils.kill(childProcess);
+        reject(err);
+      }
       
       function loggingEnabled(): boolean {
         return (daemon && daemon._processLogging) || (!daemon && enableLogging);
@@ -134,12 +144,16 @@ class HavenoDaemon {
    */
   async stopProcess(): Promise<void> {
     if (this._process === undefined) throw new Error("HavenoDaemon instance not created from new process");
-    let that = this;
-    return new Promise(function(resolve, reject) {
-      that._process.on("exit", function() { resolve(); });
-      that._process.on("error", function(err: any) { reject(err); });
-      that._process.kill("SIGINT");
-    });
+    return HavenoUtils.kill(this._process);
+  }
+  
+  /**
+   * Return the process running the haveno daemon.
+   * 
+   * @return the process running the haveno daemon
+   */
+  getProcess() {
+    return this._process;
   }
   
   /**

@@ -37,6 +37,21 @@ class HavenoUtils {
   static getLogLevel(): number {
     return HavenoUtils.LOG_LEVEL;
   }
+  
+  /**
+   * Kill the given process.
+   * 
+   * TODO (woodser): move this to monero-javascript GenUtils.js as common utility
+   * 
+   * @param process is the nodejs child process to child
+   */
+  static async kill(process: any): Promise<void> {
+    return new Promise(function(resolve, reject) {
+      process.on("exit", function() { resolve(); });
+      process.on("error", function(err: any) { reject(err); });
+      process.kill("SIGINT");
+    });
+  }
 }
 
 export {HavenoUtils};
