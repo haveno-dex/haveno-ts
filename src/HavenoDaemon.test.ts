@@ -5,12 +5,15 @@ import {HavenoDaemon} from "./HavenoDaemon";
 import {HavenoUtils} from "./HavenoUtils";
 import * as grpcWeb from 'grpc-web';
 import {XmrBalanceInfo, OfferInfo, TradeInfo, MarketPriceInfo} from './protobuf/grpc_pb'; // TODO (woodser): better names; haveno_grpc_pb, haveno_pb
-import {PaymentAccount, Offer} from './protobuf/pb_pb';
+import {PaymentAccount} from './protobuf/pb_pb';
+import {XmrDestination, XmrTx, XmrIncomingTransfer, XmrOutgoingTransfer} from './protobuf/grpc_pb';
 
 // import monero-javascript
 const monerojs = require("monero-javascript"); // TODO (woodser): support typescript and `npm install @types/monero-javascript` in monero-javascript
 const GenUtils = monerojs.GenUtils;
+const MoneroNetworkType = monerojs.MoneroNetworkType;
 const MoneroTxConfig = monerojs.MoneroTxConfig;
+const MoneroUtils = monerojs.MoneroUtils;
 const TaskLooper = monerojs.TaskLooper;
 
 // other required imports
@@ -87,6 +90,10 @@ const TestConfig = {
         ["8086", ["10005", "7781"]],
     ])
 };
+
+interface TxContext {
+    isCreatedTx: boolean;
+}
 
 // clients
 let arbitrator: HavenoDaemon;
@@ -186,6 +193,58 @@ test("Can get market prices", async () => {
   await expect(async () => {await alice.getPrice("INVALID_CURRENCY")})
     .rejects
     .toThrow('Currency not found: INVALID_CURRENCY');
+});
+
+// test wallet balances, transactions, deposit addresses, create and relay txs
+test("Has a Monero wallet", async () => { 
+  
+  // wait for alice to have unlocked balance
+  let tradeAmount: bigint = BigInt("250000000000");
+  await waitForUnlockedBalance(tradeAmount * BigInt("2"), alice);
+  
+  // test balances
+  let balancesBefore: XmrBalanceInfo = await alice.getBalances(); // TODO: rename to getXmrBalances() for consistency?
+  expect(BigInt(balancesBefore.getUnlockedBalance())).toBeGreaterThan(BigInt("0"));
+  expect(BigInt(balancesBefore.getBalance())).toBeGreaterThanOrEqual(BigInt(balancesBefore.getUnlockedBalance()));
+  
+  // get transactions
+  let txs: XmrTx[]= await alice.getXmrTxs();
+  assert(txs.length > 0);
+  for (let tx of txs) {
+    testTx(tx, {isCreatedTx: false});
+  }
+  
+  // get new deposit addresses
+  for (let i = 0; i < 0; i++) {
+    let address = await alice.getNewDepositSubaddress(); // TODO: rename to getNewDepositAddress()
+    MoneroUtils.validateAddress(address, MoneroNetworkType.STAGNET);
+  }
+  
+  // create withdraw tx
+  let destination = new XmrDestination().setAddress(await alice.getNewDepositSubaddress()).setAmount("100000000000");
+  let tx = await alice.createXmrTx([destination]);
+  testTx(tx, {isCreatedTx: true});
+  
+  // relay withdraw tx
+  let txHash = await alice.relayXmrTx(tx.getMetadata());
+  expect(txHash.length).toEqual(64);
+  
+  // balances decreased
+  let balancesAfter = await alice.getBalances();
+  expect(BigInt(balancesAfter.getBalance())).toBeLessThan(BigInt(balancesBefore.getBalance()));
+  expect(BigInt(balancesAfter.getUnlockedBalance())).toBeLessThan(BigInt(balancesBefore.getUnlockedBalance()));
+  
+  // get relayed tx
+  tx = await alice.getXmrTx(txHash);
+  testTx(tx, {isCreatedTx: false});
+  
+  // relay invalid tx
+  try {
+    await alice.relayXmrTx("invalid tx metadata");
+    throw new Error("Cannot relay invalid tx metadata");
+  } catch (err) {
+    if (err.message !== "Failed to parse hex.") throw new Error("Unexpected error: " + err.message);
+  }
 });
 
 test("Can get balances", async () => {
@@ -335,7 +394,7 @@ test("Invalidates offers when reserved funds are spent", async () => {
       await alice.removeOffer(offer.getId());
       throw new Error("cannot remove invalidated offer");
     } catch (err) {
-      if (err.message === "cannot remove invalidated offer") throw new Error(err.message);
+      if (err.message === "cannot remove invalidated offer") throw new Error("Unexpected error: " + err.message);
     }
   } catch (err2) {
     err = err2;
@@ -855,6 +914,62 @@ async function wait(durationMs: number) {
   return new Promise(function(resolve) { setTimeout(resolve, durationMs); });
 }
 
+function testTx(tx: XmrTx, ctx: TxContext) {
+  assert(tx.getHash());
+  expect(BigInt(tx.getFee())).toBeLessThan(TestConfig.maxFee);
+  if (tx.getIsConfirmed()) {
+    assert(tx.getTimestamp() > 1000);
+    assert(tx.getHeight() > 0);
+  } else {
+    assert.equal(tx.getHeight(), 0);
+  }
+  assert(tx.getOutgoingTransfer() || tx.getIncomingTransfersList().length); // TODO (woodser): test transfers
+  for (let incomingTransfer of tx.getIncomingTransfersList()) testTransfer(incomingTransfer, ctx);
+  if (tx.getOutgoingTransfer()) testTransfer(tx.getOutgoingTransfer()!, ctx);
+  if (ctx.isCreatedTx) testCreatedTx(tx, ctx);
+}
+
+function testCreatedTx(tx: XmrTx, ctx: TxContext) {
+   assert.equal(tx.getTimestamp(), 0);
+   assert.equal(tx.getIsConfirmed(), false);
+   assert.equal(tx.getIsLocked(), true);
+   assert(tx.getMetadata() && tx.getMetadata().length > 0);
+}
+
+function testTransfer(transfer: XmrIncomingTransfer|XmrOutgoingTransfer, ctx: TxContext) {
+  expect(BigInt(transfer.getAmount())).toBeGreaterThanOrEqual(BigInt("0"));
+  assert(transfer.getAccountIndex() >= 0);
+  if (transfer instanceof XmrIncomingTransfer) testIncomingTransfer(transfer, ctx);
+  else testOutgoingTransfer(transfer, ctx);
+}
+
+function testIncomingTransfer(transfer: XmrIncomingTransfer, ctx: TxContext) {
+  assert(transfer.getAddress());
+  assert(transfer.getSubaddressIndex() >= 0);
+  assert(transfer.getNumSuggestedConfirmations() > 0);
+}
+
+function testOutgoingTransfer(transfer: XmrOutgoingTransfer, ctx: TxContext) {
+  if (!ctx.isCreatedTx) assert(transfer.getSubaddressIndicesList().length > 0);
+  for (let subaddressIdx of transfer.getSubaddressIndicesList()) assert(subaddressIdx >= 0);
+  
+  // test destinations sum to outgoing amount
+  if (transfer.getDestinationsList().length > 0) {
+    let sum = BigInt(0);
+    for (let destination of transfer.getDestinationsList()) {
+      testDestination(destination);
+      expect(BigInt(destination.getAmount())).toBeGreaterThan(BigInt("0"));
+      sum += BigInt(destination.getAmount());
+    }
+    assert.equal(sum, BigInt(transfer.getAmount()));
+  }
+}
+
+function testDestination(destination: XmrDestination) {
+  assert(destination.getAddress());
+  expect(BigInt(destination.getAmount())).toBeGreaterThan(BigInt("0"));
+}
+
 async function createCryptoPaymentAccount(trader: HavenoDaemon): Promise<PaymentAccount> {
   let testAccount =  TestConfig.cryptoAccounts[0];
   let paymentAccount: PaymentAccount = await trader.createCryptoPaymentAccount(
@@ -891,7 +1006,6 @@ async function postOffer(maker: HavenoDaemon, direction: string, amount: bigint,
   
   // offer is included in my offers only
   if (!getOffer(await maker.getMyOffers(direction), offer.getId())) {
-    console.log("OK, we couldn't get the offer, let's wait");
     await wait(10000);
     if (!getOffer(await maker.getMyOffers(direction), offer.getId())) throw new Error("Offer " + offer.getId() + " was not found in my offers");
     else console.log("The offer finally posted!");
@@ -899,10 +1013,6 @@ async function postOffer(maker: HavenoDaemon, direction: string, amount: bigint,
   if (getOffer(await maker.getOffers(direction), offer.getId())) throw new Error("My offer " + offer.getId() + " should not appear in available offers");
   
   return offer;
-}
-
-function getBalancesStr(balances: XmrBalanceInfo) {
-  return "[balance=" + balances.getBalance() + ", unlocked balance=" + balances.getUnlockedBalance() + ", locked balance=" + balances.getLockedBalance() + ", reserved offer balance=" + balances.getReservedOfferBalance() + ", reserved trade balance: " + balances.getReservedTradeBalance() + "]";
 }
 
 function getOffer(offers: OfferInfo[], id: string): OfferInfo | undefined {

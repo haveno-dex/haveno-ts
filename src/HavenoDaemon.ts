@@ -1,7 +1,7 @@
 import {HavenoUtils} from "./HavenoUtils";
 import * as grpcWeb from 'grpc-web';
 import {GetVersionClient, PriceClient, WalletsClient, OffersClient, PaymentAccountsClient, TradesClient} from './protobuf/GrpcServiceClientPb';
-import {GetVersionRequest, GetVersionReply, MarketPriceRequest, MarketPriceReply, MarketPricesRequest, MarketPricesReply, MarketPriceInfo, GetBalancesRequest, GetBalancesReply, XmrBalanceInfo, GetOffersRequest, GetOffersReply, OfferInfo, GetPaymentAccountsRequest, GetPaymentAccountsReply, CreateCryptoCurrencyPaymentAccountRequest, CreateCryptoCurrencyPaymentAccountReply, CreateOfferRequest, CreateOfferReply, CancelOfferRequest, TakeOfferRequest, TakeOfferReply, TradeInfo, GetTradeRequest, GetTradeReply, GetTradesRequest, GetTradesReply, GetNewDepositSubaddressRequest, GetNewDepositSubaddressReply, ConfirmPaymentStartedRequest, ConfirmPaymentReceivedRequest} from './protobuf/grpc_pb';
+import {GetVersionRequest, GetVersionReply, MarketPriceRequest, MarketPriceReply, MarketPricesRequest, MarketPricesReply, MarketPriceInfo, GetBalancesRequest, GetBalancesReply, XmrBalanceInfo, GetOffersRequest, GetOffersReply, OfferInfo, GetPaymentAccountsRequest, GetPaymentAccountsReply, CreateCryptoCurrencyPaymentAccountRequest, CreateCryptoCurrencyPaymentAccountReply, CreateOfferRequest, CreateOfferReply, CancelOfferRequest, TakeOfferRequest, TakeOfferReply, TradeInfo, GetTradeRequest, GetTradeReply, GetTradesRequest, GetTradesReply, GetNewDepositSubaddressRequest, GetNewDepositSubaddressReply, ConfirmPaymentStartedRequest, ConfirmPaymentReceivedRequest, XmrTx, GetXmrTxsRequest, GetXmrTxsReply, XmrDestination, CreateXmrTxRequest, CreateXmrTxReply, RelayXmrTxRequest, RelayXmrTxReply} from './protobuf/grpc_pb';
 import {PaymentAccount, AvailabilityResult} from './protobuf/pb_pb';
 const console = require('console');
 
@@ -246,7 +246,7 @@ class HavenoDaemon {
   }
   
   /**
-   * Get a new subaddress in the Haveno wallet to receive deposits.
+   * Get a new subaddress in the Monero wallet to receive deposits.
    * 
    * @return {string} the deposit address (a subaddress in the Haveno wallet)
    */
@@ -259,7 +259,66 @@ class HavenoDaemon {
       });
     });
   }
+    
+  /**
+   * Get all transactions in the Monero wallet.
+   * 
+   * @return {XmrTx[]} the transactions
+   */
+  async getXmrTxs(): Promise<XmrTx[]> {
+    let that = this;
+    return new Promise(function(resolve, reject) {
+      that._walletsClient.getXmrTxs(new GetXmrTxsRequest(), {password: that._password}, function(err: grpcWeb.RpcError, response: GetXmrTxsReply) {
+        if (err) reject(err);
+        else resolve(response.getTxsList());
+      });
+    });
+  }
   
+  /**
+   * Get a transaction by hash in the Monero wallet.
+   * 
+   * @param {String} txHash - hash of the transaction to get
+   * @return {XmrTx} the transaction with the hash
+   */
+  async getXmrTx(txHash: string): Promise<XmrTx> {
+    let txs = await this.getXmrTxs(); // TODO (woodser): implement getXmrTx(hash) grpc call
+    for (let tx of txs) {
+      if (tx.getHash() === txHash) return tx;
+    }
+    throw new Error("No transaction with hash " + txHash);
+  }
+
+  /**
+   * Create but do not relay a transaction to send funds from the Monero wallet.
+   * 
+   * @return {XmrTx} the created transaction
+   */
+  async createXmrTx(destinations: XmrDestination[]): Promise<XmrTx> {
+    let that = this;
+    return new Promise(function(resolve, reject) {
+      that._walletsClient.createXmrTx(new CreateXmrTxRequest().setDestinationsList(destinations), {password: that._password}, function(err: grpcWeb.RpcError, response: CreateXmrTxReply) {
+        if (err) reject(err);
+        else resolve(response.getTx());
+      });
+    });
+  }
+
+  /**
+   * Relay a previously created transaction to send funds from the Monero wallet.
+   * 
+   * @return {string} the hash of the relayed transaction
+   */
+  async relayXmrTx(metadata: string): Promise<string> {
+    let that = this;
+    return new Promise(function(resolve, reject) {
+      that._walletsClient.relayXmrTx(new RelayXmrTxRequest().setMetadata(metadata), {password: that._password}, function(err: grpcWeb.RpcError, response: RelayXmrTxReply) {
+        if (err) reject(err);
+        else resolve(response.getHash());
+      });
+    });
+  }
+
   /**
    * Get payment accounts.
    * 
