@@ -88,7 +88,9 @@ const TestConfig = {
         ["8084", ["10003", "7779"]],
         ["8085", ["10004", "7780"]],
         ["8086", ["10005", "7781"]],
-    ])
+    ]),
+    // from DEV_PRIVILEGE_PRIV_KEY
+    devPrivPrivateKey: "6ac43ea1df2a290c1c8391736aa42e4339c5cb4f110ff0257a13b63211977b7a"
 };
 
 interface TxContext {
@@ -160,6 +162,43 @@ jest.setTimeout(400000);
 test("Can get the version", async () => {
   let version = await arbitrator.getVersion();
   expect(version).toEqual(TestConfig.haveno.version);
+});
+
+// Current implementation of required arbitor roles is implemented in GrpcDisputeAgentsService.
+// The arbitration agent role has not yet been implemented since the dispute agent registers as `MEDIATON` and `REFUND` SupportTypes, 
+// which are parsed from the disputeAgentType strings.
+// Haveno does not provide any UI to enable the `ARBITRATION` type yet.
+test("Can register arbitrator as dispute agent types", async () => {
+  
+  try {
+    console.log("Registering arbitrator as mediation agent");
+    // DEV_PRIVILEGE_PRIV_KEY is expected by the service.
+    await arbitrator.registerDisputeAgent("mediator", TestConfig.devPrivPrivateKey);
+    console.log("Registering arbitrator as refund agent");
+    await arbitrator.registerDisputeAgent("refundagent", TestConfig.devPrivPrivateKey);
+  } catch (err) {
+    console.log("Error registering dispute agent:", err.message);
+  }
+  console.log("Dispute agent registration complete");
+
+  try {
+    console.log("Registering dispute agent with bad key");
+    await arbitrator.registerDisputeAgent("mediator", "bad key");
+    throw Error("unexpected")
+  } catch (err) {
+    if (err.message === "unexpected") throw Error("Unexpected error: registered dispute agent with bad key");
+    expect(err.message).toEqual("invalid registration key");
+  }
+
+  try {
+    console.log("Registering dispute agent with bad type");
+    await arbitrator.registerDisputeAgent("unsupported type", TestConfig.devPrivPrivateKey);
+    throw Error("unexpected")
+  } catch (err) {
+    if (err.message === "unexpected") throw Error("Unexpected error: registered dispute agent with bad type");
+    expect(err.message).toEqual("unknown dispute agent type 'unsupported type'");
+  }
+
 });
 
 test("Can get market prices", async () => {
