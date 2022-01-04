@@ -12,6 +12,7 @@ This application is a lightly modified [create-react-app](https://github.com/fac
 4. Install protobuf for your system:<br>
     mac: `brew install protobuf`<br>
     linux: `apt install protobuf-compiler`
+    NOTE: You may need to upgrade to v3.19.1 manually if your package manager installs an older version.
 5.  Download `protoc-gen-grpc-web` plugin and make executable as [shown here](https://github.com/grpc/grpc-web#code-generator-plugin).
 6. `cd haveno-ui-poc`
 7. `npm install`
@@ -35,7 +36,47 @@ Running the [top-level API tests](./src/HavenoDaemon.test.ts) is a great way to 
 5. Install protobuf for your system:<br>
     mac: `brew install protobuf`<br>
     linux: `apt install protobuf-compiler`
+    NOTE: You may need to upgrade to v3.19.1 manually if your package manager installs an older version.
 6. Download `protoc-gen-grpc-web` plugin and make executable as [shown here](https://github.com/grpc/grpc-web#code-generator-plugin).
 7. `cd haveno-ui-poc`
 8. `npm install`
 9. `npm test` to run all tests or `npm run test -- -t 'my test'` to run tests by name.
+
+## Troubleshooting
+
+### Running Haveno UI POC results in error stack:
+
+```
+Error: error:0308010C:digital envelope routines::unsupported
+    at new Hash (node:internal/crypto/hash:67:19)
+    at Object.createHash (node:crypto:130:10)
+    ...
+```
+
+If you are using node.js v17+, this is caused by a bug in a dependency.
+Run the following command in your terminal:
+```
+export NODE_OPTIONS=--openssl-legacy-provider
+```
+
+### Running envoy in Docker fails with permission error:
+
+```
+docker: Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Post http://%2Fvar%2Frun%2Fdocker.sock/v1.35/containers/create: dial unix /var/run/docker.sock: connect: permission denied. See 'docker run --help'.
+```
+
+Run the following command in your terminal:
+```
+sudo chmod 666 /var/run/docker.sock
+```
+
+### Test fails with error:
+
+`wallet and network is not yet initialized`
+
+Mine some blocks in monerod to an address:
+1. In the monerod console enter `start_mining <address> 1`
+2. Wait for some blocks to show up.
+3. Enter `stop_mining`
+
+
