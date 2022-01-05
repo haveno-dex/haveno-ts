@@ -9,7 +9,7 @@ This application is a lightly modified [create-react-app](https://github.com/fac
 1. [Run a local Haveno test network](https://github.com/haveno-dex/haveno/blob/master/docs/installing.md), running Alice as a daemon with `make alice-daemon`.
 2. Clone this project to the same parent directory as the haveno project: `git clone https://github.com/haveno-dex/haveno-ui-poc`
 3. In a new terminal, start envoy with the config in haveno-ui-poc/config/envoy.yaml (change absolute path for your system): `docker run --rm --add-host host.docker.internal:host-gateway -it -v ~/git/haveno-ui-poc/config/envoy.yaml:/envoy.yaml -p 8080:8080 envoyproxy/envoy-dev:8a2143613d43d17d1eb35a24b4a4a4c432215606 -c /envoy.yaml`
-4. Install protobuf compiler 3.19.1 or later for your system:<br>
+4. Install protobuf compiler v3.19.1 or later for your system:<br>
     mac: `brew install protobuf`<br>
     linux: `apt install protobuf-compiler`
     NOTE: You may need to upgrade to v3.19.1 manually if your package manager installs an older version.
@@ -33,7 +33,7 @@ Running the [top-level API tests](./src/HavenoDaemon.test.ts) is a great way to 
 2. Clone this project to the same parent directory as the haveno project: `git clone https://github.com/haveno-dex/haveno-ui-poc`
 3. In a new terminal, start envoy with the config in haveno-ui-poc/config/envoy.test.yaml (change absolute path for your system): `docker run --rm --add-host host.docker.internal:host-gateway -it -v ~/git/haveno-ui-poc/config/envoy.test.yaml:/envoy.test.yaml -p 8079:8079 -p 8080:8080 -p 8081:8081 -p 8082:8082 -p 8083:8083 -p 8084:8084 -p 8085:8085 -p 8086:8086 envoyproxy/envoy-dev:8a2143613d43d17d1eb35a24b4a4a4c432215606 -c /envoy.test.yaml`
 4. In a new terminal, start the funding wallet. This wallet will be automatically funded in order to fund Alice and Bob during the tests.<br>For example: `cd ~/git/haveno && make funding-wallet`.
-5. Install protobuf compiler 3.19.1 or later for your system:<br>
+5. Install protobuf compiler v3.19.1 or later for your system:<br>
     mac: `brew install protobuf`<br>
     linux: `apt install protobuf-compiler`
     NOTE: You may need to upgrade to v3.19.1 manually if your package manager installs an older version.
@@ -41,5 +41,3 @@ Running the [top-level API tests](./src/HavenoDaemon.test.ts) is a great way to 
 7. `cd haveno-ui-poc`
 8. `npm install`
 9. `npm test` to run all tests or `npm run test -- -t 'my test'` to run tests by name.
-
-

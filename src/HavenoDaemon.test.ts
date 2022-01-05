@@ -89,8 +89,7 @@ const TestConfig = {
         ["8085", ["10004", "7780"]],
         ["8086", ["10005", "7781"]],
     ]),
-    // from DEV_PRIVILEGE_PRIV_KEY
-    devPrivPrivateKey: "6ac43ea1df2a290c1c8391736aa42e4339c5cb4f110ff0257a13b63211977b7a"
+    devPrivilegePrivKey: "6ac43ea1df2a290c1c8391736aa42e4339c5cb4f110ff0257a13b63211977b7a" // from DEV_PRIVILEGE_PRIV_KEY
 };
 
 interface TxContext {
@@ -129,6 +128,10 @@ beforeAll(async () => {
   if (daemons[2].status === "fulfilled") bob = (daemons[2] as PromiseFulfilledResult<HavenoDaemon>).value;
   else throw new Error((daemons[2] as PromiseRejectedResult).reason);
   
+  // register arbitrator as dispute agents
+  await arbitrator.registerDisputeAgent("mediator", TestConfig.devPrivilegePrivKey);
+  await arbitrator.registerDisputeAgent("refundagent", TestConfig.devPrivilegePrivKey);
+
   // connect monero clients
   monerod = await monerojs.connectToDaemonRpc(TestConfig.monerod.url, TestConfig.monerod.username, TestConfig.monerod.password);
   aliceWallet = await monerojs.connectToWalletRpc(TestConfig.alice.walletUrl, TestConfig.alice.walletUsername, TestConfig.alice.walletPassword);
@@ -150,8 +153,8 @@ beforeEach(async() => {
 afterAll(async () => {
   let stopPromises = [];
   if (arbitrator && arbitrator.getProcess()) stopPromises.push(stopHavenoProcess(arbitrator));
-  if (alice && alice.getProcess())stopPromises.push(stopHavenoProcess(alice));
-  if (bob && bob.getProcess())stopPromises.push(stopHavenoProcess(bob));
+  if (alice && alice.getProcess()) stopPromises.push(stopHavenoProcess(alice));
+  if (bob && bob.getProcess()) stopPromises.push(stopHavenoProcess(bob));
   return Promise.all(stopPromises);
 });
 
@@ -164,41 +167,25 @@ test("Can get the version", async () => {
   expect(version).toEqual(TestConfig.haveno.version);
 });
 
-// Current implementation of required arbitor roles is implemented in GrpcDisputeAgentsService.
-// The arbitration agent role has not yet been implemented since the dispute agent registers as `MEDIATON` and `REFUND` SupportTypes, 
-// which are parsed from the disputeAgentType strings.
-// Haveno does not provide any UI to enable the `ARBITRATION` type yet.
-test("Can register arbitrator as dispute agent types", async () => {
+test("Can register as dispute agents", async () => {
+  await arbitrator.registerDisputeAgent("mediator", TestConfig.devPrivilegePrivKey);    // TODO: bisq mediator = haveno arbitrator
+  await arbitrator.registerDisputeAgent("refundagent", TestConfig.devPrivilegePrivKey); // TODO: no refund agent in haveno
   
+  // test bad dispute agent type
   try {
-    console.log("Registering arbitrator as mediation agent");
-    // DEV_PRIVILEGE_PRIV_KEY is expected by the service.
-    await arbitrator.registerDisputeAgent("mediator", TestConfig.devPrivPrivateKey);
-    console.log("Registering arbitrator as refund agent");
-    await arbitrator.registerDisputeAgent("refundagent", TestConfig.devPrivPrivateKey);
+    await arbitrator.registerDisputeAgent("unsupported type", TestConfig.devPrivilegePrivKey);
+    throw new Error("should have thrown error registering bad type");
   } catch (err) {
-    console.log("Error registering dispute agent:", err.message);
+    if (err.message !== "unknown dispute agent type 'unsupported type'") throw new Error("Unexpected error: " + err.message);
   }
-  console.log("Dispute agent registration complete");
-
+  
+  // test bad key
   try {
-    console.log("Registering dispute agent with bad key");
     await arbitrator.registerDisputeAgent("mediator", "bad key");
-    throw Error("unexpected")
+    throw new Error("should have thrown error registering bad key");
   } catch (err) {
-    if (err.message === "unexpected") throw Error("Unexpected error: registered dispute agent with bad key");
-    expect(err.message).toEqual("invalid registration key");
+    if (err.message !== "invalid registration key") throw new Error("Unexpected error: " + err.message);
   }
-
-  try {
-    console.log("Registering dispute agent with bad type");
-    await arbitrator.registerDisputeAgent("unsupported type", TestConfig.devPrivPrivateKey);
-    throw Error("unexpected")
-  } catch (err) {
-    if (err.message === "unexpected") throw Error("Unexpected error: registered dispute agent with bad type");
-    expect(err.message).toEqual("unknown dispute agent type 'unsupported type'");
-  }
-
 });
 
 test("Can get market prices", async () => {
@@ -464,7 +451,7 @@ test("Handles unexpected errors during trade initialization", async () => {
     offer = await traders[0].getMyOffer(offer.getId());
     assert.equal(offer.getState(), "AVAILABLE");
     
-    // wait for offer for offer to be seen
+    // wait for offer to be seen
     await wait(TestConfig.walletSyncPeriodMs * 2);
     
     // trader 1 spends trade funds after initializing trade
