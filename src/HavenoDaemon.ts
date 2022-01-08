@@ -1,7 +1,7 @@
 import {HavenoUtils} from "./HavenoUtils";
 import * as grpcWeb from 'grpc-web';
-import {GetVersionClient, PriceClient, WalletsClient, OffersClient, PaymentAccountsClient, TradesClient} from './protobuf/GrpcServiceClientPb';
-import {GetVersionRequest, GetVersionReply, MarketPriceRequest, MarketPriceReply, MarketPricesRequest, MarketPricesReply, MarketPriceInfo, GetBalancesRequest, GetBalancesReply, XmrBalanceInfo, GetOffersRequest, GetOffersReply, OfferInfo, GetPaymentAccountsRequest, GetPaymentAccountsReply, CreateCryptoCurrencyPaymentAccountRequest, CreateCryptoCurrencyPaymentAccountReply, CreateOfferRequest, CreateOfferReply, CancelOfferRequest, TakeOfferRequest, TakeOfferReply, TradeInfo, GetTradeRequest, GetTradeReply, GetTradesRequest, GetTradesReply, GetNewDepositSubaddressRequest, GetNewDepositSubaddressReply, ConfirmPaymentStartedRequest, ConfirmPaymentReceivedRequest, XmrTx, GetXmrTxsRequest, GetXmrTxsReply, XmrDestination, CreateXmrTxRequest, CreateXmrTxReply, RelayXmrTxRequest, RelayXmrTxReply} from './protobuf/grpc_pb';
+import {GetVersionClient, DisputeAgentsClient, PriceClient, WalletsClient, OffersClient, PaymentAccountsClient, TradesClient} from './protobuf/GrpcServiceClientPb';
+import {GetVersionRequest, GetVersionReply, RegisterDisputeAgentRequest, MarketPriceRequest, MarketPriceReply, MarketPricesRequest, MarketPricesReply, MarketPriceInfo, GetBalancesRequest, GetBalancesReply, XmrBalanceInfo, GetOffersRequest, GetOffersReply, OfferInfo, GetPaymentAccountsRequest, GetPaymentAccountsReply, CreateCryptoCurrencyPaymentAccountRequest, CreateCryptoCurrencyPaymentAccountReply, CreateOfferRequest, CreateOfferReply, CancelOfferRequest, TakeOfferRequest, TakeOfferReply, TradeInfo, GetTradeRequest, GetTradeReply, GetTradesRequest, GetTradesReply, GetNewDepositSubaddressRequest, GetNewDepositSubaddressReply, ConfirmPaymentStartedRequest, ConfirmPaymentReceivedRequest, XmrTx, GetXmrTxsRequest, GetXmrTxsReply, XmrDestination, CreateXmrTxRequest, CreateXmrTxReply, RelayXmrTxRequest, RelayXmrTxReply} from './protobuf/grpc_pb';
 import {PaymentAccount, AvailabilityResult} from './protobuf/pb_pb';
 const console = require('console');
 
@@ -17,6 +17,7 @@ class HavenoDaemon {
   _processLogging: boolean = false;
   _walletRpcPort: number|undefined;
   _getVersionClient: GetVersionClient;
+  _disputeAgentsClient: DisputeAgentsClient;
   _priceClient: PriceClient;
   _walletsClient: WalletsClient;
   _paymentAccountsClient: PaymentAccountsClient;
@@ -36,6 +37,7 @@ class HavenoDaemon {
     this._url = url;
     this._password = password;
     this._getVersionClient = new GetVersionClient(this._url);
+    this._disputeAgentsClient = new DisputeAgentsClient(this._url);
     this._priceClient = new PriceClient(this._url);
     this._walletsClient = new WalletsClient(this._url);
     this._paymentAccountsClient = new PaymentAccountsClient(this._url);
@@ -195,6 +197,25 @@ class HavenoDaemon {
       that._getVersionClient.getVersion(new GetVersionRequest(), {password: that._password}, function(err: grpcWeb.RpcError, response: GetVersionReply) {
         if (err) reject(err);
         else resolve(response.getVersion());
+      });
+    });
+  }
+  
+  /**
+   * Register as a dispute agent.
+   * 
+   * @param {string} disputeAgentType - type of dispute agent to register, e.g. mediator, refundagent
+   * @param {string} registrationKey - registration key
+   */
+  async registerDisputeAgent(disputeAgentType: string, registrationKey: string): Promise<void> {
+    let that = this;
+    let request = new RegisterDisputeAgentRequest()
+        .setDisputeAgentType(disputeAgentType)
+        .setRegistrationKey(registrationKey);
+    return new Promise(function(resolve, reject) {
+      that._disputeAgentsClient.registerDisputeAgent(request, {password: that._password}, function(err: grpcWeb.RpcError) {
+        if (err) reject(err);
+        else resolve();
       });
     });
   }

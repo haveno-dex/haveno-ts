@@ -88,7 +88,8 @@ const TestConfig = {
         ["8084", ["10003", "7779"]],
         ["8085", ["10004", "7780"]],
         ["8086", ["10005", "7781"]],
-    ])
+    ]),
+    devPrivilegePrivKey: "6ac43ea1df2a290c1c8391736aa42e4339c5cb4f110ff0257a13b63211977b7a" // from DEV_PRIVILEGE_PRIV_KEY
 };
 
 interface TxContext {
@@ -127,6 +128,10 @@ beforeAll(async () => {
   if (daemons[2].status === "fulfilled") bob = (daemons[2] as PromiseFulfilledResult<HavenoDaemon>).value;
   else throw new Error((daemons[2] as PromiseRejectedResult).reason);
   
+  // register arbitrator as dispute agents
+  await arbitrator.registerDisputeAgent("mediator", TestConfig.devPrivilegePrivKey);
+  await arbitrator.registerDisputeAgent("refundagent", TestConfig.devPrivilegePrivKey);
+
   // connect monero clients
   monerod = await monerojs.connectToDaemonRpc(TestConfig.monerod.url, TestConfig.monerod.username, TestConfig.monerod.password);
   aliceWallet = await monerojs.connectToWalletRpc(TestConfig.alice.walletUrl, TestConfig.alice.walletUsername, TestConfig.alice.walletPassword);
@@ -148,8 +153,8 @@ beforeEach(async() => {
 afterAll(async () => {
   let stopPromises = [];
   if (arbitrator && arbitrator.getProcess()) stopPromises.push(stopHavenoProcess(arbitrator));
-  if (alice && alice.getProcess())stopPromises.push(stopHavenoProcess(alice));
-  if (bob && bob.getProcess())stopPromises.push(stopHavenoProcess(bob));
+  if (alice && alice.getProcess()) stopPromises.push(stopHavenoProcess(alice));
+  if (bob && bob.getProcess()) stopPromises.push(stopHavenoProcess(bob));
   return Promise.all(stopPromises);
 });
 
@@ -160,6 +165,27 @@ jest.setTimeout(400000);
 test("Can get the version", async () => {
   let version = await arbitrator.getVersion();
   expect(version).toEqual(TestConfig.haveno.version);
+});
+
+test("Can register as dispute agents", async () => {
+  await arbitrator.registerDisputeAgent("mediator", TestConfig.devPrivilegePrivKey);    // TODO: bisq mediator = haveno arbitrator
+  await arbitrator.registerDisputeAgent("refundagent", TestConfig.devPrivilegePrivKey); // TODO: no refund agent in haveno
+  
+  // test bad dispute agent type
+  try {
+    await arbitrator.registerDisputeAgent("unsupported type", TestConfig.devPrivilegePrivKey);
+    throw new Error("should have thrown error registering bad type");
+  } catch (err) {
+    if (err.message !== "unknown dispute agent type 'unsupported type'") throw new Error("Unexpected error: " + err.message);
+  }
+  
+  // test bad key
+  try {
+    await arbitrator.registerDisputeAgent("mediator", "bad key");
+    throw new Error("should have thrown error registering bad key");
+  } catch (err) {
+    if (err.message !== "invalid registration key") throw new Error("Unexpected error: " + err.message);
+  }
 });
 
 test("Can get market prices", async () => {
@@ -425,7 +451,7 @@ test("Handles unexpected errors during trade initialization", async () => {
     offer = await traders[0].getMyOffer(offer.getId());
     assert.equal(offer.getState(), "AVAILABLE");
     
-    // wait for offer for offer to be seen
+    // wait for offer to be seen
     await wait(TestConfig.walletSyncPeriodMs * 2);
     
     // trader 1 spends trade funds after initializing trade
