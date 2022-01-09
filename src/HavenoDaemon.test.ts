@@ -4,7 +4,7 @@
 import {HavenoDaemon} from "./HavenoDaemon";
 import {HavenoUtils} from "./HavenoUtils";
 import * as grpcWeb from 'grpc-web';
-import {XmrBalanceInfo, OfferInfo, TradeInfo, MarketPriceInfo} from './protobuf/grpc_pb'; // TODO (woodser): better names; haveno_grpc_pb, haveno_pb
+import {MarketPriceInfo, NotificationMessage, OfferInfo, TradeInfo, XmrBalanceInfo} from './protobuf/grpc_pb'; // TODO (woodser): better names; haveno_grpc_pb, haveno_pb
 import {PaymentAccount} from './protobuf/pb_pb';
 import {XmrDestination, XmrTx, XmrIncomingTransfer, XmrOutgoingTransfer} from './protobuf/grpc_pb';
 
@@ -185,6 +185,32 @@ test("Can register as dispute agents", async () => {
     throw new Error("should have thrown error registering bad key");
   } catch (err) {
     if (err.message !== "invalid registration key") throw new Error("Unexpected error: " + err.message);
+  }
+});
+
+test("Can receive push notifications", async () => {
+  
+  // add notification listener
+  let notifications: NotificationMessage[] = [];
+  await alice.addNotificationListener(notification => {
+    notifications.push(notification);
+  });
+  
+  // send test notification
+  for (let i = 0; i < 3; i++) {
+    await alice._sendNotification(new NotificationMessage()
+        .setTimestamp(Date.now())
+        .setTitle("Test title")
+        .setMessage("Test message"));
+  }
+  
+  // test notification
+  await wait(1000);
+  assert.equal(3, notifications.length);
+  for (let i = 0; i < 3; i++) {
+    assert(notifications[i].getTimestamp() > 0);
+    assert.equal("Test title", notifications[i].getTitle());
+    assert.equal("Test message", notifications[i].getMessage());
   }
 });
 
@@ -596,6 +622,12 @@ test("Can complete a trade", async () => {
   let aliceBalancesBefore = await alice.getBalances();
   let bobBalancesBefore: XmrBalanceInfo = await bob.getBalances();
   
+  // register to receive notifications
+  let aliceNotifications: NotificationMessage[] = [];
+  let bobNotifications: NotificationMessage[] = [];
+  await alice.addNotificationListener(notification => { aliceNotifications.push(notification); });
+  await bob.addNotificationListener(notification => { bobNotifications.push(notification); });
+  
   // alice posts offer to buy xmr
   console.log("Alice posting offer");
   let direction = "buy";
@@ -636,6 +668,11 @@ test("Can complete a trade", async () => {
   let trade: TradeInfo = await bob.takeOffer(offer.getId(), ethPaymentAccount.getId()); // TODO (woodser): this returns before trade is fully initialized
   expect(trade.getPhase()).toEqual("DEPOSIT_PUBLISHED");
   console.log("Bob done taking offer in " + (Date.now() - startTime) + " ms");
+  
+  // alice is notified offer is taken
+  assert.equal(1, aliceNotifications.length);
+  assert.equal("Offer Taken", aliceNotifications[0].getTitle());
+  assert.equal("Your offer " + offer.getId() + " has been accepted", aliceNotifications[0].getMessage());
   
   // bob can get trade
   let fetchedTrade: TradeInfo = await bob.getTrade(trade.getTradeId());
