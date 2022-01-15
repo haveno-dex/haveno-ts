@@ -2,7 +2,7 @@
     
 // import haveno types
 import {HavenoDaemon} from "./HavenoDaemon";
-import {HavenoUtils} from "./HavenoUtils";
+import {HavenoUtils} from "./utils/HavenoUtils";
 import * as grpcWeb from 'grpc-web';
 import {MarketPriceInfo, NotificationMessage, OfferInfo, TradeInfo, XmrBalanceInfo} from './protobuf/grpc_pb'; // TODO (woodser): better names; haveno_grpc_pb, haveno_pb
 import {PaymentAccount} from './protobuf/pb_pb';
@@ -669,10 +669,14 @@ test("Can complete a trade", async () => {
   expect(trade.getPhase()).toEqual("DEPOSIT_PUBLISHED");
   console.log("Bob done taking offer in " + (Date.now() - startTime) + " ms");
   
-  // alice is notified offer is taken
-  assert.equal(1, aliceNotifications.length);
-  assert.equal("Offer Taken", aliceNotifications[0].getTitle());
-  assert.equal("Your offer " + offer.getId() + " has been accepted", aliceNotifications[0].getMessage());
+  // alice is notified that offer is taken
+  let tradeNotifications = getNotifications(aliceNotifications, NotificationMessage.NotificationType.TRADE_UPDATE);
+  expect(tradeNotifications.length).toBe(1);
+  expect(tradeNotifications[0].getTrade()!.getPhase()).toEqual("DEPOSIT_PUBLISHED");
+  expect(tradeNotifications[0].getTitle()).toEqual("Offer Taken");
+  expect(tradeNotifications[0].getMessage()).toEqual("Your offer " + offer.getId() + " has been accepted");
+  
+  // alice is notified of balance change
   
   // bob can get trade
   let fetchedTrade: TradeInfo = await bob.getTrade(trade.getTradeId());
@@ -685,9 +689,6 @@ test("Can complete a trade", async () => {
   expect(BigInt(bobBalancesAfter.getReservedOfferBalance()) + BigInt(bobBalancesAfter.getReservedTradeBalance())).toBeGreaterThan(BigInt(bobBalancesBefore.getReservedOfferBalance()) + BigInt(bobBalancesBefore.getReservedTradeBalance()));
   
   // bob is notified of balance change
-  
-  // alice notified of balance changes and that offer is taken
-  await wait(TestConfig.maxTimePeerNoticeMs);
   
   // alice can get trade
   fetchedTrade = await alice.getTrade(trade.getTradeId());
@@ -915,7 +916,11 @@ async function waitForUnlockedBalance(amount: bigint, ...wallets: any[]) {
     let unlockedBalance = await wallet.getUnlockedBalance();
     if (unlockedBalance < amount) miningNeeded = true;
     let depositNeeded: bigint = amount - unlockedBalance - await wallet.getLockedBalance();
-    if (depositNeeded > BigInt("0") && wallet._wallet !== fundingWallet) fundConfig.addDestination(await wallet.getDepositAddress(), depositNeeded * BigInt("10")); // deposit 10 times more than needed
+    if (depositNeeded > BigInt("0") && wallet._wallet !== fundingWallet) {
+      for (let i = 0; i < 5; i++) {
+        fundConfig.addDestination(await wallet.getDepositAddress(), depositNeeded * BigInt("2")); // make several deposits
+      }
+    }
   }
   if (fundConfig.getDestinations()) {
     await waitForUnlockedBalance(TestConfig.fundingWallet.minimumFunding, fundingWallet); // TODO (woodser): wait for enough to cover tx amount + fee
@@ -975,6 +980,16 @@ async function startMining() {
 
 async function wait(durationMs: number) {
   return new Promise(function(resolve) { setTimeout(resolve, durationMs); });
+}
+
+function getNotifications(notifications: NotificationMessage[], notificationType: NotificationMessage.NotificationType) {
+  let filteredNotifications: NotificationMessage[] = [];
+   for (let notification of notifications) {
+    if (notification.getType() === notificationType) {
+      filteredNotifications.push(notification);
+     }
+  }
+  return filteredNotifications;
 }
 
 function testTx(tx: XmrTx, ctx: TxContext) {
