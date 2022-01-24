@@ -4,9 +4,11 @@
 import {HavenoDaemon} from "./HavenoDaemon";
 import {HavenoUtils} from "./utils/HavenoUtils";
 import * as grpcWeb from 'grpc-web';
-import {MarketPriceInfo, NotificationMessage, OfferInfo, TradeInfo, XmrBalanceInfo} from './protobuf/grpc_pb'; // TODO (woodser): better names; haveno_grpc_pb, haveno_pb
+import {MarketPriceInfo, NotificationMessage, OfferInfo, TradeInfo, UriConnection, XmrBalanceInfo} from './protobuf/grpc_pb'; // TODO (woodser): better names; haveno_grpc_pb, haveno_pb
 import {PaymentAccount} from './protobuf/pb_pb';
 import {XmrDestination, XmrTx, XmrIncomingTransfer, XmrOutgoingTransfer} from './protobuf/grpc_pb';
+import AuthenticationStatus = UriConnection.AuthenticationStatus;
+import OnlineStatus = UriConnection.OnlineStatus;
 
 // import monero-javascript
 const monerojs = require("monero-javascript"); // TODO (woodser): support typescript and `npm install @types/monero-javascript` in monero-javascript
@@ -29,17 +31,24 @@ const TestConfig = {
         level: 0, // set log level (gets more verbose increasing from 0)
         logProcessOutput: false // enable or disable logging process output
     },
+    moneroBinsDir: "../haveno/.localnet",
+    networkType: monerojs.MoneroNetworkType.STAGENET,
     haveno: {
         path: "../haveno",
         version: "1.6.2"
     },
     monerod: {
-        url: "http://localhost:38081",
+        uri: "http://localhost:38081",
+        username: "superuser",
+        password: "abctesting123"
+    },
+    monerod2: {
+        uri: "http://localhost:58081",
         username: "superuser",
         password: "abctesting123"
     },
     fundingWallet: {
-        url: "http://localhost:38084",
+        uri: "http://localhost:38084",
         username: "rpc_user",
         password: "abc123",
         defaultPath: "test_funding_wallet",
@@ -48,7 +57,7 @@ const TestConfig = {
     arbitrator: {
         logProcessOutput: false,
         appName: "haveno-XMR_STAGENET_arbitrator",
-        url: "http://localhost:8079",
+        uri: "http://localhost:8079",
         password: "apitest",
         walletUsername: "rpc_user",
         walletPassword: "abc123"
@@ -56,20 +65,21 @@ const TestConfig = {
     alice: {
         logProcessOutput: false,
         appName: "haveno-XMR_STAGENET_alice",
-        url: "http://localhost:8080",
+        uri: "http://localhost:8080",
         password: "apitest",
-        walletUrl: "http://127.0.0.1:38091",
+        walletUri: "http://127.0.0.1:38091",
         walletUsername: "rpc_user",
         walletPassword: "abc123"
     },
     bob: {
         logProcessOutput: false,
         appName: "haveno-XMR_STAGENET_bob",
-        url: "http://localhost:8081",
+        uri: "http://localhost:8081",
         password: "apitest",
     }, 
     maxFee: BigInt("75000000000"),
-    walletSyncPeriodMs: 5000,
+    walletSyncPeriodMs: 5000, // TODO (woodser): auto adjust higher if using remote connection
+    daemonPollPeriodMs: 15000,
     maxTimePeerNoticeMs: 3000,
     cryptoAccounts: [{ // TODO (woodser): test other cryptos, fiat
             currencyCode: "ETH",
@@ -133,8 +143,8 @@ beforeAll(async () => {
   await arbitrator.registerDisputeAgent("refundagent", TestConfig.devPrivilegePrivKey);
 
   // connect monero clients
-  monerod = await monerojs.connectToDaemonRpc(TestConfig.monerod.url, TestConfig.monerod.username, TestConfig.monerod.password);
-  aliceWallet = await monerojs.connectToWalletRpc(TestConfig.alice.walletUrl, TestConfig.alice.walletUsername, TestConfig.alice.walletPassword);
+  monerod = await monerojs.connectToDaemonRpc(TestConfig.monerod.uri, TestConfig.monerod.username, TestConfig.monerod.password);
+  aliceWallet = await monerojs.connectToWalletRpc(TestConfig.alice.walletUri, TestConfig.alice.walletUsername, TestConfig.alice.walletPassword);
   
   // initialize funding wallet
   await initFundingWallet();
@@ -158,7 +168,7 @@ afterAll(async () => {
   return Promise.all(stopPromises);
 });
 
-jest.setTimeout(400000);
+jest.setTimeout(500000);
 
 // ----------------------------------- TESTS ----------------------------------
 
@@ -189,13 +199,13 @@ test("Can register as dispute agents", async () => {
 });
 
 test("Can receive push notifications", async () => {
-  
+
   // add notification listener
   let notifications: NotificationMessage[] = [];
   await alice.addNotificationListener(notification => {
     notifications.push(notification);
   });
-  
+
   // send test notification
   for (let i = 0; i < 3; i++) {
     await alice._sendNotification(new NotificationMessage()
@@ -203,7 +213,7 @@ test("Can receive push notifications", async () => {
         .setTitle("Test title")
         .setMessage("Test message"));
   }
-  
+
   // test notification
   await wait(1000);
   assert.equal(3, notifications.length);
@@ -214,37 +224,152 @@ test("Can receive push notifications", async () => {
   }
 });
 
-test("Can get market prices", async () => {
-  
-  // get all market prices
-  let prices: MarketPriceInfo[] = await alice.getPrices();
-  expect(prices.length).toBeGreaterThan(1);
-  for (let price of prices) {
-    expect(price.getCurrencyCode().length).toBeGreaterThan(0);
-    expect(price.getPrice()).toBeGreaterThanOrEqual(0);
-  }
-  
-  // get market prices of specific currencies
-  for (let testAccount of TestConfig.cryptoAccounts) {
-    let price = await alice.getPrice(testAccount.currencyCode);
-    expect(price).toBeGreaterThan(0);
-  }
-    
-  // test that prices are reasonable
-  let usd = await alice.getPrice("USD");
-  expect(usd).toBeGreaterThan(50);
-  expect(usd).toBeLessThan(5000);
-  let doge = await alice.getPrice("DOGE");
-  expect(doge).toBeGreaterThan(200)
-  expect(doge).toBeLessThan(20000);
-  let btc = await alice.getPrice("BTC");
-  expect(btc).toBeGreaterThan(0.0004)
-  expect(btc).toBeLessThan(0.4);
+test("Can manage Monero daemon connections", async () => {
+  let monerod2: any;
+  let charlie: HavenoDaemon | undefined;
+  let err: any;
+  try {
 
-  // test invalid currency
-  await expect(async () => {await alice.getPrice("INVALID_CURRENCY")})
-    .rejects
-    .toThrow('Currency not found: INVALID_CURRENCY');
+    // start charlie
+    charlie = await startHavenoProcess(undefined, TestConfig.logging.logProcessOutput);
+
+    // test default connections
+    let monerodUri1 = "http://localhost:38081"; // TODO: (woodser): move to config
+    let monerodUri2 = "http://haveno.exchange:38081";
+    let connections: UriConnection[] = await charlie.getMoneroConnections();
+    testConnection(getConnection(connections, monerodUri1)!, monerodUri1, OnlineStatus.ONLINE, AuthenticationStatus.AUTHENTICATED, 1);
+    testConnection(getConnection(connections, monerodUri2)!, monerodUri2, OnlineStatus.UNKNOWN, AuthenticationStatus.NO_AUTHENTICATION, 2);
+
+    // test default connection
+    let connection: UriConnection | undefined = await charlie.getMoneroConnection();
+    testConnection(connection!, monerodUri1, OnlineStatus.ONLINE, AuthenticationStatus.AUTHENTICATED, 1);
+    //assert(await charlie.isMoneroConnected()); // TODO (woodser): support havenod.isConnected()?
+
+    // add a new connection
+    let fooBarUri = "http://foo.bar";
+    await charlie.addMoneroConnection(fooBarUri);
+    connections = await charlie.getMoneroConnections();
+    connection = getConnection(connections, fooBarUri);
+    testConnection(connection!, fooBarUri, OnlineStatus.UNKNOWN, AuthenticationStatus.NO_AUTHENTICATION, 0);
+    //connection = await charlie.getMoneroConnection(uri); TODO (woodser): allow getting connection by uri?
+
+    // set prioritized connection without credentials
+    await charlie.setMoneroConnection(new UriConnection()
+        .setUri(TestConfig.monerod2.uri)
+        .setPriority(1));
+    connection = await charlie.getMoneroConnection();
+    testConnection(connection!, TestConfig.monerod2.uri, undefined, undefined, 1); // status may or may not be known due to periodic connection checking
+
+    // connection is offline
+    connection = await charlie.checkMoneroConnection();
+    testConnection(connection!, TestConfig.monerod2.uri, OnlineStatus.OFFLINE, AuthenticationStatus.NO_AUTHENTICATION, 1);
+
+    // start monerod2
+    let cmd = [
+      TestConfig.moneroBinsDir + "/monerod",
+      "--" + monerojs.MoneroNetworkType.toString(TestConfig.networkType).toLowerCase(),
+      "--no-igd",
+      "--hide-my-port",
+      "--data-dir",  TestConfig.moneroBinsDir + "/node1",
+      "--p2p-bind-port", "58080",
+      "--rpc-bind-port", "58081",
+      "--rpc-login", "superuser:abctesting123",
+      "--zmq-rpc-bind-port", "58082"
+    ];
+    monerod2 = await monerojs.connectToDaemonRpc(cmd);
+
+    // connection is online and not authenticated
+    connection = await charlie.checkMoneroConnection();
+    testConnection(connection!, TestConfig.monerod2.uri, OnlineStatus.ONLINE, AuthenticationStatus.NOT_AUTHENTICATED, 1);
+
+    // set connection credentials
+    await charlie.setMoneroConnection(new UriConnection()
+        .setUri(TestConfig.monerod2.uri)
+        .setUsername(TestConfig.monerod2.username)
+        .setPassword(TestConfig.monerod2.password)
+        .setPriority(1));
+    connection = await charlie.getMoneroConnection();
+    testConnection(connection!, TestConfig.monerod2.uri, undefined, undefined, 1);
+
+    // connection is online and authenticated
+    connection = await charlie.checkMoneroConnection();
+    testConnection(connection!, TestConfig.monerod2.uri, OnlineStatus.ONLINE, AuthenticationStatus.AUTHENTICATED, 1);
+
+    // restart charlie
+    let appName = charlie.getAppName();
+    await stopHavenoProcess(charlie);
+    charlie = await startHavenoProcess(appName, TestConfig.logging.logProcessOutput);
+
+    // connection is restored, online, and authenticated
+    connection = await charlie.getMoneroConnection();
+    testConnection(connection!, TestConfig.monerod2.uri, OnlineStatus.ONLINE, AuthenticationStatus.AUTHENTICATED, 1);
+    connections = await charlie.getMoneroConnections();
+    testConnection(getConnection(connections, monerodUri1)!, monerodUri1, OnlineStatus.UNKNOWN, AuthenticationStatus.NO_AUTHENTICATION, 1);
+
+    // enable auto switch
+    await charlie.setAutoSwitch(true);
+
+    // stop monerod
+    await monerod2.stopProcess();
+
+    // test auto switch after periodic connection check
+    await wait(TestConfig.daemonPollPeriodMs);
+    connection = await charlie.getMoneroConnection();
+    testConnection(connection!, monerodUri1, OnlineStatus.ONLINE, AuthenticationStatus.AUTHENTICATED, 1);
+
+    // stop checking connection periodically
+    await charlie.stopCheckingConnection();
+
+    // remove current connection
+    await charlie.removeMoneroConnection(monerodUri1);
+
+    // check current connection
+    connection = await charlie.checkMoneroConnection();
+    assert.equal(undefined, connection);
+
+    // check all connections
+    await charlie.checkMoneroConnections();
+    connections = await charlie.getMoneroConnections();
+    testConnection(getConnection(connections, fooBarUri)!, fooBarUri, OnlineStatus.OFFLINE, AuthenticationStatus.NO_AUTHENTICATION, 0);
+    for (let connection of connections) testConnection(connection!, connection.getUri(), OnlineStatus.OFFLINE, AuthenticationStatus.NO_AUTHENTICATION);
+
+    // set connection to previous uri
+    await charlie.setMoneroConnection(fooBarUri);
+    connection = await charlie.getMoneroConnection();
+    testConnection(connection!, fooBarUri, OnlineStatus.OFFLINE, AuthenticationStatus.NO_AUTHENTICATION, 0);
+
+    // set connection to new uri
+    let fooBarUri2 = "http://foo.bar.xyz";
+    await charlie.setMoneroConnection(fooBarUri2);
+    connections = await charlie.getMoneroConnections();
+    connection = getConnection(connections, fooBarUri2);
+    testConnection(connection!, fooBarUri2, OnlineStatus.UNKNOWN, AuthenticationStatus.NO_AUTHENTICATION, 0);
+
+    // reset connection
+    await charlie.setMoneroConnection();
+    assert.equal(undefined, await charlie.getMoneroConnection());
+
+    // test auto switch after start checking connection
+    await charlie.setAutoSwitch(false);
+    await charlie.startCheckingConnection(5000); // checks the connection
+    await charlie.setAutoSwitch(true);
+    await charlie.addMoneroConnection(new UriConnection()
+            .setUri(TestConfig.monerod.uri)
+            .setUsername(TestConfig.monerod.username)
+            .setPassword(TestConfig.monerod.password)
+            .setPriority(2));
+    await wait(10000);
+    connection = await charlie.getMoneroConnection();
+    testConnection(connection!, TestConfig.monerod.uri, OnlineStatus.ONLINE, AuthenticationStatus.AUTHENTICATED, 2);
+  } catch (err2) {
+    err = err2;
+  }
+
+  // stop processes
+  if (charlie) await stopHavenoProcess(charlie);
+  if (monerod2) await monerod2.stopProcess();
+  // TODO: how to delete trader app folder at end of test?
+  if (err) throw err;
 });
 
 // test wallet balances, transactions, deposit addresses, create and relay txs
@@ -305,6 +430,39 @@ test("Can get balances", async () => {
   expect(BigInt(balances.getLockedBalance())).toBeGreaterThanOrEqual(0);
   expect(BigInt(balances.getReservedOfferBalance())).toBeGreaterThanOrEqual(0);
   expect(BigInt(balances.getReservedTradeBalance())).toBeGreaterThanOrEqual(0);
+});
+
+test("Can get market prices", async () => {
+
+  // get all market prices
+  let prices: MarketPriceInfo[] = await alice.getPrices();
+  expect(prices.length).toBeGreaterThan(1);
+  for (let price of prices) {
+    expect(price.getCurrencyCode().length).toBeGreaterThan(0);
+    expect(price.getPrice()).toBeGreaterThanOrEqual(0);
+  }
+
+  // get market prices of specific currencies
+  for (let testAccount of TestConfig.cryptoAccounts) {
+    let price = await alice.getPrice(testAccount.currencyCode);
+    expect(price).toBeGreaterThan(0);
+  }
+
+  // test that prices are reasonable
+  let usd = await alice.getPrice("USD");
+  expect(usd).toBeGreaterThan(50);
+  expect(usd).toBeLessThan(5000);
+  let doge = await alice.getPrice("DOGE");
+  expect(doge).toBeGreaterThan(200)
+  expect(doge).toBeLessThan(20000);
+  let btc = await alice.getPrice("BTC");
+  expect(btc).toBeGreaterThan(0.0004)
+  expect(btc).toBeLessThan(0.4);
+
+  // test invalid currency
+  await expect(async () => {await alice.getPrice("INVALID_CURRENCY")})
+    .rejects
+    .toThrow('Currency not found: INVALID_CURRENCY');
 });
 
 test("Can get offers", async () => {
@@ -627,7 +785,7 @@ test("Can complete a trade", async () => {
   let bobNotifications: NotificationMessage[] = [];
   await alice.addNotificationListener(notification => { aliceNotifications.push(notification); });
   await bob.addNotificationListener(notification => { bobNotifications.push(notification); });
-  
+
   // alice posts offer to buy xmr
   console.log("Alice posting offer");
   let direction = "buy";
@@ -675,7 +833,7 @@ test("Can complete a trade", async () => {
   expect(tradeNotifications[0].getTrade()!.getPhase()).toEqual("DEPOSIT_PUBLISHED");
   expect(tradeNotifications[0].getTitle()).toEqual("Offer Taken");
   expect(tradeNotifications[0].getMessage()).toEqual("Your offer " + offer.getId() + " has been accepted");
-  
+
   // alice is notified of balance change
   
   // bob can get trade
@@ -689,7 +847,7 @@ test("Can complete a trade", async () => {
   expect(BigInt(bobBalancesAfter.getReservedOfferBalance()) + BigInt(bobBalancesAfter.getReservedTradeBalance())).toBeGreaterThan(BigInt(bobBalancesBefore.getReservedOfferBalance()) + BigInt(bobBalancesBefore.getReservedTradeBalance()));
   
   // bob is notified of balance change
-  
+
   // alice can get trade
   fetchedTrade = await alice.getTrade(trade.getTradeId());
   expect(fetchedTrade.getPhase()).toEqual("DEPOSIT_PUBLISHED");
@@ -741,6 +899,20 @@ test("Can complete a trade", async () => {
 
 // ------------------------------- HELPERS ------------------------------------
 
+function getConnection(connections: UriConnection[], uri: string): UriConnection | undefined {
+  for (let connection of connections) if (connection.getUri() === uri) return connection;
+  return undefined;
+}
+
+function testConnection(connection: UriConnection, uri?: string, onlineStatus?: OnlineStatus, authenticationStatus?: AuthenticationStatus, priority?: number) {
+  if (uri) assert.equal(connection.getUri(), uri);
+  assert.equal(connection.getPassword(), ""); // TODO (woodser): undefined instead of ""?
+  assert.equal(connection.getUsername(), "");
+  if (onlineStatus !== undefined) assert.equal(connection.getOnlineStatus(), onlineStatus);
+  if (authenticationStatus !== undefined) assert.equal(connection.getAuthenticationStatus(), authenticationStatus);
+  if (priority !== undefined) assert.equal(connection.getPriority(), priority);
+}
+
 /**
  * Initialize arbitrator, alice, or bob by their configuration.
  * 
@@ -749,7 +921,7 @@ test("Can complete a trade", async () => {
  */
 async function initHavenoDaemon(config: any): Promise<HavenoDaemon> {
   try {
-    let havenod = new HavenoDaemon(config.url, config.password);
+    let havenod = new HavenoDaemon(config.uri, config.password);
     await havenod.getVersion();
     return havenod;
   } catch (err) {
@@ -809,7 +981,7 @@ async function startHavenoProcess(appName: string|undefined, enableLogging: bool
     "--appName", appName,
     "--apiPassword", "apitest",
     "--apiPort", TestConfig.proxyPorts.get(proxyPort)![0],
-    "--walletRpcBindPort", (proxyPort === "8080" ? new URL(TestConfig.alice.walletUrl).port : await getFreePort()) + "" // use alice's configured wallet rpc port 
+    "--walletRpcBindPort", (proxyPort === "8080" ? new URL(TestConfig.alice.walletUri).port : await getFreePort()) + "" // use alice's configured wallet rpc port
   ];
   let havenod = await HavenoDaemon.startProcess(TestConfig.haveno.path, cmd, "http://localhost:" + proxyPort, enableLogging);
   HAVENO_PROCESSES.push(havenod);
@@ -837,7 +1009,7 @@ async function getFreePort(): Promise<number> {
 async function stopHavenoProcess(havenod: HavenoDaemon) {
   await havenod.stopProcess();
   GenUtils.remove(HAVENO_PROCESSES, havenod);
-  GenUtils.remove(HAVENO_PROCESS_PORTS, new URL(havenod.getUrl()).port);
+  GenUtils.remove(HAVENO_PROCESS_PORTS, new URL(havenod.getUrl()).port); // TODO (woodser): standardize to uri
 }
 
 /**
@@ -846,7 +1018,7 @@ async function stopHavenoProcess(havenod: HavenoDaemon) {
 async function initFundingWallet() {
   
   // init client connected to monero-wallet-rpc
-  fundingWallet = await monerojs.connectToWalletRpc(TestConfig.fundingWallet.url, TestConfig.fundingWallet.username, TestConfig.fundingWallet.password);
+  fundingWallet = await monerojs.connectToWalletRpc(TestConfig.fundingWallet.uri, TestConfig.fundingWallet.username, TestConfig.fundingWallet.password);
   
   // check if wallet is open
   let walletIsOpen = false
