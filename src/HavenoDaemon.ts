@@ -490,7 +490,7 @@ class HavenoDaemon {
     return new Promise(function(resolve, reject) {
       that._walletsClient.createXmrTx(new CreateXmrTxRequest().setDestinationsList(destinations), {password: that._password}, function(err: grpcWeb.RpcError, response: CreateXmrTxReply) {
         if (err) reject(err);
-        else resolve(response.getTx());
+        else resolve(response.getTx()!);
       });
     });
   }
