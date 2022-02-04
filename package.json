@@ -49,6 +49,6 @@
     ]
   },
   "devDependencies": {
-    "monero-javascript": "^0.5.11"
+    "monero-javascript": "^0.6.4"
   }
 }

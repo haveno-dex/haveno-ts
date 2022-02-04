@@ -658,7 +658,7 @@ test("Handles unexpected errors during trade initialization", async () => {
       await traders[1].takeOffer(offer.getId(), paymentAccount.getId());
       throw new Error("Should have failed taking offer because taker trade funds spent")
     } catch (err) {
-      assert(err.message.includes("not enough money"), "Unexpected error: " + err.message);
+      assert(err.message.includes("not enough unlocked money"), "Unexpected error: " + err.message);
     }
     
     // TODO: test that unavailable right after taking (taker will know before maker)
@@ -693,7 +693,7 @@ test("Handles unexpected errors during trade initialization", async () => {
       await traders[2].takeOffer(offer.getId(), paymentAccount.getId());
       throw new Error("Should have failed taking offer because maker trade funds spent")
     } catch (err) {
-      assert(err.message.includes("not enough money") || err.message.includes("timeout reached. protocol did not complete"), "Unexpected error: " + err.message);
+      assert(err.message.includes("not enough unlocked money") || err.message.includes("timeout reached. protocol did not complete"), "Unexpected error: " + err.message);
     }
     
     // trader 2's balance is unreserved
