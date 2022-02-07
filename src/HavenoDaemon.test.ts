@@ -55,6 +55,7 @@ const TestConfig = {
         logProcessOutput: false, // log output for processes started by tests (except arbitrator, alice, and bob which are configured separately)
         apiPassword: "apitest",
         walletUsername: "haveno_user",
+        walletDefaultPassword: "password", // only used if account password not set
         accountPasswordRequired: true,
         accountPassword: "abctesting789",
         autoLogin: true
@@ -63,23 +64,20 @@ const TestConfig = {
             appName: "haveno-XMR_STAGENET_arbitrator",  // arbritrator
             logProcessOutput: false,
             url: "http://localhost:8079",
-            apiPassword: "apitest",
-            accountPasswordRequired: true,
+            accountPasswordRequired: false,
             accountPassword: "abctesting123",
         }, {
             appName: "haveno-XMR_STAGENET_alice",       // alice
             logProcessOutput: false,
             url: "http://localhost:8080",
-            apiPassword: "apitest",
-            accountPasswordRequired: true,
+            accountPasswordRequired: false,
             accountPassword: "abctesting456",
             walletUrl: "http://127.0.0.1:38091",
         }, {
             appName: "haveno-XMR_STAGENET_bob",         // bob
             logProcessOutput: false,
             url: "http://localhost:8081",
-            apiPassword: "apitest",
-            accountPasswordRequired: true,
+            accountPasswordRequired: false,
             accountPassword: "abctesting789",
         }
     ],
@@ -157,7 +155,7 @@ beforeAll(async () => {
 
   // connect monero clients
   monerod = await monerojs.connectToDaemonRpc(TestConfig.monerod.url, TestConfig.monerod.username, TestConfig.monerod.password);
-  aliceWallet = await monerojs.connectToWalletRpc(TestConfig.startupHavenods[1].walletUrl, TestConfig.defaultHavenod.walletUsername, TestConfig.startupHavenods[1].accountPassword);
+  aliceWallet = await monerojs.connectToWalletRpc(TestConfig.startupHavenods[1].walletUrl, TestConfig.defaultHavenod.walletUsername, TestConfig.startupHavenods[1].accountPasswordRequired ? TestConfig.startupHavenods[1].accountPassword : TestConfig.defaultHavenod.walletDefaultPassword);
   
   // initialize funding wallet
   await initFundingWallet();
