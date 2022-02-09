@@ -2,7 +2,7 @@ import {HavenoUtils} from "./utils/HavenoUtils";
 import {TaskLooper} from "./utils/TaskLooper";
 import * as grpcWeb from 'grpc-web';
 import {GetVersionClient, AccountClient, MoneroConnectionsClient, DisputeAgentsClient, NotificationsClient, WalletsClient, PriceClient, OffersClient, PaymentAccountsClient, TradesClient, ShutdownServerClient} from './protobuf/GrpcServiceClientPb';
-import {GetVersionRequest, GetVersionReply, IsAppInitializedRequest, IsAppInitializedReply, RegisterDisputeAgentRequest, MarketPriceRequest, MarketPriceReply, MarketPricesRequest, MarketPricesReply, MarketPriceInfo, GetBalancesRequest, GetBalancesReply, XmrBalanceInfo, GetOffersRequest, GetOffersReply, OfferInfo, GetPaymentAccountsRequest, GetPaymentAccountsReply, CreateCryptoCurrencyPaymentAccountRequest, CreateCryptoCurrencyPaymentAccountReply, CreateOfferRequest, CreateOfferReply, CancelOfferRequest, TakeOfferRequest, TakeOfferReply, TradeInfo, GetTradeRequest, GetTradeReply, GetTradesRequest, GetTradesReply, GetNewDepositSubaddressRequest, GetNewDepositSubaddressReply, ConfirmPaymentStartedRequest, ConfirmPaymentReceivedRequest, XmrTx, GetXmrTxsRequest, GetXmrTxsReply, XmrDestination, CreateXmrTxRequest, CreateXmrTxReply, RelayXmrTxRequest, RelayXmrTxReply, CreateAccountRequest, AccountExistsRequest, AccountExistsReply, DeleteAccountRequest, OpenAccountRequest, IsAccountOpenRequest, IsAccountOpenReply, CloseAccountRequest, ChangePasswordRequest, BackupAccountRequest, BackupAccountReply, RestoreAccountRequest, StopRequest, NotificationMessage, RegisterNotificationListenerRequest, SendNotificationRequest, UrlConnection, AddConnectionRequest, RemoveConnectionRequest, GetConnectionRequest, GetConnectionsRequest, SetConnectionRequest, CheckConnectionRequest, CheckConnectionsReply, CheckConnectionsRequest, StartCheckingConnectionsRequest, StopCheckingConnectionsRequest, GetBestAvailableConnectionRequest, SetAutoSwitchRequest, CheckConnectionReply, GetConnectionsReply, GetConnectionReply, GetBestAvailableConnectionReply} from './protobuf/grpc_pb';
+import {GetVersionRequest, GetVersionReply, IsAppInitializedRequest, IsAppInitializedReply, RegisterDisputeAgentRequest, MarketPriceRequest, MarketPriceReply, MarketPricesRequest, MarketPricesReply, MarketPriceInfo, MarketDepthReply, MarketDepthRequest, GetBalancesRequest, GetBalancesReply, XmrBalanceInfo, GetOffersRequest, GetOffersReply, OfferInfo, GetPaymentAccountsRequest, GetPaymentAccountsReply, CreateCryptoCurrencyPaymentAccountRequest, CreateCryptoCurrencyPaymentAccountReply, CreateOfferRequest, CreateOfferReply, CancelOfferRequest, TakeOfferRequest, TakeOfferReply, TradeInfo, GetTradeRequest, GetTradeReply, GetTradesRequest, GetTradesReply, GetNewDepositSubaddressRequest, GetNewDepositSubaddressReply, ConfirmPaymentStartedRequest, ConfirmPaymentReceivedRequest, XmrTx, GetXmrTxsRequest, GetXmrTxsReply, XmrDestination, CreateXmrTxRequest, CreateXmrTxReply, RelayXmrTxRequest, RelayXmrTxReply, CreateAccountRequest, AccountExistsRequest, AccountExistsReply, DeleteAccountRequest, OpenAccountRequest, IsAccountOpenRequest, IsAccountOpenReply, CloseAccountRequest, ChangePasswordRequest, BackupAccountRequest, BackupAccountReply, RestoreAccountRequest, StopRequest, NotificationMessage, RegisterNotificationListenerRequest, SendNotificationRequest, UrlConnection, AddConnectionRequest, RemoveConnectionRequest, GetConnectionRequest, GetConnectionsRequest, SetConnectionRequest, CheckConnectionRequest, CheckConnectionsReply, CheckConnectionsRequest, StartCheckingConnectionsRequest, StopCheckingConnectionsRequest, GetBestAvailableConnectionRequest, SetAutoSwitchRequest, CheckConnectionReply, GetConnectionsReply, GetConnectionReply, GetBestAvailableConnectionReply} from './protobuf/grpc_pb';
 import {PaymentAccount, AvailabilityResult} from './protobuf/pb_pb';
 const console = require('console');
 
@@ -42,7 +42,7 @@ class HavenoDaemon {
   
   /**
    * Construct a client connected to a Haveno daemon.
-   * 
+   *
    * @param {string} url - Haveno daemon url
    * @param {string} password - Haveno daemon password
    */
@@ -198,7 +198,7 @@ class HavenoDaemon {
   getWalletRpcPort(): number|undefined {
     return this._walletRpcPort;
   }
-  
+
   /**
    * Get the name of the Haveno application folder.
    */
@@ -208,8 +208,8 @@ class HavenoDaemon {
 
   /**
    * Get the Haveno version.
-   * 
-   * @return {string} the Haveno daemon version 
+   *
+   * @return {string} the Haveno daemon version
    */
   async getVersion(): Promise<string> {
     let that = this;
@@ -220,7 +220,7 @@ class HavenoDaemon {
       });
     });
   }
-  
+
   /**
    * Indicates if connected and authenticated with the Haveno daemon.
    * 
@@ -575,6 +575,21 @@ class HavenoDaemon {
       });
     });
   }
+  
+  /**
+   * Gete market depth information for a given currency
+   *
+   * @returns  {MarketDepthReply} contains information needed to construct market depth graph
+   */
+   async getMarketDepth(currencyCode: string): Promise<MarketDepthReply> {
+    let that = this;
+    return new Promise(function(resolve, reject) {
+      that._priceClient.getMarketDepth(new MarketDepthRequest().setCurrencyCode(currencyCode), {password: that._password}, function(err: grpcWeb.RpcError, response: MarketDepthReply) {
+        if (err) reject(err);
+        else resolve(response);
+      });
+    });
+  }
 
   /**
    * Automatically switch to the best available connection if current connection is disconnected after being checked.
@@ -612,7 +627,7 @@ class HavenoDaemon {
   
   /**
    * Get the user's balances.
-   * 
+   *
    * @return {XmrBalanceInfo} the user's balances
    */
   async getBalances(): Promise<XmrBalanceInfo> {
@@ -624,7 +639,7 @@ class HavenoDaemon {
       });
     });
   }
-  
+
   /**
    * Get a new subaddress in the Monero wallet to receive deposits.
    * 
@@ -732,7 +747,7 @@ class HavenoDaemon {
 
   /**
    * Get payment accounts.
-   * 
+   *
    * @return {PaymentAccount[]} the payment accounts
    */
   async getPaymentAccounts(): Promise<PaymentAccount[]> {
@@ -744,10 +759,10 @@ class HavenoDaemon {
       });
     });
   }
-  
+
   /**
    * Create a crypto payment account.
-   * 
+   *
    * @param {string} accountName - description of the account
    * @param {string} currencyCode - currency code of the account
    * @param {string} address - payment address of the account
@@ -769,7 +784,7 @@ class HavenoDaemon {
       });
     });
   }
-  
+
   /**
    * Get available offers to buy or sell XMR.
    * 
@@ -785,7 +800,7 @@ class HavenoDaemon {
       });
     });
   }
-  
+
   /**
    * Get user's created offers to buy or sell XMR.
    * 
@@ -801,7 +816,7 @@ class HavenoDaemon {
       });
     });
   }
-  
+
   /**
    * Get my offer by id.
    * 
@@ -819,7 +834,7 @@ class HavenoDaemon {
   
   /**
    * Post an offer.
-   * 
+   *
    * @param {string} currencyCode - currency code of traded pair
    * @param {string} direction - one of "BUY" or "SELL"
    * @param {number} price - trade price
@@ -861,10 +876,10 @@ class HavenoDaemon {
       });
     });
   }
-  
+
   /**
    * Remove a posted offer, releasing its reserved funds.
-   * 
+   *
    * @param {string} offerId - the offer id to cancel
    */
   async removeOffer(offerId: string): Promise<void> {
@@ -876,10 +891,10 @@ class HavenoDaemon {
       });
     });
   }
-  
+
   /**
    * Take an offer.
-   * 
+   *
    * @param {string} offerId - id of the offer to take
    * @param {string} paymentAccountId - id of the payment account
    * @return {TradeInfo} the initialized trade
@@ -897,10 +912,10 @@ class HavenoDaemon {
       });
     });
   }
-  
+
   /**
    * Get a trade by id.
-   * 
+   *
    * @param {string} tradeId - the id of the trade and its offer
    * @return {TradeInfo} the trade with the given id
    */
@@ -913,7 +928,7 @@ class HavenoDaemon {
       });
     });
   }
-  
+
   /**
    * Get all trades.
    * 
@@ -931,7 +946,7 @@ class HavenoDaemon {
   
   /**
    * Confirm a payment is started.
-   * 
+   *
    * @param {string} tradeId - the id of the trade
    */
   async confirmPaymentStarted(tradeId: string): Promise<void> {
@@ -943,10 +958,10 @@ class HavenoDaemon {
       });
     });
   }
-  
+
   /**
    * Confirm a payment is received.
-   * 
+   *
    * @param {string} tradeId - the id of the trade
    */
   async confirmPaymentReceived(tradeId: string): Promise<void> {

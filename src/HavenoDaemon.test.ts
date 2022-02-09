@@ -1,11 +1,11 @@
 // --------------------------------- IMPORTS ----------------------------------
-    
+
 // import haveno types
 import {HavenoDaemon} from "./HavenoDaemon";
 import {HavenoUtils} from "./utils/HavenoUtils";
 import * as grpcWeb from 'grpc-web';
-import {MarketPriceInfo, NotificationMessage, OfferInfo, TradeInfo, UrlConnection, XmrBalanceInfo} from './protobuf/grpc_pb'; // TODO (woodser): better names; haveno_grpc_pb, haveno_pb
-import {PaymentAccount} from './protobuf/pb_pb';
+import {MarketPriceInfo, NotificationMessage, OfferInfo, TradeInfo, UrlConnection, XmrBalanceInfo, MarketDepthRequest, MarketDepthReply} from './protobuf/grpc_pb'; // TODO (woodser): better names; haveno_grpc_pb, haveno_pb
+import {PaymentAccount, Offer} from './protobuf/pb_pb';
 import {XmrDestination, XmrTx, XmrIncomingTransfer, XmrOutgoingTransfer} from './protobuf/grpc_pb';
 import AuthenticationStatus = UrlConnection.AuthenticationStatus;
 import OnlineStatus = UrlConnection.OnlineStatus;
@@ -495,6 +495,75 @@ test("Has a Monero wallet", async () => {
   }
 });
 
+test("Can get market depth information", async () => {
+  await waitForUnlockedBalance(BigInt("1000000000000"), alice);
+
+  // get unlocked balance before reserving funds for offer
+  let unlockedBalanceBefore: bigint = BigInt((await alice.getBalances()).getUnlockedBalance());
+
+  // make buy offers
+  let offer1: OfferInfo = await postOffer(alice, "buy", BigInt("150000000000"), undefined, 0.00);
+  await wait(1000);
+  await waitForUnlockedBalance(BigInt("700000000000"), alice);
+  let offer2: OfferInfo = await postOffer(alice, "buy", BigInt("150000000000"), undefined, 0.02);
+  await wait(1000);
+  await waitForUnlockedBalance(BigInt("400000000000"), alice);
+  let offer3: OfferInfo = await postOffer(alice, "buy", BigInt("200000000000"), undefined, 0.05);
+  await wait(1000);
+
+  // // make sell offers
+  await waitForUnlockedBalance(BigInt("1500000000000"), alice);
+  let offer4: OfferInfo = await postOffer(alice, "sell", BigInt("300000000000"), undefined, 0.00);
+  await wait(1000);
+  await waitForUnlockedBalance(BigInt("600000000000"), alice);
+  let offer5: OfferInfo = await postOffer(alice, "sell", BigInt("300000000000"), undefined, 0.02);
+  await wait(1000);
+  await waitForUnlockedBalance(BigInt("800000000000"), alice);
+  let offer6: OfferInfo = await postOffer(alice, "sell", BigInt("400000000000"), undefined, 0.05);
+  await wait(1000);
+
+  // get market depth
+  let marketDepthReply: MarketDepthReply = await alice.getMarketDepth("eth");
+  
+  await alice.removeOffer(offer1.getId());
+  await alice.removeOffer(offer2.getId());
+  await alice.removeOffer(offer3.getId());
+  await alice.removeOffer(offer4.getId());
+  await alice.removeOffer(offer5.getId());
+  await alice.removeOffer(offer6.getId());
+
+  // test prices and depth arrays match in length
+  let buyPrices = marketDepthReply.getBuyPricesList();
+  let buyDepth = marketDepthReply.getBuyDepthList();  
+  let sellPrices = marketDepthReply.getSellPricesList();
+  let sellDepth = marketDepthReply.getSellDepthList();
+  
+  expect(buyPrices.length == buyDepth.length);
+  expect(sellPrices.length == sellDepth.length);
+
+  // test that prices are positive numbers
+  for (let i in buyPrices) {
+    expect(buyPrices[i]).toBeGreaterThanOrEqual(0);
+  }
+  for (let i in sellPrices) {
+    expect(sellPrices[i]).toBeGreaterThanOrEqual(0);
+  }
+
+  // test that depths and prices are accurate
+  expect(buyDepth[0]).toEqual(0.15);
+  expect(buyDepth[1]).toEqual(0.30);
+  expect(buyDepth[2]).toEqual(0.50);
+
+  expect(sellDepth[0]).toEqual(0.3);
+  expect(sellDepth[1]).toEqual(0.6);
+  expect(sellDepth[2]).toEqual(1);
+
+   // test invalid currency
+  await expect(async () => {await alice.getMarketDepth("INVALID_CURRENCY")})
+    .rejects
+    .toThrow('Currency not found: INVALID_CURRENCY');
+});
+
 test("Can get balances", async () => {
   let balances: XmrBalanceInfo = await alice.getBalances();
   expect(BigInt(balances.getUnlockedBalance())).toBeGreaterThanOrEqual(0);
@@ -607,7 +676,7 @@ test("Can get payment accounts", async () => {
 });
 
 test("Can create crypto payment accounts", async () => {
-    
+
   // test each stagenet crypto account
   for (let testAccount of TestConfig.cryptoAccounts) {
     
@@ -619,7 +688,7 @@ test("Can create crypto payment accounts", async () => {
       testAccount.address);
     testCryptoPaymentAccount(paymentAccount);
     testCryptoPaymentAccountEquals(paymentAccount, testAccount, name);
-    
+
     // fetch and test payment account
     let fetchedAccount: PaymentAccount | undefined;
     for (let account of await alice.getPaymentAccounts()) {
@@ -631,7 +700,7 @@ test("Can create crypto payment accounts", async () => {
     if (!fetchedAccount) throw new Error("Payment account not found after being added");
     testCryptoPaymentAccount(paymentAccount);
     testCryptoPaymentAccountEquals(fetchedAccount, testAccount, name);
-    
+
     // wait before creating next account
     await GenUtils.waitFor(1000);
 
@@ -639,7 +708,7 @@ test("Can create crypto payment accounts", async () => {
     // TODO (woodser): test rejecting account with invalid address
     // TODO (woodser): test rejecting account with duplicate name
   }
-  
+
   function testCryptoPaymentAccountEquals(paymentAccount: PaymentAccount, testAccount: any, name: string) {
     expect(paymentAccount.getAccountName()).toEqual(name);
     expect(paymentAccount.getPaymentAccountPayload()!.getCryptoCurrencyAccountPayload()!.getAddress()).toEqual(testAccount.address);
@@ -648,11 +717,11 @@ test("Can create crypto payment accounts", async () => {
 });
 
 test("Can post and remove an offer", async () => {
-    
+
   // wait for alice to have unlocked balance to post offer
   let tradeAmount: bigint = BigInt("250000000000");
   await waitForUnlockedBalance(tradeAmount * BigInt("2"), alice);
-  
+
   // get unlocked balance before reserving funds for offer
   let unlockedBalanceBefore: bigint = BigInt((await alice.getBalances()).getUnlockedBalance());
 
@@ -666,10 +735,10 @@ test("Can post and remove an offer", async () => {
   
   // cancel offer
   await alice.removeOffer(offer.getId());
-  
+
   // offer is removed from my offers
   if (getOffer(await alice.getMyOffers("buy"), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in my offers after removal");
-  
+
   // reserved balance released
   expect(unlockedBalanceBefore).toEqual(BigInt((await alice.getBalances()).getUnlockedBalance()));
 });
@@ -937,7 +1006,7 @@ test("Can complete a trade", async () => {
       testAccount.currencyCode + " " +  testAccount.address.substr(0, 8) + "... " + GenUtils.getUUID(),
       testAccount.currencyCode,
       testAccount.address);
-  
+
   // bob takes offer
   let startTime = Date.now();
   console.log("Bob taking offer");
@@ -958,23 +1027,23 @@ test("Can complete a trade", async () => {
   let fetchedTrade: TradeInfo = await bob.getTrade(trade.getTradeId());
   expect(fetchedTrade.getPhase()).toEqual("DEPOSIT_PUBLISHED");
   // TODO: test fetched trade
-  
+
   // test bob's balances after taking trade
   let bobBalancesAfter: XmrBalanceInfo = await bob.getBalances();
   expect(BigInt(bobBalancesAfter.getUnlockedBalance())).toBeLessThan(BigInt(bobBalancesBefore.getUnlockedBalance()));
   expect(BigInt(bobBalancesAfter.getReservedOfferBalance()) + BigInt(bobBalancesAfter.getReservedTradeBalance())).toBeGreaterThan(BigInt(bobBalancesBefore.getReservedOfferBalance()) + BigInt(bobBalancesBefore.getReservedTradeBalance()));
-  
+
   // bob is notified of balance change
 
   // alice can get trade
   fetchedTrade = await alice.getTrade(trade.getTradeId());
   expect(fetchedTrade.getPhase()).toEqual("DEPOSIT_PUBLISHED");
-  
+
   // mine until deposit txs unlock
   console.log("Mining to unlock deposit txs");
   await waitForUnlockedTxs(fetchedTrade.getMakerDepositTxId(), fetchedTrade.getTakerDepositTxId());
   console.log("Done mining to unlock deposit txs");
-  
+
   // alice notified to send payment
   await wait(TestConfig.walletSyncPeriodMs * 2);
   fetchedTrade = await alice.getTrade(trade.getTradeId());
@@ -983,27 +1052,27 @@ test("Can complete a trade", async () => {
   fetchedTrade = await bob.getTrade(trade.getTradeId());
   expect(fetchedTrade.getIsDepositConfirmed()).toBe(true);
   expect(fetchedTrade.getPhase()).toEqual("DEPOSIT_CONFIRMED");
-  
+
   // alice indicates payment is sent
   await alice.confirmPaymentStarted(trade.getTradeId());
   fetchedTrade = await alice.getTrade(trade.getTradeId());
   expect(fetchedTrade.getPhase()).toEqual("FIAT_SENT"); // TODO (woodser): rename to PAYMENT_SENT
-  
+
   // bob notified payment is sent
   await wait(TestConfig.maxTimePeerNoticeMs);
   fetchedTrade = await bob.getTrade(trade.getTradeId());
   expect(fetchedTrade.getPhase()).toEqual("FIAT_SENT"); // TODO (woodser): rename to PAYMENT_SENT
-  
+
   // bob confirms payment is received
   await bob.confirmPaymentReceived(trade.getTradeId());
   fetchedTrade = await bob.getTrade(trade.getTradeId());
   expect(fetchedTrade.getPhase()).toEqual("PAYOUT_PUBLISHED");
-  
+
   // alice notified trade is complete and of balance changes
   await wait(TestConfig.walletSyncPeriodMs * 2);
   fetchedTrade = await alice.getTrade(trade.getTradeId());
   expect(fetchedTrade.getPhase()).toEqual("PAYOUT_PUBLISHED");
-  
+
   // test balances after payout tx
   let aliceBalancesAfter = await alice.getBalances();
   bobBalancesAfter = await bob.getBalances();
@@ -1112,7 +1181,7 @@ async function initHavenoAccount(havenod: HavenoDaemon, password: string) {
  * Open or create funding wallet.
  */
 async function initFundingWallet() {
-  
+
   // init client connected to monero-wallet-rpc
   fundingWallet = await monerojs.connectToWalletRpc(TestConfig.fundingWallet.url, TestConfig.fundingWallet.username, TestConfig.fundingWallet.password);
   
@@ -1122,19 +1191,19 @@ async function initFundingWallet() {
     await fundingWallet.getPrimaryAddress();
     walletIsOpen = true;
   } catch (err) { }
-  
+
   // open wallet if necessary
   if (!walletIsOpen) {
-    
+
     // attempt to open funding wallet
     try {
       await fundingWallet.openWallet({path: TestConfig.fundingWallet.defaultPath, password: TestConfig.fundingWallet.password});
     } catch (e) {
       if (!(e instanceof monerojs.MoneroRpcError)) throw e;
-      
+
       // -1 returned when wallet does not exist or fails to open e.g. it's already open by another application
       if (e.getCode() === -1) {
-        
+
         // create wallet
         await fundingWallet.createWallet({path: TestConfig.fundingWallet.defaultPath, password: TestConfig.fundingWallet.password});
       } else {
@@ -1148,35 +1217,35 @@ async function initFundingWallet() {
  * Wait for unlocked balance in wallet or Haveno daemon.
  */
 async function waitForUnlockedBalance(amount: bigint, ...wallets: any[]) {
-  
+
   // wrap common wallet functionality for tests
   class WalletWrapper {
-    
+
     _wallet: any;
-    
+
     constructor(wallet: any) {
       this._wallet = wallet;
     }
-    
+
     async getUnlockedBalance(): Promise<bigint> {
       if (this._wallet instanceof HavenoDaemon) return BigInt((await this._wallet.getBalances()).getUnlockedBalance());
       else return BigInt((await this._wallet.getUnlockedBalance()).toString());
     }
-    
+
     async getLockedBalance(): Promise<bigint> {
       if (this._wallet instanceof HavenoDaemon) return BigInt((await this._wallet.getBalances()).getLockedBalance());
       else return BigInt((await this._wallet.getBalance()).toString()) - await this.getUnlockedBalance();
     }
-    
+
     async getDepositAddress(): Promise<string> {
       if (this._wallet instanceof HavenoDaemon) return await this._wallet.getNewDepositSubaddress();
       else return (await this._wallet.createSubaddress()).getAddress();
     }
   }
-  
+
   // wrap wallets
   for (let i = 0; i < wallets.length; i++) wallets[i] = new WalletWrapper(wallets[i]);
-  
+
   // fund wallets with insufficient balance
   let miningNeeded = false;
   let fundConfig = new MoneroTxConfig().setAccountIndex(0).setRelay(true);
@@ -1195,10 +1264,10 @@ async function waitForUnlockedBalance(amount: bigint, ...wallets: any[]) {
     try { await fundingWallet.createTx(fundConfig); }
     catch (err) { throw new Error("Error funding wallets: " + err.message); }
   }
-  
+
   // done if all wallets have sufficient unlocked balance
   if (!miningNeeded) return;
-  
+
   // wait for funds to unlock
   console.log("Mining for unlocked balance of " + amount);
   await startMining();
@@ -1339,20 +1408,20 @@ async function createCryptoPaymentAccount(trader: HavenoDaemon): Promise<Payment
   return paymentAccount;
 }
 
-async function postOffer(maker: HavenoDaemon, direction: string, amount: bigint, paymentAccountId: string|undefined) {
+async function postOffer(maker: HavenoDaemon, direction: string, amount: bigint, paymentAccountId: string|undefined, priceMargin = 0.02) {
     
   // create payment account if not given
   if (!paymentAccountId) paymentAccountId = (await createCryptoPaymentAccount(maker)).getId();
   
   // get unlocked balance before reserving offer
   let unlockedBalanceBefore: bigint = BigInt((await maker.getBalances()).getUnlockedBalance());
-  
+
   // post offer
   let offer: OfferInfo = await maker.postOffer("eth",
         direction,                  // buy or sell xmr for eth
         12.378981,                  // price TODO: price is optional? price string gets converted to long?
         true,                       // use market price
-        0.02,                       // market price margin, e.g. within 2%
+        priceMargin,                       // market price margin, e.g. within 2%
         amount,                     // amount
         BigInt("150000000000"),     // min amount
         0.15,                       // buyer security deposit, e.g. 15%
@@ -1363,7 +1432,7 @@ async function postOffer(maker: HavenoDaemon, direction: string, amount: bigint,
   // unlocked balance has decreased
   let unlockedBalanceAfter: bigint = BigInt((await maker.getBalances()).getUnlockedBalance());
   if (unlockedBalanceAfter === unlockedBalanceBefore) throw new Error("unlocked balance did not change after posting offer");
-  
+
   // offer is included in my offers only
   if (!getOffer(await maker.getMyOffers(direction), offer.getId())) {
     await wait(10000);
@@ -1371,7 +1440,7 @@ async function postOffer(maker: HavenoDaemon, direction: string, amount: bigint,
     else console.log("The offer finally posted!");
   }
   if (getOffer(await maker.getOffers(direction), offer.getId())) throw new Error("My offer " + offer.getId() + " should not appear in available offers");
-  
+
   return offer;
 }
 
