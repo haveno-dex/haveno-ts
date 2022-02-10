@@ -4,8 +4,8 @@
 import {HavenoDaemon} from "./HavenoDaemon";
 import {HavenoUtils} from "./utils/HavenoUtils";
 import * as grpcWeb from 'grpc-web';
-import {MarketPriceInfo, NotificationMessage, OfferInfo, TradeInfo, UrlConnection, XmrBalanceInfo, MarketDepthRequest, MarketDepthReply} from './protobuf/grpc_pb'; // TODO (woodser): better names; haveno_grpc_pb, haveno_pb
-import {PaymentAccount, Offer} from './protobuf/pb_pb';
+import {MarketPriceInfo, NotificationMessage, OfferInfo, TradeInfo, UrlConnection, XmrBalanceInfo} from './protobuf/grpc_pb'; // TODO (woodser): better names; haveno_grpc_pb, haveno_pb
+import {PaymentAccount} from './protobuf/pb_pb';
 import {XmrDestination, XmrTx, XmrIncomingTransfer, XmrOutgoingTransfer} from './protobuf/grpc_pb';
 import AuthenticationStatus = UrlConnection.AuthenticationStatus;
 import OnlineStatus = UrlConnection.OnlineStatus;
@@ -104,7 +104,19 @@ const TestConfig = {
         ["8086", ["10005", "7781"]],
     ]),
     devPrivilegePrivKey: "6ac43ea1df2a290c1c8391736aa42e4339c5cb4f110ff0257a13b63211977b7a", // from DEV_PRIVILEGE_PRIV_KEY
-    timeout: 900000 // timeout in ms for all tests to complete (15 minutes)
+    timeout: 900000, // timeout in ms for all tests to complete (15 minutes),
+    postOffer: {
+        direction: "buy", // buy or sell xmr
+        amount: BigInt("200000000000"),
+        counterCurrency: "eth",
+        price: undefined, // use market price if undefined // TODO: converted to long on backend
+        paymentAcountId: undefined,
+        priceMargin: 0.0,
+        minAmount: BigInt("150000000000"), // TODO: disable by default
+        buyerSecurityDeposit: 0.15,
+        awaitUnlockedBalance: false,
+        triggerPrice: undefined // TODO: fails if there is a decimal, converted to long on backend
+    }
 };
 
 interface TxContext {
@@ -495,75 +507,6 @@ test("Has a Monero wallet", async () => {
   }
 });
 
-test("Can get market depth information", async () => {
-  await waitForUnlockedBalance(BigInt("1000000000000"), alice);
-
-  // get unlocked balance before reserving funds for offer
-  let unlockedBalanceBefore: bigint = BigInt((await alice.getBalances()).getUnlockedBalance());
-
-  // make buy offers
-  let offer1: OfferInfo = await postOffer(alice, "buy", BigInt("150000000000"), undefined, 0.00);
-  await wait(1000);
-  await waitForUnlockedBalance(BigInt("700000000000"), alice);
-  let offer2: OfferInfo = await postOffer(alice, "buy", BigInt("150000000000"), undefined, 0.02);
-  await wait(1000);
-  await waitForUnlockedBalance(BigInt("400000000000"), alice);
-  let offer3: OfferInfo = await postOffer(alice, "buy", BigInt("200000000000"), undefined, 0.05);
-  await wait(1000);
-
-  // // make sell offers
-  await waitForUnlockedBalance(BigInt("1500000000000"), alice);
-  let offer4: OfferInfo = await postOffer(alice, "sell", BigInt("300000000000"), undefined, 0.00);
-  await wait(1000);
-  await waitForUnlockedBalance(BigInt("600000000000"), alice);
-  let offer5: OfferInfo = await postOffer(alice, "sell", BigInt("300000000000"), undefined, 0.02);
-  await wait(1000);
-  await waitForUnlockedBalance(BigInt("800000000000"), alice);
-  let offer6: OfferInfo = await postOffer(alice, "sell", BigInt("400000000000"), undefined, 0.05);
-  await wait(1000);
-
-  // get market depth
-  let marketDepthReply: MarketDepthReply = await alice.getMarketDepth("eth");
-  
-  await alice.removeOffer(offer1.getId());
-  await alice.removeOffer(offer2.getId());
-  await alice.removeOffer(offer3.getId());
-  await alice.removeOffer(offer4.getId());
-  await alice.removeOffer(offer5.getId());
-  await alice.removeOffer(offer6.getId());
-
-  // test prices and depth arrays match in length
-  let buyPrices = marketDepthReply.getBuyPricesList();
-  let buyDepth = marketDepthReply.getBuyDepthList();  
-  let sellPrices = marketDepthReply.getSellPricesList();
-  let sellDepth = marketDepthReply.getSellDepthList();
-  
-  expect(buyPrices.length == buyDepth.length);
-  expect(sellPrices.length == sellDepth.length);
-
-  // test that prices are positive numbers
-  for (let i in buyPrices) {
-    expect(buyPrices[i]).toBeGreaterThanOrEqual(0);
-  }
-  for (let i in sellPrices) {
-    expect(sellPrices[i]).toBeGreaterThanOrEqual(0);
-  }
-
-  // test that depths and prices are accurate
-  expect(buyDepth[0]).toEqual(0.15);
-  expect(buyDepth[1]).toEqual(0.30);
-  expect(buyDepth[2]).toEqual(0.50);
-
-  expect(sellDepth[0]).toEqual(0.3);
-  expect(sellDepth[1]).toEqual(0.6);
-  expect(sellDepth[2]).toEqual(1);
-
-   // test invalid currency
-  await expect(async () => {await alice.getMarketDepth("INVALID_CURRENCY")})
-    .rejects
-    .toThrow('Currency not found: INVALID_CURRENCY');
-});
-
 test("Can get balances", async () => {
   let balances: XmrBalanceInfo = await alice.getBalances();
   expect(BigInt(balances.getUnlockedBalance())).toBeGreaterThanOrEqual(0);
@@ -631,6 +574,76 @@ test("Can get market prices", async () => {
     .toThrow('Currency not found: INVALID_CURRENCY');
 });
 
+test("Can get market depth", async () => {
+    let counterCurrency = "eth";
+    
+    // clear offers
+    await clearOffers(alice, counterCurrency);
+    await clearOffers(bob, counterCurrency);
+    async function clearOffers(havenod: HavenoDaemon, counterCurrency: string) {
+      for (let offer of await havenod.getMyOffers()) {
+        if (offer.getBaseCurrencyCode().toLowerCase() === counterCurrency.toLowerCase()) { // TODO (woodser): offer base currency and counter currency are switched
+            await havenod.removeOffer(offer.getId());
+        }
+      }
+    }
+    
+    // market depth has no data
+    await wait(TestConfig.maxTimePeerNoticeMs);
+    let marketDepth = await alice.getMarketDepth(counterCurrency);
+    expect(marketDepth.getBuyPricesList().length).toEqual(0);
+    expect(marketDepth.getBuyDepthList().length).toEqual(0);
+    expect(marketDepth.getSellPricesList().length).toEqual(0);
+    expect(marketDepth.getSellDepthList().length).toEqual(0);
+    
+    // post offers to buy and sell
+    await postOffer(alice, {direction: "buy", amount: BigInt("150000000000"), counterCurrency: counterCurrency, priceMargin: 0.00, awaitUnlockedBalance: true, price: 17.0}); // TODO: offer price is reversed. fix everywhere
+    await postOffer(alice, {direction: "buy", amount: BigInt("150000000000"), counterCurrency: counterCurrency, priceMargin: 0.02, awaitUnlockedBalance: true, price: 17.2});
+    await postOffer(alice, {direction: "buy", amount: BigInt("200000000000"), counterCurrency: counterCurrency, priceMargin: 0.05, awaitUnlockedBalance: true, price: 17.3});
+    await postOffer(alice, {direction: "buy", amount: BigInt("150000000000"), counterCurrency: counterCurrency, priceMargin: 0.02, awaitUnlockedBalance: true, price: 17.3});
+    await postOffer(alice, {direction: "sell", amount: BigInt("300000000000"), counterCurrency: counterCurrency, priceMargin: 0.00, awaitUnlockedBalance: true});
+    await postOffer(alice, {direction: "sell", amount: BigInt("300000000000"), counterCurrency: counterCurrency, priceMargin: 0.02, awaitUnlockedBalance: true});
+    await postOffer(alice, {direction: "sell", amount: BigInt("400000000000"), counterCurrency: counterCurrency, priceMargin: 0.05, awaitUnlockedBalance: true});
+    
+    // get bob's market depth
+    await wait(TestConfig.maxTimePeerNoticeMs);
+    marketDepth = await alice.getMarketDepth(counterCurrency);
+    
+    // each unique price has a depth
+    expect(marketDepth.getBuyPricesList().length).toEqual(3);
+    expect(marketDepth.getSellPricesList().length).toEqual(3);
+    expect(marketDepth.getBuyPricesList().length).toEqual(marketDepth.getBuyDepthList().length);
+    expect(marketDepth.getSellPricesList().length).toEqual(marketDepth.getSellDepthList().length);
+    
+    // test buy prices and depths
+    const priceDivisor = 100000000; // TODO: offer price = price * 100000000
+    let buyOffers = (await alice.getOffers("buy")).concat(await alice.getMyOffers("buy")).sort(function(a, b) { return a.getPrice() - b.getPrice() });
+    expect(marketDepth.getBuyPricesList()[0]).toEqual(1 / (buyOffers[0].getPrice() / priceDivisor)); // TODO: price when posting offer is reversed. this assumes crypto counter currency
+    expect(marketDepth.getBuyPricesList()[1]).toEqual(1 / (buyOffers[1].getPrice() / priceDivisor));
+    expect(marketDepth.getBuyPricesList()[2]).toEqual(1 / (buyOffers[2].getPrice() / priceDivisor));
+    expect(marketDepth.getBuyDepthList()[0]).toEqual(0.15);
+    expect(marketDepth.getBuyDepthList()[1]).toEqual(0.30);
+    expect(marketDepth.getBuyDepthList()[2]).toEqual(0.65);
+    
+    // test sell prices and depths
+    let sellOffers = (await alice.getOffers("sell")).concat(await alice.getMyOffers("sell")).sort(function(a, b) { return b.getPrice() - a.getPrice() });
+    expect(marketDepth.getSellPricesList()[0]).toEqual(1 / (sellOffers[0].getPrice() / priceDivisor));
+    expect(marketDepth.getSellPricesList()[1]).toEqual(1 / (sellOffers[1].getPrice() / priceDivisor));
+    expect(marketDepth.getSellPricesList()[2]).toEqual(1 / (sellOffers[2].getPrice() / priceDivisor));
+    expect(marketDepth.getSellDepthList()[0]).toEqual(0.3);
+    expect(marketDepth.getSellDepthList()[1]).toEqual(0.6);
+    expect(marketDepth.getSellDepthList()[2]).toEqual(1);
+    
+    // clear offers
+    await clearOffers(alice, counterCurrency);
+    await clearOffers(bob, counterCurrency);
+    
+    // test invalid currency
+    await expect(async () => {await alice.getMarketDepth("INVALID_CURRENCY")})
+        .rejects
+        .toThrow('Currency not found: INVALID_CURRENCY');
+});
+
 test("Can register as dispute agents", async () => {
   await arbitrator.registerDisputeAgent("mediator", TestConfig.devPrivilegePrivKey);    // TODO: bisq mediator = haveno arbitrator
   await arbitrator.registerDisputeAgent("refundagent", TestConfig.devPrivilegePrivKey); // TODO: no refund agent in haveno
@@ -676,7 +689,7 @@ test("Can get payment accounts", async () => {
 });
 
 test("Can create crypto payment accounts", async () => {
-
+  
   // test each stagenet crypto account
   for (let testAccount of TestConfig.cryptoAccounts) {
     
@@ -688,7 +701,7 @@ test("Can create crypto payment accounts", async () => {
       testAccount.address);
     testCryptoPaymentAccount(paymentAccount);
     testCryptoPaymentAccountEquals(paymentAccount, testAccount, name);
-
+    
     // fetch and test payment account
     let fetchedAccount: PaymentAccount | undefined;
     for (let account of await alice.getPaymentAccounts()) {
@@ -700,7 +713,7 @@ test("Can create crypto payment accounts", async () => {
     if (!fetchedAccount) throw new Error("Payment account not found after being added");
     testCryptoPaymentAccount(paymentAccount);
     testCryptoPaymentAccountEquals(fetchedAccount, testAccount, name);
-
+    
     // wait before creating next account
     await GenUtils.waitFor(1000);
 
@@ -708,7 +721,7 @@ test("Can create crypto payment accounts", async () => {
     // TODO (woodser): test rejecting account with invalid address
     // TODO (woodser): test rejecting account with duplicate name
   }
-
+  
   function testCryptoPaymentAccountEquals(paymentAccount: PaymentAccount, testAccount: any, name: string) {
     expect(paymentAccount.getAccountName()).toEqual(name);
     expect(paymentAccount.getPaymentAccountPayload()!.getCryptoCurrencyAccountPayload()!.getAddress()).toEqual(testAccount.address);
@@ -717,16 +730,16 @@ test("Can create crypto payment accounts", async () => {
 });
 
 test("Can post and remove an offer", async () => {
-
+  
   // wait for alice to have unlocked balance to post offer
   let tradeAmount: bigint = BigInt("250000000000");
   await waitForUnlockedBalance(tradeAmount * BigInt("2"), alice);
-
+  
   // get unlocked balance before reserving funds for offer
   let unlockedBalanceBefore: bigint = BigInt((await alice.getBalances()).getUnlockedBalance());
 
   // post offer
-  let offer: OfferInfo = await postOffer(alice, "buy", BigInt("200000000000"), undefined);
+  let offer: OfferInfo = await postOffer(alice);
   assert.equal(offer.getState(), "AVAILABLE");
   
   // has offer
@@ -735,10 +748,10 @@ test("Can post and remove an offer", async () => {
   
   // cancel offer
   await alice.removeOffer(offer.getId());
-
+  
   // offer is removed from my offers
   if (getOffer(await alice.getMyOffers("buy"), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in my offers after removal");
-
+  
   // reserved balance released
   expect(unlockedBalanceBefore).toEqual(BigInt((await alice.getBalances()).getUnlockedBalance()));
 });
@@ -757,7 +770,7 @@ test("Invalidates offers when reserved funds are spent", async () => {
     
     // post offer
     await wait(1000);
-    let offer: OfferInfo = await postOffer(alice, "buy", tradeAmount, undefined);
+    let offer: OfferInfo = await postOffer(alice, {amount: tradeAmount});
     
     // get key images reserved by offer
     let reservedKeyImages = [];
@@ -818,7 +831,7 @@ test("Handles unexpected errors during trade initialization", async () => {
     
     // trader 0 posts offer
     console.log("Posting offer");
-    let offer = await postOffer(traders[0], "buy", tradeAmount, undefined);
+    let offer = await postOffer(traders[0], {amount: tradeAmount});
     offer = await traders[0].getMyOffer(offer.getId());
     assert.equal(offer.getState(), "AVAILABLE");
     
@@ -910,7 +923,7 @@ test("Cannot make or take offer with insufficient unlocked funds", async () => {
     
     // charlie cannot make offer with insufficient funds
     try {
-      await postOffer(charlie, "buy", BigInt("200000000000"), paymentAccount.getId());
+      await postOffer(charlie, {paymentAccountId: paymentAccount.getId()});
       throw new Error("Should have failed making offer with insufficient funds")
     } catch (err) {
       let errTyped = err as grpcWeb.RpcError;
@@ -925,7 +938,7 @@ test("Cannot make or take offer with insufficient unlocked funds", async () => {
     else {
       let tradeAmount: bigint = BigInt("250000000000");
       await waitForUnlockedBalance(tradeAmount * BigInt("2"), alice);
-      offer = await postOffer(alice, "buy", tradeAmount, undefined);
+      offer = await postOffer(alice, {amount: tradeAmount});
       assert.equal(offer.getState(), "AVAILABLE");
       await wait(TestConfig.walletSyncPeriodMs * 2);
     }
@@ -976,7 +989,7 @@ test("Can complete a trade", async () => {
   // alice posts offer to buy xmr
   console.log("Alice posting offer");
   let direction = "buy";
-  let offer: OfferInfo = await postOffer(alice, direction, tradeAmount, undefined);
+  let offer: OfferInfo = await postOffer(alice, {direction: direction, amount: tradeAmount});
   expect(offer.getState()).toEqual("AVAILABLE");
   console.log("Alice done posting offer");
   
@@ -1006,7 +1019,7 @@ test("Can complete a trade", async () => {
       testAccount.currencyCode + " " +  testAccount.address.substr(0, 8) + "... " + GenUtils.getUUID(),
       testAccount.currencyCode,
       testAccount.address);
-
+  
   // bob takes offer
   let startTime = Date.now();
   console.log("Bob taking offer");
@@ -1027,23 +1040,23 @@ test("Can complete a trade", async () => {
   let fetchedTrade: TradeInfo = await bob.getTrade(trade.getTradeId());
   expect(fetchedTrade.getPhase()).toEqual("DEPOSIT_PUBLISHED");
   // TODO: test fetched trade
-
+  
   // test bob's balances after taking trade
   let bobBalancesAfter: XmrBalanceInfo = await bob.getBalances();
   expect(BigInt(bobBalancesAfter.getUnlockedBalance())).toBeLessThan(BigInt(bobBalancesBefore.getUnlockedBalance()));
   expect(BigInt(bobBalancesAfter.getReservedOfferBalance()) + BigInt(bobBalancesAfter.getReservedTradeBalance())).toBeGreaterThan(BigInt(bobBalancesBefore.getReservedOfferBalance()) + BigInt(bobBalancesBefore.getReservedTradeBalance()));
-
+  
   // bob is notified of balance change
 
   // alice can get trade
   fetchedTrade = await alice.getTrade(trade.getTradeId());
   expect(fetchedTrade.getPhase()).toEqual("DEPOSIT_PUBLISHED");
-
+  
   // mine until deposit txs unlock
   console.log("Mining to unlock deposit txs");
   await waitForUnlockedTxs(fetchedTrade.getMakerDepositTxId(), fetchedTrade.getTakerDepositTxId());
   console.log("Done mining to unlock deposit txs");
-
+  
   // alice notified to send payment
   await wait(TestConfig.walletSyncPeriodMs * 2);
   fetchedTrade = await alice.getTrade(trade.getTradeId());
@@ -1052,27 +1065,27 @@ test("Can complete a trade", async () => {
   fetchedTrade = await bob.getTrade(trade.getTradeId());
   expect(fetchedTrade.getIsDepositConfirmed()).toBe(true);
   expect(fetchedTrade.getPhase()).toEqual("DEPOSIT_CONFIRMED");
-
+  
   // alice indicates payment is sent
   await alice.confirmPaymentStarted(trade.getTradeId());
   fetchedTrade = await alice.getTrade(trade.getTradeId());
   expect(fetchedTrade.getPhase()).toEqual("FIAT_SENT"); // TODO (woodser): rename to PAYMENT_SENT
-
+  
   // bob notified payment is sent
   await wait(TestConfig.maxTimePeerNoticeMs);
   fetchedTrade = await bob.getTrade(trade.getTradeId());
   expect(fetchedTrade.getPhase()).toEqual("FIAT_SENT"); // TODO (woodser): rename to PAYMENT_SENT
-
+  
   // bob confirms payment is received
   await bob.confirmPaymentReceived(trade.getTradeId());
   fetchedTrade = await bob.getTrade(trade.getTradeId());
   expect(fetchedTrade.getPhase()).toEqual("PAYOUT_PUBLISHED");
-
+  
   // alice notified trade is complete and of balance changes
   await wait(TestConfig.walletSyncPeriodMs * 2);
   fetchedTrade = await alice.getTrade(trade.getTradeId());
   expect(fetchedTrade.getPhase()).toEqual("PAYOUT_PUBLISHED");
-
+  
   // test balances after payout tx
   let aliceBalancesAfter = await alice.getBalances();
   bobBalancesAfter = await bob.getBalances();
@@ -1142,7 +1155,7 @@ async function initHavenoDaemon(config?: any): Promise<HavenoDaemon> {
   return havenod;
   
   async function getAvailablePort(): Promise<number> {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function(resolve) {
       let srv = net.createServer();
       srv.listen(0, function() {
         let port = srv.address().port;
@@ -1181,7 +1194,7 @@ async function initHavenoAccount(havenod: HavenoDaemon, password: string) {
  * Open or create funding wallet.
  */
 async function initFundingWallet() {
-
+  
   // init client connected to monero-wallet-rpc
   fundingWallet = await monerojs.connectToWalletRpc(TestConfig.fundingWallet.url, TestConfig.fundingWallet.username, TestConfig.fundingWallet.password);
   
@@ -1191,19 +1204,19 @@ async function initFundingWallet() {
     await fundingWallet.getPrimaryAddress();
     walletIsOpen = true;
   } catch (err) { }
-
+  
   // open wallet if necessary
   if (!walletIsOpen) {
-
+    
     // attempt to open funding wallet
     try {
       await fundingWallet.openWallet({path: TestConfig.fundingWallet.defaultPath, password: TestConfig.fundingWallet.password});
     } catch (e) {
       if (!(e instanceof monerojs.MoneroRpcError)) throw e;
-
+      
       // -1 returned when wallet does not exist or fails to open e.g. it's already open by another application
       if (e.getCode() === -1) {
-
+        
         // create wallet
         await fundingWallet.createWallet({path: TestConfig.fundingWallet.defaultPath, password: TestConfig.fundingWallet.password});
       } else {
@@ -1217,35 +1230,35 @@ async function initFundingWallet() {
  * Wait for unlocked balance in wallet or Haveno daemon.
  */
 async function waitForUnlockedBalance(amount: bigint, ...wallets: any[]) {
-
+  
   // wrap common wallet functionality for tests
   class WalletWrapper {
-
+    
     _wallet: any;
-
+    
     constructor(wallet: any) {
       this._wallet = wallet;
     }
-
+    
     async getUnlockedBalance(): Promise<bigint> {
       if (this._wallet instanceof HavenoDaemon) return BigInt((await this._wallet.getBalances()).getUnlockedBalance());
       else return BigInt((await this._wallet.getUnlockedBalance()).toString());
     }
-
+    
     async getLockedBalance(): Promise<bigint> {
       if (this._wallet instanceof HavenoDaemon) return BigInt((await this._wallet.getBalances()).getLockedBalance());
       else return BigInt((await this._wallet.getBalance()).toString()) - await this.getUnlockedBalance();
     }
-
+    
     async getDepositAddress(): Promise<string> {
       if (this._wallet instanceof HavenoDaemon) return await this._wallet.getNewDepositSubaddress();
       else return (await this._wallet.createSubaddress()).getAddress();
     }
   }
-
+  
   // wrap wallets
   for (let i = 0; i < wallets.length; i++) wallets[i] = new WalletWrapper(wallets[i]);
-
+  
   // fund wallets with insufficient balance
   let miningNeeded = false;
   let fundConfig = new MoneroTxConfig().setAccountIndex(0).setRelay(true);
@@ -1264,16 +1277,16 @@ async function waitForUnlockedBalance(amount: bigint, ...wallets: any[]) {
     try { await fundingWallet.createTx(fundConfig); }
     catch (err) { throw new Error("Error funding wallets: " + err.message); }
   }
-
+  
   // done if all wallets have sufficient unlocked balance
   if (!miningNeeded) return;
-
+  
   // wait for funds to unlock
   console.log("Mining for unlocked balance of " + amount);
   await startMining();
   let promises: Promise<void>[] = [];
   for (let wallet of wallets) {
-    promises.push(new Promise(async function(resolve, reject) {
+    promises.push(new Promise(async function(resolve) {
       let taskLooper: any = new TaskLooper(async function() {
         if (await wallet.getUnlockedBalance() >= amount) {
           taskLooper.stop();
@@ -1293,7 +1306,7 @@ async function waitForUnlockedTxs(...txHashes: string[]) {
   let promises: Promise<void>[] = []
   for (let txHash of txHashes) {
     promises.push(new Promise(async function(resolve, reject) {
-      let taskLooper: any = new TaskLooper(async function() {
+      let taskLooper = new TaskLooper(async function() {
         let tx = await monerod.getTx(txHash);
         if (tx.isConfirmed() && tx.getBlock().getHeight() <= await monerod.getHeight() - 10) {
           taskLooper.stop();
@@ -1355,24 +1368,24 @@ function testTx(tx: XmrTx, ctx: TxContext) {
   assert(tx.getOutgoingTransfer() || tx.getIncomingTransfersList().length); // TODO (woodser): test transfers
   for (let incomingTransfer of tx.getIncomingTransfersList()) testTransfer(incomingTransfer, ctx);
   if (tx.getOutgoingTransfer()) testTransfer(tx.getOutgoingTransfer()!, ctx);
-  if (ctx.isCreatedTx) testCreatedTx(tx, ctx);
+  if (ctx.isCreatedTx) testCreatedTx(tx);
 }
 
-function testCreatedTx(tx: XmrTx, ctx: TxContext) {
+function testCreatedTx(tx: XmrTx) {
    assert.equal(tx.getTimestamp(), 0);
    assert.equal(tx.getIsConfirmed(), false);
    assert.equal(tx.getIsLocked(), true);
    assert(tx.getMetadata() && tx.getMetadata().length > 0);
 }
 
-function testTransfer(transfer: XmrIncomingTransfer|XmrOutgoingTransfer, ctx: TxContext) {
+function testTransfer(transfer: XmrIncomingTransfer | XmrOutgoingTransfer, ctx: TxContext) {
   expect(BigInt(transfer.getAmount())).toBeGreaterThanOrEqual(BigInt("0"));
   assert(transfer.getAccountIndex() >= 0);
-  if (transfer instanceof XmrIncomingTransfer) testIncomingTransfer(transfer, ctx);
+  if (transfer instanceof XmrIncomingTransfer) testIncomingTransfer(transfer);
   else testOutgoingTransfer(transfer, ctx);
 }
 
-function testIncomingTransfer(transfer: XmrIncomingTransfer, ctx: TxContext) {
+function testIncomingTransfer(transfer: XmrIncomingTransfer) {
   assert(transfer.getAddress());
   assert(transfer.getSubaddressIndex() >= 0);
   assert(transfer.getNumSuggestedConfirmations() > 0);
@@ -1399,48 +1412,59 @@ function testDestination(destination: XmrDestination) {
   expect(BigInt(destination.getAmount())).toBeGreaterThan(BigInt("0"));
 }
 
-async function createCryptoPaymentAccount(trader: HavenoDaemon): Promise<PaymentAccount> {
-  let testAccount =  TestConfig.cryptoAccounts[0];
-  let paymentAccount: PaymentAccount = await trader.createCryptoPaymentAccount(
-    testAccount.currencyCode + " " +  testAccount.address.substr(0, 8) + "... " + GenUtils.getUUID(),
-    testAccount.currencyCode,
-    testAccount.address);
-  return paymentAccount;
+async function createCryptoPaymentAccount(trader: HavenoDaemon, currencyCode = "eth"): Promise<PaymentAccount> {
+  for (let cryptoAccount of TestConfig.cryptoAccounts) {
+    if (cryptoAccount.currencyCode.toLowerCase() !== currencyCode.toLowerCase()) continue;
+    return trader.createCryptoPaymentAccount(
+      cryptoAccount.currencyCode + " " +  cryptoAccount.address.substr(0, 8) + "... " + GenUtils.getUUID(),
+      cryptoAccount.currencyCode,
+      cryptoAccount.address);
+  }
+  throw new Error("No test config for crypto: " + currencyCode);
 }
 
-async function postOffer(maker: HavenoDaemon, direction: string, amount: bigint, paymentAccountId: string|undefined, priceMargin = 0.02) {
-    
+// TODO: specify counter currency code
+async function postOffer(maker: HavenoDaemon, config?: any) {
+  
+  // assign default options
+  config = Object.assign({}, TestConfig.postOffer, config);
+  
+  // wait for unlocked balance
+  if (config.awaitUnlockedBalance) await waitForUnlockedBalance(config.amount * BigInt("2"), maker);
+  
   // create payment account if not given
-  if (!paymentAccountId) paymentAccountId = (await createCryptoPaymentAccount(maker)).getId();
+  if (!config.paymentAccountId) config.paymentAccountId = (await createCryptoPaymentAccount(maker, config.counterCurrency)).getId();
   
   // get unlocked balance before reserving offer
   let unlockedBalanceBefore: bigint = BigInt((await maker.getBalances()).getUnlockedBalance());
-
+  
   // post offer
-  let offer: OfferInfo = await maker.postOffer("eth",
-        direction,                  // buy or sell xmr for eth
-        12.378981,                  // price TODO: price is optional? price string gets converted to long?
-        true,                       // use market price
-        priceMargin,                       // market price margin, e.g. within 2%
-        amount,                     // amount
-        BigInt("150000000000"),     // min amount
-        0.15,                       // buyer security deposit, e.g. 15%
-        paymentAccountId,           // payment account id
-        undefined);                 // trigger price // TODO: fails if there is a decimal, gets converted to long?
+  // TODO: re-arrange post offer parameters like this postOffer() or use config interface?
+  let offer: OfferInfo = await maker.postOffer(
+        config.counterCurrency,
+        config.direction,
+        config.price,
+        config.price ? false : true, // TODO: redundant with price field?
+        config.priceMargin,
+        config.amount,
+        config.minAmount,
+        config.buyerSecurityDeposit,
+        config.paymentAccountId,
+        config.triggerPrice);
   testOffer(offer);
 
   // unlocked balance has decreased
   let unlockedBalanceAfter: bigint = BigInt((await maker.getBalances()).getUnlockedBalance());
   if (unlockedBalanceAfter === unlockedBalanceBefore) throw new Error("unlocked balance did not change after posting offer");
-
+  
   // offer is included in my offers only
-  if (!getOffer(await maker.getMyOffers(direction), offer.getId())) {
+  if (!getOffer(await maker.getMyOffers(config.amountdirection), offer.getId())) {
     await wait(10000);
-    if (!getOffer(await maker.getMyOffers(direction), offer.getId())) throw new Error("Offer " + offer.getId() + " was not found in my offers");
+    if (!getOffer(await maker.getMyOffers(config.amountdirection), offer.getId())) throw new Error("Offer " + offer.getId() + " was not found in my offers");
     else console.log("The offer finally posted!");
   }
-  if (getOffer(await maker.getOffers(direction), offer.getId())) throw new Error("My offer " + offer.getId() + " should not appear in available offers");
-
+  if (getOffer(await maker.getOffers(config.amountdirection), offer.getId())) throw new Error("My offer " + offer.getId() + " should not appear in available offers");
+  
   return offer;
 }
 
