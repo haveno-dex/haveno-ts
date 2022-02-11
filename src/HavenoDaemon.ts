@@ -2,7 +2,7 @@ import {HavenoUtils} from "./utils/HavenoUtils";
 import {TaskLooper} from "./utils/TaskLooper";
 import * as grpcWeb from 'grpc-web';
 import {GetVersionClient, AccountClient, MoneroConnectionsClient, DisputeAgentsClient, NotificationsClient, WalletsClient, PriceClient, OffersClient, PaymentAccountsClient, TradesClient, ShutdownServerClient} from './protobuf/GrpcServiceClientPb';
-import {GetVersionRequest, GetVersionReply, IsAppInitializedRequest, IsAppInitializedReply, RegisterDisputeAgentRequest, MarketPriceRequest, MarketPriceReply, MarketPricesRequest, MarketPricesReply, MarketPriceInfo, GetBalancesRequest, GetBalancesReply, XmrBalanceInfo, GetOffersRequest, GetOffersReply, OfferInfo, GetPaymentAccountsRequest, GetPaymentAccountsReply, CreateCryptoCurrencyPaymentAccountRequest, CreateCryptoCurrencyPaymentAccountReply, CreateOfferRequest, CreateOfferReply, CancelOfferRequest, TakeOfferRequest, TakeOfferReply, TradeInfo, GetTradeRequest, GetTradeReply, GetTradesRequest, GetTradesReply, GetNewDepositSubaddressRequest, GetNewDepositSubaddressReply, ConfirmPaymentStartedRequest, ConfirmPaymentReceivedRequest, XmrTx, GetXmrTxsRequest, GetXmrTxsReply, XmrDestination, CreateXmrTxRequest, CreateXmrTxReply, RelayXmrTxRequest, RelayXmrTxReply, CreateAccountRequest, AccountExistsRequest, AccountExistsReply, DeleteAccountRequest, OpenAccountRequest, IsAccountOpenRequest, IsAccountOpenReply, CloseAccountRequest, ChangePasswordRequest, BackupAccountRequest, BackupAccountReply, RestoreAccountRequest, StopRequest, NotificationMessage, RegisterNotificationListenerRequest, SendNotificationRequest, UrlConnection, AddConnectionRequest, RemoveConnectionRequest, GetConnectionRequest, GetConnectionsRequest, SetConnectionRequest, CheckConnectionRequest, CheckConnectionsReply, CheckConnectionsRequest, StartCheckingConnectionsRequest, StopCheckingConnectionsRequest, GetBestAvailableConnectionRequest, SetAutoSwitchRequest, CheckConnectionReply, GetConnectionsReply, GetConnectionReply, GetBestAvailableConnectionReply} from './protobuf/grpc_pb';
+import {GetVersionRequest, GetVersionReply, IsAppInitializedRequest, IsAppInitializedReply, RegisterDisputeAgentRequest, MarketPriceRequest, MarketPriceReply, MarketPricesRequest, MarketPricesReply, MarketPriceInfo, MarketDepthRequest, MarketDepthReply, MarketDepthInfo, GetBalancesRequest, GetBalancesReply, XmrBalanceInfo, GetOffersRequest, GetOffersReply, OfferInfo, GetPaymentAccountsRequest, GetPaymentAccountsReply, CreateCryptoCurrencyPaymentAccountRequest, CreateCryptoCurrencyPaymentAccountReply, CreateOfferRequest, CreateOfferReply, CancelOfferRequest, TakeOfferRequest, TakeOfferReply, TradeInfo, GetTradeRequest, GetTradeReply, GetTradesRequest, GetTradesReply, GetNewDepositSubaddressRequest, GetNewDepositSubaddressReply, ConfirmPaymentStartedRequest, ConfirmPaymentReceivedRequest, XmrTx, GetXmrTxsRequest, GetXmrTxsReply, XmrDestination, CreateXmrTxRequest, CreateXmrTxReply, RelayXmrTxRequest, RelayXmrTxReply, CreateAccountRequest, AccountExistsRequest, AccountExistsReply, DeleteAccountRequest, OpenAccountRequest, IsAccountOpenRequest, IsAccountOpenReply, CloseAccountRequest, ChangePasswordRequest, BackupAccountRequest, BackupAccountReply, RestoreAccountRequest, StopRequest, NotificationMessage, RegisterNotificationListenerRequest, SendNotificationRequest, UrlConnection, AddConnectionRequest, RemoveConnectionRequest, GetConnectionRequest, GetConnectionsRequest, SetConnectionRequest, CheckConnectionRequest, CheckConnectionsReply, CheckConnectionsRequest, StartCheckingConnectionsRequest, StopCheckingConnectionsRequest, GetBestAvailableConnectionRequest, SetAutoSwitchRequest, CheckConnectionReply, GetConnectionsReply, GetConnectionReply, GetBestAvailableConnectionReply} from './protobuf/grpc_pb';
 import {PaymentAccount, AvailabilityResult} from './protobuf/pb_pb';
 const console = require('console');
 
@@ -205,11 +205,11 @@ class HavenoDaemon {
   getAppName(): string|undefined {
     return this._appName;
   }
-
+  
   /**
    * Get the Haveno version.
    * 
-   * @return {string} the Haveno daemon version 
+   * @return {string} the Haveno daemon version
    */
   async getVersion(): Promise<string> {
     let that = this;
@@ -575,7 +575,7 @@ class HavenoDaemon {
       });
     });
   }
-
+  
   /**
    * Automatically switch to the best available connection if current connection is disconnected after being checked.
    *
@@ -668,7 +668,7 @@ class HavenoDaemon {
     }
     throw new Error("No transaction with hash " + txHash);
   }
-
+  
   /**
    * Create but do not relay a transaction to send funds from the Monero wallet.
    * 
@@ -683,7 +683,7 @@ class HavenoDaemon {
       });
     });
   }
-
+  
   /**
    * Relay a previously created transaction to send funds from the Monero wallet.
    * 
@@ -698,7 +698,7 @@ class HavenoDaemon {
       });
     });
   }
-
+  
   /**
    * Get the current market price per 1 XMR in the given currency.
    *
@@ -714,9 +714,9 @@ class HavenoDaemon {
       });
     });
   }
-
+  
   /**
-   * Get the current market prices of all the currencies.
+   * Get the current market prices of all currencies.
    *
    * @return {MarketPrice[]} price per 1 XMR in all supported currencies (fiat & crypto)
    */
@@ -729,7 +729,22 @@ class HavenoDaemon {
       });
     });
   }
-
+  
+  /**
+   * Get the market depth of a currency.
+   *
+   * @return {MarketDepthInfo} market depth of the given currency
+   */
+   async getMarketDepth(currencyCode: string): Promise<MarketDepthInfo> {
+    let that = this;
+    return new Promise(function(resolve, reject) {
+      that._priceClient.getMarketDepth(new MarketDepthRequest().setCurrencyCode(currencyCode), {password: that._password}, function(err: grpcWeb.RpcError, response: MarketDepthReply) {
+        if (err) reject(err);
+        else resolve(response.getMarketDepth());
+      });
+    });
+  }
+  
   /**
    * Get payment accounts.
    * 
@@ -773,10 +788,11 @@ class HavenoDaemon {
   /**
    * Get available offers to buy or sell XMR.
    * 
-   * @param {string} direction - one of "BUY" or "SELL" // TODO (woodser): make optional
-   * @return {OfferInfo[]} available offers
+   * @param {string|undefined} direction - "buy" or "sell" (default all)
+   * @return {OfferInfo[]} the available offers
    */
-  async getOffers(direction: string): Promise<OfferInfo[]> {
+  async getOffers(direction?: string): Promise<OfferInfo[]> {
+    if (!direction) return (await this.getOffers("buy")).concat(await this.getOffers("sell")); // TODO: implement in backend
     let that = this;
     return new Promise(function(resolve, reject) {
       that._offersClient.getOffers(new GetOffersRequest().setDirection(direction).setCurrencyCode("XMR"), {password: that._password}, function(err: grpcWeb.RpcError, response: GetOffersReply) {
@@ -787,12 +803,13 @@ class HavenoDaemon {
   }
   
   /**
-   * Get user's created offers to buy or sell XMR.
+   * Get the user's posted offers to buy or sell XMR.
    * 
-   * @param {string} direction - one of "BUY" or "SELL" // TODO (woodser): make optional
+   * @param {string|undefined} direction - "buy" or "sell" (default all)
    * @return {OfferInfo[]} the user's created offers
    */
-  async getMyOffers(direction: string): Promise<OfferInfo[]> {
+  async getMyOffers(direction?: string): Promise<OfferInfo[]> {
+    if (!direction) return (await this.getMyOffers("buy")).concat(await this.getMyOffers("sell")); // TODO: implement in backend
     let that = this;
     return new Promise(function(resolve, reject) {
       that._offersClient.getMyOffers(new GetOffersRequest().setDirection(direction).setCurrencyCode("XMR"), {password: that._password}, function(err: grpcWeb.RpcError, response: GetOffersReply) {
@@ -823,7 +840,7 @@ class HavenoDaemon {
    * @param {string} currencyCode - currency code of traded pair
    * @param {string} direction - one of "BUY" or "SELL"
    * @param {number} price - trade price
-   * @param {bool} useMarketBasedPrice - base trade on market price
+   * @param {bool} useMarketBasedPrice - base trade on market price // TODO: this field redundant with price
    * @param {number} marketPriceMargin - % from market price to tolerate
    * @param {bigint} amount - amount to trade
    * @param {bigint} minAmount - minimum amount to trade
@@ -846,8 +863,8 @@ class HavenoDaemon {
     let request = new CreateOfferRequest()
             .setCurrencyCode(currencyCode)
             .setDirection(direction)
-            .setPrice(price.toString())
             .setUseMarketBasedPrice(useMarketBasedPrice)
+            .setPrice(useMarketBasedPrice ? "1.0" : price.toString()) // TODO: positive price required even if using market price
             .setMarketPriceMargin(marketPriceMargin)
             .setAmount(amount.toString())
             .setMinAmount(minAmount.toString())
@@ -973,7 +990,7 @@ class HavenoDaemon {
     });
     if (this._process) return HavenoUtils.kill(this._process);
   }
-
+  
   // ------------------------------- HELPERS ----------------------------------
   
   /**
