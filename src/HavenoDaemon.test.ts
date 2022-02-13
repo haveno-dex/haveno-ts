@@ -91,6 +91,12 @@ const TestConfig = {
         }, {
             currencyCode: "BTC",
             address: "bcrt1q6j90vywv8x7eyevcnn2tn2wrlg3vsjlsvt46qz"
+        }, {
+            currencyCode: "BCH",
+            address: "1JRjBNKi4ZgJpKPeoL4149Q7ZZD3VvVgk9"
+        }, {
+            currencyCode: "LTC",
+            address: "LXUTUN5mTPc2LsS7cEjkyjTRcfYyJGoUuQ"
         }
     ],
     proxyPorts: new Map<string, string[]>([ // map proxied ports to havenod api and p2p ports
