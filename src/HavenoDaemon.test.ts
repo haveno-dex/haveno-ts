@@ -5,7 +5,7 @@ import {HavenoDaemon} from "./HavenoDaemon";
 import {HavenoUtils} from "./utils/HavenoUtils";
 import * as grpcWeb from 'grpc-web';
 import {MarketPriceInfo, NotificationMessage, OfferInfo, TradeInfo, UrlConnection, XmrBalanceInfo} from './protobuf/grpc_pb'; // TODO (woodser): better names; haveno_grpc_pb, haveno_pb
-import {PaymentAccount} from './protobuf/pb_pb';
+import {PaymentMethod, PaymentAccount} from './protobuf/pb_pb';
 import {XmrDestination, XmrTx, XmrIncomingTransfer, XmrOutgoingTransfer} from './protobuf/grpc_pb';
 import AuthenticationStatus = UrlConnection.AuthenticationStatus;
 import OnlineStatus = UrlConnection.OnlineStatus;
@@ -85,7 +85,8 @@ const TestConfig = {
     walletSyncPeriodMs: 5000, // TODO (woodser): auto adjust higher if using remote connection
     daemonPollPeriodMs: 15000,
     maxTimePeerNoticeMs: 3000,
-    cryptoAccounts: [{ // TODO (woodser): test other cryptos, fiat
+    assetCodes: ["USD", "GBP", "EUR", "BTC", "ETH"], // primary asset codes
+    cryptoAddresses: [{
             currencyCode: "ETH",
             address: "0xdBdAb835Acd6fC84cF5F9aDD3c0B5a1E25fbd99f"
         }, {
@@ -94,9 +95,9 @@ const TestConfig = {
         }
     ],
     proxyPorts: new Map<string, string[]>([ // map proxied ports to havenod api and p2p ports
-        ["8079", ["9998", "4444"]],  // arbitrator
-        ["8080", ["9999", "5555"]],  // alice
-        ["8081", ["10000", "6666"]], // bob
+        ["8079", ["9998", "4444"]],         // arbitrator
+        ["8080", ["9999", "5555"]],         // alice
+        ["8081", ["10000", "6666"]],        // bob
         ["8082", ["10001", "7777"]],
         ["8083", ["10002", "7778"]],
         ["8084", ["10003", "7779"]],
@@ -104,18 +105,18 @@ const TestConfig = {
         ["8086", ["10005", "7781"]],
     ]),
     devPrivilegePrivKey: "6ac43ea1df2a290c1c8391736aa42e4339c5cb4f110ff0257a13b63211977b7a", // from DEV_PRIVILEGE_PRIV_KEY
-    timeout: 900000, // timeout in ms for all tests to complete (15 minutes),
+    timeout: 900000, // timeout in ms for all tests to complete (15 minutes)
     postOffer: {
-        direction: "buy", // buy or sell xmr
-        amount: BigInt("200000000000"),
-        counterCurrency: "eth",
-        price: undefined, // use market price if undefined // TODO: converted to long on backend
-        paymentAcountId: undefined,
+        direction: "buy",                  // buy or sell xmr
+        amount: BigInt("200000000000"),    // amount of xmr to trade
+        assetCode: "eth",                  // counter asset to trade
+        price: undefined,                  // use market price if undefined // TODO: converted to long on backend
+        paymentAccountId: undefined,
         priceMargin: 0.0,
         minAmount: BigInt("150000000000"), // TODO: disable by default
         buyerSecurityDeposit: 0.15,
         awaitUnlockedBalance: false,
-        triggerPrice: undefined // TODO: fails if there is a decimal, converted to long on backend
+        triggerPrice: undefined            // TODO: fails if there is a decimal, converted to long on backend
     }
 };
 
@@ -550,10 +551,10 @@ test("Can get market prices", async () => {
     expect(price.getCurrencyCode().length).toBeGreaterThan(0);
     expect(price.getPrice()).toBeGreaterThanOrEqual(0);
   }
-
-  // get market prices of specific currencies
-  for (let testAccount of TestConfig.cryptoAccounts) {
-    let price = await alice.getPrice(testAccount.currencyCode);
+  
+  // get market prices of primary assets
+  for (let assetCode of TestConfig.assetCodes) {
+    let price = await alice.getPrice(assetCode);
     expect(price).toBeGreaterThan(0);
   }
 
@@ -575,14 +576,14 @@ test("Can get market prices", async () => {
 });
 
 test("Can get market depth", async () => {
-    let counterCurrency = "eth";
+    let assetCode = "eth";
     
     // clear offers
-    await clearOffers(alice, counterCurrency);
-    await clearOffers(bob, counterCurrency);
-    async function clearOffers(havenod: HavenoDaemon, counterCurrency: string) {
-      for (let offer of await havenod.getMyOffers()) {
-        if (offer.getBaseCurrencyCode().toLowerCase() === counterCurrency.toLowerCase()) { // TODO (woodser): offer base currency and counter currency are switched
+    await clearOffers(alice, assetCode);
+    await clearOffers(bob, assetCode);
+    async function clearOffers(havenod: HavenoDaemon, assetCode: string) {
+      for (let offer of await havenod.getMyOffers(assetCode)) {
+        if (offer.getBaseCurrencyCode().toLowerCase() === assetCode.toLowerCase()) { // TODO (woodser): offer base currency and counter currency are switched for cryptos
             await havenod.removeOffer(offer.getId());
         }
       }
@@ -590,24 +591,24 @@ test("Can get market depth", async () => {
     
     // market depth has no data
     await wait(TestConfig.maxTimePeerNoticeMs);
-    let marketDepth = await alice.getMarketDepth(counterCurrency);
+    let marketDepth = await alice.getMarketDepth(assetCode);
     expect(marketDepth.getBuyPricesList().length).toEqual(0);
     expect(marketDepth.getBuyDepthList().length).toEqual(0);
     expect(marketDepth.getSellPricesList().length).toEqual(0);
     expect(marketDepth.getSellDepthList().length).toEqual(0);
     
     // post offers to buy and sell
-    await postOffer(alice, {direction: "buy", amount: BigInt("150000000000"), counterCurrency: counterCurrency, priceMargin: 0.00, awaitUnlockedBalance: true, price: 17.0}); // TODO: offer price is reversed. fix everywhere
-    await postOffer(alice, {direction: "buy", amount: BigInt("150000000000"), counterCurrency: counterCurrency, priceMargin: 0.02, awaitUnlockedBalance: true, price: 17.2});
-    await postOffer(alice, {direction: "buy", amount: BigInt("200000000000"), counterCurrency: counterCurrency, priceMargin: 0.05, awaitUnlockedBalance: true, price: 17.3});
-    await postOffer(alice, {direction: "buy", amount: BigInt("150000000000"), counterCurrency: counterCurrency, priceMargin: 0.02, awaitUnlockedBalance: true, price: 17.3});
-    await postOffer(alice, {direction: "sell", amount: BigInt("300000000000"), counterCurrency: counterCurrency, priceMargin: 0.00, awaitUnlockedBalance: true});
-    await postOffer(alice, {direction: "sell", amount: BigInt("300000000000"), counterCurrency: counterCurrency, priceMargin: 0.02, awaitUnlockedBalance: true});
-    await postOffer(alice, {direction: "sell", amount: BigInt("400000000000"), counterCurrency: counterCurrency, priceMargin: 0.05, awaitUnlockedBalance: true});
+    await postOffer(alice, {direction: "buy", amount: BigInt("150000000000"), assetCode: assetCode, priceMargin: 0.00, awaitUnlockedBalance: true, price: 17.0}); // TODO: offer price is reversed. fix everywhere
+    await postOffer(alice, {direction: "buy", amount: BigInt("150000000000"), assetCode: assetCode, priceMargin: 0.02, awaitUnlockedBalance: true, price: 17.2});
+    await postOffer(alice, {direction: "buy", amount: BigInt("200000000000"), assetCode: assetCode, priceMargin: 0.05, awaitUnlockedBalance: true, price: 17.3});
+    await postOffer(alice, {direction: "buy", amount: BigInt("150000000000"), assetCode: assetCode, priceMargin: 0.02, awaitUnlockedBalance: true, price: 17.3});
+    await postOffer(alice, {direction: "sell", amount: BigInt("300000000000"), assetCode: assetCode, priceMargin: 0.00, awaitUnlockedBalance: true});
+    await postOffer(alice, {direction: "sell", amount: BigInt("300000000000"), assetCode: assetCode, priceMargin: 0.02, awaitUnlockedBalance: true});
+    await postOffer(alice, {direction: "sell", amount: BigInt("400000000000"), assetCode: assetCode, priceMargin: 0.05, awaitUnlockedBalance: true});
     
     // get bob's market depth
     await wait(TestConfig.maxTimePeerNoticeMs);
-    marketDepth = await alice.getMarketDepth(counterCurrency);
+    marketDepth = await alice.getMarketDepth(assetCode);
     
     // each unique price has a depth
     expect(marketDepth.getBuyPricesList().length).toEqual(3);
@@ -617,7 +618,7 @@ test("Can get market depth", async () => {
     
     // test buy prices and depths
     const priceDivisor = 100000000; // TODO: offer price = price * 100000000
-    let buyOffers = (await alice.getOffers("buy")).concat(await alice.getMyOffers("buy")).sort(function(a, b) { return a.getPrice() - b.getPrice() });
+    let buyOffers = (await alice.getOffers(assetCode, "buy")).concat(await alice.getMyOffers(assetCode, "buy")).sort(function(a, b) { return a.getPrice() - b.getPrice() });
     expect(marketDepth.getBuyPricesList()[0]).toEqual(1 / (buyOffers[0].getPrice() / priceDivisor)); // TODO: price when posting offer is reversed. this assumes crypto counter currency
     expect(marketDepth.getBuyPricesList()[1]).toEqual(1 / (buyOffers[1].getPrice() / priceDivisor));
     expect(marketDepth.getBuyPricesList()[2]).toEqual(1 / (buyOffers[2].getPrice() / priceDivisor));
@@ -626,7 +627,7 @@ test("Can get market depth", async () => {
     expect(marketDepth.getBuyDepthList()[2]).toEqual(0.65);
     
     // test sell prices and depths
-    let sellOffers = (await alice.getOffers("sell")).concat(await alice.getMyOffers("sell")).sort(function(a, b) { return b.getPrice() - a.getPrice() });
+    let sellOffers = (await alice.getOffers(assetCode, "sell")).concat(await alice.getMyOffers(assetCode, "sell")).sort(function(a, b) { return b.getPrice() - a.getPrice() });
     expect(marketDepth.getSellPricesList()[0]).toEqual(1 / (sellOffers[0].getPrice() / priceDivisor));
     expect(marketDepth.getSellPricesList()[1]).toEqual(1 / (sellOffers[1].getPrice() / priceDivisor));
     expect(marketDepth.getSellPricesList()[2]).toEqual(1 / (sellOffers[2].getPrice() / priceDivisor));
@@ -635,8 +636,8 @@ test("Can get market depth", async () => {
     expect(marketDepth.getSellDepthList()[2]).toEqual(1);
     
     // clear offers
-    await clearOffers(alice, counterCurrency);
-    await clearOffers(bob, counterCurrency);
+    await clearOffers(alice, assetCode);
+    await clearOffers(bob, assetCode);
     
     // test invalid currency
     await expect(async () => {await alice.getMarketDepth("INVALID_CURRENCY")})
@@ -666,16 +667,26 @@ test("Can register as dispute agents", async () => {
 });
 
 test("Can get offers", async () => {
-  let offers: OfferInfo[] = await alice.getOffers("BUY");
-  for (let offer of offers) {
-    testOffer(offer);
+  for (let assetCode of TestConfig.assetCodes) {
+    let offers: OfferInfo[] = await alice.getOffers(assetCode);
+    for (let offer of offers)  testOffer(offer);
   }
 });
 
 test("Can get my offers", async () => {
-  let offers: OfferInfo[] = await alice.getMyOffers("SELL");
-  for (let offer of offers) {
-    testOffer(offer);
+  for (let assetCode of TestConfig.assetCodes) {
+    let offers: OfferInfo[] = await alice.getMyOffers(assetCode);
+    for (let offer of offers)  testOffer(offer);
+  }
+});
+
+test("Can get payment methods", async () => {
+  let paymentMethods: PaymentMethod[] = await alice.getPaymentMethods();
+  expect(paymentMethods.length).toBeGreaterThan(0);
+  for (let paymentMethod of paymentMethods) {
+    expect(paymentMethod.getId().length).toBeGreaterThan(0);
+    expect(BigInt(paymentMethod.getMaxTradeLimit())).toBeGreaterThan(BigInt(0));
+    expect(BigInt(paymentMethod.getMaxTradePeriod())).toBeGreaterThan(BigInt(0));
   }
 });
 
@@ -688,17 +699,43 @@ test("Can get payment accounts", async () => {
   }
 });
 
+test("Can create fiat payment accounts", async () => {
+  
+  // get payment account form
+  const paymentMethodId = 'REVOLUT';
+  let accountForm = await alice.getPaymentAccountForm(paymentMethodId);
+  
+  // edit form
+  accountForm.accountName = "Revolut account " + GenUtils.getUUID();
+  accountForm.userName = "user123";
+  
+  // create payment account
+  let fiatAccount = await alice.createPaymentAccount(accountForm);
+  expect(fiatAccount.getAccountName()).toEqual(accountForm.accountName);
+  expect(fiatAccount.getTradeCurrenciesList().length).toBeGreaterThan(0);
+  expect(fiatAccount.getPaymentAccountPayload()!.getPaymentMethodId()).toEqual(paymentMethodId);
+  expect(fiatAccount.getPaymentAccountPayload()!.getRevolutAccountPayload()!.getAccountId()).toEqual(accountForm.userName);
+  expect(fiatAccount.getPaymentAccountPayload()!.getRevolutAccountPayload()!.getUserName()).toEqual(accountForm.userName);
+  
+  // payment account added
+  let found = false;
+  for (let paymentAccount of await alice.getPaymentAccounts()) {
+    if (paymentAccount.getId() === fiatAccount.getId()) {
+        found = true;
+        break;
+    }
+  }
+  assert(found, "Payment account not found after adding");
+});
+
 test("Can create crypto payment accounts", async () => {
   
-  // test each stagenet crypto account
-  for (let testAccount of TestConfig.cryptoAccounts) {
+  // test each crypto
+  for (let testAccount of TestConfig.cryptoAddresses) {
     
     // create payment account
     let name = testAccount.currencyCode + " " + testAccount.address.substr(0, 8) + "... " + GenUtils.getUUID();
-    let paymentAccount: PaymentAccount = await alice.createCryptoPaymentAccount(
-      name,
-      testAccount.currencyCode,
-      testAccount.address);
+    let paymentAccount: PaymentAccount = await alice.createCryptoPaymentAccount(name, testAccount.currencyCode, testAccount.address);
     testCryptoPaymentAccount(paymentAccount);
     testCryptoPaymentAccountEquals(paymentAccount, testAccount, name);
     
@@ -714,9 +751,6 @@ test("Can create crypto payment accounts", async () => {
     testCryptoPaymentAccount(paymentAccount);
     testCryptoPaymentAccountEquals(fetchedAccount, testAccount, name);
     
-    // wait before creating next account
-    await GenUtils.waitFor(1000);
-
     // TODO (woodser): test rejecting account with invalid currency code
     // TODO (woodser): test rejecting account with invalid address
     // TODO (woodser): test rejecting account with duplicate name
@@ -739,7 +773,10 @@ test("Can post and remove an offer", async () => {
   let unlockedBalanceBefore: bigint = BigInt((await alice.getBalances()).getUnlockedBalance());
 
   // post offer
-  let offer: OfferInfo = await postOffer(alice);
+  let assetCode = getRandomAssetCode();
+  let offer: OfferInfo = await postOffer(alice, {assetCode: assetCode});
+  if (isCrypto(assetCode)) assert.equal(offer.getBaseCurrencyCode(), assetCode); // TODO: crypto base/counter is inverted
+  else assert.equal(offer.getCounterCurrencyCode(),assetCode);
   assert.equal(offer.getState(), "AVAILABLE");
   
   // has offer
@@ -750,225 +787,10 @@ test("Can post and remove an offer", async () => {
   await alice.removeOffer(offer.getId());
   
   // offer is removed from my offers
-  if (getOffer(await alice.getMyOffers("buy"), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in my offers after removal");
+  if (getOffer(await alice.getMyOffers(assetCode, "buy"), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in my offers after removal");
   
   // reserved balance released
   expect(unlockedBalanceBefore).toEqual(BigInt((await alice.getBalances()).getUnlockedBalance()));
-});
-
-test("Invalidates offers when reserved funds are spent", async () => {
-  let err;
-  let tx;
-  try {
-    // wait for alice to have unlocked balance for trade
-    let tradeAmount: bigint = BigInt("250000000000");
-    await waitForUnlockedBalance(tradeAmount * BigInt("2"), alice);
-    
-    // get frozen key images before posting offer
-    let frozenKeyImagesBefore = [];
-    for (let frozenOutput of await aliceWallet.getOutputs({isFrozen: true})) frozenKeyImagesBefore.push(frozenOutput.getKeyImage().getHex());
-    
-    // post offer
-    await wait(1000);
-    let offer: OfferInfo = await postOffer(alice, {amount: tradeAmount});
-    
-    // get key images reserved by offer
-    let reservedKeyImages = [];
-    let frozenKeyImagesAfter = [];
-    for (let frozenOutput of await aliceWallet.getOutputs({isFrozen: true})) frozenKeyImagesAfter.push(frozenOutput.getKeyImage().getHex());
-    for (let frozenKeyImageAfter of frozenKeyImagesAfter) {
-      if (!frozenKeyImagesBefore.includes(frozenKeyImageAfter)) reservedKeyImages.push(frozenKeyImageAfter);
-    }
-    
-    // offer is available to peers
-    await wait(TestConfig.walletSyncPeriodMs * 2);
-    if (!getOffer(await bob.getOffers("buy"), offer.getId())) throw new Error("Offer " + offer.getId() + " was not found in peer's offers after posting");
-    
-    // spend one of offer's reserved outputs
-    if (!reservedKeyImages.length) throw new Error("No reserved key images detected");
-    await aliceWallet.thawOutput(reservedKeyImages[0]);
-    tx = await aliceWallet.sweepOutput({keyImage: reservedKeyImages[0], address: await aliceWallet.getPrimaryAddress(), relay: false});
-    await monerod.submitTxHex(tx.getFullHex(), true);
-    
-    // wait for spend to be seen
-    await wait(TestConfig.walletSyncPeriodMs * 2); // TODO (woodser): need place for common test utilities
-    
-    // offer is removed from peer offers
-    if (getOffer(await bob.getOffers("buy"), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in peer's offers after reserved funds spent");
-    
-    // offer is removed from my offers
-    if (getOffer(await alice.getMyOffers("buy"), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in my offers after reserved funds spent");
-    
-    // offer is automatically cancelled
-    try {
-      await alice.removeOffer(offer.getId());
-      throw new Error("cannot remove invalidated offer");
-    } catch (err) {
-      if (err.message === "cannot remove invalidated offer") throw new Error("Unexpected error: " + err.message);
-    }
-  } catch (err2) {
-    err = err2;
-  }
-  
-  // flush tx from pool
-  if (tx) await monerod.flushTxPool(tx.getHash());
-  if (err) throw err;
-});
-
-// TODO (woodser): test arbitrator state too
-// TODO (woodser): test breaking protocol after depositing to multisig (e.g. don't send payment account payload by deleting it)
-test("Handles unexpected errors during trade initialization", async () => {
-  let traders: HavenoDaemon[] = [];
-  let err: any;
-  try {
-    
-    // start and fund 3 trader processes
-    console.log("Starting trader processes");
-    traders = await initHavenoDaemons(3);
-    console.log("Funding traders");
-    let tradeAmount: bigint = BigInt("250000000000");
-    await waitForUnlockedBalance(tradeAmount * BigInt("2"), traders[0], traders[1], traders[2]);
-    
-    // trader 0 posts offer
-    console.log("Posting offer");
-    let offer = await postOffer(traders[0], {amount: tradeAmount});
-    offer = await traders[0].getMyOffer(offer.getId());
-    assert.equal(offer.getState(), "AVAILABLE");
-    
-    // wait for offer to be seen
-    await wait(TestConfig.walletSyncPeriodMs * 2);
-    
-    // trader 1 spends trade funds after initializing trade
-    let paymentAccount = await createCryptoPaymentAccount(traders[1]);
-    wait(3000).then(async function() {
-      try {
-        let traderWallet = await monerojs.connectToWalletRpc("http://localhost:" + traders[1].getWalletRpcPort(), TestConfig.defaultHavenod.walletUsername, TestConfig.defaultHavenod.accountPassword);
-        for (let frozenOutput of await traderWallet.getOutputs({isFrozen: true})) await traderWallet.thawOutput(frozenOutput.getKeyImage().getHex());
-        console.log("Sweeping trade funds");
-        await traderWallet.sweepUnlocked({address: await traderWallet.getPrimaryAddress(), relay: true});
-      } catch (err) {
-        console.log("Caught error sweeping funds!");
-        console.log(err);
-      }
-    });
-    
-    // trader 1 tries to take offer
-    try {
-      console.log("Trader 1 taking offer");
-      await traders[1].takeOffer(offer.getId(), paymentAccount.getId());
-      throw new Error("Should have failed taking offer because taker trade funds spent")
-    } catch (err) {
-      assert(err.message.includes("not enough unlocked money"), "Unexpected error: " + err.message);
-    }
-    
-    // TODO: test that unavailable right after taking (taker will know before maker)
-    
-    // trader 0's offer remains available
-    await wait(10000); // give time for trade initialization to fail and offer to become available
-    offer = await traders[0].getMyOffer(offer.getId());
-    if (offer.getState() !== "AVAILABLE") {
-        console.log("Offer is not yet available, waiting to become available after timeout..."); // there is no error notice if peer stops responding
-        await wait(25000); // give another 25 seconds to become available
-        offer = await traders[0].getMyOffer(offer.getId());
-        assert.equal(offer.getState(), "AVAILABLE");
-    }
-    
-    // trader 0 spends trade funds then trader 2 takes offer
-    wait(3000).then(async function() {
-      try {
-        let traderWallet = await monerojs.connectToWalletRpc("http://localhost:" + traders[0].getWalletRpcPort(), TestConfig.defaultHavenod.walletUsername, TestConfig.defaultHavenod.accountPassword);
-        for (let frozenOutput of await traderWallet.getOutputs({isFrozen: true})) await traderWallet.thawOutput(frozenOutput.getKeyImage().getHex());
-        console.log("Sweeping offer funds");
-        await traderWallet.sweepUnlocked({address: await traderWallet.getPrimaryAddress(), relay: true});
-      } catch (err) {
-        console.log("Caught error sweeping funds!");
-        console.log(err);
-      }
-    });
-    
-    // trader 2 tries to take offer
-    paymentAccount = await createCryptoPaymentAccount(traders[2]);
-    try {
-      console.log("Trader 2 taking offer")
-      await traders[2].takeOffer(offer.getId(), paymentAccount.getId());
-      throw new Error("Should have failed taking offer because maker trade funds spent")
-    } catch (err) {
-      assert(err.message.includes("not enough unlocked money") || err.message.includes("timeout reached. protocol did not complete"), "Unexpected error: " + err.message);
-    }
-    
-    // trader 2's balance is unreserved
-    let trader2Balances = await traders[2].getBalances();
-    expect(BigInt(trader2Balances.getReservedTradeBalance())).toEqual(BigInt("0"));
-    expect(BigInt(trader2Balances.getUnlockedBalance())).toBeGreaterThan(BigInt("0"));
-  } catch (err2) {
-    err = err2;
-  }
-  
-  // stop traders
-  console.log("Stopping haveno processes");
-  for (let trader of traders) await releaseHavenoProcess(trader);
-  if (err) throw err;
-});
-
-test("Cannot make or take offer with insufficient unlocked funds", async () => {
-  let charlie: HavenoDaemon | undefined;
-  let err: any;
-  try {
-    
-    // start charlie
-    charlie = await initHavenoDaemon();
-    
-    // charlie creates ethereum payment account
-    let paymentAccount = await createCryptoPaymentAccount(charlie);
-    
-    // charlie cannot make offer with insufficient funds
-    try {
-      await postOffer(charlie, {paymentAccountId: paymentAccount.getId()});
-      throw new Error("Should have failed making offer with insufficient funds")
-    } catch (err) {
-      let errTyped = err as grpcWeb.RpcError;
-      assert.equal(errTyped.code, 2);
-      assert(err.message.includes("not enough money"), "Unexpected error: " + err.message);
-    }
-    
-    // alice posts offer
-    let offers: OfferInfo[] = await alice.getMyOffers("buy"); // TODO: support alice.getMyOffers() without direction
-    let offer: OfferInfo;
-    if (offers.length) offer = offers[0];
-    else {
-      let tradeAmount: bigint = BigInt("250000000000");
-      await waitForUnlockedBalance(tradeAmount * BigInt("2"), alice);
-      offer = await postOffer(alice, {amount: tradeAmount});
-      assert.equal(offer.getState(), "AVAILABLE");
-      await wait(TestConfig.walletSyncPeriodMs * 2);
-    }
-    
-    // charlie cannot take offer with insufficient funds
-    try {
-      await charlie.takeOffer(offer.getId(), paymentAccount.getId()); // TODO (woodser): this returns before trade is fully initialized
-      throw new Error("Should have failed taking offer with insufficient funds")
-    } catch (err) {
-      let errTyped = err as grpcWeb.RpcError;
-      assert(errTyped.message.includes("not enough money"), "Unexpected error: " + errTyped.message);
-      assert.equal(errTyped.code, 2);
-    }
-    
-    // charlie does not have trade
-    try {
-      await charlie.getTrade(offer.getId());
-    } catch (err) {
-      let errTyped = err as grpcWeb.RpcError;
-      assert.equal(errTyped.code, 3);
-      assert(errTyped.message.includes("trade with id '" + offer.getId() + "' not found"));  // TODO (woodser): error message does not contain stacktrace
-    }
-  } catch (err2) {
-    err = err2;
-  }
-  
-  // stop charlie
-  if (charlie) await releaseHavenoProcess(charlie);
-  // TODO: how to delete trader app folder at end of test?
-  if (err) throw err;
 });
 
 // TODO (woodser): test grpc notifications
@@ -986,18 +808,19 @@ test("Can complete a trade", async () => {
   await alice.addNotificationListener(notification => { aliceNotifications.push(notification); });
   await bob.addNotificationListener(notification => { bobNotifications.push(notification); });
 
-  // alice posts offer to buy xmr
-  console.log("Alice posting offer");
+  // alice posts offer
+  let assetCode = getRandomAssetCode();
   let direction = "buy";
-  let offer: OfferInfo = await postOffer(alice, {direction: direction, amount: tradeAmount});
+  HavenoUtils.log(1, "Alice posting offer to " + direction + " XMR for " + assetCode);
+  let offer: OfferInfo = await postOffer(alice, {direction: direction, amount: tradeAmount, assetCode: assetCode});
   expect(offer.getState()).toEqual("AVAILABLE");
-  console.log("Alice done posting offer");
+  HavenoUtils.log(1, "Alice done posting offer");
   
   // TODO (woodser): test error message taking offer before posted
   
   // bob sees offer
   await wait(TestConfig.walletSyncPeriodMs * 2);
-  let offerBob = getOffer(await bob.getOffers(direction), offer.getId());
+  let offerBob = getOffer(await bob.getOffers(assetCode, direction), offer.getId());
   if (!offerBob) throw new Error("Offer " + offer.getId() + " was not found in peer's offers after posting");
   expect(offerBob.getState()).toEqual("UNKNOWN"); // TODO: offer state is not known?
   
@@ -1009,23 +832,19 @@ test("Can complete a trade", async () => {
     throw new Error("taking offer with invalid payment account id should fail");
   } catch (err) {
     assert.equal(err.message, "payment account with id 'abc' not found");
-    assert.equal((await alice.getTrades()).length, aliceTradesBefore.length, "alice should have not new trades");
+    assert.equal((await alice.getTrades()).length, aliceTradesBefore.length, "alice should not have new trades");
     assert.equal((await bob.getTrades()).length, bobTradesBefore.length, "bob should not have new trades"); // TODO (woodser): also test balance unreserved
   }
   
-  // bob creates ethereum payment account
-  let testAccount =  TestConfig.cryptoAccounts[0];
-  let ethPaymentAccount: PaymentAccount = await bob.createCryptoPaymentAccount(
-      testAccount.currencyCode + " " +  testAccount.address.substr(0, 8) + "... " + GenUtils.getUUID(),
-      testAccount.currencyCode,
-      testAccount.address);
+  // bob creates random payment account
+  let paymentAccount = await createPaymentAccount(bob, assetCode);
   
   // bob takes offer
   let startTime = Date.now();
-  console.log("Bob taking offer");
-  let trade: TradeInfo = await bob.takeOffer(offer.getId(), ethPaymentAccount.getId()); // TODO (woodser): this returns before trade is fully initialized
+  HavenoUtils.log(1, "Bob taking offer");
+  let trade: TradeInfo = await bob.takeOffer(offer.getId(), paymentAccount.getId()); // TODO (woodser): this returns before trade is fully initialized
   expect(trade.getPhase()).toEqual("DEPOSIT_PUBLISHED");
-  console.log("Bob done taking offer in " + (Date.now() - startTime) + " ms");
+  HavenoUtils.log(1, "Bob done taking offer in " + (Date.now() - startTime) + " ms");
   
   // alice is notified that offer is taken
   let tradeNotifications = getNotifications(aliceNotifications, NotificationMessage.NotificationType.TRADE_UPDATE);
@@ -1053,9 +872,9 @@ test("Can complete a trade", async () => {
   expect(fetchedTrade.getPhase()).toEqual("DEPOSIT_PUBLISHED");
   
   // mine until deposit txs unlock
-  console.log("Mining to unlock deposit txs");
+  HavenoUtils.log(1, "Mining to unlock deposit txs");
   await waitForUnlockedTxs(fetchedTrade.getMakerDepositTxId(), fetchedTrade.getTakerDepositTxId());
-  console.log("Done mining to unlock deposit txs");
+  HavenoUtils.log(1, "Done mining to unlock deposit txs");
   
   // alice notified to send payment
   await wait(TestConfig.walletSyncPeriodMs * 2);
@@ -1095,6 +914,221 @@ test("Can complete a trade", async () => {
   expect(aliceFee).toBeGreaterThan(BigInt("0"));
   expect(bobFee).toBeLessThanOrEqual(TestConfig.maxFee);
   expect(bobFee).toBeGreaterThan(BigInt("0"));
+});
+
+test("Cannot make or take offer with insufficient unlocked funds", async () => {
+  let charlie: HavenoDaemon | undefined;
+  let err: any;
+  try {
+    
+    // start charlie
+    charlie = await initHavenoDaemon();
+    
+    // charlie creates ethereum payment account
+    let paymentAccount = await createCryptoPaymentAccount(charlie);
+    
+    // charlie cannot make offer with insufficient funds
+    try {
+      await postOffer(charlie, {paymentAccountId: paymentAccount.getId()});
+      throw new Error("Should have failed making offer with insufficient funds")
+    } catch (err) {
+      let errTyped = err as grpcWeb.RpcError;
+      assert.equal(errTyped.code, 2);
+      assert(err.message.includes("not enough money"), "Unexpected error: " + err.message);
+    }
+    
+    // alice posts offer
+    let offers: OfferInfo[] = await alice.getMyOffers("ETH", "buy"); // TODO: support alice.getMyOffers() without direction
+    let offer: OfferInfo;
+    if (offers.length) offer = offers[0];
+    else {
+      let tradeAmount: bigint = BigInt("250000000000");
+      await waitForUnlockedBalance(tradeAmount * BigInt("2"), alice);
+      offer = await postOffer(alice, {amount: tradeAmount});
+      assert.equal(offer.getState(), "AVAILABLE");
+      await wait(TestConfig.walletSyncPeriodMs * 2);
+    }
+    
+    // charlie cannot take offer with insufficient funds
+    try {
+      await charlie.takeOffer(offer.getId(), paymentAccount.getId()); // TODO (woodser): this returns before trade is fully initialized
+      throw new Error("Should have failed taking offer with insufficient funds")
+    } catch (err) {
+      let errTyped = err as grpcWeb.RpcError;
+      assert(errTyped.message.includes("not enough money"), "Unexpected error: " + errTyped.message);
+      assert.equal(errTyped.code, 2);
+    }
+    
+    // charlie does not have trade
+    try {
+      await charlie.getTrade(offer.getId());
+    } catch (err) {
+      let errTyped = err as grpcWeb.RpcError;
+      assert.equal(errTyped.code, 3);
+      assert(errTyped.message.includes("trade with id '" + offer.getId() + "' not found"));  // TODO (woodser): error message does not contain stacktrace
+    }
+  } catch (err2) {
+    err = err2;
+  }
+  
+  // stop charlie
+  if (charlie) await releaseHavenoProcess(charlie);
+  // TODO: how to delete trader app folder at end of test?
+  if (err) throw err;
+});
+
+test("Invalidates offers when reserved funds are spent", async () => {
+  let err;
+  let tx;
+  try {
+    // wait for alice to have unlocked balance for trade
+    let tradeAmount: bigint = BigInt("250000000000");
+    await waitForUnlockedBalance(tradeAmount * BigInt("2"), alice);
+    
+    // get frozen key images before posting offer
+    let frozenKeyImagesBefore = [];
+    for (let frozenOutput of await aliceWallet.getOutputs({isFrozen: true})) frozenKeyImagesBefore.push(frozenOutput.getKeyImage().getHex());
+    
+    // post offer
+    await wait(1000);
+    let assetCode = getRandomAssetCode();
+    let offer: OfferInfo = await postOffer(alice, {assetCode: assetCode, amount: tradeAmount});
+    
+    // get key images reserved by offer
+    let reservedKeyImages = [];
+    let frozenKeyImagesAfter = [];
+    for (let frozenOutput of await aliceWallet.getOutputs({isFrozen: true})) frozenKeyImagesAfter.push(frozenOutput.getKeyImage().getHex());
+    for (let frozenKeyImageAfter of frozenKeyImagesAfter) {
+      if (!frozenKeyImagesBefore.includes(frozenKeyImageAfter)) reservedKeyImages.push(frozenKeyImageAfter);
+    }
+    
+    // offer is available to peers
+    await wait(TestConfig.walletSyncPeriodMs * 2);
+    if (!getOffer(await bob.getOffers(assetCode, "buy"), offer.getId())) throw new Error("Offer " + offer.getId() + " was not found in peer's offers after posting");
+    
+    // spend one of offer's reserved outputs
+    if (!reservedKeyImages.length) throw new Error("No reserved key images detected");
+    await aliceWallet.thawOutput(reservedKeyImages[0]);
+    tx = await aliceWallet.sweepOutput({keyImage: reservedKeyImages[0], address: await aliceWallet.getPrimaryAddress(), relay: false});
+    await monerod.submitTxHex(tx.getFullHex(), true);
+    
+    // wait for spend to be seen
+    await wait(TestConfig.walletSyncPeriodMs * 2); // TODO (woodser): need place for common test utilities
+    
+    // offer is removed from peer offers
+    if (getOffer(await bob.getOffers(assetCode, "buy"), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in peer's offers after reserved funds spent");
+    
+    // offer is removed from my offers
+    if (getOffer(await alice.getMyOffers(assetCode, "buy"), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in my offers after reserved funds spent");
+    
+    // offer is automatically cancelled
+    try {
+      await alice.removeOffer(offer.getId());
+      throw new Error("cannot remove invalidated offer");
+    } catch (err) {
+      if (err.message === "cannot remove invalidated offer") throw new Error("Unexpected error: " + err.message);
+    }
+  } catch (err2) {
+    err = err2;
+  }
+  
+  // flush tx from pool
+  if (tx) await monerod.flushTxPool(tx.getHash());
+  if (err) throw err;
+});
+
+// TODO (woodser): test arbitrator state too
+// TODO (woodser): test breaking protocol after depositing to multisig (e.g. don't send payment account payload by deleting it)
+test("Handles unexpected errors during trade initialization", async () => {
+  let traders: HavenoDaemon[] = [];
+  let err: any;
+  try {
+    
+    // start and fund 3 trader processes
+    HavenoUtils.log(1, "Starting trader processes");
+    traders = await initHavenoDaemons(3);
+    HavenoUtils.log(1, "Funding traders");
+    let tradeAmount: bigint = BigInt("250000000000");
+    await waitForUnlockedBalance(tradeAmount * BigInt("2"), traders[0], traders[1], traders[2]);
+    
+    // trader 0 posts offer
+    HavenoUtils.log(1, "Posting offer");
+    let offer = await postOffer(traders[0], {amount: tradeAmount});
+    offer = await traders[0].getMyOffer(offer.getId());
+    assert.equal(offer.getState(), "AVAILABLE");
+    
+    // wait for offer to be seen
+    await wait(TestConfig.walletSyncPeriodMs * 2);
+    
+    // trader 1 spends trade funds after initializing trade
+    let paymentAccount = await createCryptoPaymentAccount(traders[1]);
+    wait(3000).then(async function() {
+      try {
+        let traderWallet = await monerojs.connectToWalletRpc("http://localhost:" + traders[1].getWalletRpcPort(), TestConfig.defaultHavenod.walletUsername, TestConfig.defaultHavenod.accountPassword);
+        for (let frozenOutput of await traderWallet.getOutputs({isFrozen: true})) await traderWallet.thawOutput(frozenOutput.getKeyImage().getHex());
+        HavenoUtils.log(1, "Sweeping trade funds");
+        await traderWallet.sweepUnlocked({address: await traderWallet.getPrimaryAddress(), relay: true});
+      } catch (err) {
+        console.log("Caught error sweeping funds!");
+        console.log(err);
+      }
+    });
+    
+    // trader 1 tries to take offer
+    try {
+      HavenoUtils.log(1, "Trader 1 taking offer");
+      await traders[1].takeOffer(offer.getId(), paymentAccount.getId());
+      throw new Error("Should have failed taking offer because taker trade funds spent")
+    } catch (err) {
+      assert(err.message.includes("not enough unlocked money"), "Unexpected error: " + err.message);
+    }
+    
+    // TODO: test that unavailable right after taking (taker will know before maker)
+    
+    // trader 0's offer remains available
+    await wait(10000); // give time for trade initialization to fail and offer to become available
+    offer = await traders[0].getMyOffer(offer.getId());
+    if (offer.getState() !== "AVAILABLE") {
+        HavenoUtils.log(1, "Offer is not yet available, waiting to become available after timeout..."); // there is no error notice if peer stops responding
+        await wait(25000); // give another 25 seconds to become available
+        offer = await traders[0].getMyOffer(offer.getId());
+        assert.equal(offer.getState(), "AVAILABLE");
+    }
+    
+    // trader 0 spends trade funds then trader 2 takes offer
+    wait(3000).then(async function() {
+      try {
+        let traderWallet = await monerojs.connectToWalletRpc("http://localhost:" + traders[0].getWalletRpcPort(), TestConfig.defaultHavenod.walletUsername, TestConfig.defaultHavenod.accountPassword);
+        for (let frozenOutput of await traderWallet.getOutputs({isFrozen: true})) await traderWallet.thawOutput(frozenOutput.getKeyImage().getHex());
+        HavenoUtils.log(1, "Sweeping offer funds");
+        await traderWallet.sweepUnlocked({address: await traderWallet.getPrimaryAddress(), relay: true});
+      } catch (err) {
+        console.log("Caught error sweeping funds!");
+        console.log(err);
+      }
+    });
+    
+    // trader 2 tries to take offer
+    paymentAccount = await createCryptoPaymentAccount(traders[2]);
+    try {
+      HavenoUtils.log(1, "Trader 2 taking offer")
+      await traders[2].takeOffer(offer.getId(), paymentAccount.getId());
+      throw new Error("Should have failed taking offer because maker trade funds spent")
+    } catch (err) {
+      assert(err.message.includes("not enough unlocked money") || err.message.includes("timeout reached. protocol did not complete"), "Unexpected error: " + err.message);
+    }
+    
+    // trader 2's balance is unreserved
+    let trader2Balances = await traders[2].getBalances();
+    expect(BigInt(trader2Balances.getReservedTradeBalance())).toEqual(BigInt("0"));
+    expect(BigInt(trader2Balances.getUnlockedBalance())).toBeGreaterThan(BigInt("0"));
+  } catch (err2) {
+    err = err2;
+  }
+  
+  // stop traders
+  for (let trader of traders) await releaseHavenoProcess(trader);
+  if (err) throw err;
 });
 
 // ------------------------------- HELPERS ------------------------------------
@@ -1303,8 +1337,9 @@ async function waitForUnlockedBalance(amount: bigint, ...wallets: any[]) {
 
 async function waitForUnlockedTxs(...txHashes: string[]) {
   await startMining();
-  let promises: Promise<void>[] = []
+  let promises: Promise<void>[] = [];
   for (let txHash of txHashes) {
+    // eslint-disable-next-line no-loop-func
     promises.push(new Promise(async function(resolve, reject) {
       let taskLooper = new TaskLooper(async function() {
         let tx = await monerod.getTx(txHash);
@@ -1412,13 +1447,38 @@ function testDestination(destination: XmrDestination) {
   expect(BigInt(destination.getAmount())).toBeGreaterThan(BigInt("0"));
 }
 
+function getRandomAssetCode() {
+    return TestConfig.assetCodes[GenUtils.getRandomInt(0, TestConfig.assetCodes.length - 1)];
+}
+
+async function createPaymentAccount(trader: HavenoDaemon, assetCode: string): Promise<PaymentAccount> {
+    return isCrypto(assetCode) ? createCryptoPaymentAccount(trader, assetCode) : createRevolutPaymentAccount(trader);
+}
+
+function isCrypto(assetCode: string) {
+    return getCryptoAddress(assetCode) !== undefined;
+}
+
+function getCryptoAddress(currencyCode: string): string | undefined {
+    for (let cryptoAddress of TestConfig.cryptoAddresses) {
+        if (cryptoAddress.currencyCode === currencyCode.toUpperCase()) return cryptoAddress.address;
+    }
+}
+
+async function createRevolutPaymentAccount(trader: HavenoDaemon): Promise<PaymentAccount> {
+  let accountForm = await trader.getPaymentAccountForm('REVOLUT');
+  accountForm.accountName = "Revolut account " + GenUtils.getUUID();
+  accountForm.userName = "user123";
+  return trader.createPaymentAccount(accountForm);
+}
+
 async function createCryptoPaymentAccount(trader: HavenoDaemon, currencyCode = "eth"): Promise<PaymentAccount> {
-  for (let cryptoAccount of TestConfig.cryptoAccounts) {
-    if (cryptoAccount.currencyCode.toLowerCase() !== currencyCode.toLowerCase()) continue;
+  for (let cryptoAddress of TestConfig.cryptoAddresses) {
+    if (cryptoAddress.currencyCode.toLowerCase() !== currencyCode.toLowerCase()) continue;
     return trader.createCryptoPaymentAccount(
-      cryptoAccount.currencyCode + " " +  cryptoAccount.address.substr(0, 8) + "... " + GenUtils.getUUID(),
-      cryptoAccount.currencyCode,
-      cryptoAccount.address);
+      cryptoAddress.currencyCode + " " +  cryptoAddress.address.substr(0, 8) + "... " + GenUtils.getUUID(),
+      cryptoAddress.currencyCode,
+      cryptoAddress.address);
   }
   throw new Error("No test config for crypto: " + currencyCode);
 }
@@ -1433,7 +1493,7 @@ async function postOffer(maker: HavenoDaemon, config?: any) {
   if (config.awaitUnlockedBalance) await waitForUnlockedBalance(config.amount * BigInt("2"), maker);
   
   // create payment account if not given
-  if (!config.paymentAccountId) config.paymentAccountId = (await createCryptoPaymentAccount(maker, config.counterCurrency)).getId();
+  if (!config.paymentAccountId) config.paymentAccountId = (await createPaymentAccount(maker, config.assetCode)).getId();
   
   // get unlocked balance before reserving offer
   let unlockedBalanceBefore: bigint = BigInt((await maker.getBalances()).getUnlockedBalance());
@@ -1441,7 +1501,7 @@ async function postOffer(maker: HavenoDaemon, config?: any) {
   // post offer
   // TODO: re-arrange post offer parameters like this postOffer() or use config interface?
   let offer: OfferInfo = await maker.postOffer(
-        config.counterCurrency,
+        config.assetCode,
         config.direction,
         config.price,
         config.price ? false : true, // TODO: redundant with price field?
@@ -1452,18 +1512,17 @@ async function postOffer(maker: HavenoDaemon, config?: any) {
         config.paymentAccountId,
         config.triggerPrice);
   testOffer(offer);
-
+  
   // unlocked balance has decreased
   let unlockedBalanceAfter: bigint = BigInt((await maker.getBalances()).getUnlockedBalance());
   if (unlockedBalanceAfter === unlockedBalanceBefore) throw new Error("unlocked balance did not change after posting offer");
   
   // offer is included in my offers only
-  if (!getOffer(await maker.getMyOffers(config.amountdirection), offer.getId())) {
+  if (!getOffer(await maker.getMyOffers(config.assetCode, config.direction), offer.getId())) {
     await wait(10000);
-    if (!getOffer(await maker.getMyOffers(config.amountdirection), offer.getId())) throw new Error("Offer " + offer.getId() + " was not found in my offers");
-    else console.log("The offer finally posted!");
+    if (!getOffer(await maker.getMyOffers(config.assetCode, config.direction), offer.getId())) throw new Error("Offer " + offer.getId() + " was not found in my offers");
   }
-  if (getOffer(await maker.getOffers(config.amountdirection), offer.getId())) throw new Error("My offer " + offer.getId() + " should not appear in available offers");
+  if (getOffer(await maker.getOffers(config.assetCode, config.direction), offer.getId())) throw new Error("My offer " + offer.getId() + " should not appear in available offers");
   
   return offer;
 }

@@ -2,8 +2,8 @@ import {HavenoUtils} from "./utils/HavenoUtils";
 import {TaskLooper} from "./utils/TaskLooper";
 import * as grpcWeb from 'grpc-web';
 import {GetVersionClient, AccountClient, MoneroConnectionsClient, DisputeAgentsClient, NotificationsClient, WalletsClient, PriceClient, OffersClient, PaymentAccountsClient, TradesClient, ShutdownServerClient} from './protobuf/GrpcServiceClientPb';
-import {GetVersionRequest, GetVersionReply, IsAppInitializedRequest, IsAppInitializedReply, RegisterDisputeAgentRequest, MarketPriceRequest, MarketPriceReply, MarketPricesRequest, MarketPricesReply, MarketPriceInfo, MarketDepthRequest, MarketDepthReply, MarketDepthInfo, GetBalancesRequest, GetBalancesReply, XmrBalanceInfo, GetOffersRequest, GetOffersReply, OfferInfo, GetPaymentAccountsRequest, GetPaymentAccountsReply, CreateCryptoCurrencyPaymentAccountRequest, CreateCryptoCurrencyPaymentAccountReply, CreateOfferRequest, CreateOfferReply, CancelOfferRequest, TakeOfferRequest, TakeOfferReply, TradeInfo, GetTradeRequest, GetTradeReply, GetTradesRequest, GetTradesReply, GetNewDepositSubaddressRequest, GetNewDepositSubaddressReply, ConfirmPaymentStartedRequest, ConfirmPaymentReceivedRequest, XmrTx, GetXmrTxsRequest, GetXmrTxsReply, XmrDestination, CreateXmrTxRequest, CreateXmrTxReply, RelayXmrTxRequest, RelayXmrTxReply, CreateAccountRequest, AccountExistsRequest, AccountExistsReply, DeleteAccountRequest, OpenAccountRequest, IsAccountOpenRequest, IsAccountOpenReply, CloseAccountRequest, ChangePasswordRequest, BackupAccountRequest, BackupAccountReply, RestoreAccountRequest, StopRequest, NotificationMessage, RegisterNotificationListenerRequest, SendNotificationRequest, UrlConnection, AddConnectionRequest, RemoveConnectionRequest, GetConnectionRequest, GetConnectionsRequest, SetConnectionRequest, CheckConnectionRequest, CheckConnectionsReply, CheckConnectionsRequest, StartCheckingConnectionsRequest, StopCheckingConnectionsRequest, GetBestAvailableConnectionRequest, SetAutoSwitchRequest, CheckConnectionReply, GetConnectionsReply, GetConnectionReply, GetBestAvailableConnectionReply} from './protobuf/grpc_pb';
-import {PaymentAccount, AvailabilityResult} from './protobuf/pb_pb';
+import {GetVersionRequest, GetVersionReply, IsAppInitializedRequest, IsAppInitializedReply, RegisterDisputeAgentRequest, MarketPriceRequest, MarketPriceReply, MarketPricesRequest, MarketPricesReply, MarketPriceInfo, MarketDepthRequest, MarketDepthReply, MarketDepthInfo, GetBalancesRequest, GetBalancesReply, XmrBalanceInfo, GetMyOfferRequest, GetMyOfferReply, GetOffersRequest, GetOffersReply, OfferInfo, GetPaymentMethodsRequest, GetPaymentMethodsReply, GetPaymentAccountFormRequest, CreatePaymentAccountRequest, CreatePaymentAccountReply, GetPaymentAccountFormReply, GetPaymentAccountsRequest, GetPaymentAccountsReply, CreateCryptoCurrencyPaymentAccountRequest, CreateCryptoCurrencyPaymentAccountReply, CreateOfferRequest, CreateOfferReply, CancelOfferRequest, TakeOfferRequest, TakeOfferReply, TradeInfo, GetTradeRequest, GetTradeReply, GetTradesRequest, GetTradesReply, GetNewDepositSubaddressRequest, GetNewDepositSubaddressReply, ConfirmPaymentStartedRequest, ConfirmPaymentReceivedRequest, XmrTx, GetXmrTxsRequest, GetXmrTxsReply, XmrDestination, CreateXmrTxRequest, CreateXmrTxReply, RelayXmrTxRequest, RelayXmrTxReply, CreateAccountRequest, AccountExistsRequest, AccountExistsReply, DeleteAccountRequest, OpenAccountRequest, IsAccountOpenRequest, IsAccountOpenReply, CloseAccountRequest, ChangePasswordRequest, BackupAccountRequest, BackupAccountReply, RestoreAccountRequest, StopRequest, NotificationMessage, RegisterNotificationListenerRequest, SendNotificationRequest, UrlConnection, AddConnectionRequest, RemoveConnectionRequest, GetConnectionRequest, GetConnectionsRequest, SetConnectionRequest, CheckConnectionRequest, CheckConnectionsReply, CheckConnectionsRequest, StartCheckingConnectionsRequest, StopCheckingConnectionsRequest, GetBestAvailableConnectionRequest, SetAutoSwitchRequest, CheckConnectionReply, GetConnectionsReply, GetConnectionReply, GetBestAvailableConnectionReply} from './protobuf/grpc_pb';
+import {PaymentMethod, PaymentAccount, AvailabilityResult} from './protobuf/pb_pb';
 const console = require('console');
 
 /**
@@ -732,15 +732,31 @@ class HavenoDaemon {
   
   /**
    * Get the market depth of a currency.
-   *
+   * 
+   * @param {string} assetCode - asset to get the market depth of
    * @return {MarketDepthInfo} market depth of the given currency
    */
-   async getMarketDepth(currencyCode: string): Promise<MarketDepthInfo> {
+   async getMarketDepth(assetCode: string): Promise<MarketDepthInfo> {
     let that = this;
     return new Promise(function(resolve, reject) {
-      that._priceClient.getMarketDepth(new MarketDepthRequest().setCurrencyCode(currencyCode), {password: that._password}, function(err: grpcWeb.RpcError, response: MarketDepthReply) {
+      that._priceClient.getMarketDepth(new MarketDepthRequest().setCurrencyCode(assetCode), {password: that._password}, function(err: grpcWeb.RpcError, response: MarketDepthReply) {
         if (err) reject(err);
         else resolve(response.getMarketDepth());
+      });
+    });
+  }
+  
+  /**
+   * Get payment methods.
+   * 
+   * @return {PaymentMethod[]} the payment methods
+   */
+  async getPaymentMethods(): Promise<PaymentMethod[]> {
+    let that = this;
+    return new Promise(function(resolve, reject) {
+      that._paymentAccountsClient.getPaymentMethods(new GetPaymentMethodsRequest(), {password: that._password}, function(err: grpcWeb.RpcError, response: GetPaymentMethodsReply) {
+        if (err) reject(err);
+        else resolve(response.getPaymentMethodsList());
       });
     });
   }
@@ -761,20 +777,49 @@ class HavenoDaemon {
   }
   
   /**
+   * Get a form for the given payment method to complete and create a new payment account.
+   * 
+   * @return {object} the payment account form as JSON
+   */
+  async getPaymentAccountForm(paymentMethodId: string): Promise<any> {
+    let that = this;
+    return new Promise(function(resolve, reject) {
+      that._paymentAccountsClient.getPaymentAccountForm(new GetPaymentAccountFormRequest().setPaymentMethodId(paymentMethodId), {password: that._password}, function(err: grpcWeb.RpcError, response: GetPaymentAccountFormReply) {
+        if (err) reject(err);
+        else resolve(JSON.parse(response.getPaymentAccountFormJson()));
+      });
+    });
+  }
+  
+  /**
+   * Create a payment account.
+   * 
+   * @param {object} paymentAccountForm - the completed form as JSON to create the payment account
+   * @return {PaymentAccount} the created payment account
+   */
+  async createPaymentAccount(paymentAccountForm: any): Promise<PaymentAccount> {
+    let that = this;
+    return new Promise(function(resolve, reject) {
+      that._paymentAccountsClient.createPaymentAccount(new CreatePaymentAccountRequest().setPaymentAccountForm(JSON.stringify(paymentAccountForm)), {password: that._password}, function(err: grpcWeb.RpcError, response: CreatePaymentAccountReply) {
+        if (err) reject(err);
+        else resolve(response.getPaymentAccount()!);
+      });
+    });
+  }
+  
+  /**
    * Create a crypto payment account.
    * 
    * @param {string} accountName - description of the account
-   * @param {string} currencyCode - currency code of the account
+   * @param {string} assetCode - traded asset code
    * @param {string} address - payment address of the account
    * @return {PaymentAccount} the created payment account
    */
-  async createCryptoPaymentAccount(accountName: string,
-        currencyCode: string,
-        address: string): Promise<PaymentAccount> {
+  async createCryptoPaymentAccount(accountName: string, assetCode: string, address: string): Promise<PaymentAccount> {
     let that = this;
     let request = new CreateCryptoCurrencyPaymentAccountRequest()
             .setAccountName(accountName)
-            .setCurrencyCode(currencyCode)
+            .setCurrencyCode(assetCode)
             .setAddress(address)
             .setTradeInstant(false); // not using instant trades
     return new Promise(function(resolve, reject) {
@@ -788,14 +833,15 @@ class HavenoDaemon {
   /**
    * Get available offers to buy or sell XMR.
    * 
+   * @param {string} assetCode - traded asset code
    * @param {string|undefined} direction - "buy" or "sell" (default all)
    * @return {OfferInfo[]} the available offers
    */
-  async getOffers(direction?: string): Promise<OfferInfo[]> {
-    if (!direction) return (await this.getOffers("buy")).concat(await this.getOffers("sell")); // TODO: implement in backend
+  async getOffers(assetCode: string, direction?: string): Promise<OfferInfo[]> {
+    if (!direction) return (await this.getOffers(assetCode, "buy")).concat(await this.getOffers(assetCode, "sell")); // TODO: implement in backend
     let that = this;
     return new Promise(function(resolve, reject) {
-      that._offersClient.getOffers(new GetOffersRequest().setDirection(direction).setCurrencyCode("XMR"), {password: that._password}, function(err: grpcWeb.RpcError, response: GetOffersReply) {
+      that._offersClient.getOffers(new GetOffersRequest().setDirection(direction).setCurrencyCode(assetCode), {password: that._password}, function(err: grpcWeb.RpcError, response: GetOffersReply) {
         if (err) reject(err);
         else resolve(response.getOffersList());
       });
@@ -805,14 +851,15 @@ class HavenoDaemon {
   /**
    * Get the user's posted offers to buy or sell XMR.
    * 
-   * @param {string|undefined} direction - "buy" or "sell" (default all)
+   * @param {string} assetCode - traded asset code
+   * @param {string|undefined} direction - "buy" or "sell" XMR (default all)
    * @return {OfferInfo[]} the user's created offers
    */
-  async getMyOffers(direction?: string): Promise<OfferInfo[]> {
-    if (!direction) return (await this.getMyOffers("buy")).concat(await this.getMyOffers("sell")); // TODO: implement in backend
+  async getMyOffers(assetCode: string, direction?: string): Promise<OfferInfo[]> {
+    if (!direction) return (await this.getMyOffers(assetCode, "buy")).concat(await this.getMyOffers(assetCode, "sell")); // TODO: implement in backend
     let that = this;
     return new Promise(function(resolve, reject) {
-      that._offersClient.getMyOffers(new GetOffersRequest().setDirection(direction).setCurrencyCode("XMR"), {password: that._password}, function(err: grpcWeb.RpcError, response: GetOffersReply) {
+      that._offersClient.getMyOffers(new GetOffersRequest().setDirection(direction).setCurrencyCode(assetCode), {password: that._password}, function(err: grpcWeb.RpcError, response: GetOffersReply) {
         if (err) reject(err);
         else resolve(response.getOffersList());
       });
@@ -826,19 +873,20 @@ class HavenoDaemon {
    * @return {OfferInfo} the user's created offer
    */
   async getMyOffer(offerId: string): Promise<OfferInfo> {
-    // TODO: implement this call on the backend
-    let offers = await this.getMyOffers("buy");
-    for (let offer of offers) if (offer.getId() === offerId) return offer;
-    offers = await this.getMyOffers("sell");
-    for (let offer of offers) if (offer.getId() === offerId) return offer;
-    throw new Error("No offer with id: " + offerId);
+    let that = this;
+    return new Promise(function(resolve, reject) {
+      that._offersClient.getMyOffer(new GetMyOfferRequest().setId(offerId), {password: that._password}, function(err: grpcWeb.RpcError, response: GetMyOfferReply) {
+        if (err) reject(err);
+        else resolve(response.getOffer()!);
+      });
+    });
   }
   
   /**
    * Post an offer.
    * 
-   * @param {string} currencyCode - currency code of traded pair
-   * @param {string} direction - one of "BUY" or "SELL"
+   * @param {string} assetCode - traded asset code
+   * @param {string} direction - one of "buy" or "sell"
    * @param {number} price - trade price
    * @param {bool} useMarketBasedPrice - base trade on market price // TODO: this field redundant with price
    * @param {number} marketPriceMargin - % from market price to tolerate
@@ -849,7 +897,7 @@ class HavenoDaemon {
    * @param {number} triggerPrice - price to remove offer
    * @return {OfferInfo} the posted offer
    */
-  async postOffer(currencyCode: string,
+  async postOffer(assetCode: string,
         direction: string,
         price: number,
         useMarketBasedPrice: boolean,
@@ -861,7 +909,7 @@ class HavenoDaemon {
         triggerPrice?: number): Promise<OfferInfo> {
     let that = this;
     let request = new CreateOfferRequest()
-            .setCurrencyCode(currencyCode)
+            .setCurrencyCode(assetCode)
             .setDirection(direction)
             .setUseMarketBasedPrice(useMarketBasedPrice)
             .setPrice(useMarketBasedPrice ? "1.0" : price.toString()) // TODO: positive price required even if using market price
