@@ -5,7 +5,7 @@ import {HavenoDaemon} from "./HavenoDaemon";
 import {HavenoUtils} from "./utils/HavenoUtils";
 import * as grpcWeb from 'grpc-web';
 import {MarketPriceInfo, NotificationMessage, OfferInfo, TradeInfo, UrlConnection, XmrBalanceInfo} from './protobuf/grpc_pb'; // TODO (woodser): better names; haveno_grpc_pb, haveno_pb
-import {PaymentMethod, PaymentAccount} from './protobuf/pb_pb';
+import {Attachment, DisputeResult, PaymentMethod, PaymentAccount} from './protobuf/pb_pb';
 import {XmrDestination, XmrTx, XmrIncomingTransfer, XmrOutgoingTransfer} from './protobuf/grpc_pb';
 import AuthenticationStatus = UrlConnection.AuthenticationStatus;
 import OnlineStatus = UrlConnection.OnlineStatus;
@@ -1135,6 +1135,211 @@ test("Handles unexpected errors during trade initialization", async () => {
   // stop traders
   for (let trader of traders) await releaseHavenoProcess(trader);
   if (err) throw err;
+});
+
+test("Can resolve disputes", async () => {
+
+  // wait for alice and bob to have unlocked balance for trade
+  let tradeAmount: bigint = BigInt("250000000000");
+  await waitForUnlockedBalance(tradeAmount * BigInt("6"), alice, bob);
+  
+  // register to receive notifications
+  let aliceNotifications: NotificationMessage[] = [];
+  let bobNotifications: NotificationMessage[] = [];
+  let arbitratorNotifications: NotificationMessage[] = [];
+  await alice.addNotificationListener(notification => { aliceNotifications.push(notification); });
+  await bob.addNotificationListener(notification => { bobNotifications.push(notification); });
+  await arbitrator.addNotificationListener(notification => { arbitratorNotifications.push(notification); });
+
+  // alice posts offers to buy xmr
+  HavenoUtils.log(1, "Alice posting offers");
+  let direction = "buy";
+  let offer1: OfferInfo = await postOffer(alice, {direction: direction, amount: tradeAmount});
+  let offer2: OfferInfo = await postOffer(alice, {direction: direction, amount: tradeAmount});
+  let offer3: OfferInfo = await postOffer(alice, {direction: direction, amount: tradeAmount});
+  HavenoUtils.log(1, "Alice done posting offers");
+
+  // takes awhile to sync deposit
+  await wait(TestConfig.walletSyncPeriodMs * 3);
+
+  let paymentAccount = await createPaymentAccount(bob, "eth");
+  
+  // bob takes offer
+  let startTime = Date.now();
+  HavenoUtils.log(1, "Bob taking offers");
+  let trade1: TradeInfo = await bob.takeOffer(offer1.getId(), paymentAccount.getId());
+  expect(trade1.getPhase()).toEqual("DEPOSIT_PUBLISHED");
+  HavenoUtils.log(1, "Bob done taking offer1 in " + (Date.now() - startTime) + " ms");
+  let fetchedTrade1: TradeInfo = await bob.getTrade(trade1.getTradeId());
+  expect(fetchedTrade1.getPhase()).toEqual("DEPOSIT_PUBLISHED");
+
+  let trade2: TradeInfo = await bob.takeOffer(offer2.getId(), paymentAccount.getId());
+  expect(trade2.getPhase()).toEqual("DEPOSIT_PUBLISHED");
+  HavenoUtils.log(1, "Bob done taking offer2 in " + (Date.now() - startTime) + " ms");
+  let fetchedTrade2: TradeInfo = await bob.getTrade(trade2.getTradeId());
+  expect(fetchedTrade2.getPhase()).toEqual("DEPOSIT_PUBLISHED");
+
+  let trade3: TradeInfo = await bob.takeOffer(offer3.getId(), paymentAccount.getId());
+  expect(trade3.getPhase()).toEqual("DEPOSIT_PUBLISHED");
+  HavenoUtils.log(1, "Bob done taking offer3 in " + (Date.now() - startTime) + " ms");
+  let fetchedTrade3: TradeInfo = await bob.getTrade(trade3.getTradeId());
+  expect(fetchedTrade3.getPhase()).toEqual("DEPOSIT_PUBLISHED");
+
+  // mine until deposit txs unlock
+  HavenoUtils.log(1, "Mining to unlock deposit txs");
+  await waitForUnlockedTxs(
+    fetchedTrade1.getMakerDepositTxId(), fetchedTrade1.getTakerDepositTxId(),
+    fetchedTrade2.getMakerDepositTxId(), fetchedTrade2.getTakerDepositTxId(),
+    fetchedTrade3.getMakerDepositTxId(), fetchedTrade3.getTakerDepositTxId(),
+  );
+  HavenoUtils.log(1, "Done mining to unlock deposit txs");
+  
+  // bob does not recieve payment, open a dispute
+  HavenoUtils.log(1, "Opening disputes");
+  await bob.openDispute(trade1.getTradeId());
+  await alice.openDispute(trade2.getTradeId());
+  await bob.openDispute(trade3.getTradeId());
+
+  let bobDispute = await bob.getDispute(trade1.getTradeId());
+  expect(bobDispute.getTradeId()).toEqual(trade1.getTradeId());
+  expect(bobDispute.getIsOpener()).toBe(true);
+  expect(bobDispute.getDisputeOpenerIsBuyer()).toBe(false);
+
+  // get non-existing dispute should fail
+  try {
+    await bob.getDispute("invalid");
+    throw new Error("get dispute with invalid id should fail");
+  } catch (err) {
+    assert.equal(err.message, "dispute for trade id 'invalid' not found");
+  }
+
+  // alice should see the dispute
+  await wait(TestConfig.maxTimePeerNoticeMs*2); // wait 2x since the dispute propagates from bob->arbitrator->alice
+  let aliceDispute = await alice.getDispute(trade1.getTradeId());
+  expect(aliceDispute.getTradeId()).toEqual(trade1.getTradeId());
+  expect(aliceDispute.getIsOpener()).toBe(false);
+
+  // arbitrator should see both disputes
+  let disputes = await arbitrator.getDisputes();
+  expect(disputes.length).toBeGreaterThanOrEqual(2);
+  let arbAliceDispute = disputes.find(d => d.getId() === aliceDispute.getId());
+  assert(arbAliceDispute);
+  let arbBobDispute = disputes.find(d => d.getId() === bobDispute.getId());
+  assert(arbBobDispute);
+
+  // send a message
+  HavenoUtils.log(1, "Arbitrator sending chat messages");
+  await arbitrator.sendDisputeChatMessage(arbBobDispute!.getId(), "Arbitrator chat message to Bob", []);
+  await arbitrator.sendDisputeChatMessage(arbAliceDispute!.getId(), "Arbitrator chat message to Alice", []);
+
+  HavenoUtils.log(1, "Alice and bob replying to chat messages");
+  
+  let attachment = new Attachment();
+  let bytes = new Uint8Array(Buffer.from("Proof Bob was scammed", "utf8"));
+  attachment.setBytes(bytes);
+  attachment.setFileName("proof.txt");
+  let attachment2 = new Attachment();
+  let bytes2 = new Uint8Array(Buffer.from("picture bytes", "utf8"));
+  attachment2.setBytes(bytes2);
+  attachment2.setFileName("proof.png");
+  await bob.sendDisputeChatMessage(bobDispute.getId(), "Bob chat message", [attachment, attachment2]); 
+  await wait(TestConfig.maxTimePeerNoticeMs);
+  await alice.sendDisputeChatMessage(aliceDispute.getId(), "Alice chat message", []); 
+  await wait(TestConfig.maxTimePeerNoticeMs);
+
+  // check messages on alice and bob
+  HavenoUtils.log(1, "Confirming chat messages");
+  let updatedDispute = await bob.getDispute(trade1.getTradeId());
+  let messages = updatedDispute.getChatMessageList();
+  expect(messages.length).toEqual(3); // 1st message is the system message
+  expect(messages[1].getMessage()).toEqual("Arbitrator chat message to Bob");
+  expect(messages[2].getMessage()).toEqual("Bob chat message");
+  let attachments = messages[2].getAttachmentsList();
+  expect(attachments.length).toEqual(2);
+  expect(attachments[0].getFileName()).toEqual("proof.txt");
+  expect(attachments[0].getBytes()).toEqual(bytes);
+  expect(attachments[1].getFileName()).toEqual("proof.png");
+  expect(attachments[1].getBytes()).toEqual(bytes2);
+  updatedDispute = await alice.getDispute(trade1.getTradeId());
+  messages = updatedDispute.getChatMessageList();
+  expect(messages.length).toEqual(3);
+  expect(messages[1].getMessage()).toEqual("Arbitrator chat message to Alice");
+  expect(messages[2].getMessage()).toEqual("Alice chat message");
+
+  HavenoUtils.log(1, "Confirming chat messages via notifications");
+  let chatNotifications = getNotifications(aliceNotifications, NotificationMessage.NotificationType.CHAT_MESSAGE);
+  expect(chatNotifications.length).toBe(1);
+  expect(chatNotifications[0].getChatMessage()?.getMessage()).toEqual("Arbitrator chat message to Alice");
+  chatNotifications = getNotifications(bobNotifications, NotificationMessage.NotificationType.CHAT_MESSAGE);
+  expect(chatNotifications.length).toBe(1);
+  expect(chatNotifications[0].getChatMessage()?.getMessage()).toEqual("Arbitrator chat message to Bob");
+
+  // arbitrator expects 2 chat messages, one with attachments
+  chatNotifications = getNotifications(arbitratorNotifications, NotificationMessage.NotificationType.CHAT_MESSAGE);
+  expect(chatNotifications.length).toBe(2);
+  expect(chatNotifications[0].getChatMessage()?.getMessage()).toEqual("Bob chat message");
+  assert(chatNotifications[0].getChatMessage()?.getAttachmentsList());
+  attachments = chatNotifications[0].getChatMessage()?.getAttachmentsList()!;
+  expect(attachments[0].getFileName()).toEqual("proof.txt");
+  expect(attachments[0].getBytes()).toEqual(bytes);
+  expect(attachments[1].getFileName()).toEqual("proof.png");
+  expect(attachments[1].getBytes()).toEqual(bytes2);
+  expect(chatNotifications[1].getChatMessage()?.getMessage()).toEqual("Alice chat message");
+
+  // arbitrator resolves dispute, seller winner scenario
+  HavenoUtils.log(1, "Resolving dispute in favor of seller");
+  let bobBalancesBefore = await bob.getBalances();
+  let aliceBalancesBefore = await alice.getBalances();
+  await arbitrator.resolveDispute(trade1.getTradeId(), DisputeResult.Winner.SELLER, DisputeResult.Reason.PEER_WAS_LATE, "Seller is winner", BigInt(0));
+
+  // Dispute is properly resolved
+  await wait(TestConfig.maxTimePeerNoticeMs);
+  updatedDispute = await alice.getDispute(trade1.getTradeId());
+  expect(updatedDispute.getIsClosed()).toBe(true);
+  updatedDispute = await bob.getDispute(trade1.getTradeId());
+  expect(updatedDispute.getIsClosed()).toBe(true);
+
+  // check balances after payout tx
+  await wait(TestConfig.walletSyncPeriodMs*2);
+  let aliceBalancesAfter = await alice.getBalances();
+  let bobBalancesAfter = await bob.getBalances();
+  let aliceDifference = BigInt(aliceBalancesAfter.getBalance()) - BigInt(aliceBalancesBefore.getBalance());
+  let bobDifference = BigInt(bobBalancesAfter.getBalance()) - BigInt(bobBalancesBefore.getBalance());
+  let winnerPayout = tradeAmount + BigInt(offer1.getSellerSecurityDeposit()) - TestConfig.maxFee;
+  let loserPayout = BigInt(offer1.getBuyerSecurityDeposit()) - TestConfig.maxFee;
+  expect(aliceDifference).toBeGreaterThan(loserPayout);
+  expect(bobDifference).toBeGreaterThan(winnerPayout);
+
+  // buyer winner scenario
+  HavenoUtils.log(1, "Resolved dispute in favor of buyer");
+  aliceBalancesBefore = await alice.getBalances();
+  bobBalancesBefore = await bob.getBalances();
+  await arbitrator.resolveDispute(trade2.getTradeId(), DisputeResult.Winner.BUYER, DisputeResult.Reason.SELLER_NOT_RESPONDING, "Buyer is winner", BigInt(0));
+  await wait(TestConfig.walletSyncPeriodMs*2);
+  aliceBalancesAfter = await alice.getBalances();
+  bobBalancesAfter = await bob.getBalances();
+  aliceDifference = BigInt(aliceBalancesAfter.getBalance()) - BigInt(aliceBalancesBefore.getBalance());
+  bobDifference = BigInt(bobBalancesAfter.getBalance()) - BigInt(bobBalancesBefore.getBalance());
+  winnerPayout = tradeAmount + BigInt(offer2.getBuyerSecurityDeposit()) - TestConfig.maxFee;
+  loserPayout = BigInt(offer2.getSellerSecurityDeposit()) - TestConfig.maxFee;
+  expect(aliceDifference).toBeGreaterThan(winnerPayout);
+  expect(bobDifference).toBeGreaterThan(loserPayout);
+
+  // custom payout scenario
+  HavenoUtils.log(1, "Resolve with split payment in custom payout");
+  aliceBalancesBefore = await alice.getBalances();
+  bobBalancesBefore = await bob.getBalances();
+  let splitAmount = tradeAmount / BigInt(2);
+  await arbitrator.resolveDispute(trade3.getTradeId(), DisputeResult.Winner.BUYER, DisputeResult.Reason.WRONG_SENDER_ACCOUNT, "Equal payout", splitAmount);
+  await wait(TestConfig.walletSyncPeriodMs*2);
+  aliceBalancesAfter = await alice.getBalances();
+  bobBalancesAfter = await bob.getBalances();
+  aliceDifference = BigInt(aliceBalancesAfter.getBalance()) - BigInt(aliceBalancesBefore.getBalance());
+  bobDifference = BigInt(bobBalancesAfter.getBalance()) - BigInt(bobBalancesBefore.getBalance());
+  winnerPayout = splitAmount + BigInt(offer3.getBuyerSecurityDeposit()) - TestConfig.maxFee;
+  loserPayout = splitAmount + BigInt(offer3.getSellerSecurityDeposit()) - TestConfig.maxFee;
+  expect(aliceDifference).toBeGreaterThan(winnerPayout);
+  expect(bobDifference).toBeGreaterThan(loserPayout);
 });
 
 // ------------------------------- HELPERS ------------------------------------
