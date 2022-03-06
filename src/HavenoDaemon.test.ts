@@ -1120,7 +1120,7 @@ test("Can resolve disputes", async () => {
   // award too little to loser
   customWinnerAmount = tradeAmount + HavenoUtils.centinerosToAtomicUnits(offers[3].getBuyerSecurityDeposit()) + HavenoUtils.centinerosToAtomicUnits(offers[3].getSellerSecurityDeposit()) - BigInt("10000");
   try {
-    await arbitrator.resolveDispute(trades[3].getTradeId(), DisputeResult.Winner.SELLER, DisputeResult.Reason.TRADE_ALREADY_SETTLED, "Seller gets everything", customWinnerAmount);
+    await arbitrator.resolveDispute(trades[3].getTradeId(), DisputeResult.Winner.SELLER, DisputeResult.Reason.TRADE_ALREADY_SETTLED, "Loser gets too little", customWinnerAmount);
     throw new Error("Should have failed resolving dispute with insufficient loser payout");
   } catch (err) {
     assert.equal(err.message, "Loser payout is too small to cover the mining fee");
