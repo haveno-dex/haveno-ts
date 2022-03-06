@@ -1028,21 +1028,6 @@ class HavenoDaemon {
   }
   
   /**
-   * Shutdown the Haveno daemon server and stop the process if applicable.
-   */
-  async shutdownServer() {
-    if (this._keepAliveLooper) this._keepAliveLooper.stop();
-    let that = this;
-    await new Promise(function(resolve, reject) {
-      that._shutdownServerClient.stop(new StopRequest(), {password: that._password}, function(err: grpcWeb.RpcError) { // process receives 'exit' event
-        if (err) reject(err);
-        else resolve();
-      });
-    });
-    if (this._process) return HavenoUtils.kill(this._process);
-  }
-
-  /**
    * Get a dispute by trade id.
    *
    * @param {string} tradeId - the id of the trade
@@ -1056,7 +1041,7 @@ class HavenoDaemon {
       });
     });
   }
-
+  
   /**
    * Get all disputes.
    */
@@ -1069,9 +1054,9 @@ class HavenoDaemon {
       });
     });
   }
-
+  
   /**
-   * Opens a dispute for a trade.
+   * Open a dispute for a trade.
    *
    * @param {string} tradeId - the id of the trade
    */
@@ -1084,35 +1069,35 @@ class HavenoDaemon {
       });
     });
   }
-
+  
   /**
-   * Resolves a dispute. The winner receives the trade amount and security deposites are returned.
-   * Custom amounts >= 0 will result in the winner receiving the custom amount.
+   * Resolve a dispute. By default, the winner receives the trade amount and the security deposits are returned,
+   * but the arbitrator may award a custom amount to the winner.
    *
    * @param {string} tradeId - the id of the trade
    * @param {DisputeResult.Winner} winner - the winner of the dispute
    * @param {DisputeResult.Reason} reason - the reason for the dispute
    * @param {string} summaryNotes - summary of the dispute
-   * @param {bigint} customPayoutAmount - optional custom amount winner receives
+   * @param {bigint} customWinnerAmount - custom amount to award the winner (optional)
    */
-  async resolveDispute(tradeId: string, winner: DisputeResult.Winner, reason: DisputeResult.Reason, summaryNotes: string, customPayoutAmount: bigint): Promise<void> {
+  async resolveDispute(tradeId: string, winner: DisputeResult.Winner, reason: DisputeResult.Reason, summaryNotes: string, customWinnerAmount?: bigint): Promise<void> {
     let that = this;
     return new Promise(function(resolve, reject) {
-      let request = new ResolveDisputeRequest();
-      request.setTradeId(tradeId);
-      request.setWinner(winner);
-      request.setReason(reason);
-      request.setSummaryNotes(summaryNotes);
-      request.setCustomPayoutAmount(customPayoutAmount.toString());
+      let request = new ResolveDisputeRequest()
+            .setTradeId(tradeId)
+            .setWinner(winner)
+            .setReason(reason)
+            .setSummaryNotes(summaryNotes)
+            .setCustomPayoutAmount(customWinnerAmount ? customWinnerAmount.toString() : "0");
       that._disputesClient.resolveDispute(request, {password: that._password}, function(err: grpcWeb.RpcError) {
         if (err) reject(err);
         else resolve();
       });
     });
   }
-
+  
   /**
-   * Sends a dispute chat message.
+   * Send a dispute chat message.
    *
    * @param {string} disputeId - the id of the dispute
    * @param {string} message - the message
@@ -1121,15 +1106,30 @@ class HavenoDaemon {
   async sendDisputeChatMessage(disputeId: string, message: string, attachments: Attachment[]): Promise<void> {
     let that = this;
     return new Promise(function(resolve, reject) {
-      let request = new SendDisputeChatMessageRequest();
-      request.setDisputeId(disputeId);
-      request.setMessage(message);
-      request.setAttachmentsList(attachments);
+      let request = new SendDisputeChatMessageRequest()
+            .setDisputeId(disputeId)
+            .setMessage(message)
+            .setAttachmentsList(attachments);
       that._disputesClient.sendDisputeChatMessage(request, {password: that._password}, function(err: grpcWeb.RpcError) {
         if (err) reject(err);
         else resolve();
       });
     });
+  }
+  
+  /**
+   * Shutdown the Haveno daemon server and stop the process if applicable.
+   */
+  async shutdownServer() {
+    if (this._keepAliveLooper) this._keepAliveLooper.stop();
+    let that = this;
+    await new Promise(function(resolve, reject) {
+      that._shutdownServerClient.stop(new StopRequest(), {password: that._password}, function(err: grpcWeb.RpcError) { // process receives 'exit' event
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+    if (this._process) return HavenoUtils.kill(this._process);
   }
   
   // ------------------------------- HELPERS ----------------------------------

@@ -7,6 +7,7 @@ const console = require('console');
 class HavenoUtils {
     
   static LOG_LEVEL = 0;
+  static CENTINEROS_AU_MULTIPLIER = 10000;
     
   /**
    * Log a message.
@@ -52,6 +53,16 @@ class HavenoUtils {
       process.on("error", function(err: any) { reject(err); });
       process.kill(signal ? signal : "SIGINT");
     });
+  }
+  
+  /**
+   * Convert centineros to atomic units.
+   * 
+   * @param {number} centineros - denominates an amount of XMR in centineros
+   * @return {BigInt} the amount denominated in atomic units
+   */
+  static centinerosToAtomicUnits(centineros: number): bigint {
+    return BigInt(centineros) * BigInt(HavenoUtils.CENTINEROS_AU_MULTIPLIER);
   }
 }
 
