@@ -1021,11 +1021,12 @@ test("Can resolve disputes", async () => {
   let bytes2 = new Uint8Array(Buffer.from("picture bytes", "utf8"));
   attachment2.setBytes(bytes2);
   attachment2.setFileName("proof.png");
-  await bob.sendDisputeChatMessage(bobDispute.getId(), "Bob chat message", [attachment, attachment2]); 
+  await bob.sendDisputeChatMessage(bobDispute.getId(), "Bob chat message", [attachment, attachment2]);
+  await wait(1000); // make sure messages are sent in order
   await alice.sendDisputeChatMessage(aliceDispute.getId(), "Alice chat message", []); 
-  await wait(TestConfig.maxTimePeerNoticeMs);
   
   // test alice and bob's chat messages
+  await wait(TestConfig.maxTimePeerNoticeMs);
   let updatedDispute = await bob.getDispute(trades[0].getTradeId());
   let messages = updatedDispute.getChatMessageList();
   expect(messages.length).toEqual(3); // 1st message is the system message
