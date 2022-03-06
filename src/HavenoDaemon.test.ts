@@ -1117,6 +1117,15 @@ test("Can resolve disputes", async () => {
   expect(aliceDifference).toEqual(customWinnerAmount);
   expect(loserPayout - bobDifference).toBeLessThan(TestConfig.maxFee);
   
+  // award too little to loser
+  customWinnerAmount = tradeAmount + HavenoUtils.centinerosToAtomicUnits(offers[3].getBuyerSecurityDeposit()) + HavenoUtils.centinerosToAtomicUnits(offers[3].getSellerSecurityDeposit()) - BigInt("10000");
+  try {
+    await arbitrator.resolveDispute(trades[3].getTradeId(), DisputeResult.Winner.SELLER, DisputeResult.Reason.TRADE_ALREADY_SETTLED, "Seller gets everything", customWinnerAmount);
+    throw new Error("Should have failed resolving dispute with insufficient loser payout");
+  } catch (err) {
+    assert.equal(err.message, "Loser payout is too small to cover the mining fee");
+  }
+  
   // award full amount to seller
   HavenoUtils.log(1, "Awarding full amount to seller");
   customWinnerAmount = tradeAmount + HavenoUtils.centinerosToAtomicUnits(offers[3].getBuyerSecurityDeposit()) + HavenoUtils.centinerosToAtomicUnits(offers[3].getSellerSecurityDeposit());
