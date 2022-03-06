@@ -85,13 +85,16 @@ const TestConfig = {
     walletSyncPeriodMs: 5000, // TODO (woodser): auto adjust higher if using remote connection
     daemonPollPeriodMs: 15000,
     maxTimePeerNoticeMs: 3000,
-    assetCodes: ["USD", "GBP", "EUR", "ETH", "BTC", "LTC", "ZEC"], // primary asset codes
+    assetCodes: ["USD", "GBP", "EUR", "ETH", "BTC", "BCH", "LTC", "ZEC"], // primary asset codes
     cryptoAddresses: [{
             currencyCode: "ETH",
             address: "0xdBdAb835Acd6fC84cF5F9aDD3c0B5a1E25fbd99f"
         }, {
             currencyCode: "BTC",
             address: "bcrt1q6j90vywv8x7eyevcnn2tn2wrlg3vsjlsvt46qz"
+        }, {
+            currencyCode: "BCH",
+            address: "1JRjBNKi4ZgJpKPeoL4149Q7ZZD3VvVgk9" // TODO: support Cash Address format also
         }, {
             currencyCode: "LTC",
             address: "LXUTUN5mTPc2LsS7cEjkyjTRcfYyJGoUuQ"
