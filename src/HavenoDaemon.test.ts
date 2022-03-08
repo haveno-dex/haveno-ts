@@ -1844,7 +1844,7 @@ async function testTradeChat(tradeId: string, alice: HavenoDaemon, bob: HavenoDa
   await wait(TestConfig.maxTimePeerNoticeMs);
   messages = await bob.getChatMessages(tradeId);
   let offset = 3; // 3 existing messages
-  expect(messages.length).toEqual(offset+msgs.length);
+  expect(messages.length).toEqual(offset + msgs.length);
   expect(messages[0].getIsSystemMessage()).toEqual(true);
   expect(messages[1].getMessage()).toEqual(aliceMsg);
   expect(messages[2].getMessage()).toEqual(bobMsg);
@@ -1854,7 +1854,7 @@ async function testTradeChat(tradeId: string, alice: HavenoDaemon, bob: HavenoDa
 
   chatNotifications = getNotifications(bobNotifications, NotificationMessage.NotificationType.CHAT_MESSAGE);
   offset = 1; // 1 existing notification
-  expect(chatNotifications.length).toBe(offset+msgs.length);
+  expect(chatNotifications.length).toBe(offset + msgs.length);
   expect(chatNotifications[0].getChatMessage()?.getMessage()).toEqual(aliceMsg);
   for (var i = 0; i < msgs.length; i++) {
     expect(chatNotifications[i + offset].getChatMessage()?.getMessage()).toEqual(msgs[i]);
