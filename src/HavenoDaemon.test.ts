@@ -879,6 +879,8 @@ test("Can complete a trade", async () => {
   // alice can get trade
   fetchedTrade = await alice.getTrade(trade.getTradeId());
   expect(fetchedTrade.getPhase()).toEqual("DEPOSIT_PUBLISHED");
+
+  await testTradeChat(trade.getTradeId(), alice, bob);
   
   // mine until deposit txs unlock
   HavenoUtils.log(1, "Mining to unlock deposit txs");
@@ -1779,4 +1781,83 @@ function testOffer(offer: OfferInfo, config?: any) {
     expect(offer.getSellerSecurityDeposit() / offer.getAmount()).toEqual(config.buyerSecurityDeposit); // TODO: use same config.securityDeposit for buyer and seller? 
   }
   // TODO: test rest of offer
+}
+
+/**
+ * Tests trade chat functionality. Must be called during an open trade.
+ */
+async function testTradeChat(tradeId: string, alice: HavenoDaemon, bob: HavenoDaemon) {
+  HavenoUtils.log(1, "Testing trade chat");
+
+  // invalid trade should throw error
+  try {
+    await alice.getChatMessages("invalid");
+    throw new Error("get chat messages with invalid id should fail");
+  } catch (err) {
+    assert.equal(err.message, "trade with id 'invalid' not found");
+  }
+
+  // trade chat should be in initial state
+  let messages = await alice.getChatMessages(tradeId);
+  assert(messages.length == 0);
+  messages = await bob.getChatMessages(tradeId);
+  assert(messages.length == 0);
+
+  // add notification handlers and send some messages
+  let aliceNotifications: NotificationMessage[] = [];
+  let bobNotifications: NotificationMessage[] = [];
+  await alice.addNotificationListener(notification => { aliceNotifications.push(notification); });
+  await bob.addNotificationListener(notification => { bobNotifications.push(notification); });
+
+  // send simple conversation and verify the list of messages
+  let aliceMsg = "Hi I'm Alice";
+  await alice.sendChatMessage(tradeId, aliceMsg);
+  await wait(TestConfig.maxTimePeerNoticeMs);
+  messages = await bob.getChatMessages(tradeId);
+  expect(messages.length).toEqual(2);
+  expect(messages[0].getIsSystemMessage()).toEqual(true); // first message is system
+  expect(messages[1].getMessage()).toEqual(aliceMsg);
+
+  let bobMsg = "Hello I'm Bob";
+  await bob.sendChatMessage(tradeId, bobMsg);
+  await wait(TestConfig.maxTimePeerNoticeMs);
+  messages = await alice.getChatMessages(tradeId);
+  expect(messages.length).toEqual(3);
+  expect(messages[0].getIsSystemMessage()).toEqual(true);
+  expect(messages[1].getMessage()).toEqual(aliceMsg);
+  expect(messages[2].getMessage()).toEqual(bobMsg);
+
+  // verify notifications
+  let chatNotifications = getNotifications(aliceNotifications, NotificationMessage.NotificationType.CHAT_MESSAGE);
+  expect(chatNotifications.length).toBe(1);
+  expect(chatNotifications[0].getChatMessage()?.getMessage()).toEqual(bobMsg);
+  chatNotifications = getNotifications(bobNotifications, NotificationMessage.NotificationType.CHAT_MESSAGE);
+  expect(chatNotifications.length).toBe(1);
+  expect(chatNotifications[0].getChatMessage()?.getMessage()).toEqual(aliceMsg);
+
+  // additional msgs
+  let msgs = ["", "  ", "<script>alert('test');</script>", "さようなら"];
+  for(let msg of msgs) {
+    await alice.sendChatMessage(tradeId, msg);
+    await wait(1000); // the async operation can result in out of order messages
+  }
+  await wait(TestConfig.maxTimePeerNoticeMs);
+  messages = await bob.getChatMessages(tradeId);
+  let offset = 3; // 3 existing messages
+  expect(messages.length).toEqual(offset+msgs.length);
+  expect(messages[0].getIsSystemMessage()).toEqual(true);
+  expect(messages[1].getMessage()).toEqual(aliceMsg);
+  expect(messages[2].getMessage()).toEqual(bobMsg);
+  for (var i = 0; i < msgs.length; i++) {
+    expect(messages[i+offset].getMessage()).toEqual(msgs[i]);
+  }
+
+  chatNotifications = getNotifications(bobNotifications, NotificationMessage.NotificationType.CHAT_MESSAGE);
+  offset = 1; // 1 existing notification
+  expect(chatNotifications.length).toBe(offset+msgs.length);
+  expect(chatNotifications[0].getChatMessage()?.getMessage()).toEqual(aliceMsg);
+  for (var i = 0; i < msgs.length; i++) {
+    // notifications messages are trimmed
+    expect(chatNotifications[i+offset].getChatMessage()?.getMessage()).toEqual(msgs[i].trim());
+  }
 }
