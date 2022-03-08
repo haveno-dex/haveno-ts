@@ -880,7 +880,8 @@ test("Can complete a trade", async () => {
   fetchedTrade = await alice.getTrade(trade.getTradeId());
   expect(fetchedTrade.getPhase()).toEqual("DEPOSIT_PUBLISHED");
 
-  await testTradeChat(trade.getTradeId(), alice, bob); // test trader chat
+  // test trader chat
+  await testTradeChat(trade.getTradeId(), alice, bob);
   
   // mine until deposit txs unlock
   HavenoUtils.log(1, "Mining to unlock deposit txs");
