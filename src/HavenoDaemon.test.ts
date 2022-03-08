@@ -880,7 +880,7 @@ test("Can complete a trade", async () => {
   fetchedTrade = await alice.getTrade(trade.getTradeId());
   expect(fetchedTrade.getPhase()).toEqual("DEPOSIT_PUBLISHED");
 
-  await testTradeChat(trade.getTradeId(), alice, bob);
+  await testTradeChat(trade.getTradeId(), alice, bob); // test trader chat
   
   // mine until deposit txs unlock
   HavenoUtils.log(1, "Mining to unlock deposit txs");
@@ -1857,7 +1857,6 @@ async function testTradeChat(tradeId: string, alice: HavenoDaemon, bob: HavenoDa
   expect(chatNotifications.length).toBe(offset+msgs.length);
   expect(chatNotifications[0].getChatMessage()?.getMessage()).toEqual(aliceMsg);
   for (var i = 0; i < msgs.length; i++) {
-    // notifications messages are trimmed
-    expect(chatNotifications[i+offset].getChatMessage()?.getMessage()).toEqual(msgs[i].trim());
+    expect(chatNotifications[i + offset].getChatMessage()?.getMessage()).toEqual(msgs[i]);
   }
 }

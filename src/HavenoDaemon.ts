@@ -1030,7 +1030,7 @@ class HavenoDaemon {
   /**
    * Get all chat messages for a trade.
    *
-   * @param {string} tradeId
+   * @param {string} tradeId - the id of the trade
    */
   async getChatMessages(tradeId: string): Promise<ChatMessage[]> {
     let that = this;
