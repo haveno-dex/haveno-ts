@@ -465,6 +465,76 @@ test("Can manage Monero daemon connections", async () => {
   if (err) throw err;
 });
 
+test("Can start and stop local Monero node", async() => {
+  let srv: any;
+  let err: any;
+  try {
+    // ensure stopped local Monero node
+    let isMoneroNodeStarted = await alice.isMoneroNodeStarted();
+    if (isMoneroNodeStarted) {
+      await alice.stopMoneroNode();
+    }
+
+    // check default connection is working
+    let monerodUrl1 = "http://localhost:38081";
+    let connection: UrlConnection | undefined = await alice.getMoneroConnection();
+    assert(await alice.isConnectedToMonero());
+    testConnection(connection!, monerodUrl1, OnlineStatus.ONLINE, AuthenticationStatus.AUTHENTICATED, 1);
+
+    let username = "testuser";
+    let password = "testpw123";
+
+    // check node start errors are handled
+    srv = net.createServer();
+    await listenPort(srv, 58081);
+    try {
+      console.log("Starting node with error");
+      await alice.startMoneroNode(username, password);
+      throw new Error('should have thrown');
+    } catch (err) {
+      if (!err.message.startsWith("Failed to start monerod:")) throw new Error("Unexpected error: " + err.message);
+    }
+    await closeServer(srv);
+
+    // check successful node start
+    console.log("Starting node with success");
+    await alice.startMoneroNode(username, password);
+
+    // expect already running error
+    try {
+      await alice.startMoneroNode(username, password);
+      throw new Error('should have thrown');
+    } catch (err) {
+      if (err.message !== "Monero node already running") throw new Error("Unexpected error: " + err.message);
+    }
+
+    isMoneroNodeStarted = await alice.isMoneroNodeStarted();
+    assert(isMoneroNodeStarted);
+
+    // no longer using connection
+    connection = await alice.getMoneroConnection();
+    assert(connection == undefined);
+
+    // check wallet still works
+    let balance = await alice.getBalances();
+    assert(balance);
+
+    await alice.stopMoneroNode();
+    isMoneroNodeStarted = await alice.isMoneroNodeStarted();
+    assert(!isMoneroNodeStarted);
+
+    // check restored connection
+    connection = await alice.getMoneroConnection();
+    assert(await alice.isConnectedToMonero());
+    testConnection(connection!, monerodUrl1, OnlineStatus.ONLINE, AuthenticationStatus.AUTHENTICATED, 1);
+  } catch(err2) {
+    err = err2;
+  }
+
+  if (srv) await closeServer(srv);
+  if (err) throw err;
+});
+
 // test wallet balances, transactions, deposit addresses, create and relay txs
 test("Has a Monero wallet", async () => { 
   
@@ -1431,6 +1501,22 @@ async function initHavenoDaemon(config?: any): Promise<HavenoDaemon> {
       });
     });
   }
+
+}
+
+async function listenPort(srv: any, port: number): Promise<void> {
+  return new Promise(function(resolve) {
+    srv.listen(port, resolve);
+  });
+}
+
+async function closeServer(srv: any): Promise<void> {
+  if (!srv) return;
+  return new Promise(function(resolve) {
+    srv.close(resolve());
+    // sometimes close doesn't work on repeated runs
+    setTimeout(resolve, 5000);
+  });
 }
 
 /**
