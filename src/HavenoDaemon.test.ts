@@ -5,7 +5,7 @@ import {HavenoDaemon} from "./HavenoDaemon";
 import {HavenoUtils} from "./utils/HavenoUtils";
 import * as grpcWeb from 'grpc-web';
 import {MarketPriceInfo, NotificationMessage, OfferInfo, TradeInfo, UrlConnection, XmrBalanceInfo} from './protobuf/grpc_pb'; // TODO (woodser): better names; haveno_grpc_pb, haveno_pb
-import {Attachment, DisputeResult, PaymentMethod, PaymentAccount} from './protobuf/pb_pb';
+import {Attachment, DisputeResult, PaymentMethod, PaymentAccount, MoneroNodeSettings} from './protobuf/pb_pb';
 import {XmrDestination, XmrTx, XmrIncomingTransfer, XmrOutgoingTransfer} from './protobuf/grpc_pb';
 import AuthenticationStatus = UrlConnection.AuthenticationStatus;
 import OnlineStatus = UrlConnection.OnlineStatus;
@@ -470,7 +470,7 @@ test("Can start and stop local Monero node", async() => {
   let err: any;
   try {
     // ensure stopped local Monero node
-    let isMoneroNodeStarted = await alice.isMoneroNodeStarted();
+    let isMoneroNodeStarted = await alice.isMoneroNodeRunning();
     if (isMoneroNodeStarted) {
       await alice.stopMoneroNode();
     }
@@ -481,15 +481,14 @@ test("Can start and stop local Monero node", async() => {
     assert(await alice.isConnectedToMonero());
     testConnection(connection!, monerodUrl1, OnlineStatus.ONLINE, AuthenticationStatus.AUTHENTICATED, 1);
 
-    let username = "testuser";
-    let password = "testpw123";
+    let settings = new MoneroNodeSettings();
 
     // check node start errors are handled
     srv = net.createServer();
     await listenPort(srv, 58081);
     try {
       console.log("Starting node with error");
-      await alice.startMoneroNode(username, password);
+      await alice.startMoneroNode(settings);
       throw new Error('should have thrown');
     } catch (err) {
       if (!err.message.startsWith("Failed to start monerod:")) throw new Error("Unexpected error: " + err.message);
@@ -498,17 +497,17 @@ test("Can start and stop local Monero node", async() => {
 
     // check successful node start
     console.log("Starting node with success");
-    await alice.startMoneroNode(username, password);
+    await alice.startMoneroNode(settings);
 
     // expect already running error
     try {
-      await alice.startMoneroNode(username, password);
+      await alice.startMoneroNode(settings);
       throw new Error('should have thrown');
     } catch (err) {
       if (err.message !== "Monero node already running") throw new Error("Unexpected error: " + err.message);
     }
 
-    isMoneroNodeStarted = await alice.isMoneroNodeStarted();
+    isMoneroNodeStarted = await alice.isMoneroNodeRunning();
     assert(isMoneroNodeStarted);
 
     // no longer using connection
@@ -520,7 +519,7 @@ test("Can start and stop local Monero node", async() => {
     assert(balance);
 
     await alice.stopMoneroNode();
-    isMoneroNodeStarted = await alice.isMoneroNodeStarted();
+    isMoneroNodeStarted = await alice.isMoneroNodeRunning();
     assert(!isMoneroNodeStarted);
 
     // check restored connection
