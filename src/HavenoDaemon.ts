@@ -612,13 +612,13 @@ class HavenoDaemon {
   /**
    * Gets the current local monero node settings.
    */
-  async getMoneroNodeSettings(): Promise<MoneroNodeSettings> {
+  async getMoneroNodeSettings(): Promise<MoneroNodeSettings | undefined> {
     let that = this;
     return new Promise(function(resolve, reject) {
       let request = new GetMoneroNodeSettingsRequest();
       that._moneroNodeClient.getMoneroNodeSettings(request, {password: that._password}, function(err: grpcWeb.RpcError, response: GetMoneroNodeSettingsReply) {
         if (err) reject(err);
-        else resolve(response.getSettings()!);
+        else resolve(response.getSettings());
       });
     });
   }
