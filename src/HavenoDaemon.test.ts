@@ -468,21 +468,23 @@ test("Can manage Monero daemon connections", async () => {
 test("Can start and stop local Monero node", async() => {
   let rootDir = process.cwd();
 
-  // expect error if local node is not running
-  try {
+  // expect error stopping local node
+  try {    
     await alice.stopMoneroNode();
     console.log("Running Monero local node stopped");
-    await alice.stopMoneroNode(); // stop a 2nd time in case local node was running before
+    await alice.stopMoneroNode(); // stop 2nd time to force error
     throw new Error("should have thrown");
   } catch (err) {
-    if (err.message !== "Monero node is not running") throw new Error("Unexpected error: " + err.message);
+    if (err.message !== "Monero node is not running" &&
+        err.message !== "MoneroDaemonRpc instance not created from new process") { // daemon doesn't own the local monero node process
+      throw new Error("Unexpected error: " + err.message);
+    }
   }
 
   let isMoneroNodeRunning = await alice.isMoneroNodeRunning();
   if (isMoneroNodeRunning) {
     console.log("Warning: local Monero node is already running, skipping start and stop local Monero node test");
   } else {
-
     // expect error when passing in bad arguments
     let badSettings = new MoneroNodeSettings();
     badSettings.setStartupflagsList(["--invalid-flag"]);
@@ -497,8 +499,8 @@ test("Can start and stop local Monero node", async() => {
     let settings: MoneroNodeSettings = new MoneroNodeSettings();
     let dataDir = rootDir + "/testdata";
     let logFile = rootDir + "/testdata/test.log";
-    let p2pPort = 58080;
-    let rpcPort = 58081;
+    let p2pPort = 38080;
+    let rpcPort = 38081;
     settings.setBlockchainpath(dataDir);
     settings.setStartupflagsList(["--log-file", logFile, "--p2p-bind-port", p2pPort.toString(), "--rpc-bind-port", rpcPort.toString(), "--no-zmq"]);
     await alice.startMoneroNode(settings);
@@ -509,12 +511,9 @@ test("Can start and stop local Monero node", async() => {
     let settingsAfter = await alice.getMoneroNodeSettings();
     testMoneroNodeSettings(settings, settingsAfter!);
 
-    // no longer using remote monero connection
-    let connection = await alice.getMoneroConnection();
-    assert(connection == undefined);
-
-    // expect connection to local monero node to succeed 
-    let daemon = await monerojs.connectToDaemonRpc("http://localhost:" + rpcPort.toString());
+    // expect connection to local monero node to succeed
+    let rpcUrl = "http://localhost:" + rpcPort.toString();
+    let daemon = await monerojs.connectToDaemonRpc(rpcUrl);
     let height = await daemon.getHeight();
     assert(height >= 0);
 
@@ -523,11 +522,11 @@ test("Can start and stop local Monero node", async() => {
     isMoneroNodeRunning = await alice.isMoneroNodeRunning();
     assert(!isMoneroNodeRunning);
     try {
-      daemon = await monerojs.connectToDaemonRpc("http://localhost:" + rpcPort.toString());
+      daemon = await monerojs.connectToDaemonRpc(rpcUrl);
       height = await daemon.getHeight();
       throw new Error("should have thrown");
     } catch (err) {
-      if (err.message !== "RequestError: Error: connect ECONNREFUSED 127.0.0.1:58081") throw new Error("Unexpected error: " + err.message);
+      if (err.message !== "RequestError: Error: connect ECONNREFUSED 127.0.0.1:" + rpcPort.toString()) throw new Error("Unexpected error: " + err.message);
     }
 
     // start the node back up and continue test
