@@ -495,8 +495,8 @@ test("Can start and stop local Monero node", async() => {
 
     // expect successful start with custom settings
     let settings: MoneroNodeSettings = new MoneroNodeSettings();
-    let dataDir = rootDir + "/testblockchain";
-    let logFile = rootDir + "/testblockchain/test.log";
+    let dataDir = rootDir + "/testdata";
+    let logFile = rootDir + "/testdata/test.log";
     let p2pPort = 58080;
     let rpcPort = 58081;
     settings.setBlockchainpath(dataDir);
