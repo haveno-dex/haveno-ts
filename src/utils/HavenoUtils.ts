@@ -6,19 +6,10 @@ const console = require('console');
  */
 class HavenoUtils {
     
-  static LOG_LEVEL = 0;
-  static CENTINEROS_AU_MULTIPLIER = 10000;
-    
-  /**
-   * Log a message.
-   *
-   * @param {int} level - log level of the message
-   * @param {string} msg - message to log
-   */
-  static log(level: number, msg: string) {
-    assert(level === parseInt(level + "", 10) && level >= 0, "Log level must be an integer >= 0");
-    if (HavenoUtils.LOG_LEVEL >= level) console.log(msg);
-  }
+  static logLevel = 0;
+  static centinerosToAUMultiplier = 10000;
+  static months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  static lastLogTimeMs = 0;
   
   /**
    * Set the log level with 0 being least verbose.
@@ -27,7 +18,7 @@ class HavenoUtils {
    */
   static async setLogLevel(level: number) {
     assert(level === parseInt(level + "", 10) && level >= 0, "Log level must be an integer >= 0");
-    HavenoUtils.LOG_LEVEL = level;
+    HavenoUtils.logLevel = level;
   }
   
   /**
@@ -36,7 +27,35 @@ class HavenoUtils {
    * @return {int} the current log level
    */
   static getLogLevel(): number {
-    return HavenoUtils.LOG_LEVEL;
+    return HavenoUtils.logLevel;
+  }
+    
+  /**
+   * Log a message. // TODO (woodser): switch to log library?
+   *
+   * @param {int} level - log level of the message
+   * @param {string} msg - message to log
+   * @param {boolean?} warn - log the message as a warning if true
+   */
+  static log(level: number, msg: string) {
+    assert(level === parseInt(level + "", 10) && level >= 0, "Log level must be an integer >= 0");
+    if (HavenoUtils.logLevel >= level) {
+      let now = Date.now();
+      let formattedTimeSinceLastLog = HavenoUtils.lastLogTimeMs ? " (+" + (now - HavenoUtils.lastLogTimeMs) + " ms)" : "\t";
+      HavenoUtils.lastLogTimeMs = now;    
+      console.log(HavenoUtils.formatTimestamp(now) + formattedTimeSinceLastLog + "\t[L" + level + "] " + msg);
+    }
+  }
+  
+  /**
+   * Format a timestamp as e.g. Jul-07 hh:mm:ss:ms. // TODO: move to GenUtils?
+   * 
+   * @param {number} timestamp - the timestamp in milliseconds to format
+   * @return {string} the formatted timestamp
+   */
+  static formatTimestamp(timestamp: number): string {
+    let date = new Date(timestamp);
+    return HavenoUtils.months[date.getMonth()] + "-" + date.getDate() + " " + date.getHours() + ':' + ("0"  + date.getMinutes()).substr(-2) + ':' + ("0" + date.getSeconds()).substr(-2) + ':' + ("0" + date.getMilliseconds()).substr(-2);
   }
   
   /**
@@ -62,7 +81,7 @@ class HavenoUtils {
    * @return {BigInt} the amount denominated in atomic units
    */
   static centinerosToAtomicUnits(centineros: number): bigint {
-    return BigInt(centineros) * BigInt(HavenoUtils.CENTINEROS_AU_MULTIPLIER);
+    return BigInt(centineros) * BigInt(HavenoUtils.centinerosToAUMultiplier);
   }
 }
 
