@@ -29,6 +29,7 @@ const console = require('console'); // import console because jest swallows mess
 const TestConfig = {
     logLevel: 0,
     moneroBinsDir: "../haveno/.localnet",
+    testDataDir: "./testdata",
     networkType: monerojs.MoneroNetworkType.STAGENET,
     haveno: {
         path: "../haveno",
@@ -215,7 +216,7 @@ test("Can manage an account", async () => {
     // create account
     let password = "testPassword";
     await charlie.createAccount(password);
-    await charlie.getBalances();
+    if (await charlie.isConnectedToMonero()) await charlie.getBalances(); // only connected if local node running
     assert(await charlie.accountExists());
     assert(await charlie.isAccountOpen());
     
@@ -267,8 +268,7 @@ test("Can manage an account", async () => {
     assert(await charlie.isAccountOpen());
     
     // backup account to zip file
-    let rootDir = process.cwd();
-    let zipFile = rootDir + "/backup.zip";
+    let zipFile = TestConfig.testDataDir + "/backup.zip";
     let stream = fs.createWriteStream(zipFile);
     let size = await charlie.backupAccount(stream);
     stream.end();
@@ -357,7 +357,7 @@ test("Can manage Monero daemon connections", async () => {
       "--" + monerojs.MoneroNetworkType.toString(TestConfig.networkType).toLowerCase(),
       "--no-igd",
       "--hide-my-port",
-      "--data-dir",  TestConfig.moneroBinsDir + "/node1",
+      "--data-dir",  TestConfig.moneroBinsDir + "/stagenet/testnode",
       "--p2p-bind-port", "58080",
       "--rpc-bind-port", "58081",
       "--rpc-login", "superuser:abctesting123",
@@ -465,25 +465,24 @@ test("Can manage Monero daemon connections", async () => {
   if (err) throw err;
 });
 
-test("Can start and stop local Monero node", async() => {
-  let rootDir = process.cwd();
+test("Can start and stop a local Monero node", async() => {
 
   // expect error stopping local node
   try {    
     await alice.stopMoneroNode();
-    console.log("Running Monero local node stopped");
+    HavenoUtils.log(1, "Running local Monero node stopped");
     await alice.stopMoneroNode(); // stop 2nd time to force error
     throw new Error("should have thrown");
   } catch (err) {
-    if (err.message !== "Monero node is not running" &&
-        err.message !== "MoneroDaemonRpc instance not created from new process") { // daemon doesn't own the local monero node process
+    if (err.message !== "Local Monero node is not running" &&
+        err.message !== "Cannot stop local Monero node because we don't own its process") {
       throw new Error("Unexpected error: " + err.message);
     }
   }
 
   let isMoneroNodeRunning = await alice.isMoneroNodeRunning();
   if (isMoneroNodeRunning) {
-    console.log("Warning: local Monero node is already running, skipping start and stop local Monero node test");
+    HavenoUtils.log(0, "Warning: local Monero node is already running, skipping start and stop local Monero node tests");
 
     // expect error due to existing running node
     let newSettings = new MoneroNodeSettings();
@@ -491,7 +490,7 @@ test("Can start and stop local Monero node", async() => {
       await alice.startMoneroNode(newSettings);
       throw new Error("should have thrown");
     } catch (err) {
-      if (err.message !== "Monero node already running") throw new Error("Unexpected error: " + err.message);
+      if (err.message !== "Local Monero node already running") throw new Error("Unexpected error: " + err.message);
     }
 
   } else {
@@ -509,8 +508,8 @@ test("Can start and stop local Monero node", async() => {
     // expect successful start with custom settings
     let connectionsBefore = await alice.getMoneroConnections();
     let settings: MoneroNodeSettings = new MoneroNodeSettings();
-    let dataDir = rootDir + "/testdata";
-    let logFile = rootDir + "/testdata/test.log";
+    let dataDir = TestConfig.moneroBinsDir + "/stagenet/node1";
+    let logFile = dataDir + "/test.log";
     let p2pPort = 38080;
     let rpcPort = 38081;
     settings.setBlockchainPath(dataDir);
@@ -539,7 +538,7 @@ test("Can start and stop local Monero node", async() => {
       await alice.startMoneroNode(newSettings);
       throw new Error("should have thrown");
     } catch (err) {
-      if (err.message !== "Monero node already running") throw new Error("Unexpected error: " + err.message);
+      if (err.message !== "Local Monero node already running") throw new Error("Unexpected error: " + err.message);
     }
 
     // expect stopped node
@@ -554,7 +553,6 @@ test("Can start and stop local Monero node", async() => {
       if (err.message !== "RequestError: Error: connect ECONNREFUSED 127.0.0.1:" + rpcPort.toString()) throw new Error("Unexpected error: " + err.message);
     }
   }
-  
 });
 
 // test wallet balances, transactions, deposit addresses, create and relay txs
