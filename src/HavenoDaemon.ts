@@ -1,9 +1,9 @@
 import {HavenoUtils} from "./utils/HavenoUtils";
 import {TaskLooper} from "./utils/TaskLooper";
 import * as grpcWeb from 'grpc-web';
-import {GetVersionClient, AccountClient, MoneroConnectionsClient, DisputesClient, DisputeAgentsClient, NotificationsClient, WalletsClient, PriceClient, OffersClient, PaymentAccountsClient, TradesClient, ShutdownServerClient} from './protobuf/GrpcServiceClientPb';
-import {GetVersionRequest, GetVersionReply, IsAppInitializedRequest, IsAppInitializedReply, RegisterDisputeAgentRequest, MarketPriceRequest, MarketPriceReply, MarketPricesRequest, MarketPricesReply, MarketPriceInfo, MarketDepthRequest, MarketDepthReply, MarketDepthInfo, GetBalancesRequest, GetBalancesReply, XmrBalanceInfo, GetMyOfferRequest, GetMyOfferReply, GetOffersRequest, GetOffersReply, OfferInfo, GetPaymentMethodsRequest, GetPaymentMethodsReply, GetPaymentAccountFormRequest, CreatePaymentAccountRequest, CreatePaymentAccountReply, GetPaymentAccountFormReply, GetPaymentAccountsRequest, GetPaymentAccountsReply, CreateCryptoCurrencyPaymentAccountRequest, CreateCryptoCurrencyPaymentAccountReply, CreateOfferRequest, CreateOfferReply, CancelOfferRequest, TakeOfferRequest, TakeOfferReply, TradeInfo, GetTradeRequest, GetTradeReply, GetTradesRequest, GetTradesReply, GetNewDepositSubaddressRequest, GetNewDepositSubaddressReply, ConfirmPaymentStartedRequest, ConfirmPaymentReceivedRequest, XmrTx, GetXmrTxsRequest, GetXmrTxsReply, XmrDestination, CreateXmrTxRequest, CreateXmrTxReply, RelayXmrTxRequest, RelayXmrTxReply, CreateAccountRequest, AccountExistsRequest, AccountExistsReply, DeleteAccountRequest, OpenAccountRequest, IsAccountOpenRequest, IsAccountOpenReply, CloseAccountRequest, ChangePasswordRequest, BackupAccountRequest, BackupAccountReply, RestoreAccountRequest, StopRequest, NotificationMessage, RegisterNotificationListenerRequest, SendNotificationRequest, UrlConnection, AddConnectionRequest, RemoveConnectionRequest, GetConnectionRequest, GetConnectionsRequest, SetConnectionRequest, CheckConnectionRequest, CheckConnectionsReply, CheckConnectionsRequest, StartCheckingConnectionsRequest, StopCheckingConnectionsRequest, GetBestAvailableConnectionRequest, SetAutoSwitchRequest, CheckConnectionReply, GetConnectionsReply, GetConnectionReply, GetBestAvailableConnectionReply, GetDisputeRequest, GetDisputeReply, GetDisputesRequest, GetDisputesReply, OpenDisputeRequest, ResolveDisputeRequest, SendDisputeChatMessageRequest, SendChatMessageRequest, GetChatMessagesRequest, GetChatMessagesReply} from './protobuf/grpc_pb';
-import {PaymentMethod, PaymentAccount, AvailabilityResult, Attachment, DisputeResult, Dispute, ChatMessage} from './protobuf/pb_pb';
+import {GetVersionClient, AccountClient, MoneroConnectionsClient, DisputesClient, DisputeAgentsClient, NotificationsClient, WalletsClient, PriceClient, OffersClient, PaymentAccountsClient, TradesClient, ShutdownServerClient, MoneroNodeClient} from './protobuf/GrpcServiceClientPb';
+import {GetVersionRequest, GetVersionReply, IsAppInitializedRequest, IsAppInitializedReply, RegisterDisputeAgentRequest, MarketPriceRequest, MarketPriceReply, MarketPricesRequest, MarketPricesReply, MarketPriceInfo, MarketDepthRequest, MarketDepthReply, MarketDepthInfo, GetBalancesRequest, GetBalancesReply, XmrBalanceInfo, GetMyOfferRequest, GetMyOfferReply, GetOffersRequest, GetOffersReply, OfferInfo, GetPaymentMethodsRequest, GetPaymentMethodsReply, GetPaymentAccountFormRequest, CreatePaymentAccountRequest, CreatePaymentAccountReply, GetPaymentAccountFormReply, GetPaymentAccountsRequest, GetPaymentAccountsReply, CreateCryptoCurrencyPaymentAccountRequest, CreateCryptoCurrencyPaymentAccountReply, CreateOfferRequest, CreateOfferReply, CancelOfferRequest, TakeOfferRequest, TakeOfferReply, TradeInfo, GetTradeRequest, GetTradeReply, GetTradesRequest, GetTradesReply, GetNewDepositSubaddressRequest, GetNewDepositSubaddressReply, ConfirmPaymentStartedRequest, ConfirmPaymentReceivedRequest, XmrTx, GetXmrTxsRequest, GetXmrTxsReply, XmrDestination, CreateXmrTxRequest, CreateXmrTxReply, RelayXmrTxRequest, RelayXmrTxReply, CreateAccountRequest, AccountExistsRequest, AccountExistsReply, DeleteAccountRequest, OpenAccountRequest, IsAccountOpenRequest, IsAccountOpenReply, CloseAccountRequest, ChangePasswordRequest, BackupAccountRequest, BackupAccountReply, RestoreAccountRequest, StopRequest, NotificationMessage, RegisterNotificationListenerRequest, SendNotificationRequest, UrlConnection, AddConnectionRequest, RemoveConnectionRequest, GetConnectionRequest, GetConnectionsRequest, SetConnectionRequest, CheckConnectionRequest, CheckConnectionsReply, CheckConnectionsRequest, StartCheckingConnectionsRequest, StopCheckingConnectionsRequest, GetBestAvailableConnectionRequest, SetAutoSwitchRequest, CheckConnectionReply, GetConnectionsReply, GetConnectionReply, GetBestAvailableConnectionReply, GetDisputeRequest, GetDisputeReply, GetDisputesRequest, GetDisputesReply, OpenDisputeRequest, ResolveDisputeRequest, SendDisputeChatMessageRequest, SendChatMessageRequest, GetChatMessagesRequest, GetChatMessagesReply, StartMoneroNodeRequest, StopMoneroNodeRequest, IsMoneroNodeRunningRequest, IsMoneroNodeRunningReply, GetMoneroNodeSettingsRequest, GetMoneroNodeSettingsReply} from './protobuf/grpc_pb';
+import {PaymentMethod, PaymentAccount, AvailabilityResult, Attachment, DisputeResult, Dispute, ChatMessage, MoneroNodeSettings} from './protobuf/pb_pb';
 
 const console = require('console');
 
@@ -19,6 +19,7 @@ class HavenoDaemon {
   _disputesClient: DisputesClient;
   _notificationsClient: NotificationsClient;
   _moneroConnectionsClient: MoneroConnectionsClient;
+  _moneroNodeClient: MoneroNodeClient;
   _walletsClient: WalletsClient;
   _priceClient: PriceClient;
   _paymentAccountsClient: PaymentAccountsClient;
@@ -56,7 +57,8 @@ class HavenoDaemon {
     this._password = password;
     this._getVersionClient = new GetVersionClient(this._url);
     this._accountClient = new AccountClient(this._url);
-    this._moneroConnectionsClient = new MoneroConnectionsClient(this._url)
+    this._moneroConnectionsClient = new MoneroConnectionsClient(this._url);
+    this._moneroNodeClient = new MoneroNodeClient(this._url);
     this._disputeAgentsClient = new DisputeAgentsClient(this._url);
     this._disputesClient = new DisputesClient(this._url);
     this._walletsClient = new WalletsClient(this._url);
@@ -588,6 +590,62 @@ class HavenoDaemon {
     let that = this;
     return new Promise(function(resolve, reject) {
       that._moneroConnectionsClient.setAutoSwitch(new SetAutoSwitchRequest().setAutoSwitch(autoSwitch), {password: that._password}, function(err: grpcWeb.RpcError) {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+  }
+
+  /**
+   * Returns whether daemon is running a local monero node.
+   */
+  async isMoneroNodeRunning(): Promise<boolean> {
+    let that = this;
+    return new Promise(function(resolve, reject) {
+      that._moneroNodeClient.isMoneroNodeRunning(new IsMoneroNodeRunningRequest(), {password: that._password}, function(err: grpcWeb.RpcError, response: IsMoneroNodeRunningReply) {
+        if (err) reject(err);
+        else resolve(response.getIsRunning());
+      });
+    });
+  }
+
+  /**
+   * Gets the current local monero node settings.
+   */
+  async getMoneroNodeSettings(): Promise<MoneroNodeSettings | undefined> {
+    let that = this;
+    return new Promise(function(resolve, reject) {
+      let request = new GetMoneroNodeSettingsRequest();
+      that._moneroNodeClient.getMoneroNodeSettings(request, {password: that._password}, function(err: grpcWeb.RpcError, response: GetMoneroNodeSettingsReply) {
+        if (err) reject(err);
+        else resolve(response.getSettings());
+      });
+    });
+  }
+
+  /**
+   * Starts the local monero node.
+   *
+   * @param {MoneroNodeSettings} settings - the settings to start the local node with
+   */
+  async startMoneroNode(settings: MoneroNodeSettings): Promise<void> {
+    let that = this;
+    return new Promise(function(resolve, reject) {
+      let request = new StartMoneroNodeRequest().setSettings(settings);
+      that._moneroNodeClient.startMoneroNode(request, {password: that._password}, function(err: grpcWeb.RpcError) {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+  }
+
+  /**
+   * Stops the local monero node.
+   */
+  async stopMoneroNode(): Promise<void> {
+    let that = this;
+    return new Promise(function(resolve, reject) {
+      that._moneroNodeClient.stopMoneroNode(new StopMoneroNodeRequest(), {password: that._password}, function(err: grpcWeb.RpcError) {
         if (err) reject(err);
         else resolve();
       });

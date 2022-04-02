@@ -5,7 +5,7 @@ import {HavenoDaemon} from "./HavenoDaemon";
 import {HavenoUtils} from "./utils/HavenoUtils";
 import * as grpcWeb from 'grpc-web';
 import {MarketPriceInfo, NotificationMessage, OfferInfo, TradeInfo, UrlConnection, XmrBalanceInfo} from './protobuf/grpc_pb'; // TODO (woodser): better names; haveno_grpc_pb, haveno_pb
-import {Attachment, DisputeResult, PaymentMethod, PaymentAccount} from './protobuf/pb_pb';
+import {Attachment, DisputeResult, PaymentMethod, PaymentAccount, MoneroNodeSettings} from './protobuf/pb_pb';
 import {XmrDestination, XmrTx, XmrIncomingTransfer, XmrOutgoingTransfer} from './protobuf/grpc_pb';
 import AuthenticationStatus = UrlConnection.AuthenticationStatus;
 import OnlineStatus = UrlConnection.OnlineStatus;
@@ -321,7 +321,7 @@ test("Can manage Monero daemon connections", async () => {
     charlie = await initHavenoDaemon();
 
     // test default connections
-    let monerodUrl1 = "http://localhost:38081"; // TODO: (woodser): move to config
+    let monerodUrl1 = "http://127.0.0.1:38081"; // TODO: (woodser): move to config
     let monerodUrl2 = "http://haveno.exchange:38081";
     let connections: UrlConnection[] = await charlie.getMoneroConnections();
     testConnection(getConnection(connections, monerodUrl1)!, monerodUrl1, OnlineStatus.ONLINE, AuthenticationStatus.AUTHENTICATED, 1);
@@ -463,6 +463,98 @@ test("Can manage Monero daemon connections", async () => {
   if (monerod2) await monerod2.stopProcess();
   // TODO: how to delete trader app folder at end of test?
   if (err) throw err;
+});
+
+test("Can start and stop local Monero node", async() => {
+  let rootDir = process.cwd();
+
+  // expect error stopping local node
+  try {    
+    await alice.stopMoneroNode();
+    console.log("Running Monero local node stopped");
+    await alice.stopMoneroNode(); // stop 2nd time to force error
+    throw new Error("should have thrown");
+  } catch (err) {
+    if (err.message !== "Monero node is not running" &&
+        err.message !== "MoneroDaemonRpc instance not created from new process") { // daemon doesn't own the local monero node process
+      throw new Error("Unexpected error: " + err.message);
+    }
+  }
+
+  let isMoneroNodeRunning = await alice.isMoneroNodeRunning();
+  if (isMoneroNodeRunning) {
+    console.log("Warning: local Monero node is already running, skipping start and stop local Monero node test");
+
+    // expect error due to existing running node
+    let newSettings = new MoneroNodeSettings();
+    try {
+      await alice.startMoneroNode(newSettings);
+      throw new Error("should have thrown");
+    } catch (err) {
+      if (err.message !== "Monero node already running") throw new Error("Unexpected error: " + err.message);
+    }
+
+  } else {
+
+    // expect error when passing in bad arguments
+    let badSettings = new MoneroNodeSettings();
+    badSettings.setStartupFlagsList(["--invalid-flag"]);
+    try {
+      await alice.startMoneroNode(badSettings);
+      throw new Error("should have thrown");
+    } catch (err) {
+      if (!err.message.startsWith("Failed to start monerod:")) throw new Error("Unexpected error: ");
+    }
+
+    // expect successful start with custom settings
+    let connectionsBefore = await alice.getMoneroConnections();
+    let settings: MoneroNodeSettings = new MoneroNodeSettings();
+    let dataDir = rootDir + "/testdata";
+    let logFile = rootDir + "/testdata/test.log";
+    let p2pPort = 38080;
+    let rpcPort = 38081;
+    settings.setBlockchainPath(dataDir);
+    settings.setStartupFlagsList(["--log-file", logFile, "--p2p-bind-port", p2pPort.toString(), "--rpc-bind-port", rpcPort.toString(), "--no-zmq"]);
+    await alice.startMoneroNode(settings);
+    isMoneroNodeRunning = await alice.isMoneroNodeRunning();
+    assert(isMoneroNodeRunning);
+    
+    // expect settings are updated
+    let settingsAfter = await alice.getMoneroNodeSettings();
+    testMoneroNodeSettings(settings, settingsAfter!);
+
+    // expect connections to be unmodified by local node
+    let connectionsAfter = await alice.getMoneroConnections();
+    assert(connectionsBefore.length === connectionsAfter.length);
+
+    // expect connection to local monero node to succeed
+    let rpcUrl = "http://127.0.0.1:" + rpcPort.toString();
+    let daemon = await monerojs.connectToDaemonRpc(rpcUrl, "superuser", "abctesting123");
+    let height = await daemon.getHeight();
+    assert(height >= 0);
+
+    // expect error due to existing running node
+    let newSettings = new MoneroNodeSettings();
+    try {
+      await alice.startMoneroNode(newSettings);
+      throw new Error("should have thrown");
+    } catch (err) {
+      if (err.message !== "Monero node already running") throw new Error("Unexpected error: " + err.message);
+    }
+
+    // expect stopped node
+    await alice.stopMoneroNode();
+    isMoneroNodeRunning = await alice.isMoneroNodeRunning();
+    assert(!isMoneroNodeRunning);
+    try {
+      daemon = await monerojs.connectToDaemonRpc(rpcUrl);
+      height = await daemon.getHeight();
+      throw new Error("should have thrown");
+    } catch (err) {
+      if (err.message !== "RequestError: Error: connect ECONNREFUSED 127.0.0.1:" + rpcPort.toString()) throw new Error("Unexpected error: " + err.message);
+    }
+  }
+  
 });
 
 // test wallet balances, transactions, deposit addresses, create and relay txs
@@ -1431,6 +1523,7 @@ async function initHavenoDaemon(config?: any): Promise<HavenoDaemon> {
       });
     });
   }
+
 }
 
 /**
@@ -1800,9 +1893,9 @@ async function testTradeChat(tradeId: string, alice: HavenoDaemon, bob: HavenoDa
 
   // trade chat should be in initial state
   let messages = await alice.getChatMessages(tradeId);
-  assert(messages.length == 0);
+  assert(messages.length === 0);
   messages = await bob.getChatMessages(tradeId);
-  assert(messages.length == 0);
+  assert(messages.length === 0);
 
   // add notification handlers and send some messages
   let aliceNotifications: NotificationMessage[] = [];
@@ -1850,7 +1943,7 @@ async function testTradeChat(tradeId: string, alice: HavenoDaemon, bob: HavenoDa
   expect(messages[1].getMessage()).toEqual(aliceMsg);
   expect(messages[2].getMessage()).toEqual(bobMsg);
   for (var i = 0; i < msgs.length; i++) {
-    expect(messages[i+offset].getMessage()).toEqual(msgs[i]);
+    expect(messages[i + offset].getMessage()).toEqual(msgs[i]);
   }
 
   chatNotifications = getNotifications(bobNotifications, NotificationMessage.NotificationType.CHAT_MESSAGE);
@@ -1860,4 +1953,10 @@ async function testTradeChat(tradeId: string, alice: HavenoDaemon, bob: HavenoDa
   for (var i = 0; i < msgs.length; i++) {
     expect(chatNotifications[i + offset].getChatMessage()?.getMessage()).toEqual(msgs[i]);
   }
+}
+
+function testMoneroNodeSettings(settingsBefore: MoneroNodeSettings, settingsAfter: MoneroNodeSettings) {
+    expect(settingsBefore.getBlockchainPath()).toEqual(settingsAfter.getBlockchainPath());
+    expect(settingsBefore.getBootstrapUrl()).toEqual(settingsAfter.getBootstrapUrl());
+    expect(settingsBefore.getStartupFlagsList()).toEqual(settingsAfter.getStartupFlagsList());
 }
