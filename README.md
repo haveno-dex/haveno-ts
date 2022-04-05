@@ -25,9 +25,9 @@ This application is a lightly modified [create-react-app](https://github.com/fac
 
 ## Run Tests
 
-Running the [top-level API tests](./src/HavenoDaemon.test.ts) is a great way to develop and test Haveno end-to-end.
+Running the [API tests](./src/haveno.test.ts) is the best way to develop and test Haveno end-to-end.
 
-[`HavenoDaemon`](./src/HavenoDaemon.ts) provides the interface to the Haveno daemon's gRPC API.
+[`haveno.ts`](./src/haveno.ts) provides the interface to Haveno's backend daemon.
 
 1. [Run a local Haveno test network](https://github.com/haveno-dex/haveno/blob/master/docs/installing.md) and then shut down the arbitrator, Alice, and Bob or run them as daemons, e.g. `make alice-daemon`. You may omit the arbitrator registration steps since it is done automatically in the tests.
 2. Clone this project to the same parent directory as the haveno project: `git clone https://github.com/haveno-dex/haveno-ui-poc`
