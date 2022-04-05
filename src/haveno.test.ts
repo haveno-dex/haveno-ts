@@ -987,14 +987,14 @@ test("Can complete a trade", async () => {
   // alice notified to send payment
   await wait(TestConfig.maxWalletStartupMs + TestConfig.walletSyncPeriodMs * 2);
   fetchedTrade = await alice.getTrade(trade.getTradeId());
-  expect(fetchedTrade.getIsDepositConfirmed()).toBe(true);
-  expect(fetchedTrade.getPhase()).toEqual("DEPOSIT_CONFIRMED"); // TODO (woodser): rename to DEPOSIT_UNLOCKED, have phase for when deposit txs confirm?
+  expect(fetchedTrade.getIsDepositUnlocked()).toBe(true);
+  expect(fetchedTrade.getPhase()).toEqual("DEPOSIT_UNLOCKED");
   fetchedTrade = await bob.getTrade(trade.getTradeId());
-  expect(fetchedTrade.getIsDepositConfirmed()).toBe(true);
-  expect(fetchedTrade.getPhase()).toEqual("DEPOSIT_CONFIRMED");
+  expect(fetchedTrade.getIsDepositUnlocked()).toBe(true);
+  expect(fetchedTrade.getPhase()).toEqual("DEPOSIT_UNLOCKED");
   
   // alice indicates payment is sent
-  HavenoUtils.log(1, "Alice confirming payment started");
+  HavenoUtils.log(1, "Alice confirming payment sent");
   await alice.confirmPaymentStarted(trade.getTradeId());
   fetchedTrade = await alice.getTrade(trade.getTradeId());
   expect(fetchedTrade.getPhase()).toEqual("PAYMENT_SENT");
