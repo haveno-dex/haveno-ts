@@ -277,7 +277,7 @@ class HavenoDaemon {
    */
   async createAccount(password: string): Promise<void> {
     let that = this;
-    await new Promise(function(resolve, reject) {
+    await new Promise<void>(function(resolve, reject) {
       that._accountClient.createAccount(new CreateAccountRequest().setPassword(password), {password: that._password}, function(err: grpcWeb.RpcError) {
         if (err) reject(err);
         else resolve();
@@ -293,7 +293,7 @@ class HavenoDaemon {
    */
   async openAccount(password: string): Promise<void> {
     let that = this;
-    await new Promise(function(resolve, reject) {
+    await new Promise<void>(function(resolve, reject) {
       that._accountClient.openAccount(new OpenAccountRequest().setPassword(password), {password: that._password}, function(err: grpcWeb.RpcError) {
         if (err) reject(err);
         else resolve();
@@ -1216,7 +1216,7 @@ class HavenoDaemon {
   async shutdownServer() {
     if (this._keepAliveLooper) this._keepAliveLooper.stop();
     let that = this;
-    await new Promise(function(resolve, reject) {
+    await new Promise<void>(function(resolve, reject) {
       that._shutdownServerClient.stop(new StopRequest(), {password: that._password}, function(err: grpcWeb.RpcError) { // process receives 'exit' event
         if (err) reject(err);
         else resolve();
