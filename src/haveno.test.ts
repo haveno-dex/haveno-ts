@@ -583,12 +583,12 @@ test("Has a Monero wallet", async () => {
   
   // get new deposit addresses
   for (let i = 0; i < 0; i++) {
-    let address = await alice.getNewDepositSubaddress(); // TODO: rename to getNewDepositAddress()
+    let address = await alice.getNewDepositAddress();
     MoneroUtils.validateAddress(address, MoneroNetworkType.STAGNET);
   }
   
   // create withdraw tx
-  let destination = new XmrDestination().setAddress(await alice.getNewDepositSubaddress()).setAmount("100000000000");
+  let destination = new XmrDestination().setAddress(await alice.getNewDepositAddress()).setAmount("100000000000");
   let tx = await alice.createXmrTx([destination]);
   testTx(tx, {isCreatedTx: true});
   
@@ -948,7 +948,7 @@ test("Can complete a trade", async () => {
   // bob takes offer
   let startTime = Date.now();
   HavenoUtils.log(1, "Bob taking offer");
-  let trade: TradeInfo = await bob.takeOffer(offer.getId(), paymentAccount.getId()); // TODO (woodser): this returns before trade is fully initialized
+  let trade: TradeInfo = await bob.takeOffer(offer.getId(), paymentAccount.getId());
   expect(trade.getPhase()).toEqual("DEPOSIT_PUBLISHED");
   HavenoUtils.log(1, "Bob done taking offer in " + (Date.now() - startTime) + " ms");
   
@@ -1303,7 +1303,7 @@ test("Cannot make or take offer with insufficient unlocked funds", async () => {
     }
     
     // alice posts offer
-    let offers: OfferInfo[] = await alice.getMyOffers("ETH", "buy"); // TODO: support alice.getMyOffers() without direction
+    let offers: OfferInfo[] = await alice.getMyOffers("ETH");
     let offer: OfferInfo;
     if (offers.length) offer = offers[0];
     else {
@@ -1316,7 +1316,7 @@ test("Cannot make or take offer with insufficient unlocked funds", async () => {
     
     // charlie cannot take offer with insufficient funds
     try {
-      await charlie.takeOffer(offer.getId(), paymentAccount.getId()); // TODO (woodser): this returns before trade is fully initialized
+      await charlie.takeOffer(offer.getId(), paymentAccount.getId());
       throw new Error("Should have failed taking offer with insufficient funds")
     } catch (err) {
       let errTyped = err as grpcWeb.RpcError;
@@ -1330,7 +1330,7 @@ test("Cannot make or take offer with insufficient unlocked funds", async () => {
     } catch (err) {
       let errTyped = err as grpcWeb.RpcError;
       assert.equal(errTyped.code, 3);
-      assert(errTyped.message.includes("trade with id '" + offer.getId() + "' not found"));  // TODO (woodser): error message does not contain stacktrace
+      assert(errTyped.message.includes("trade with id '" + offer.getId() + "' not found"));
     }
   } catch (err2) {
     err = err2;
@@ -1659,7 +1659,7 @@ async function waitForUnlockedBalance(amount: bigint, ...wallets: any[]) {
     }
     
     async getDepositAddress(): Promise<string> {
-      if (this._wallet instanceof haveno) return await this._wallet.getNewDepositSubaddress();
+      if (this._wallet instanceof haveno) return await this._wallet.getNewDepositAddress();
       else return (await this._wallet.createSubaddress()).getAddress();
     }
   }
