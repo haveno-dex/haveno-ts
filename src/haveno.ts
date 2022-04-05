@@ -10,7 +10,7 @@ const console = require('console');
 /**
  * Haveno daemon client using gRPC.
  */
-class HavenoDaemon {
+class haveno {
   
   // grpc clients
   _appName: string|undefined;
@@ -40,8 +40,8 @@ class HavenoDaemon {
   _keepAlivePeriodMs: number = 60000;
   
   // constants
-  static readonly _fullyInitializedMessage = "AppStartupState: Application fully initialized";
-  static readonly _loginRequiredMessage = "HavenoDaemonMain: Interactive login required";
+  static readonly _fullyInitializedMessage = "Application fully initialized";
+  static readonly _loginRequiredMessage = "Interactive login required";
   
   /**
    * Construct a client connected to a Haveno daemon.
@@ -52,7 +52,7 @@ class HavenoDaemon {
   constructor(url: string, password: string) {
     if (!url) throw new Error("Must provide URL of Haveno daemon");
     if (!password) throw new Error("Must provide password of Haveno daemon");
-    HavenoUtils.log(2, "Creating HavenoDaemon(" + url + ", " + password + ")");
+    HavenoUtils.log(2, "Creating Haveno client connected to " + url);
     this._url = url;
     this._password = password;
     this._getVersionClient = new GetVersionClient(this._url);
@@ -77,9 +77,9 @@ class HavenoDaemon {
    * @param {string[]} cmd - command to start the process
    * @param {string} url - Haveno daemon url (must proxy to api port)
    * @param {boolean} enableLogging - specifies if logging is enabled or disabled at log level 3
-   * @return {HavenoDaemon} a client connected to the newly started Haveno process
+   * @return {haveno} a client connected to the newly started Haveno process
    */
-  static async startProcess(havenoPath: string, cmd: string[], url: string, enableLogging: boolean): Promise<HavenoDaemon> {
+  static async startProcess(havenoPath: string, cmd: string[], url: string, enableLogging: boolean): Promise<haveno> {
     
     // return promise which resolves after starting havenod
     return new Promise(function(resolve, reject) {
@@ -88,7 +88,7 @@ class HavenoDaemon {
       // state variables
       let output = "";
       let isStarted = false;
-      let daemon: HavenoDaemon|undefined = undefined;
+      let daemon: haveno|undefined = undefined;
       
       // start process
       let childProcess = require('child_process').spawn(cmd[0], cmd.slice(1), {cwd: havenoPath});
@@ -102,7 +102,7 @@ class HavenoDaemon {
         output += line + '\n'; // capture output in case of error
         
         // initialize daemon on success or login required message
-        if (!daemon && (line.indexOf(HavenoDaemon._fullyInitializedMessage) >= 0 || line.indexOf(HavenoDaemon._loginRequiredMessage) >= 0)) {
+        if (!daemon && (line.indexOf(haveno._fullyInitializedMessage) >= 0 || line.indexOf(haveno._loginRequiredMessage) >= 0)) {
           
           // get api password
           let passwordIdx = cmd.indexOf("--apiPassword");
@@ -113,7 +113,7 @@ class HavenoDaemon {
           let password = cmd[passwordIdx + 1];
 
           // create client connected to internal process
-          daemon = new HavenoDaemon(url, password);
+          daemon = new haveno(url, password);
           daemon._process = childProcess;
           daemon._processLogging = enableLogging;
           daemon._appName = cmd[cmd.indexOf("--appName") + 1];
@@ -182,7 +182,7 @@ class HavenoDaemon {
    * @param {boolean} enabled - specifies if logging is enabled or disabled
    */
   setProcessLogging(enabled: boolean) {
-    if (this._process === undefined) throw new Error("HavenoDaemon instance not created from new process");
+    if (this._process === undefined) throw new Error("haveno instance not created from new process");
     this._processLogging = enabled;
   }
   
@@ -393,7 +393,7 @@ class HavenoDaemon {
   /**
    * Add a listener to receive notifications from the Haveno daemon.
    *
-   * @param {HavenoDaemonListener} listener - the notification listener to add
+   * @param {(notification: NotificationMessage) => void} listener - the notification listener to add
    */
   async addNotificationListener(listener: (notification: NotificationMessage) => void): Promise<void> {
     this._notificationListeners.push(listener);
@@ -403,7 +403,7 @@ class HavenoDaemon {
   /**
    * Remove a notification listener.
    * 
-   * @param {HavenoDaemonListener} listener - the notification listener to remove
+   * @param {(notification: NotificationMessage) => void} listener - the notification listener to remove
    */
   async removeNotificationListener(listener: (notification: NotificationMessage) => void): Promise<void> {
     let idx = this._notificationListeners.indexOf(listener);
@@ -1339,4 +1339,4 @@ class HavenoDaemon {
   }
 }
 
-export {HavenoDaemon};
+export {haveno};

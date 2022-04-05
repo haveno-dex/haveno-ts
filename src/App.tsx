@@ -1,19 +1,19 @@
 import React from 'react';
 import logo from './logo.png';
 import './App.css';
-import {HavenoDaemon} from './HavenoDaemon';
+import {haveno} from './haveno';
 
 const HAVENO_DAEMON_URL = "http://localhost:8080";
 const HAVENO_DAEMON_PASSWORD = "apitest";
 
 class App extends React.Component<{}, {daemonVersion: string}> {
   
-  daemon: HavenoDaemon;
+  daemon: haveno;
     
   constructor(props: any) {
     super(props);
     this.state = {daemonVersion: ""};
-    this.daemon = new HavenoDaemon(HAVENO_DAEMON_URL, HAVENO_DAEMON_PASSWORD);
+    this.daemon = new haveno(HAVENO_DAEMON_URL, HAVENO_DAEMON_PASSWORD);
   }
 
   render() {
