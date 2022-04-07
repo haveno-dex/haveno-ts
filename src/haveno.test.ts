@@ -1008,7 +1008,7 @@ test("Can complete a trade", async () => {
   HavenoUtils.log(1, "Bob confirming payment received");
   await bob.confirmPaymentReceived(trade.getTradeId());
   fetchedTrade = await bob.getTrade(trade.getTradeId());
-  expect(fetchedTrade.getPhase()).toEqual("PAYOUT_PUBLISHED"); // TODO (woodser): payout is not necessarily published, buyer might need to sign
+  expect(fetchedTrade.getPhase()).toEqual("PAYMENT_RECEIVED"); // TODO (woodser): may be PAYOUT_PUBLISHED if seller sends multisig info after confirmation
   
   // alice notified trade is complete and of balance changes
   await wait(TestConfig.maxWalletStartupMs + TestConfig.walletSyncPeriodMs * 2);
