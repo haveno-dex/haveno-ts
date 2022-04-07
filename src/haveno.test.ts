@@ -1,7 +1,7 @@
 // --------------------------------- IMPORTS ----------------------------------
 
 // import haveno types
-import {haveno} from "./haveno";
+import {HavenoClient} from "./haveno";
 import {HavenoUtils} from "./utils/HavenoUtils";
 import * as grpcWeb from 'grpc-web';
 import {MarketPriceInfo, NotificationMessage, OfferInfo, TradeInfo, UrlConnection, XmrBalanceInfo} from './protobuf/grpc_pb'; // TODO (woodser): better names; haveno_grpc_pb, haveno_pb
@@ -140,17 +140,17 @@ interface TxContext {
 }
 
 // clients
-let startupHavenods: haveno[] = [];
-let arbitrator: haveno;
-let alice: haveno;
-let bob: haveno;
+let startupHavenods: HavenoClient[] = [];
+let arbitrator: HavenoClient;
+let alice: HavenoClient;
+let bob: HavenoClient;
 let monerod: any;
 let fundingWallet: any;
 let aliceWallet: any;
 let bobWallet: any;
 
 // track started haveno processes
-const HAVENO_PROCESSES: haveno[] = [];
+const HAVENO_PROCESSES: HavenoClient[] = [];
 const HAVENO_PROCESS_PORTS: string[] = [];
 
 // other config
@@ -170,7 +170,7 @@ beforeAll(async () => {
   for (let config of TestConfig.startupHavenods) promises.push(initHaveno(config));
   for (let settledPromise of await Promise.allSettled(promises)) {
     if (settledPromise.status !== "fulfilled") throw new Error((settledPromise as PromiseRejectedResult).reason);
-    startupHavenods.push((settledPromise as PromiseFulfilledResult<haveno>).value);
+    startupHavenods.push((settledPromise as PromiseFulfilledResult<HavenoClient>).value);
   }
   
   // assign arbitrator alice, bob
@@ -209,7 +209,7 @@ test("Can get the version", async () => {
 });
 
 test("Can manage an account", async () => {
-  let charlie: haveno | undefined;
+  let charlie: HavenoClient | undefined;
   let err: any;
   try {
     
@@ -308,7 +308,7 @@ test("Can manage an account", async () => {
   // TODO: how to delete trader app folder at end of test?
   if (err) throw err;
   
-  async function testAccountNotOpen(havenod: haveno): Promise<void> { // TODO: generalize this?
+  async function testAccountNotOpen(havenod: HavenoClient): Promise<void> { // TODO: generalize this?
     try { await havenod.getMoneroConnections(); throw new Error("Should have thrown"); }
     catch (err) { assert.equal(err.message, "Account not open"); }
     try { await havenod.getXmrTxs(); throw new Error("Should have thrown"); }
@@ -320,7 +320,7 @@ test("Can manage an account", async () => {
 
 test("Can manage Monero daemon connections", async () => {
   let monerod2: any;
-  let charlie: haveno | undefined;
+  let charlie: HavenoClient | undefined;
   let err: any;
   try {
 
@@ -687,7 +687,7 @@ test("Can get market depth", async () => {
     // clear offers
     await clearOffers(alice, assetCode);
     await clearOffers(bob, assetCode);
-    async function clearOffers(havenod: haveno, assetCode: string) {
+    async function clearOffers(havenod: HavenoClient, assetCode: string) {
       for (let offer of await havenod.getMyOffers(assetCode)) {
         if (offer.getBaseCurrencyCode().toLowerCase() === assetCode.toLowerCase()) { // TODO (woodser): offer base currency and counter currency are switched for cryptos
             await havenod.removeOffer(offer.getId());
@@ -1282,7 +1282,7 @@ test("Can resolve disputes", async () => {
 });
 
 test("Cannot make or take offer with insufficient unlocked funds", async () => {
-  let charlie: haveno | undefined;
+  let charlie: HavenoClient | undefined;
   let err: any;
   try {
     
@@ -1405,7 +1405,7 @@ test("Invalidates offers when reserved funds are spent", async () => {
 // TODO (woodser): test arbitrator state too
 // TODO (woodser): test breaking protocol after depositing to multisig (e.g. don't send payment account payload by deleting it)
 test("Handles unexpected errors during trade initialization", async () => {
-  let traders: haveno[] = [];
+  let traders: HavenoClient[] = [];
   let err: any;
   try {
     
@@ -1499,12 +1499,12 @@ test("Handles unexpected errors during trade initialization", async () => {
 // ------------------------------- HELPERS ------------------------------------
 
 async function initHavenos(numDaemons: number, config?: any) {
-  let traderPromises: Promise<haveno>[] = [];
+  let traderPromises: Promise<HavenoClient>[] = [];
   for (let i = 0; i < numDaemons; i++) traderPromises.push(initHaveno(config));
   return Promise.all(traderPromises);
 }
 
-async function initHaveno(config?: any): Promise<haveno> {
+async function initHaveno(config?: any): Promise<HavenoClient> {
   config = Object.assign({}, TestConfig.defaultHavenod, config);
   if (!config.appName) config.appName = "haveno-XMR_STAGENET_instance_" + GenUtils.getUUID();
   
@@ -1513,7 +1513,7 @@ async function initHaveno(config?: any): Promise<haveno> {
   try {
     
     // try to connect to existing server
-    havenod = new haveno(config.url, config.apiPassword);
+    havenod = new HavenoClient(config.url, config.apiPassword);
     await havenod.getVersion();
   } catch (err) {
     
@@ -1545,7 +1545,7 @@ async function initHaveno(config?: any): Promise<haveno> {
       "--walletRpcBindPort", config.walletUrl ? new URL(config.walletUrl).port : "" + await getAvailablePort(), // use configured port if given
       "--passwordRequired", (config.accountPasswordRequired ? "true" : "false")
     ];
-    havenod = await haveno.startProcess(TestConfig.haveno.path, cmd, "http://localhost:" + proxyPort, config.logProcessOutput);
+    havenod = await HavenoClient.startProcess(TestConfig.haveno.path, cmd, "http://localhost:" + proxyPort, config.logProcessOutput);
     HAVENO_PROCESSES.push(havenod);
   }
   
@@ -1570,7 +1570,7 @@ async function initHaveno(config?: any): Promise<haveno> {
 /**
  * Release a Haveno process for reuse and try to shutdown.
  */
-async function releaseHavenoProcess(havenod: haveno) {
+async function releaseHavenoProcess(havenod: HavenoClient) {
   GenUtils.remove(HAVENO_PROCESSES, havenod);
   GenUtils.remove(HAVENO_PROCESS_PORTS, new URL(havenod.getUrl()).port); // TODO (woodser): standardize to url
   try {
@@ -1583,7 +1583,7 @@ async function releaseHavenoProcess(havenod: haveno) {
 /**
  * Create or open an account with the given daemon and password.
  */
-async function initHavenoAccount(havenod: haveno, password: string) {
+async function initHavenoAccount(havenod: HavenoClient, password: string) {
   if (await havenod.isAccountOpen()) return;
   if (await havenod.accountExists()) return havenod.openAccount(password);
   await havenod.createAccount(password);
@@ -1649,17 +1649,17 @@ async function waitForUnlockedBalance(amount: bigint, ...wallets: any[]) {
     }
     
     async getUnlockedBalance(): Promise<bigint> {
-      if (this._wallet instanceof haveno) return BigInt((await this._wallet.getBalances()).getUnlockedBalance());
+      if (this._wallet instanceof HavenoClient) return BigInt((await this._wallet.getBalances()).getUnlockedBalance());
       else return BigInt((await this._wallet.getUnlockedBalance()).toString());
     }
     
     async getLockedBalance(): Promise<bigint> {
-      if (this._wallet instanceof haveno) return BigInt((await this._wallet.getBalances()).getLockedBalance());
+      if (this._wallet instanceof HavenoClient) return BigInt((await this._wallet.getBalances()).getLockedBalance());
       else return BigInt((await this._wallet.getBalance()).toString()) - await this.getUnlockedBalance();
     }
     
     async getDepositAddress(): Promise<string> {
-      if (this._wallet instanceof haveno) return await this._wallet.getNewDepositAddress();
+      if (this._wallet instanceof HavenoClient) return await this._wallet.getNewDepositAddress();
       else return (await this._wallet.createSubaddress()).getAddress();
     }
   }
@@ -1880,7 +1880,7 @@ function getRandomAssetCode() {
     return TestConfig.assetCodes[GenUtils.getRandomInt(0, TestConfig.assetCodes.length - 1)];
 }
 
-async function createPaymentAccount(trader: haveno, assetCode: string): Promise<PaymentAccount> {
+async function createPaymentAccount(trader: HavenoClient, assetCode: string): Promise<PaymentAccount> {
     return isCrypto(assetCode) ? createCryptoPaymentAccount(trader, assetCode) : createRevolutPaymentAccount(trader);
 }
 
@@ -1894,14 +1894,14 @@ function getCryptoAddress(currencyCode: string): string | undefined {
     }
 }
 
-async function createRevolutPaymentAccount(trader: haveno): Promise<PaymentAccount> {
+async function createRevolutPaymentAccount(trader: HavenoClient): Promise<PaymentAccount> {
   let accountForm = await trader.getPaymentAccountForm('REVOLUT');
   accountForm.accountName = "Revolut account " + GenUtils.getUUID();
   accountForm.userName = "user123";
   return trader.createPaymentAccount(accountForm);
 }
 
-async function createCryptoPaymentAccount(trader: haveno, currencyCode = "eth"): Promise<PaymentAccount> {
+async function createCryptoPaymentAccount(trader: HavenoClient, currencyCode = "eth"): Promise<PaymentAccount> {
   for (let cryptoAddress of TestConfig.cryptoAddresses) {
     if (cryptoAddress.currencyCode.toLowerCase() !== currencyCode.toLowerCase()) continue;
     return trader.createCryptoPaymentAccount(
@@ -1913,7 +1913,7 @@ async function createCryptoPaymentAccount(trader: haveno, currencyCode = "eth"):
 }
 
 // TODO: specify counter currency code
-async function postOffer(maker: haveno, config?: any) {
+async function postOffer(maker: HavenoClient, config?: any) {
   
   // assign default options
   config = Object.assign({}, TestConfig.postOffer, config);
@@ -1984,7 +1984,7 @@ function testOffer(offer: OfferInfo, config?: any) {
 /**
  * Tests trade chat functionality. Must be called during an open trade.
  */
-async function testTradeChat(tradeId: string, alice: haveno, bob: haveno) {
+async function testTradeChat(tradeId: string, alice: HavenoClient, bob: HavenoClient) {
   HavenoUtils.log(1, "Testing trade chat");
 
   // invalid trade should throw error

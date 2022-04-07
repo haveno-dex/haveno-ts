@@ -10,7 +10,7 @@ const console = require('console');
 /**
  * Haveno daemon client using gRPC.
  */
-class haveno {
+class HavenoClient {
   
   // grpc clients
   _appName: string|undefined;
@@ -79,7 +79,7 @@ class haveno {
    * @param {boolean} enableLogging - specifies if logging is enabled or disabled at log level 3
    * @return {haveno} a client connected to the newly started Haveno process
    */
-  static async startProcess(havenoPath: string, cmd: string[], url: string, enableLogging: boolean): Promise<haveno> {
+  static async startProcess(havenoPath: string, cmd: string[], url: string, enableLogging: boolean): Promise<HavenoClient> {
     
     // return promise which resolves after starting havenod
     return new Promise(function(resolve, reject) {
@@ -88,7 +88,7 @@ class haveno {
       // state variables
       let output = "";
       let isStarted = false;
-      let daemon: haveno|undefined = undefined;
+      let daemon: HavenoClient|undefined = undefined;
       
       // start process
       let childProcess = require('child_process').spawn(cmd[0], cmd.slice(1), {cwd: havenoPath});
@@ -102,7 +102,7 @@ class haveno {
         output += line + '\n'; // capture output in case of error
         
         // initialize daemon on success or login required message
-        if (!daemon && (line.indexOf(haveno._fullyInitializedMessage) >= 0 || line.indexOf(haveno._loginRequiredMessage) >= 0)) {
+        if (!daemon && (line.indexOf(HavenoClient._fullyInitializedMessage) >= 0 || line.indexOf(HavenoClient._loginRequiredMessage) >= 0)) {
           
           // get api password
           let passwordIdx = cmd.indexOf("--apiPassword");
@@ -113,7 +113,7 @@ class haveno {
           let password = cmd[passwordIdx + 1];
 
           // create client connected to internal process
-          daemon = new haveno(url, password);
+          daemon = new HavenoClient(url, password);
           daemon._process = childProcess;
           daemon._processLogging = enableLogging;
           daemon._appName = cmd[cmd.indexOf("--appName") + 1];
@@ -1339,4 +1339,4 @@ class haveno {
   }
 }
 
-export {haveno};
+export {HavenoClient};
