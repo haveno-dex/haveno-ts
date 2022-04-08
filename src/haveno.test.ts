@@ -899,6 +899,23 @@ test("Can post and remove an offer", async () => {
   expect(BigInt((await alice.getBalances()).getUnlockedBalance())).toEqual(unlockedBalanceBefore);
 });
 
+test("Can prepare for trading", async () => {
+
+  // create ethereum and revolut payment accounts
+  await createPaymentAccount(alice, "eth");
+  await createRevolutPaymentAccount(alice);
+  await createPaymentAccount(bob, "eth");
+  await createRevolutPaymentAccount(bob);
+
+  // fund alice and bob with at least 5 outputs of 0.5 XMR
+  let numOutputs = 5;
+  let outputAmt = BigInt("500000000000");
+  let walletsToFund = [];
+  if (!await hasUnlockedOutputs(aliceWallet, outputAmt, numOutputs)) walletsToFund.push(aliceWallet);
+  if (!await hasUnlockedOutputs(bobWallet, outputAmt, numOutputs)) walletsToFund.push(bobWallet);
+  await fundWallets(walletsToFund, outputAmt, numOutputs);
+});
+
 // TODO (woodser): test grpc notifications
 test("Can complete a trade", async () => {
   
