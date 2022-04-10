@@ -227,6 +227,9 @@ test("Can manage an account", async () => {
     assert(await charlie.accountExists());
     assert(await charlie.isAccountOpen());
     
+    // create payment account
+    let paymentAccount = await charlie.createCryptoPaymentAccount("My ETH account", TestConfig.cryptoAddresses[0].currencyCode, TestConfig.cryptoAddresses[0].address);
+    
     // close account
     await charlie.closeAccount();
     assert(await charlie.accountExists());
@@ -298,6 +301,10 @@ test("Can manage an account", async () => {
     assert(await charlie.accountExists());
     await charlie.openAccount(password);
     assert(await charlie.isAccountOpen());
+    
+    // check the persisted payment account
+    let paymentAccount2 = await charlie.getPaymentAccount(paymentAccount.getId());
+    testCryptoPaymentAccountsEqual(paymentAccount, paymentAccount2);
   } catch (err2) {
     console.log(err2);
     err = err2;
@@ -314,6 +321,8 @@ test("Can manage an account", async () => {
     try { await havenod.getXmrTxs(); throw new Error("Should have thrown"); }
     catch (err) { assert.equal(err.message, "Account not open"); }
     try { await havenod.getBalances(); throw new Error("Should have thrown"); }
+    catch (err) { assert.equal(err.message, "Account not open"); }
+    try { await havenod.createCryptoPaymentAccount("My ETH account", TestConfig.cryptoAddresses[0].currencyCode, TestConfig.cryptoAddresses[0].address); throw new Error("Should have thrown"); }
     catch (err) { assert.equal(err.message, "Account not open"); }
   }
 });
@@ -527,7 +536,7 @@ test("Can start and stop a local Monero node", async() => {
     
     // expect settings are updated
     let settingsAfter = await alice.getMoneroNodeSettings();
-    testMoneroNodeSettings(settings, settingsAfter!);
+    testMoneroNodeSettingsEqual(settings, settingsAfter!);
 
     // expect connections to be unmodified by local node
     let connectionsAfter = await alice.getMoneroConnections();
@@ -1987,15 +1996,22 @@ function getOffer(offers: OfferInfo[], id: string): OfferInfo | undefined {
   return offers.find(offer => offer.getId() === id);
 }
 
-function testCryptoPaymentAccount(paymentAccount: PaymentAccount) {
-  expect(paymentAccount.getId().length).toBeGreaterThan(0);
-  expect(paymentAccount.getAccountName().length).toBeGreaterThan(0);
-  expect(paymentAccount.getPaymentAccountPayload()!.getCryptoCurrencyAccountPayload()!.getAddress().length).toBeGreaterThan(0);
-  expect(paymentAccount.getSelectedTradeCurrency()!.getCode().length).toBeGreaterThan(0);
-  expect(paymentAccount.getTradeCurrenciesList().length).toEqual(1);
-  let tradeCurrency = paymentAccount.getTradeCurrenciesList()[0];
+function testCryptoPaymentAccount(acct: PaymentAccount) {
+  expect(acct.getId().length).toBeGreaterThan(0);
+  expect(acct.getAccountName().length).toBeGreaterThan(0);
+  expect(acct.getPaymentAccountPayload()!.getCryptoCurrencyAccountPayload()!.getAddress().length).toBeGreaterThan(0);
+  expect(acct.getSelectedTradeCurrency()!.getCode().length).toBeGreaterThan(0);
+  expect(acct.getTradeCurrenciesList().length).toEqual(1);
+  let tradeCurrency = acct.getTradeCurrenciesList()[0];
   expect(tradeCurrency.getName().length).toBeGreaterThan(0);
-  expect(tradeCurrency.getCode()).toEqual(paymentAccount.getSelectedTradeCurrency()!.getCode());
+  expect(tradeCurrency.getCode()).toEqual(acct.getSelectedTradeCurrency()!.getCode());
+}
+
+function testCryptoPaymentAccountsEqual(acct1: PaymentAccount, acct2: PaymentAccount) {
+  expect(acct1.getId()).toEqual(acct2.getId());
+  expect(acct1.getAccountName()).toEqual(acct2.getAccountName());
+  expect(acct1.getSelectedTradeCurrency()!.getCode()).toEqual(acct2.getSelectedTradeCurrency()!.getCode());
+  expect(acct1.getPaymentAccountPayload()!.getCryptoCurrencyAccountPayload()!.getAddress()).toEqual(acct2.getPaymentAccountPayload()!.getCryptoCurrencyAccountPayload()!.getAddress());
 }
 
 function testOffer(offer: OfferInfo, config?: any) {
@@ -2086,7 +2102,7 @@ async function testTradeChat(tradeId: string, alice: HavenoClient, bob: HavenoCl
   }
 }
 
-function testMoneroNodeSettings(settingsBefore: MoneroNodeSettings, settingsAfter: MoneroNodeSettings) {
+function testMoneroNodeSettingsEqual(settingsBefore: MoneroNodeSettings, settingsAfter: MoneroNodeSettings) {
     expect(settingsBefore.getBlockchainPath()).toEqual(settingsAfter.getBlockchainPath());
     expect(settingsBefore.getBootstrapUrl()).toEqual(settingsAfter.getBootstrapUrl());
     expect(settingsBefore.getStartupFlagsList()).toEqual(settingsAfter.getStartupFlagsList());

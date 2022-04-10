@@ -838,6 +838,21 @@ class HavenoClient {
   }
   
   /**
+   * Get a payment account by id.
+   * 
+   * @param {string} paymentAccountId - the payment account id to get
+   * @return {PaymentAccount} the payment account
+   */
+  async getPaymentAccount(paymentAccountId: string): Promise<PaymentAccount> {
+     // TODO (woodser): implement this on the backend
+    let paymentAccounts = await this.getPaymentAccounts(); 
+    for (let paymentAccount of paymentAccounts) {
+      if (paymentAccount.getId() === paymentAccountId) return paymentAccount;
+    }
+    throw new Error("No payment account with id " + paymentAccountId);
+  }
+  
+  /**
    * Get a form for the given payment method to complete and create a new payment account.
    * 
    * @return {object} the payment account form as JSON
