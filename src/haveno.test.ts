@@ -676,7 +676,7 @@ test("Can get market prices", async () => {
   expect(btc).toBeLessThan(0.4);
 
   // test invalid currency
-  await expect(async () => {await alice.getPrice("INVALID_CURRENCY")})
+  await expect(async () => { await alice.getPrice("INVALID_CURRENCY") })
     .rejects
     .toThrow('Currency not found: INVALID_CURRENCY');
 });
@@ -856,11 +856,21 @@ test("Can create crypto payment accounts", async () => {
     if (!fetchedAccount) throw new Error("Payment account not found after being added");
     testCryptoPaymentAccount(paymentAccount);
     testCryptoPaymentAccountEquals(fetchedAccount, testAccount, name);
-    
-    // TODO (woodser): test rejecting account with invalid currency code
-    // TODO (woodser): test rejecting account with invalid address
-    // TODO (woodser): test rejecting account with duplicate name
   }
+  
+  // TODO (woodser): update from latest Bisq CorePaymentAccountService.java for currency and address validation
+  
+/*  // test invalid currency code
+  await expect(async () => { await alice.createCryptoPaymentAccount("My account", "ABC", "123"); })
+      .rejects
+      .toThrow('Unsupported cryptocurrency code: ABC');
+  
+  // test invalid address
+  await expect(async () => { await alice.createCryptoPaymentAccount("My account", "ETH", "123"); })
+      .rejects
+      .toThrow('Invalid address');*/
+  
+  // TODO (woodser): test rejecting account with duplicate name
   
   function testCryptoPaymentAccountEquals(paymentAccount: PaymentAccount, testAccount: any, name: string) {
     expect(paymentAccount.getAccountName()).toEqual(name);
