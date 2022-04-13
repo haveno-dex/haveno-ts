@@ -121,14 +121,14 @@ const TestConfig = {
     devPrivilegePrivKey: "6ac43ea1df2a290c1c8391736aa42e4339c5cb4f110ff0257a13b63211977b7a", // from DEV_PRIVILEGE_PRIV_KEY
     tradeInitTimeout: 60000,
     timeout: 900000, // timeout in ms for all tests to complete (15 minutes)
-    postOffer: { // TODO (woodser): use typed config
+    postOffer: {     // default post offer config
         direction: "buy",                  // buy or sell xmr
         amount: BigInt("200000000000"),    // amount of xmr to trade
         assetCode: "eth",                  // counter asset to trade
         price: undefined,                  // use market price if undefined // TODO: converted to long on backend
         paymentAccountId: undefined,
         priceMargin: 0.0,
-        minAmount: BigInt("150000000000"), // TODO: disable by default
+        minAmount: BigInt("150000000000"), // TODO: disable by default, test somewhere
         buyerSecurityDeposit: 0.15,
         awaitUnlockedBalance: false,
         triggerPrice: undefined            // TODO: fails if there is a decimal, converted to long on backend
@@ -137,6 +137,19 @@ const TestConfig = {
 
 interface TxContext {
     isCreatedTx: boolean;
+}
+
+interface PostOfferConfig {
+    direction?: string,
+    amount?: bigint,
+    assetCode?: string,
+    paymentAccountId?: string,
+    buyerSecurityDeposit?: number,
+    price?: number,
+    priceMargin?: number,
+    triggerPrice?: number,
+    minAmount?: bigint,
+    awaitUnlockedBalance?: boolean
 }
 
 // clients
@@ -1949,41 +1962,39 @@ async function createCryptoPaymentAccount(trader: HavenoClient, currencyCode = "
 }
 
 // TODO: specify counter currency code
-async function postOffer(maker: HavenoClient, config?: any) {
+async function postOffer(maker: HavenoClient, config?: PostOfferConfig) {
   
   // assign default options
   config = Object.assign({}, TestConfig.postOffer, config);
   
   // wait for unlocked balance
-  if (config.awaitUnlockedBalance) await waitForUnlockedBalance(config.amount * BigInt("2"), maker);
+  if (config.awaitUnlockedBalance) await waitForUnlockedBalance(config.amount! * BigInt("2"), maker);
   
   // create payment account if not given
-  if (!config.paymentAccountId) config.paymentAccountId = (await createPaymentAccount(maker, config.assetCode)).getId();
+  if (!config.paymentAccountId) config.paymentAccountId = (await createPaymentAccount(maker, config.assetCode!)).getId();
   
   // get unlocked balance before reserving offer
   let unlockedBalanceBefore: bigint = BigInt((await maker.getBalances()).getUnlockedBalance());
   
   // post offer
-  // TODO: re-arrange post offer parameters like this postOffer() or use config interface?
   let offer: OfferInfo = await maker.postOffer(
-        config.assetCode,
-        config.direction,
+        config.direction!,
+        config.amount!,
+        config.assetCode!,
+        config.paymentAccountId!,
+        config.buyerSecurityDeposit!,
         config.price,
-        config.price ? false : true, // TODO: redundant with price field?
         config.priceMargin,
-        config.amount,
-        config.minAmount,
-        config.buyerSecurityDeposit,
-        config.paymentAccountId,
-        config.triggerPrice);
+        config.triggerPrice,
+        config.minAmount);
   testOffer(offer, config);
   
   // offer is included in my offers only
-  if (!getOffer(await maker.getMyOffers(config.assetCode, config.direction), offer.getId())) {
+  if (!getOffer(await maker.getMyOffers(config.assetCode!, config.direction), offer.getId())) {
     await wait(10000);
-    if (!getOffer(await maker.getMyOffers(config.assetCode, config.direction), offer.getId())) throw new Error("Offer " + offer.getId() + " was not found in my offers");
+    if (!getOffer(await maker.getMyOffers(config.assetCode!, config.direction), offer.getId())) throw new Error("Offer " + offer.getId() + " was not found in my offers");
   }
-  if (getOffer(await maker.getOffers(config.assetCode, config.direction), offer.getId())) throw new Error("My offer " + offer.getId() + " should not appear in available offers");
+  if (getOffer(await maker.getOffers(config.assetCode!, config.direction), offer.getId())) throw new Error("My offer " + offer.getId() + " should not appear in available offers");
   
   // unlocked balance has decreased
   let unlockedBalanceAfter: bigint = BigInt((await maker.getBalances()).getUnlockedBalance());

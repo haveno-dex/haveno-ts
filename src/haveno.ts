@@ -961,40 +961,38 @@ class HavenoClient {
   /**
    * Post an offer.
    * 
-   * @param {string} assetCode - traded asset code
-   * @param {string} direction - one of "buy" or "sell"
-   * @param {number} price - trade price
-   * @param {bool} useMarketBasedPrice - base trade on market price // TODO: this field redundant with price
-   * @param {number} marketPriceMargin - % from market price to tolerate
-   * @param {bigint} amount - amount to trade
-   * @param {bigint} minAmount - minimum amount to trade
-   * @param {number} buyerSecurityDeposit - buyer security deposit as % of trade amount
+   * @param {string} direction - "buy" or "sell" XMR
+   * @param {bigint} amount - amount of XMR to trade
+   * @param {string} assetCode - asset code to trade for XMR
    * @param {string} paymentAccountId - payment account id
-   * @param {number} triggerPrice - price to remove offer
-   * @return {OfferInfo} the posted offer
+   * @param {number} buyerSecurityDeposit - buyer security deposit as % of trade amount
+   * @param {number} price - trade price (optional, default to market price)
+   * @param {number} marketPriceMargin - if using market price, % from market price to accept (optional, default 0%)
+   * @param {bigint} minAmount - minimum amount to trade (optional, default to fixed amount)
+   * @param {number} triggerPrice - price to remove offer (optional)
+   * @return {OfferInfo} the posted offer 
    */
-  async postOffer(assetCode: string,
-        direction: string,
-        price: number,
-        useMarketBasedPrice: boolean,
-        marketPriceMargin: number,
-        amount: bigint,
-        minAmount: bigint,
-        buyerSecurityDeposit: number,
-        paymentAccountId: string,
-        triggerPrice?: number): Promise<OfferInfo> {
+  async postOffer(direction: string,
+                  amount: bigint,
+                  assetCode: string,
+                  paymentAccountId: string,
+                  buyerSecurityDeposit: number,
+                  price?: number,
+                  marketPriceMargin?: number,
+                  triggerPrice?: number,
+                  minAmount?: bigint): Promise<OfferInfo> {
     let that = this;
     let request = new CreateOfferRequest()
-            .setCurrencyCode(assetCode)
             .setDirection(direction)
-            .setUseMarketBasedPrice(useMarketBasedPrice)
-            .setPrice(useMarketBasedPrice ? "1.0" : price.toString()) // TODO: positive price required even if using market price
-            .setMarketPriceMargin(marketPriceMargin)
             .setAmount(amount.toString())
-            .setMinAmount(minAmount.toString())
+            .setCurrencyCode(assetCode)
+            .setPaymentAccountId(paymentAccountId)
             .setBuyerSecurityDeposit(buyerSecurityDeposit)
-            .setPaymentAccountId(paymentAccountId);
-    if (triggerPrice) request.setTriggerPrice(BigInt(triggerPrice.toString()).toString());
+            .setPrice(price ? price.toString() : "1.0")  // TOOD (woodser): positive price required even if using market price?
+            .setUseMarketBasedPrice(price === undefined) // TODO (woodser): this field is redundant; remove from api
+    if (marketPriceMargin) request.setMarketPriceMargin(marketPriceMargin);
+    if (triggerPrice) request.setTriggerPrice(triggerPrice.toString());
+    if (minAmount) request.setMinAmount(minAmount.toString());
     return new Promise(function(resolve, reject) {
       that._offersClient.createOffer(request, {password: that._password}, function(err: grpcWeb.RpcError, response: CreateOfferReply) {
         if (err) reject(err);
