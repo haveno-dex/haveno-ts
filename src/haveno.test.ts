@@ -122,16 +122,16 @@ const TestConfig = {
     tradeInitTimeout: 60000,
     timeout: 900000, // timeout in ms for all tests to complete (15 minutes)
     postOffer: {     // default post offer config
-        direction: "buy",                  // buy or sell xmr
-        amount: BigInt("200000000000"),    // amount of xmr to trade
-        assetCode: "eth",                  // counter asset to trade
-        price: undefined,                  // use market price if undefined // TODO: converted to long on backend
+        direction: "buy",               // buy or sell xmr
+        amount: BigInt("200000000000"), // amount of xmr to trade
+        assetCode: "eth",               // counter asset to trade
+        price: undefined,               // use market price if undefined
         paymentAccountId: undefined,
         priceMargin: 0.0,
         minAmount: undefined,
         buyerSecurityDeposit: 0.15,
         awaitUnlockedBalance: false,
-        triggerPrice: undefined            // TODO: fails if there is a decimal, converted to long on backend
+        triggerPrice: undefined
     }
 };
 
@@ -191,9 +191,8 @@ beforeAll(async () => {
   alice = startupHavenods[1];
   bob = startupHavenods[2];
   
-  // register arbitrator as dispute agents
-  await arbitrator.registerDisputeAgent("mediator", TestConfig.devPrivilegePrivKey);
-  await arbitrator.registerDisputeAgent("refundagent", TestConfig.devPrivilegePrivKey);
+  // register arbitrator dispute agent
+  await arbitrator.registerDisputeAgent("arbitrator", TestConfig.devPrivilegePrivKey);
 
   // connect monero clients
   monerod = await monerojs.connectToDaemonRpc(TestConfig.monerod.url, TestConfig.monerod.username, TestConfig.monerod.password);
@@ -774,8 +773,9 @@ test("Can get market depth", async () => {
 });
 
 test("Can register as dispute agents", async () => {
-  await arbitrator.registerDisputeAgent("mediator", TestConfig.devPrivilegePrivKey);    // TODO: bisq mediator = haveno arbitrator
-  await arbitrator.registerDisputeAgent("refundagent", TestConfig.devPrivilegePrivKey); // TODO: no refund agent in haveno
+  await arbitrator.registerDisputeAgent("arbitrator", TestConfig.devPrivilegePrivKey);
+  await arbitrator.registerDisputeAgent("mediator", TestConfig.devPrivilegePrivKey);
+  await arbitrator.registerDisputeAgent("refundagent", TestConfig.devPrivilegePrivKey);
   
   // test bad dispute agent type
   try {
@@ -787,7 +787,7 @@ test("Can register as dispute agents", async () => {
   
   // test bad key
   try {
-    await arbitrator.registerDisputeAgent("mediator", "bad key");
+    await arbitrator.registerDisputeAgent("arbitrator", "bad key");
     throw new Error("should have thrown error registering bad key");
   } catch (err) {
     if (err.message !== "invalid registration key") throw new Error("Unexpected error: " + err.message);
@@ -1961,7 +1961,6 @@ async function createCryptoPaymentAccount(trader: HavenoClient, currencyCode = "
   throw new Error("No test config for crypto: " + currencyCode);
 }
 
-// TODO: specify counter currency code
 async function postOffer(maker: HavenoClient, config?: PostOfferConfig) {
   
   // assign default options
