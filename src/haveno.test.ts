@@ -128,7 +128,7 @@ const TestConfig = {
         price: undefined,                  // use market price if undefined // TODO: converted to long on backend
         paymentAccountId: undefined,
         priceMargin: 0.0,
-        minAmount: BigInt("150000000000"), // TODO: disable by default, test somewhere
+        minAmount: undefined,
         buyerSecurityDeposit: 0.15,
         awaitUnlockedBalance: false,
         triggerPrice: undefined            // TODO: fails if there is a decimal, converted to long on backend

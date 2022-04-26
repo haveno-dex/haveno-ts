@@ -990,9 +990,9 @@ class HavenoClient {
             .setBuyerSecurityDeposit(buyerSecurityDeposit)
             .setPrice(price ? price.toString() : "1.0")  // TOOD (woodser): positive price required even if using market price?
             .setUseMarketBasedPrice(price === undefined) // TODO (woodser): this field is redundant; remove from api
+            .setMinAmount(minAmount ? minAmount.toString() : amount.toString());
     if (marketPriceMargin) request.setMarketPriceMargin(marketPriceMargin);
     if (triggerPrice) request.setTriggerPrice(triggerPrice.toString());
-    if (minAmount) request.setMinAmount(minAmount.toString());
     return new Promise(function(resolve, reject) {
       that._offersClient.createOffer(request, {password: that._password}, function(err: grpcWeb.RpcError, response: CreateOfferReply) {
         if (err) reject(err);
