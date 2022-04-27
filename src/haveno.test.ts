@@ -22,6 +22,7 @@ const TaskLooper = monerojs.TaskLooper;
 
 // other required imports
 const fs = require('fs');
+const path = require('path');
 const net = require('net');
 const assert = require("assert");
 const console = require('console'); // import console because jest swallows messages in real time
@@ -322,9 +323,8 @@ test("Can manage an account", async () => {
     err = err2;
   }
 
-  // stop processes
-  if (charlie) await releaseHavenoProcess(charlie);
-  // TODO: how to delete trader app folder at end of test?
+  // stop and delete instances
+  if (charlie) await releaseHavenoProcess(charlie, true);
   if (err) throw err;
   
   async function testAccountNotOpen(havenod: HavenoClient): Promise<void> { // TODO: generalize this?
@@ -487,9 +487,8 @@ test("Can manage Monero daemon connections", async () => {
   }
 
   // stop processes
-  if (charlie) await releaseHavenoProcess(charlie);
+  if (charlie) await releaseHavenoProcess(charlie, true);
   if (monerod2) await monerod2.stopProcess();
-  // TODO: how to delete trader app folder at end of test?
   if (err) throw err;
 });
 
@@ -1386,8 +1385,7 @@ test("Cannot make or take offer with insufficient unlocked funds", async () => {
   }
   
   // stop charlie
-  if (charlie) await releaseHavenoProcess(charlie);
-  // TODO: how to delete trader app folder at end of test?
+  if (charlie) await releaseHavenoProcess(charlie, true);
   if (err) throw err;
 });
 
@@ -1541,7 +1539,7 @@ test("Handles unexpected errors during trade initialization", async () => {
   }
   
   // stop traders
-  for (let trader of traders) await releaseHavenoProcess(trader);
+  for (let trader of traders) await releaseHavenoProcess(trader, true);
   if (err) throw err;
 });
 
@@ -1619,14 +1617,25 @@ async function initHaveno(config?: any): Promise<HavenoClient> {
 /**
  * Release a Haveno process for reuse and try to shutdown.
  */
-async function releaseHavenoProcess(havenod: HavenoClient) {
+async function releaseHavenoProcess(havenod: HavenoClient, deleteAppDir?: boolean) {
   GenUtils.remove(HAVENO_PROCESSES, havenod);
-  GenUtils.remove(HAVENO_PROCESS_PORTS, new URL(havenod.getUrl()).port); // TODO (woodser): standardize to url
+  GenUtils.remove(HAVENO_PROCESS_PORTS, new URL(havenod.getUrl()).port);
   try {
     await havenod.shutdownServer();
   } catch (err) {
     assert.equal(err.message, OFFLINE_ERR_MSG);
   }
+  if (deleteAppDir) deleteHavenoInstance(havenod);
+}
+
+/**
+ * Delete a Haveno instance from disk.
+ */
+function deleteHavenoInstance(havenod: HavenoClient) {
+    if (!havenod.getAppName()) throw new Error("Cannot delete Haveno instance owned by different process")
+    let userDataDir = process.env.APPDATA || (process.platform === 'darwin' ? process.env.HOME + '/Library/Application Support' : process.env.HOME + "/.local/share");
+    let appPath = path.normalize(userDataDir + "/" + havenod.getAppName()!);
+    fs.rmSync(appPath, {recursive: true, force: true});
 }
 
 /**
