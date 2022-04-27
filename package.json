@@ -25,7 +25,8 @@
     "test": "react-scripts test --runInBand",
     "eject": "react-scripts eject",
     "prepare": "bin/build_protobuf.sh",
-    "pretest": "bin/build_protobuf.sh"
+    "pretest": "bin/build_protobuf.sh",
+    "generate:docs": "typedoc ./src/haveno.ts --exclude **/*.test.ts --excludeNotDocumented"
   },
   "eslintConfig": {
     "extends": [
@@ -49,6 +50,7 @@
     ]
   },
   "devDependencies": {
-    "monero-javascript": "^0.6.4"
+    "monero-javascript": "^0.6.4",
+    "typedoc": "^0.22.15"
   }
 }
