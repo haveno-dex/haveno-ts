@@ -1,7 +1,7 @@
 import React from 'react';
 import logo from './logo.png';
 import './App.css';
-import HavenoClient from './haveno';
+import { HavenoClient } from './haveno';
 
 const HAVENO_DAEMON_URL = "http://localhost:8080";
 const HAVENO_DAEMON_PASSWORD = "apitest";

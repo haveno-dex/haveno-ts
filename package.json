@@ -26,9 +26,9 @@
     "eject": "react-scripts eject",
     "prepare": "bin/build_protobuf.sh",
     "pretest": "bin/build_protobuf.sh",
-    "lint": "eslint .",
+    "eslint": "eslint .",
     "eslintfix": "eslint src/* --fix",
-    "typedoc": "typedoc ./src/haveno.ts --exclude **/*.test.ts --excludeNotDocumented"
+    "typedoc": "typedoc ./src/haveno.ts --entryPointStrategy expand src/ --exclude **/*.test.ts"
   },
   "browserslist": {
     "production": [
@@ -51,6 +51,8 @@
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-jsx-a11y": "^6.5.1",
     "monero-javascript": "^0.6.4",
-    "typedoc": "^0.22.15"
+    "typedoc": "^0.22.15",
+    "typedoc-plugin-missing-exports": "^0.22.6",
+    "typedoc-plugin-rename-defaults": "^0.5.1"
   }
 }
