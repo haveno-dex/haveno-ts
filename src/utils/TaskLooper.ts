@@ -1,7 +1,7 @@
 /**
  * Run a task in a fixed period loop.
  */
-class TaskLooper {
+export default class TaskLooper {
     
   _fn: () => Promise<void>;
   _isStarted: boolean;
@@ -39,12 +39,10 @@ class TaskLooper {
   async _runLoop(periodInMs: number) {
     this._isLooping = true;
     while (this._isStarted) {
-      let startTime = Date.now();
+      const startTime = Date.now();
       await this._fn();
       if (this._isStarted) await new Promise(function(resolve) { setTimeout(resolve, periodInMs - (Date.now() - startTime)); });
     }
     this._isLooping = false;
   }
 }
-
-export {TaskLooper};

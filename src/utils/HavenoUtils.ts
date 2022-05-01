@@ -1,10 +1,10 @@
-const assert = require("assert");
-const console = require('console');
+import assert from "assert";
+import console from 'console';
 
 /**
  * Collection of utilities for working with Haveno.
  */
-class HavenoUtils {
+export default class HavenoUtils {
     
   static logLevel = 0;
   static centinerosToAUMultiplier = 10000;
@@ -40,8 +40,8 @@ class HavenoUtils {
   static log(level: number, msg: string) {
     assert(level === parseInt(level + "", 10) && level >= 0, "Log level must be an integer >= 0");
     if (HavenoUtils.logLevel >= level) {
-      let now = Date.now();
-      let formattedTimeSinceLastLog = HavenoUtils.lastLogTimeMs ? " (+" + (now - HavenoUtils.lastLogTimeMs) + " ms)" : "\t";
+      const now = Date.now();
+      const formattedTimeSinceLastLog = HavenoUtils.lastLogTimeMs ? " (+" + (now - HavenoUtils.lastLogTimeMs) + " ms)" : "\t";
       HavenoUtils.lastLogTimeMs = now;    
       console.log(HavenoUtils.formatTimestamp(now) + formattedTimeSinceLastLog + "\t[L" + level + "] " + msg);
     }
@@ -54,7 +54,7 @@ class HavenoUtils {
    * @return {string} the formatted timestamp
    */
   static formatTimestamp(timestamp: number): string {
-    let date = new Date(timestamp);
+    const date = new Date(timestamp);
     return HavenoUtils.months[date.getMonth()] + "-" + date.getDate() + " " + date.getHours() + ':' + ("0"  + date.getMinutes()).substr(-2) + ':' + ("0" + date.getSeconds()).substr(-2) + ':' + ("0" + date.getMilliseconds()).substr(-2);
   }
   
@@ -84,5 +84,3 @@ class HavenoUtils {
     return BigInt(centineros) * BigInt(HavenoUtils.centinerosToAUMultiplier);
   }
 }
-
-export {HavenoUtils};
