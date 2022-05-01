@@ -1,7 +1,7 @@
 // --------------------------------- IMPORTS ----------------------------------
 
 // import haveno types
-import HavenoClient from "./haveno";
+import { HavenoClient } from "./haveno";
 import HavenoUtils from "./utils/HavenoUtils";
 import * as grpcWeb from "grpc-web";
 import { MarketPriceInfo, NotificationMessage, OfferInfo, TradeInfo, UrlConnection, XmrBalanceInfo } from "./protobuf/grpc_pb"; // TODO (woodser): better names; haveno_grpc_pb, haveno_pb

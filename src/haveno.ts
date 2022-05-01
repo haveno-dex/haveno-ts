@@ -9,7 +9,7 @@ import { PaymentMethod, PaymentAccount, AvailabilityResult, Attachment, DisputeR
 /**
  * Haveno daemon client using gRPC.
  */
-export default class HavenoClient {
+class HavenoClient {
 
   // grpc clients
   _appName: string | undefined;
@@ -1197,6 +1197,8 @@ export default class HavenoClient {
    * Ideally when the application starts, the system checks the Haveno network connection, supporting
    * havenod.isHavenoConnectionInitialized() and havenod.awaitHavenoConnectionInitialized().
    * Independently, gRPC createAccount() and openAccount() return after all account setup and reading from disk.
+   * 
+   * @hidden
    */
   async _awaitAppInitialized(): Promise<void> {
     // eslint-disable-next-line no-async-promise-executor
@@ -1216,6 +1218,7 @@ export default class HavenoClient {
     });
   }
   
+  // @hidden
   async _isAppInitialized(): Promise<boolean> {
     return new Promise((resolve, reject) => {
       this._accountClient.isAppInitialized(new IsAppInitializedRequest(), {password: this._password}, function(err: grpcWeb.RpcError, response: IsAppInitializedReply) {
@@ -1230,6 +1233,8 @@ export default class HavenoClient {
    * Register a listener to receive notifications.
    * Due to the nature of grpc streaming, this method returns a promise
    * which may be resolved before the listener is actually registered.
+   * 
+   * @hidden
    */
   async _registerNotificationListenerOnce(): Promise<void> {
     if (this._registerNotificationListenerCalled) return;
@@ -1263,7 +1268,8 @@ export default class HavenoClient {
 
   /**
    * Send a notification.
-   *
+   * 
+   * @hidden
    * @param {NotificationMessage} notification - notification to send
    */
   async _sendNotification(notification: NotificationMessage): Promise<void> {
@@ -1277,13 +1283,15 @@ export default class HavenoClient {
 
   /**
    * Restore an account chunk from zip bytes.
+   * 
+   * @hidden
    */
   async _restoreAccountChunk(zipBytes: Uint8Array, offset: number, totalLength: number, hasMore: boolean): Promise<void> {
     const request = new RestoreAccountRequest()
-      .setZipBytes(zipBytes)
-      .setOffset(offset)
-      .setTotalLength(totalLength)
-      .setHasMore(hasMore);
+        .setZipBytes(zipBytes)
+        .setOffset(offset)
+        .setTotalLength(totalLength)
+        .setHasMore(hasMore);
     return new Promise((resolve, reject) => {
       this._accountClient.restoreAccount(request, {password: this._password}, function(err: grpcWeb.RpcError) {
         if (err) reject(err);
@@ -1292,3 +1300,5 @@ export default class HavenoClient {
     });
   }
 }
+
+export { HavenoClient };
