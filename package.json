@@ -28,7 +28,7 @@
     "pretest": "bin/build_protobuf.sh",
     "eslint": "eslint .",
     "eslintfix": "eslint src/* --fix",
-    "typedoc": "typedoc ./src/haveno.ts --entryPointStrategy expand src/ --exclude **/*.test.ts --githubPages false"
+    "typedoc": "typedoc ./src/haveno.ts --entryPointStrategy expand src/ --exclude **/*.test.ts"
   },
   "browserslist": {
     "production": [
