@@ -1,58 +1,57 @@
 {
   "name": "haveno-ts",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "@testing-library/jest-dom": "^5.11.10",
-    "@testing-library/react": "^11.2.6",
-    "@testing-library/user-event": "^12.8.3",
-    "@types/jest": "^26.0.22",
-    "@types/node": "^17.0.30",
-    "@types/react": "^17.0.3",
-    "@types/react-dom": "^17.0.3",
-    "console": "^0.7.2",
-    "google-protobuf": "^3.0.0",
-    "grpc-web": "^1.2.1",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-scripts": "^4.0.3",
-    "typescript": "^4.6.3",
-    "web-vitals": "^1.1.1"
-  },
+  "version": "0.0.1",
+  "description": "Haveno TypeScript interface",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist/**/*"],
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test --runInBand",
-    "eject": "react-scripts eject",
-    "prepare": "bin/build_protobuf.sh",
-    "pretest": "bin/build_protobuf.sh",
+    "prepare": "scripts/build_protobuf.sh",
+    "pretest": "scripts/build_protobuf.sh",
+    "build": "tsc",
+    "test": "jest ",
     "eslint": "eslint .",
     "eslintfix": "eslint src/* --fix",
-    "typedoc": "typedoc ./src/haveno.ts --entryPointStrategy expand src/ --exclude **/*.test.ts"
+    "typedoc": "typedoc ./src/index.ts --entryPointStrategy expand src/ --exclude **/*.test.ts"
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "jest": {
+    "testPathIgnorePatterns": ["<rootDir>/dist/", "/node_modules/"]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/haveno-dex/haveno-ts.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/haveno-dex/haveno-ts/issues"
+  },
+  "homepage": "https://github.com/haveno-dex/haveno-ts#readme",
+  "dependencies": {
+    "@types/node": "^17.0.30",
+    "console": "^0.7.2",
+    "google-protobuf": "^3.0.0",
+    "grpc-web": "^1.2.1"
   },
   "devDependencies": {
+    "@babel/core": "^7.17.10",
+    "@babel/preset-env": "^7.17.10",
+    "@babel/preset-typescript": "^7.16.7",
+    "@types/jest": "^27.4.1",
     "@typescript-eslint/eslint-plugin": "5.12.1",
     "@typescript-eslint/parser": "^5.19.0",
+    "babel-jest": "^28.0.3",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-import-resolver-typescript": "^2.7.1",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-jsx-a11y": "^6.5.1",
+    "jest": "^26.6.0",
     "monero-javascript": "^0.6.4",
     "typedoc": "^0.22.15",
     "typedoc-plugin-missing-exports": "^0.22.6",
-    "typedoc-plugin-rename-defaults": "^0.5.1"
+    "typedoc-plugin-rename-defaults": "^0.5.1",
+    "typescript": "^4.6.4"
   }
 }

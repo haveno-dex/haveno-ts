@@ -1,33 +1,35 @@
-# Haveno UI Proof of Concept
+# Haveno TypeScript Library
 
-A proof of concept to fetch and render data from Haveno's daemon in ReactJS.
+TypeScript library for using Haveno.
 
-This application is a lightly modified [create-react-app](https://github.com/facebook/create-react-app) with typescript using [envoy proxy](https://www.envoyproxy.io/) and [grpc-web](https://github.com/grpc/grpc-web) to use Haveno's gRPC API.
+## Sample code
 
-## Run in a Browser
+```js
+import { HavenoClient } from "haveno-ts";
 
-1. [Run a local Haveno test network](https://github.com/haveno-dex/haveno/blob/master/docs/installing.md), running Alice as a daemon with `make alice-daemon`.
-2. Clone this project to the same parent directory as the haveno project: `git clone https://github.com/haveno-dex/haveno-ts`
-3. In a new terminal, start envoy with the config in haveno-ts/config/envoy.yaml (change absolute path for your system): `docker run --rm --add-host host.docker.internal:host-gateway -it -v ~/git/haveno-ts/config/envoy.yaml:/envoy.yaml -p 8080:8080 envoyproxy/envoy-dev:8a2143613d43d17d1eb35a24b4a4a4c432215606 -c /envoy.yaml`
-4. Install protobuf compiler v3.19.1 or later for your system:<br>
-    mac: `brew install protobuf`<br>
-    linux: `apt install protobuf-compiler`
-    NOTE: You may need to upgrade to v3.19.1 manually if your package manager installs an older version.
-5.  Download `protoc-gen-grpc-web` plugin and make executable as [shown here](https://github.com/grpc/grpc-web#code-generator-plugin).
-6. `cd haveno-ts`
-7. `npm install`
-8. `npm start` to open http://localhost:3000 in a browser
-9. Confirm that the Haveno daemon version is displayed (1.6.2).
+// create client connected to Haveno daemon
+const alice = new HavenoClient("http://localhost:8080", "apitest");
 
-<p align="center">
-    <img src="haveno-ui-poc.png" width="500"/><br>
-</p>
+// use Haveno daemon
+const balances = await alice.getBalances();
+const paymentAccounts = await alice.getPaymentAccounts();
+const myOffers = await alice.getMyOffers("ETH");
+const offers = await alice.getOffers("ETH", "BUY");
+const trade = await alice.takeOffer(offers[0].getId(), paymentAccounts[0].getId());
 
-## Run Tests
+// disconnect client
+await alice.disconnect();
+```
 
-Running the [API tests](./src/haveno.test.ts) is the best way to develop and test Haveno end-to-end.
+## TypeDocs
 
-[`haveno.ts`](./src/haveno.ts) provides the interface to Haveno's backend daemon.
+See haveno-ts [typedocs](https://haveno-dex.github.io/haveno-ts/classes/haveno.HavenoClient.html).
+
+## Run tests
+
+Running the [API tests](./src/HavenoClient.test.ts) is the best way to develop and test Haveno end-to-end.
+
+[`HavenoClient.ts`](./src/HavenoClient.ts) provides the client interface to Haveno's backend daemon.
 
 1. [Run a local Haveno test network](https://github.com/haveno-dex/haveno/blob/master/docs/installing.md) and then shut down the arbitrator, Alice, and Bob or run them as daemons, e.g. `make alice-daemon`. You may omit the arbitrator registration steps since it is done automatically in the tests.
 2. Clone this project to the same parent directory as the haveno project: `git clone https://github.com/haveno-dex/haveno-ts`
