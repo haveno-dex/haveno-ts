@@ -9,7 +9,7 @@ import { PaymentMethod, PaymentAccount, AvailabilityResult, Attachment, DisputeR
 /**
  * Haveno daemon client using gRPC.
  */
-class HavenoClient {
+export default class HavenoClient {
 
   // grpc clients
   _appName: string | undefined;
@@ -17,6 +17,7 @@ class HavenoClient {
   _disputeAgentsClient: DisputeAgentsClient;
   _disputesClient: DisputesClient;
   _notificationsClient: NotificationsClient;
+  _notificationStream: grpcWeb.ClientReadableStream<NotificationMessage> | undefined;
   _moneroConnectionsClient: MoneroConnectionsClient;
   _moneroNodeClient: MoneroNodeClient;
   _walletsClient: WalletsClient;
@@ -33,7 +34,7 @@ class HavenoClient {
   _process: any;
   _processLogging = false;
   _walletRpcPort: number | undefined;
-  _notificationListeners: ((notification: NotificationMessage) => void)[] = [];
+  _notificationListeners: ((_notification: NotificationMessage) => void)[] = [];
   _registerNotificationListenerCalled = false;
   _keepAliveLooper: any;
   _keepAlivePeriodMs = 60000;
@@ -386,9 +387,9 @@ class HavenoClient {
    *
    * @param {(notification: NotificationMessage) => void} listener - the notification listener to add
    */
-  async addNotificationListener(listener: (notification: NotificationMessage) => void): Promise<void> {
+  async addNotificationListener(listener: (_notification: NotificationMessage) => void): Promise<void> {
     this._notificationListeners.push(listener);
-    return this._registerNotificationListenerOnce();
+    return this._updateNotificationListenerRegistration();
   }
   
   /**
@@ -396,10 +397,11 @@ class HavenoClient {
    * 
    * @param {(notification: NotificationMessage) => void} listener - the notification listener to remove
    */
-  async removeNotificationListener(listener: (notification: NotificationMessage) => void): Promise<void> {
+  async removeNotificationListener(listener: (_notification: NotificationMessage) => void): Promise<void> {
     const idx = this._notificationListeners.indexOf(listener);
     if (idx > -1) this._notificationListeners.splice(idx, 1);
     else throw new Error("Notification listener is not registered");
+    return this._updateNotificationListenerRegistration();
   }
   
   /**
@@ -1169,10 +1171,17 @@ class HavenoClient {
   }
   
   /**
+   * Disconnect this client from the server.
+   */
+  async disconnect() {
+    while (this._notificationListeners.length) await this.removeNotificationListener(this._notificationListeners[0]);
+  }
+  
+  /**
    * Shutdown the Haveno daemon server and stop the process if applicable.
    */
   async shutdownServer() {
-    if (this._keepAliveLooper) this._keepAliveLooper.stop();
+    await this.disconnect();
     await new Promise<void>((resolve, reject) => {
       this._shutdownServerClient.stop(new StopRequest(), {password: this._password}, function(err: grpcWeb.RpcError) { // process receives 'exit' event
         if (err) reject(err);
@@ -1227,43 +1236,46 @@ class HavenoClient {
       });
     });
   }
-
-
+  
   /**
-   * Register a listener to receive notifications.
+   * Update notification listener registration.
    * Due to the nature of grpc streaming, this method returns a promise
    * which may be resolved before the listener is actually registered.
-   * 
-   * @hidden
    */
-  async _registerNotificationListenerOnce(): Promise<void> {
-    if (this._registerNotificationListenerCalled) return;
-    else this._registerNotificationListenerCalled = true;
-    return new Promise((resolve) => {
+  async _updateNotificationListenerRegistration(): Promise<void> {
+    const listening = this._notificationListeners.length > 0;
+    if (listening && this._notificationStream || !listening && !this._notificationStream) return; // no difference
+    if (listening) {
+      return new Promise((resolve) => {
       
-      // send request to register client listener
-      this._notificationsClient.registerNotificationListener(new RegisterNotificationListenerRequest(), {password: this._password})
-        .on('data', (data) => {
-          if (data instanceof NotificationMessage) {
-            for (const listener of this._notificationListeners) listener(data);
+        // send request to register client listener
+        this._notificationStream = this._notificationsClient.registerNotificationListener(new RegisterNotificationListenerRequest(), {password: this._password})
+          .on('data', (data) => {
+            if (data instanceof NotificationMessage) {
+              for (const listener of this._notificationListeners) listener(data);
+            }
+          });
+        
+        // periodically send keep alive requests // TODO (woodser): better way to keep notification stream alive?
+        let firstRequest = true;
+        this._keepAliveLooper = new TaskLooper(async () => {
+          if (firstRequest) {
+            firstRequest = false;
+            return;
           }
+          await this._sendNotification(new NotificationMessage()
+                  .setType(NotificationMessage.NotificationType.KEEP_ALIVE)
+                  .setTimestamp(Date.now()));
         });
-      
-      // periodically send keep alive requests // TODO (woodser): better way to keep notification stream alive?
-      let firstRequest = true;
-      this._keepAliveLooper = new TaskLooper(async () => {
-        if (firstRequest) {
-          firstRequest = false;
-          return;
-        }
-        await this._sendNotification(new NotificationMessage()
-                .setType(NotificationMessage.NotificationType.KEEP_ALIVE)
-                .setTimestamp(Date.now()));
+        this._keepAliveLooper.start(this._keepAlivePeriodMs);
+        
+        setTimeout(resolve, 1000); // TODO: call returns before listener registered
       });
-      this._keepAliveLooper.start(this._keepAlivePeriodMs);
-      
-      setTimeout(resolve, 1000); // TODO: call returns before listener registered
-    });
+    } else {
+      this._keepAliveLooper.stop();
+      this._notificationStream!.cancel();
+      this._notificationStream = undefined;
+    }
   }
 
   /**
@@ -1300,5 +1312,3 @@ class HavenoClient {
     });
   }
 }
-
-export { HavenoClient };

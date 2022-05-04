@@ -6,6 +6,7 @@ export default class TaskLooper {
   _fn: () => Promise<void>;
   _isStarted: boolean;
   _isLooping: boolean;
+  _timeout: NodeJS.Timeout | undefined;
   
   /**
    * Build the looper with a function to invoke on a fixed period loop.
@@ -33,7 +34,10 @@ export default class TaskLooper {
    * Stop the task loop.
    */
   stop() {
+    if (!this._isStarted) throw new Error("Cannot stop TaskLooper because it's not started");
     this._isStarted = false;
+    clearTimeout(this._timeout!);
+    this._timeout = undefined;
   }
   
   async _runLoop(periodInMs: number) {
@@ -41,7 +45,7 @@ export default class TaskLooper {
     while (this._isStarted) {
       const startTime = Date.now();
       await this._fn();
-      if (this._isStarted) await new Promise(function(resolve) { setTimeout(resolve, periodInMs - (Date.now() - startTime)); });
+      if (this._isStarted) await new Promise((resolve) => { this._timeout = setTimeout(resolve, periodInMs - (Date.now() - startTime)); });
     }
     this._isLooping = false;
   }

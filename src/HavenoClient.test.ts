@@ -1,7 +1,7 @@
 // --------------------------------- IMPORTS ----------------------------------
 
 // import haveno types
-import { HavenoClient } from "./haveno";
+import HavenoClient from "./HavenoClient";
 import HavenoUtils from "./utils/HavenoUtils";
 import * as grpcWeb from "grpc-web";
 import { MarketPriceInfo, NotificationMessage, OfferInfo, TradeInfo, UrlConnection, XmrBalanceInfo } from "./protobuf/grpc_pb"; // TODO (woodser): better names; haveno_grpc_pb, haveno_pb
@@ -202,15 +202,22 @@ beforeAll(async () => {
   
   // initialize funding wallet
   await initFundingWallet();
+  
+  // create test data directory if it doesn't exist
+  if (!fs.existsSync(TestConfig.testDataDir)) fs.mkdirSync(TestConfig.testDataDir);
 });
 
-beforeEach(async() => {
+beforeEach(async () => {
   HavenoUtils.log(0, "BEFORE TEST \"" + expect.getState().currentTestName + "\"");
 });
 
 afterAll(async () => {
+  monerod.worker.terminate(); // TODO (woodser): support terminating daemon and full wallet worker, e.g. daemon.disconnect()
   const promises = [];
-  for (const havenod of startupHavenods) if (havenod.getProcess()) promises.push(releaseHavenoProcess(havenod));
+  for (const havenod of startupHavenods) {
+    if (havenod.getProcess()) promises.push(releaseHavenoProcess(havenod));
+    else promises.push(havenod.disconnect());
+  }
   return Promise.all(promises);
 });
 
