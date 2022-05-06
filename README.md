@@ -23,7 +23,7 @@ await alice.disconnect();
 
 ## TypeDocs
 
-See haveno-ts [typedocs](https://haveno-dex.github.io/haveno-ts/classes/haveno.HavenoClient.html).
+See haveno-ts [typedocs](https://haveno-dex.github.io/haveno-ts/classes/HavenoClient.HavenoClient-1.html).
 
 ## Run tests
 
