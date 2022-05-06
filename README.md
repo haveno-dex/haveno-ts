@@ -2,6 +2,11 @@
 
 TypeScript library for using Haveno.
 
+## Install
+
+1. Start a Haveno daemon (see [installing.md](https://github.com/haveno-dex/haveno/blob/master/docs/installing.md)).
+2. Install haveno-ts in your project: `npm install haveno-ts`
+
 ## Sample code
 
 ```js
