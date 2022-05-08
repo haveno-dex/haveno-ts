@@ -8,7 +8,7 @@
   "scripts": {
     "prepare": "scripts/build_protobuf.sh",
     "pretest": "scripts/build_protobuf.sh",
-    "build": "tsc",
+    "build": "./scripts/build_dist.sh",
     "test": "jest ",
     "eslint": "eslint .",
     "eslintfix": "eslint src/* --fix",

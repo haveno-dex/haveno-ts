@@ -196,7 +196,7 @@ beforeAll(async () => {
   await arbitrator.registerDisputeAgent("arbitrator", TestConfig.devPrivilegePrivKey);
 
   // connect monero clients
-  monerod = await monerojs.connectToDaemonRpc(TestConfig.monerod.url, TestConfig.monerod.username, TestConfig.monerod.password);
+  monerod = await monerojs.connectToDaemonRpc(TestConfig.monerod.url, TestConfig.monerod.username, TestConfig.monerod.password, undefined, undefined, false);
   aliceWallet = await monerojs.connectToWalletRpc(TestConfig.startupHavenods[1].walletUrl, TestConfig.defaultHavenod.walletUsername, TestConfig.startupHavenods[1].accountPasswordRequired ? TestConfig.startupHavenods[1].accountPassword : TestConfig.defaultHavenod.walletDefaultPassword);
   bobWallet = await monerojs.connectToWalletRpc(TestConfig.startupHavenods[2].walletUrl, TestConfig.defaultHavenod.walletUsername, TestConfig.startupHavenods[2].accountPasswordRequired ? TestConfig.startupHavenods[2].accountPassword : TestConfig.defaultHavenod.walletDefaultPassword);
   
@@ -212,7 +212,6 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
-  monerod.worker.terminate(); // TODO (woodser): support terminating daemon and full wallet worker, e.g. daemon.disconnect()
   const promises = [];
   for (const havenod of startupHavenods) {
     if (havenod.getProcess()) promises.push(releaseHavenoProcess(havenod));
