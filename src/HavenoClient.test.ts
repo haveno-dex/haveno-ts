@@ -212,12 +212,16 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
+  
+  // release haveno processes
   const promises = [];
   for (const havenod of startupHavenods) {
-    if (havenod.getProcess()) promises.push(releaseHavenoProcess(havenod));
-    else promises.push(havenod.disconnect());
+    promises.push(havenod.getProcess() ? releaseHavenoProcess(havenod) : havenod.disconnect());
   }
-  return Promise.all(promises);
+  await Promise.all(promises);
+  
+  // terminate monero-javascript worker
+  (await monerojs.LibraryUtils.getWorker()).terminate();
 });
 
 // ----------------------------------- TESTS ----------------------------------
