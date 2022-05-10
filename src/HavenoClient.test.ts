@@ -593,7 +593,11 @@ test("Can start and stop a local Monero node", async() => {
 });
 
 // test wallet balances, transactions, deposit addresses, create and relay txs
-test("Has a Monero wallet", async () => { 
+test("Has a Monero wallet", async () => {
+  
+  // get seed phrase
+  const seed = await alice.getXmrSeed();
+  await MoneroUtils.validateMnemonic(seed);
   
   // wait for alice to have unlocked balance
   const tradeAmount = BigInt("250000000000");
