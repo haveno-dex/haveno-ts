@@ -7,7 +7,7 @@ import { GetVersionRequest, GetVersionReply, IsAppInitializedRequest, IsAppIniti
 import { PaymentMethod, PaymentAccount, AvailabilityResult, Attachment, DisputeResult, Dispute, ChatMessage, MoneroNodeSettings } from "./protobuf/pb_pb";
 
 /**
- * Haveno daemon client using gRPC.
+ * Haveno daemon client.
  */
 export default class HavenoClient {
 

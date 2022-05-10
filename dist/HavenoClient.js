@@ -5,7 +5,7 @@ import { GetVersionClient, AccountClient, MoneroConnectionsClient, DisputesClien
 import { GetVersionRequest, IsAppInitializedRequest, RegisterDisputeAgentRequest, MarketPriceRequest, MarketPricesRequest, MarketDepthRequest, GetBalancesRequest, GetMyOfferRequest, GetOffersRequest, GetPaymentMethodsRequest, GetPaymentAccountFormRequest, CreatePaymentAccountRequest, GetPaymentAccountsRequest, CreateCryptoCurrencyPaymentAccountRequest, CreateOfferRequest, CancelOfferRequest, TakeOfferRequest, GetTradeRequest, GetTradesRequest, GetNewDepositAddressRequest, ConfirmPaymentStartedRequest, ConfirmPaymentReceivedRequest, GetXmrTxsRequest, CreateXmrTxRequest, RelayXmrTxRequest, CreateAccountRequest, AccountExistsRequest, DeleteAccountRequest, OpenAccountRequest, IsAccountOpenRequest, CloseAccountRequest, ChangePasswordRequest, BackupAccountRequest, RestoreAccountRequest, StopRequest, NotificationMessage, RegisterNotificationListenerRequest, SendNotificationRequest, UrlConnection, AddConnectionRequest, RemoveConnectionRequest, GetConnectionRequest, GetConnectionsRequest, SetConnectionRequest, CheckConnectionRequest, CheckConnectionsRequest, StartCheckingConnectionsRequest, StopCheckingConnectionsRequest, GetBestAvailableConnectionRequest, SetAutoSwitchRequest, GetDisputeRequest, GetDisputesRequest, OpenDisputeRequest, ResolveDisputeRequest, SendDisputeChatMessageRequest, SendChatMessageRequest, GetChatMessagesRequest, StartMoneroNodeRequest, StopMoneroNodeRequest, IsMoneroNodeRunningRequest, GetMoneroNodeSettingsRequest } from "./protobuf/grpc_pb";
 import { AvailabilityResult } from "./protobuf/pb_pb";
 /**
- * Haveno daemon client using gRPC.
+ * Haveno daemon client.
  */
 export default class HavenoClient {
     /**

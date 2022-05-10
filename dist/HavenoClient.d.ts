@@ -3,7 +3,7 @@ import { GetVersionClient, AccountClient, MoneroConnectionsClient, DisputesClien
 import { MarketPriceInfo, MarketDepthInfo, XmrBalanceInfo, OfferInfo, TradeInfo, XmrTx, XmrDestination, NotificationMessage, UrlConnection } from "./protobuf/grpc_pb";
 import { PaymentMethod, PaymentAccount, Attachment, DisputeResult, Dispute, ChatMessage, MoneroNodeSettings } from "./protobuf/pb_pb";
 /**
- * Haveno daemon client using gRPC.
+ * Haveno daemon client.
  */
 export default class HavenoClient {
     _appName: string | undefined;

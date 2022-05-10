@@ -212,13 +212,16 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
-  monerod.worker.terminate(); // TODO (woodser): support terminating daemon and full wallet worker, e.g. daemon.disconnect()
+  
+  // release haveno processes
   const promises = [];
   for (const havenod of startupHavenods) {
-    if (havenod.getProcess()) promises.push(releaseHavenoProcess(havenod));
-    else promises.push(havenod.disconnect());
+    promises.push(havenod.getProcess() ? releaseHavenoProcess(havenod) : havenod.disconnect());
   }
-  return Promise.all(promises);
+  await Promise.all(promises);
+  
+  // terminate monero-javascript worker
+  (await monerojs.LibraryUtils.getWorker()).terminate();
 });
 
 // ----------------------------------- TESTS ----------------------------------
@@ -611,7 +614,7 @@ test("Has a Monero wallet", async () => {
   // get new deposit addresses
   for (let i = 0; i < 0; i++) {
     const address = await alice.getNewDepositAddress();
-    MoneroUtils.validateAddress(address, MoneroNetworkType.STAGNET);
+    await MoneroUtils.validateAddress(address, MoneroNetworkType.STAGNET);
   }
   
   // create withdraw tx

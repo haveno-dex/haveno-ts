@@ -1,6 +1,6 @@
 {
   "name": "haveno-ts",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Haveno TypeScript interface",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -8,7 +8,7 @@
   "scripts": {
     "prepare": "scripts/build_protobuf.sh",
     "pretest": "scripts/build_protobuf.sh",
-    "build": "tsc",
+    "build": "./scripts/build_dist.sh",
     "test": "jest ",
     "eslint": "eslint .",
     "eslintfix": "eslint src/* --fix",
@@ -48,7 +48,7 @@
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-jsx-a11y": "^6.5.1",
     "jest": "^26.6.0",
-    "monero-javascript": "^0.6.4",
+    "monero-javascript": "^0.7.0",
     "typedoc": "^0.22.15",
     "typedoc-plugin-missing-exports": "^0.22.6",
     "typedoc-plugin-rename-defaults": "^0.5.1",
