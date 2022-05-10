@@ -260,6 +260,12 @@ export default class HavenoClient {
      */
     getBalances(): Promise<XmrBalanceInfo>;
     /**
+     * Get the mnemonic seed phrase of the Monero wallet.
+     *
+     * @return {string} the mnemonic seed phrase of the Monero wallet
+     */
+    getXmrSeed(): Promise<string>;
+    /**
      * Get a new subaddress in the Monero wallet to receive deposits.
      *
      * @return {string} the deposit address (a subaddress in the Haveno wallet)
