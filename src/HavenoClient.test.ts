@@ -196,7 +196,7 @@ beforeAll(async () => {
   await arbitrator.registerDisputeAgent("arbitrator", TestConfig.devPrivilegePrivKey);
 
   // connect monero clients
-  monerod = await monerojs.connectToDaemonRpc(TestConfig.monerod.url, TestConfig.monerod.username, TestConfig.monerod.password, undefined, undefined, false);
+  monerod = await monerojs.connectToDaemonRpc(TestConfig.monerod.url, TestConfig.monerod.username, TestConfig.monerod.password);
   aliceWallet = await monerojs.connectToWalletRpc(TestConfig.startupHavenods[1].walletUrl, TestConfig.defaultHavenod.walletUsername, TestConfig.startupHavenods[1].accountPasswordRequired ? TestConfig.startupHavenods[1].accountPassword : TestConfig.defaultHavenod.walletDefaultPassword);
   bobWallet = await monerojs.connectToWalletRpc(TestConfig.startupHavenods[2].walletUrl, TestConfig.defaultHavenod.walletUsername, TestConfig.startupHavenods[2].accountPasswordRequired ? TestConfig.startupHavenods[2].accountPassword : TestConfig.defaultHavenod.walletDefaultPassword);
   
@@ -614,7 +614,7 @@ test("Has a Monero wallet", async () => {
   // get new deposit addresses
   for (let i = 0; i < 0; i++) {
     const address = await alice.getNewDepositAddress();
-    MoneroUtils.validateAddress(address, MoneroNetworkType.STAGNET);
+    await MoneroUtils.validateAddress(address, MoneroNetworkType.STAGNET);
   }
   
   // create withdraw tx
