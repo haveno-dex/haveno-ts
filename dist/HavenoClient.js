@@ -2,7 +2,7 @@ import console from "console";
 import HavenoUtils from "./utils/HavenoUtils";
 import TaskLooper from "./utils/TaskLooper";
 import { GetVersionClient, AccountClient, MoneroConnectionsClient, DisputesClient, DisputeAgentsClient, NotificationsClient, WalletsClient, PriceClient, OffersClient, PaymentAccountsClient, TradesClient, ShutdownServerClient, MoneroNodeClient } from './protobuf/GrpcServiceClientPb';
-import { GetVersionRequest, IsAppInitializedRequest, RegisterDisputeAgentRequest, MarketPriceRequest, MarketPricesRequest, MarketDepthRequest, GetBalancesRequest, GetMyOfferRequest, GetOffersRequest, GetPaymentMethodsRequest, GetPaymentAccountFormRequest, CreatePaymentAccountRequest, GetPaymentAccountsRequest, CreateCryptoCurrencyPaymentAccountRequest, CreateOfferRequest, CancelOfferRequest, TakeOfferRequest, GetTradeRequest, GetTradesRequest, GetNewDepositAddressRequest, ConfirmPaymentStartedRequest, ConfirmPaymentReceivedRequest, GetXmrTxsRequest, CreateXmrTxRequest, RelayXmrTxRequest, CreateAccountRequest, AccountExistsRequest, DeleteAccountRequest, OpenAccountRequest, IsAccountOpenRequest, CloseAccountRequest, ChangePasswordRequest, BackupAccountRequest, RestoreAccountRequest, StopRequest, NotificationMessage, RegisterNotificationListenerRequest, SendNotificationRequest, UrlConnection, AddConnectionRequest, RemoveConnectionRequest, GetConnectionRequest, GetConnectionsRequest, SetConnectionRequest, CheckConnectionRequest, CheckConnectionsRequest, StartCheckingConnectionsRequest, StopCheckingConnectionsRequest, GetBestAvailableConnectionRequest, SetAutoSwitchRequest, GetDisputeRequest, GetDisputesRequest, OpenDisputeRequest, ResolveDisputeRequest, SendDisputeChatMessageRequest, SendChatMessageRequest, GetChatMessagesRequest, StartMoneroNodeRequest, StopMoneroNodeRequest, IsMoneroNodeRunningRequest, GetMoneroNodeSettingsRequest } from "./protobuf/grpc_pb";
+import { GetVersionRequest, IsAppInitializedRequest, RegisterDisputeAgentRequest, MarketPriceRequest, MarketPricesRequest, MarketDepthRequest, GetBalancesRequest, GetMyOfferRequest, GetOffersRequest, GetPaymentMethodsRequest, GetPaymentAccountFormRequest, CreatePaymentAccountRequest, GetPaymentAccountsRequest, CreateCryptoCurrencyPaymentAccountRequest, CreateOfferRequest, CancelOfferRequest, TakeOfferRequest, GetTradeRequest, GetTradesRequest, GetXmrSeedRequest, GetNewDepositAddressRequest, ConfirmPaymentStartedRequest, ConfirmPaymentReceivedRequest, GetXmrTxsRequest, CreateXmrTxRequest, RelayXmrTxRequest, CreateAccountRequest, AccountExistsRequest, DeleteAccountRequest, OpenAccountRequest, IsAccountOpenRequest, CloseAccountRequest, ChangePasswordRequest, BackupAccountRequest, RestoreAccountRequest, StopRequest, NotificationMessage, RegisterNotificationListenerRequest, SendNotificationRequest, UrlConnection, AddConnectionRequest, RemoveConnectionRequest, GetConnectionRequest, GetConnectionsRequest, SetConnectionRequest, CheckConnectionRequest, CheckConnectionsRequest, StartCheckingConnectionsRequest, StopCheckingConnectionsRequest, GetBestAvailableConnectionRequest, SetAutoSwitchRequest, GetDisputeRequest, GetDisputesRequest, OpenDisputeRequest, ResolveDisputeRequest, SendDisputeChatMessageRequest, SendChatMessageRequest, GetChatMessagesRequest, StartMoneroNodeRequest, StopMoneroNodeRequest, IsMoneroNodeRunningRequest, GetMoneroNodeSettingsRequest } from "./protobuf/grpc_pb";
 import { AvailabilityResult } from "./protobuf/pb_pb";
 /**
  * Haveno daemon client.
@@ -642,6 +642,21 @@ export default class HavenoClient {
                     reject(err);
                 else
                     resolve(response.getBalances().getXmr());
+            });
+        });
+    }
+    /**
+     * Get the mnemonic seed phrase of the Monero wallet.
+     *
+     * @return {string} the mnemonic seed phrase of the Monero wallet
+     */
+    async getXmrSeed() {
+        return new Promise((resolve, reject) => {
+            this._walletsClient.getXmrSeed(new GetXmrSeedRequest(), { password: this._password }, function (err, response) {
+                if (err)
+                    reject(err);
+                else
+                    resolve(response.getSeed());
             });
         });
     }

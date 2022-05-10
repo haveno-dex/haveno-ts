@@ -413,6 +413,9 @@ export declare class WalletsClient {
     methodInfoGetBalances: grpcWeb.MethodDescriptor<grpc_pb.GetBalancesRequest, grpc_pb.GetBalancesReply>;
     getBalances(request: grpc_pb.GetBalancesRequest, metadata: grpcWeb.Metadata | null): Promise<grpc_pb.GetBalancesReply>;
     getBalances(request: grpc_pb.GetBalancesRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.GetBalancesReply) => void): grpcWeb.ClientReadableStream<grpc_pb.GetBalancesReply>;
+    methodInfoGetXmrSeed: grpcWeb.MethodDescriptor<grpc_pb.GetXmrSeedRequest, grpc_pb.GetXmrSeedReply>;
+    getXmrSeed(request: grpc_pb.GetXmrSeedRequest, metadata: grpcWeb.Metadata | null): Promise<grpc_pb.GetXmrSeedReply>;
+    getXmrSeed(request: grpc_pb.GetXmrSeedRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.GetXmrSeedReply) => void): grpcWeb.ClientReadableStream<grpc_pb.GetXmrSeedReply>;
     methodInfoGetNewDepositAddress: grpcWeb.MethodDescriptor<grpc_pb.GetNewDepositAddressRequest, grpc_pb.GetNewDepositAddressReply>;
     getNewDepositAddress(request: grpc_pb.GetNewDepositAddressRequest, metadata: grpcWeb.Metadata | null): Promise<grpc_pb.GetNewDepositAddressReply>;
     getNewDepositAddress(request: grpc_pb.GetNewDepositAddressRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.GetNewDepositAddressReply) => void): grpcWeb.ClientReadableStream<grpc_pb.GetNewDepositAddressReply>;

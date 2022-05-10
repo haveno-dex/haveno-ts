@@ -2774,6 +2774,38 @@ export namespace GetBalancesReply {
   }
 }
 
+export class GetXmrSeedRequest extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GetXmrSeedRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: GetXmrSeedRequest): GetXmrSeedRequest.AsObject;
+  static serializeBinaryToWriter(message: GetXmrSeedRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GetXmrSeedRequest;
+  static deserializeBinaryFromReader(message: GetXmrSeedRequest, reader: jspb.BinaryReader): GetXmrSeedRequest;
+}
+
+export namespace GetXmrSeedRequest {
+  export type AsObject = {
+  }
+}
+
+export class GetXmrSeedReply extends jspb.Message {
+  getSeed(): string;
+  setSeed(value: string): GetXmrSeedReply;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GetXmrSeedReply.AsObject;
+  static toObject(includeInstance: boolean, msg: GetXmrSeedReply): GetXmrSeedReply.AsObject;
+  static serializeBinaryToWriter(message: GetXmrSeedReply, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GetXmrSeedReply;
+  static deserializeBinaryFromReader(message: GetXmrSeedReply, reader: jspb.BinaryReader): GetXmrSeedReply;
+}
+
+export namespace GetXmrSeedReply {
+  export type AsObject = {
+    seed: string,
+  }
+}
+
 export class GetNewDepositAddressRequest extends jspb.Message {
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GetNewDepositAddressRequest.AsObject;
