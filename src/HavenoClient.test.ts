@@ -923,21 +923,23 @@ test("Can create crypto payment accounts", async () => {
   }
 });
 
-test("Can post and remove an offer", async () => {
-  
-  // wait for alice to have unlocked balance to post offer
-  const tradeAmount = BigInt("250000000000");
-  await waitForUnlockedBalance(tradeAmount * BigInt("2"), alice);
+test("Can post and remove offers", async () => {
+
+  // wait for alice to have at least 5 outputs of 0.5 XMR
+  await waitForUnlockedOutputs([aliceWallet], BigInt("500000000000"), 5);
   
   // get unlocked balance before reserving funds for offer
   const unlockedBalanceBefore = BigInt((await alice.getBalances()).getUnlockedBalance());
-
-  // post offer
-  const assetCode = getRandomAssetCode();
-  let offer: OfferInfo = await postOffer(alice, {assetCode: assetCode});
-  if (isCrypto(assetCode)) assert.equal(offer.getBaseCurrencyCode(), assetCode); // TODO: crypto base/counter is inverted
-  else assert.equal(offer.getCounterCurrencyCode(),assetCode);
+  
+  // post crypto offer
+  let assetCode = "ETH";
+  let price = 1 / 17;
+  price = 1 / price; // TODO: price in crypto offer is inverted
+  let offer: OfferInfo = await postOffer(alice, {assetCode: assetCode, price: price}); 
   assert.equal(offer.getState(), "AVAILABLE");
+  assert.equal(offer.getBaseCurrencyCode(), assetCode); // TODO: base and counter currencies inverted in crypto offer
+  assert.equal(offer.getCounterCurrencyCode(), "XMR");
+  assert.equal(offer.getPrice(), price * 100000000); // TODO: price when posting crypto offer is inverted and * 100000000.
   
   // has offer
   offer = await alice.getMyOffer(offer.getId());
@@ -951,23 +953,28 @@ test("Can post and remove an offer", async () => {
   
   // reserved balance released
   expect(BigInt((await alice.getBalances()).getUnlockedBalance())).toEqual(unlockedBalanceBefore);
-});
-
-test("Can prepare for trading", async () => {
-
-  // create ethereum and revolut payment accounts
-  await createPaymentAccount(alice, "eth");
-  await createRevolutPaymentAccount(alice);
-  await createPaymentAccount(bob, "eth");
-  await createRevolutPaymentAccount(bob);
-
-  // fund alice and bob with at least 5 outputs of 0.5 XMR
-  const numOutputs = 5;
-  const outputAmt = BigInt("500000000000");
-  const walletsToFund = [];
-  if (!await hasUnlockedOutputs(aliceWallet, outputAmt, numOutputs)) walletsToFund.push(aliceWallet);
-  if (!await hasUnlockedOutputs(bobWallet, outputAmt, numOutputs)) walletsToFund.push(bobWallet);
-  await fundWallets(walletsToFund, outputAmt, numOutputs);
+  
+  // post fiat offer 
+  assetCode = "USD";
+  price = 180.0;
+  offer = await postOffer(alice, {assetCode: assetCode, price: price});
+  assert.equal(offer.getState(), "AVAILABLE");
+  assert.equal(offer.getBaseCurrencyCode(), "XMR");
+  assert.equal(offer.getCounterCurrencyCode(), "USD");
+  assert.equal(offer.getPrice(), price * 10000); // TODO: price = price * 10000
+  
+  // has offer
+  offer = await alice.getMyOffer(offer.getId());
+  assert.equal(offer.getState(), "AVAILABLE");
+  
+  // cancel offer
+  await alice.removeOffer(offer.getId());
+  
+  // offer is removed from my offers
+  if (getOffer(await alice.getMyOffers(assetCode, "buy"), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in my offers after removal");
+  
+  // reserved balance released
+  expect(BigInt((await alice.getBalances()).getUnlockedBalance())).toEqual(unlockedBalanceBefore);
 });
 
 // TODO (woodser): test grpc notifications
@@ -1101,7 +1108,7 @@ test("Can resolve disputes", async () => {
 
   // wait for alice and bob to have unlocked balance for trade
   const tradeAmount = BigInt("250000000000");
-  await fundWallets([aliceWallet, bobWallet], tradeAmount * BigInt("6"), 4);
+  await waitForUnlockedOutputs([aliceWallet, bobWallet], tradeAmount * BigInt("6"), 4);
   
   // register to receive notifications
   const aliceNotifications: NotificationMessage[] = [];
@@ -1835,7 +1842,7 @@ async function hasUnlockedOutputs(wallet: any, amt: BigInt, numOutputs?: number)
  * @param {BigInt} amt - the amount to fund
  * @param {number?} numOutputs - the number of outputs of the given amount (default 1)
  */
-async function fundWallets(wallets: any[], amt: BigInt, numOutputs?: number): Promise<void> {
+async function waitForUnlockedOutputs(wallets: any[], amt: BigInt, numOutputs?: number): Promise<void> {
   if (numOutputs === undefined) numOutputs = 1;
   
   // collect destinations
