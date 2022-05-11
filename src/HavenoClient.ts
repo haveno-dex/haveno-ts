@@ -38,6 +38,7 @@ export default class HavenoClient {
   _registerNotificationListenerCalled = false;
   _keepAliveLooper: any;
   _keepAlivePeriodMs = 60000;
+  _paymentMethods: PaymentMethod[] | undefined; // cached for performance
 
   // constants
   static readonly _fullyInitializedMessage = "Application fully initialized";
@@ -747,14 +748,27 @@ export default class HavenoClient {
   }
   
   /**
+   * Get all supported assets codes.
+   * 
+   * TODO: replace this with getSupportedAssetCodes(): Promise<TradeCurrency[]>)
+   * 
+   * @return {Promise<string[]>} all supported trade assets
+   */
+  async getSupportedAssetCodes(): Promise<string[]> {
+    const assetCodes: string[] = [];
+    for (const price of await this.getPrices()) assetCodes.push(price.getCurrencyCode());
+    return assetCodes;
+  }
+  
+  /**
    * Get the current market price per 1 XMR in the given currency.
    *
-   * @param {string} currencyCode - currency code (fiat or crypto) to get the price of
-   * @return {number} the current market price per 1 XMR in the given currency
+   * @param {string} assetCode - asset code to get the price of
+   * @return {number} the price of the asset per 1 XMR
    */
-  async getPrice(currencyCode: string): Promise<number> {
+  async getPrice(assetCode: string): Promise<number> {
     return new Promise((resolve, reject) => {
-      this._priceClient.getMarketPrice(new MarketPriceRequest().setCurrencyCode(currencyCode), {password: this._password}, function(err: grpcWeb.RpcError, response: MarketPriceReply) {
+      this._priceClient.getMarketPrice(new MarketPriceRequest().setCurrencyCode(assetCode), {password: this._password}, function(err: grpcWeb.RpcError, response: MarketPriceReply) {
         if (err) reject(err);
         else resolve(response.getPrice());
       });
@@ -762,9 +776,9 @@ export default class HavenoClient {
   }
   
   /**
-   * Get the current market prices of all currencies.
+   * Get the current market prices of all a.
    *
-   * @return {MarketPrice[]} price per 1 XMR in all supported currencies (fiat & crypto)
+   * @return {MarketPrice[]} prices of the assets per 1 XMR
    */
   async getPrices(): Promise<MarketPriceInfo[]> {
     return new Promise((resolve, reject) => {
@@ -793,15 +807,24 @@ export default class HavenoClient {
   /**
    * Get payment methods.
    * 
+   * @param {string} assetCode - get payment methods supporting this asset code (optional)
    * @return {PaymentMethod[]} the payment methods
    */
-  async getPaymentMethods(): Promise<PaymentMethod[]> {
-    return new Promise((resolve, reject) => {
-      this._paymentAccountsClient.getPaymentMethods(new GetPaymentMethodsRequest(), {password: this._password}, function(err: grpcWeb.RpcError, response: GetPaymentMethodsReply) {
-        if (err) reject(err);
-        else resolve(response.getPaymentMethodsList());
+  async getPaymentMethods(assetCode?: string): Promise<PaymentMethod[]> {
+    if (!this._paymentMethods) {
+      this._paymentMethods = await new Promise((resolve, reject) => {
+        this._paymentAccountsClient.getPaymentMethods(new GetPaymentMethodsRequest(), {password: this._password}, function(err: grpcWeb.RpcError, response: GetPaymentMethodsReply) {
+          if (err) reject(err);
+          else resolve(response.getPaymentMethodsList());
+        });
       });
-    });
+    }
+    if (!assetCode) return this._paymentMethods!;
+    const assetPaymentMethods: PaymentMethod[] = [];
+    for (const paymentMethod of this._paymentMethods!) {
+      if (paymentMethod.getSupportedAssetCodesList().includes(assetCode)) assetPaymentMethods.push(paymentMethod);
+    }
+    return assetPaymentMethods;
   }
   
   /**

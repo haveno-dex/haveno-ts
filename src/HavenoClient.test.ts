@@ -682,6 +682,14 @@ test("Can receive push notifications", async () => {
   }
 });
 
+test("Can get supported assets and their payment methods", async() => {
+  const assetCodes = await alice.getSupportedAssetCodes(); // TODO: replace with getSupportedAssets(): TradeCurrency[]
+  for (const assetCode of assetCodes) {
+    const paymentMethods = await alice.getPaymentMethods(assetCode);
+    expect(paymentMethods.length).toBeGreaterThanOrEqual(0);
+  }
+});
+
 test("Can get market prices", async () => {
 
   // get all market prices
@@ -828,6 +836,7 @@ test("Can get payment methods", async () => {
     expect(paymentMethod.getId().length).toBeGreaterThan(0);
     expect(BigInt(paymentMethod.getMaxTradeLimit())).toBeGreaterThan(BigInt(0));
     expect(BigInt(paymentMethod.getMaxTradePeriod())).toBeGreaterThan(BigInt(0));
+    expect(paymentMethod.getSupportedAssetCodesList().length).toBeGreaterThanOrEqual(0);
   }
 });
 
