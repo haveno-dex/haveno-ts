@@ -3760,7 +3760,7 @@ if (goog.DEBUG && !COMPILED) {
  * @constructor
  */
 proto.io.bisq.protobuffer.PaymentMethod = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.io.bisq.protobuffer.PaymentMethod.repeatedFields_, null);
 };
 goog.inherits(proto.io.bisq.protobuffer.PaymentMethod, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -61725,6 +61725,13 @@ proto.io.bisq.protobuffer.PaymentAccount.prototype.hasPaymentAccountPayload = fu
 
 
 
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.io.bisq.protobuffer.PaymentMethod.repeatedFields_ = [4];
+
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -61758,7 +61765,8 @@ proto.io.bisq.protobuffer.PaymentMethod.toObject = function(includeInstance, msg
   var f, obj = {
     id: jspb.Message.getFieldWithDefault(msg, 1, ""),
     maxTradePeriod: jspb.Message.getFieldWithDefault(msg, 2, "0"),
-    maxTradeLimit: jspb.Message.getFieldWithDefault(msg, 3, "0")
+    maxTradeLimit: jspb.Message.getFieldWithDefault(msg, 3, "0"),
+    supportedAssetCodesList: (f = jspb.Message.getRepeatedField(msg, 4)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -61807,6 +61815,10 @@ proto.io.bisq.protobuffer.PaymentMethod.deserializeBinaryFromReader = function(m
       var value = /** @type {string} */ (reader.readInt64String());
       msg.setMaxTradeLimit(value);
       break;
+    case 4:
+      var value = /** @type {string} */ (reader.readString());
+      msg.addSupportedAssetCodes(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -61854,6 +61866,13 @@ proto.io.bisq.protobuffer.PaymentMethod.serializeBinaryToWriter = function(messa
   if (parseInt(f, 10) !== 0) {
     writer.writeInt64String(
       3,
+      f
+    );
+  }
+  f = message.getSupportedAssetCodesList();
+  if (f.length > 0) {
+    writer.writeRepeatedString(
+      4,
       f
     );
   }
@@ -61911,6 +61930,43 @@ proto.io.bisq.protobuffer.PaymentMethod.prototype.getMaxTradeLimit = function() 
  */
 proto.io.bisq.protobuffer.PaymentMethod.prototype.setMaxTradeLimit = function(value) {
   return jspb.Message.setProto3StringIntField(this, 3, value);
+};
+
+
+/**
+ * repeated string supported_asset_codes = 4;
+ * @return {!Array<string>}
+ */
+proto.io.bisq.protobuffer.PaymentMethod.prototype.getSupportedAssetCodesList = function() {
+  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 4));
+};
+
+
+/**
+ * @param {!Array<string>} value
+ * @return {!proto.io.bisq.protobuffer.PaymentMethod} returns this
+ */
+proto.io.bisq.protobuffer.PaymentMethod.prototype.setSupportedAssetCodesList = function(value) {
+  return jspb.Message.setField(this, 4, value || []);
+};
+
+
+/**
+ * @param {string} value
+ * @param {number=} opt_index
+ * @return {!proto.io.bisq.protobuffer.PaymentMethod} returns this
+ */
+proto.io.bisq.protobuffer.PaymentMethod.prototype.addSupportedAssetCodes = function(value, opt_index) {
+  return jspb.Message.addToRepeatedField(this, 4, value, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.io.bisq.protobuffer.PaymentMethod} returns this
+ */
+proto.io.bisq.protobuffer.PaymentMethod.prototype.clearSupportedAssetCodesList = function() {
+  return this.setSupportedAssetCodesList([]);
 };
 
 

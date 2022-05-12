@@ -1,16 +1,21 @@
-import assert from "assert";
-import console from 'console';
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const assert_1 = __importDefault(require("assert"));
+const console_1 = __importDefault(require("console"));
 /**
  * Collection of utilities for working with Haveno.
  */
-export default class HavenoUtils {
+class HavenoUtils {
     /**
      * Set the log level with 0 being least verbose.
      *
      * @param {int} level - the log level
      */
     static async setLogLevel(level) {
-        assert(level === parseInt(level + "", 10) && level >= 0, "Log level must be an integer >= 0");
+        (0, assert_1.default)(level === parseInt(level + "", 10) && level >= 0, "Log level must be an integer >= 0");
         HavenoUtils.logLevel = level;
     }
     /**
@@ -29,12 +34,12 @@ export default class HavenoUtils {
      * @param {boolean?} warn - log the message as a warning if true
      */
     static log(level, msg) {
-        assert(level === parseInt(level + "", 10) && level >= 0, "Log level must be an integer >= 0");
+        (0, assert_1.default)(level === parseInt(level + "", 10) && level >= 0, "Log level must be an integer >= 0");
         if (HavenoUtils.logLevel >= level) {
             const now = Date.now();
             const formattedTimeSinceLastLog = HavenoUtils.lastLogTimeMs ? " (+" + (now - HavenoUtils.lastLogTimeMs) + " ms)" : "\t";
             HavenoUtils.lastLogTimeMs = now;
-            console.log(HavenoUtils.formatTimestamp(now) + formattedTimeSinceLastLog + "\t[L" + level + "] " + msg);
+            console_1.default.log(HavenoUtils.formatTimestamp(now) + formattedTimeSinceLastLog + "\t[L" + level + "] " + msg);
         }
     }
     /**
@@ -72,6 +77,7 @@ export default class HavenoUtils {
         return BigInt(centineros) * BigInt(HavenoUtils.centinerosToAUMultiplier);
     }
 }
+exports.default = HavenoUtils;
 HavenoUtils.logLevel = 0;
 HavenoUtils.centinerosToAUMultiplier = 10000;
 HavenoUtils.months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];

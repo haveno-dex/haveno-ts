@@ -7650,6 +7650,11 @@ export class PaymentMethod extends jspb.Message {
   getMaxTradeLimit(): string;
   setMaxTradeLimit(value: string): PaymentMethod;
 
+  getSupportedAssetCodesList(): Array<string>;
+  setSupportedAssetCodesList(value: Array<string>): PaymentMethod;
+  clearSupportedAssetCodesList(): PaymentMethod;
+  addSupportedAssetCodes(value: string, index?: number): PaymentMethod;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PaymentMethod.AsObject;
   static toObject(includeInstance: boolean, msg: PaymentMethod): PaymentMethod.AsObject;
@@ -7663,6 +7668,7 @@ export namespace PaymentMethod {
     id: string,
     maxTradePeriod: string,
     maxTradeLimit: string,
+    supportedAssetCodesList: Array<string>,
   }
 }
 

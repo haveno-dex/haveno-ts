@@ -1,14 +1,40 @@
+"use strict";
 /**
  * @fileoverview gRPC-Web generated client stub for io.bisq.protobuffer
  * @enhanceable
  * @public
  */
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.WalletsClient = exports.TradesClient = exports.ShutdownServerClient = exports.GetTradeStatisticsClient = exports.PriceClient = exports.PaymentAccountsClient = exports.OffersClient = exports.MoneroNodeClient = exports.MoneroConnectionsClient = exports.NotificationsClient = exports.DisputeAgentsClient = exports.DisputesClient = exports.AccountClient = exports.GetVersionClient = exports.HelpClient = void 0;
 // GENERATED CODE -- DO NOT EDIT!
 /* eslint-disable */
 // @ts-nocheck
-import * as grpcWeb from 'grpc-web';
-import * as grpc_pb from './grpc_pb';
-export class HelpClient {
+const grpcWeb = __importStar(require("grpc-web"));
+const grpc_pb = __importStar(require("./grpc_pb"));
+class HelpClient {
     constructor(hostname, credentials, options) {
         this.methodInfoGetMethodHelp = new grpcWeb.MethodDescriptor('/io.bisq.protobuffer.Help/GetMethodHelp', grpcWeb.MethodType.UNARY, grpc_pb.GetMethodHelpRequest, grpc_pb.GetMethodHelpReply, (request) => {
             return request.serializeBinary();
@@ -32,7 +58,8 @@ export class HelpClient {
             '/io.bisq.protobuffer.Help/GetMethodHelp', request, metadata || {}, this.methodInfoGetMethodHelp);
     }
 }
-export class GetVersionClient {
+exports.HelpClient = HelpClient;
+class GetVersionClient {
     constructor(hostname, credentials, options) {
         this.methodInfoGetVersion = new grpcWeb.MethodDescriptor('/io.bisq.protobuffer.GetVersion/GetVersion', grpcWeb.MethodType.UNARY, grpc_pb.GetVersionRequest, grpc_pb.GetVersionReply, (request) => {
             return request.serializeBinary();
@@ -56,7 +83,8 @@ export class GetVersionClient {
             '/io.bisq.protobuffer.GetVersion/GetVersion', request, metadata || {}, this.methodInfoGetVersion);
     }
 }
-export class AccountClient {
+exports.GetVersionClient = GetVersionClient;
+class AccountClient {
     constructor(hostname, credentials, options) {
         this.methodInfoAccountExists = new grpcWeb.MethodDescriptor('/io.bisq.protobuffer.Account/AccountExists', grpcWeb.MethodType.UNARY, grpc_pb.AccountExistsRequest, grpc_pb.AccountExistsReply, (request) => {
             return request.serializeBinary();
@@ -175,7 +203,8 @@ export class AccountClient {
             '/io.bisq.protobuffer.Account/RestoreAccount', request, metadata || {}, this.methodInfoRestoreAccount);
     }
 }
-export class DisputesClient {
+exports.AccountClient = AccountClient;
+class DisputesClient {
     constructor(hostname, credentials, options) {
         this.methodInfoGetDispute = new grpcWeb.MethodDescriptor('/io.bisq.protobuffer.Disputes/GetDispute', grpcWeb.MethodType.UNARY, grpc_pb.GetDisputeRequest, grpc_pb.GetDisputeReply, (request) => {
             return request.serializeBinary();
@@ -243,7 +272,8 @@ export class DisputesClient {
             '/io.bisq.protobuffer.Disputes/SendDisputeChatMessage', request, metadata || {}, this.methodInfoSendDisputeChatMessage);
     }
 }
-export class DisputeAgentsClient {
+exports.DisputesClient = DisputesClient;
+class DisputeAgentsClient {
     constructor(hostname, credentials, options) {
         this.methodInfoRegisterDisputeAgent = new grpcWeb.MethodDescriptor('/io.bisq.protobuffer.DisputeAgents/RegisterDisputeAgent', grpcWeb.MethodType.UNARY, grpc_pb.RegisterDisputeAgentRequest, grpc_pb.RegisterDisputeAgentReply, (request) => {
             return request.serializeBinary();
@@ -267,7 +297,8 @@ export class DisputeAgentsClient {
             '/io.bisq.protobuffer.DisputeAgents/RegisterDisputeAgent', request, metadata || {}, this.methodInfoRegisterDisputeAgent);
     }
 }
-export class NotificationsClient {
+exports.DisputeAgentsClient = DisputeAgentsClient;
+class NotificationsClient {
     constructor(hostname, credentials, options) {
         this.methodInfoRegisterNotificationListener = new grpcWeb.MethodDescriptor('/io.bisq.protobuffer.Notifications/RegisterNotificationListener', grpcWeb.MethodType.SERVER_STREAMING, grpc_pb.RegisterNotificationListenerRequest, grpc_pb.NotificationMessage, (request) => {
             return request.serializeBinary();
@@ -298,7 +329,8 @@ export class NotificationsClient {
             '/io.bisq.protobuffer.Notifications/SendNotification', request, metadata || {}, this.methodInfoSendNotification);
     }
 }
-export class MoneroConnectionsClient {
+exports.NotificationsClient = NotificationsClient;
+class MoneroConnectionsClient {
     constructor(hostname, credentials, options) {
         this.methodInfoAddConnection = new grpcWeb.MethodDescriptor('/io.bisq.protobuffer.MoneroConnections/AddConnection', grpcWeb.MethodType.UNARY, grpc_pb.AddConnectionRequest, grpc_pb.AddConnectionReply, (request) => {
             return request.serializeBinary();
@@ -432,7 +464,8 @@ export class MoneroConnectionsClient {
             '/io.bisq.protobuffer.MoneroConnections/SetAutoSwitch', request, metadata || {}, this.methodInfoSetAutoSwitch);
     }
 }
-export class MoneroNodeClient {
+exports.MoneroConnectionsClient = MoneroConnectionsClient;
+class MoneroNodeClient {
     constructor(hostname, credentials, options) {
         this.methodInfoIsMoneroNodeRunning = new grpcWeb.MethodDescriptor('/io.bisq.protobuffer.MoneroNode/IsMoneroNodeRunning', grpcWeb.MethodType.UNARY, grpc_pb.IsMoneroNodeRunningRequest, grpc_pb.IsMoneroNodeRunningReply, (request) => {
             return request.serializeBinary();
@@ -489,7 +522,8 @@ export class MoneroNodeClient {
             '/io.bisq.protobuffer.MoneroNode/StopMoneroNode', request, metadata || {}, this.methodInfoStopMoneroNode);
     }
 }
-export class OffersClient {
+exports.MoneroNodeClient = MoneroNodeClient;
+class OffersClient {
     constructor(hostname, credentials, options) {
         this.methodInfoGetOffer = new grpcWeb.MethodDescriptor('/io.bisq.protobuffer.Offers/GetOffer', grpcWeb.MethodType.UNARY, grpc_pb.GetOfferRequest, grpc_pb.GetOfferReply, (request) => {
             return request.serializeBinary();
@@ -568,7 +602,8 @@ export class OffersClient {
             '/io.bisq.protobuffer.Offers/CancelOffer', request, metadata || {}, this.methodInfoCancelOffer);
     }
 }
-export class PaymentAccountsClient {
+exports.OffersClient = OffersClient;
+class PaymentAccountsClient {
     constructor(hostname, credentials, options) {
         this.methodInfoCreatePaymentAccount = new grpcWeb.MethodDescriptor('/io.bisq.protobuffer.PaymentAccounts/CreatePaymentAccount', grpcWeb.MethodType.UNARY, grpc_pb.CreatePaymentAccountRequest, grpc_pb.CreatePaymentAccountReply, (request) => {
             return request.serializeBinary();
@@ -647,7 +682,8 @@ export class PaymentAccountsClient {
             '/io.bisq.protobuffer.PaymentAccounts/GetCryptoCurrencyPaymentMethods', request, metadata || {}, this.methodInfoGetCryptoCurrencyPaymentMethods);
     }
 }
-export class PriceClient {
+exports.PaymentAccountsClient = PaymentAccountsClient;
+class PriceClient {
     constructor(hostname, credentials, options) {
         this.methodInfoGetMarketPrice = new grpcWeb.MethodDescriptor('/io.bisq.protobuffer.Price/GetMarketPrice', grpcWeb.MethodType.UNARY, grpc_pb.MarketPriceRequest, grpc_pb.MarketPriceReply, (request) => {
             return request.serializeBinary();
@@ -693,7 +729,8 @@ export class PriceClient {
             '/io.bisq.protobuffer.Price/GetMarketDepth', request, metadata || {}, this.methodInfoGetMarketDepth);
     }
 }
-export class GetTradeStatisticsClient {
+exports.PriceClient = PriceClient;
+class GetTradeStatisticsClient {
     constructor(hostname, credentials, options) {
         this.methodInfoGetTradeStatistics = new grpcWeb.MethodDescriptor('/io.bisq.protobuffer.GetTradeStatistics/GetTradeStatistics', grpcWeb.MethodType.UNARY, grpc_pb.GetTradeStatisticsRequest, grpc_pb.GetTradeStatisticsReply, (request) => {
             return request.serializeBinary();
@@ -717,7 +754,8 @@ export class GetTradeStatisticsClient {
             '/io.bisq.protobuffer.GetTradeStatistics/GetTradeStatistics', request, metadata || {}, this.methodInfoGetTradeStatistics);
     }
 }
-export class ShutdownServerClient {
+exports.GetTradeStatisticsClient = GetTradeStatisticsClient;
+class ShutdownServerClient {
     constructor(hostname, credentials, options) {
         this.methodInfoStop = new grpcWeb.MethodDescriptor('/io.bisq.protobuffer.ShutdownServer/Stop', grpcWeb.MethodType.UNARY, grpc_pb.StopRequest, grpc_pb.StopReply, (request) => {
             return request.serializeBinary();
@@ -741,7 +779,8 @@ export class ShutdownServerClient {
             '/io.bisq.protobuffer.ShutdownServer/Stop', request, metadata || {}, this.methodInfoStop);
     }
 }
-export class TradesClient {
+exports.ShutdownServerClient = ShutdownServerClient;
+class TradesClient {
     constructor(hostname, credentials, options) {
         this.methodInfoGetTrade = new grpcWeb.MethodDescriptor('/io.bisq.protobuffer.Trades/GetTrade', grpcWeb.MethodType.UNARY, grpc_pb.GetTradeRequest, grpc_pb.GetTradeReply, (request) => {
             return request.serializeBinary();
@@ -853,7 +892,8 @@ export class TradesClient {
             '/io.bisq.protobuffer.Trades/SendChatMessage', request, metadata || {}, this.methodInfoSendChatMessage);
     }
 }
-export class WalletsClient {
+exports.TradesClient = TradesClient;
+class WalletsClient {
     constructor(hostname, credentials, options) {
         this.methodInfoGetBalances = new grpcWeb.MethodDescriptor('/io.bisq.protobuffer.Wallets/GetBalances', grpcWeb.MethodType.UNARY, grpc_pb.GetBalancesRequest, grpc_pb.GetBalancesReply, (request) => {
             return request.serializeBinary();
@@ -1053,4 +1093,5 @@ export class WalletsClient {
             '/io.bisq.protobuffer.Wallets/UnlockWallet', request, metadata || {}, this.methodInfoUnlockWallet);
     }
 }
+exports.WalletsClient = WalletsClient;
 //# sourceMappingURL=GrpcServiceClientPb.js.map
