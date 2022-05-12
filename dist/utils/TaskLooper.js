@@ -1,7 +1,9 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Run a task in a fixed period loop.
  */
-export default class TaskLooper {
+class TaskLooper {
     /**
      * Build the looper with a function to invoke on a fixed period loop.
      *
@@ -44,4 +46,5 @@ export default class TaskLooper {
         this._isLooping = false;
     }
 }
+exports.default = TaskLooper;
 //# sourceMappingURL=TaskLooper.js.map

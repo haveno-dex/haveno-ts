@@ -1,13 +1,18 @@
-import console from "console";
-import HavenoUtils from "./utils/HavenoUtils";
-import TaskLooper from "./utils/TaskLooper";
-import { GetVersionClient, AccountClient, MoneroConnectionsClient, DisputesClient, DisputeAgentsClient, NotificationsClient, WalletsClient, PriceClient, OffersClient, PaymentAccountsClient, TradesClient, ShutdownServerClient, MoneroNodeClient } from './protobuf/GrpcServiceClientPb';
-import { GetVersionRequest, IsAppInitializedRequest, RegisterDisputeAgentRequest, MarketPriceRequest, MarketPricesRequest, MarketDepthRequest, GetBalancesRequest, GetMyOfferRequest, GetOffersRequest, GetPaymentMethodsRequest, GetPaymentAccountFormRequest, CreatePaymentAccountRequest, GetPaymentAccountsRequest, CreateCryptoCurrencyPaymentAccountRequest, CreateOfferRequest, CancelOfferRequest, TakeOfferRequest, GetTradeRequest, GetTradesRequest, GetXmrSeedRequest, GetNewDepositAddressRequest, ConfirmPaymentStartedRequest, ConfirmPaymentReceivedRequest, GetXmrTxsRequest, CreateXmrTxRequest, RelayXmrTxRequest, CreateAccountRequest, AccountExistsRequest, DeleteAccountRequest, OpenAccountRequest, IsAccountOpenRequest, CloseAccountRequest, ChangePasswordRequest, BackupAccountRequest, RestoreAccountRequest, StopRequest, NotificationMessage, RegisterNotificationListenerRequest, SendNotificationRequest, UrlConnection, AddConnectionRequest, RemoveConnectionRequest, GetConnectionRequest, GetConnectionsRequest, SetConnectionRequest, CheckConnectionRequest, CheckConnectionsRequest, StartCheckingConnectionsRequest, StopCheckingConnectionsRequest, GetBestAvailableConnectionRequest, SetAutoSwitchRequest, GetDisputeRequest, GetDisputesRequest, OpenDisputeRequest, ResolveDisputeRequest, SendDisputeChatMessageRequest, SendChatMessageRequest, GetChatMessagesRequest, StartMoneroNodeRequest, StopMoneroNodeRequest, IsMoneroNodeRunningRequest, GetMoneroNodeSettingsRequest } from "./protobuf/grpc_pb";
-import { AvailabilityResult } from "./protobuf/pb_pb";
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const console_1 = __importDefault(require("console"));
+const HavenoUtils_1 = __importDefault(require("./utils/HavenoUtils"));
+const TaskLooper_1 = __importDefault(require("./utils/TaskLooper"));
+const GrpcServiceClientPb_1 = require("./protobuf/GrpcServiceClientPb");
+const grpc_pb_1 = require("./protobuf/grpc_pb");
+const pb_pb_1 = require("./protobuf/pb_pb");
 /**
  * Haveno daemon client.
  */
-export default class HavenoClient {
+class HavenoClient {
     /**
      * Construct a client connected to a Haveno daemon.
      *
@@ -23,22 +28,22 @@ export default class HavenoClient {
             throw new Error("Must provide URL of Haveno daemon");
         if (!password)
             throw new Error("Must provide password of Haveno daemon");
-        HavenoUtils.log(2, "Creating Haveno client connected to " + url);
+        HavenoUtils_1.default.log(2, "Creating Haveno client connected to " + url);
         this._url = url;
         this._password = password;
-        this._getVersionClient = new GetVersionClient(this._url);
-        this._accountClient = new AccountClient(this._url);
-        this._moneroConnectionsClient = new MoneroConnectionsClient(this._url);
-        this._moneroNodeClient = new MoneroNodeClient(this._url);
-        this._disputeAgentsClient = new DisputeAgentsClient(this._url);
-        this._disputesClient = new DisputesClient(this._url);
-        this._walletsClient = new WalletsClient(this._url);
-        this._priceClient = new PriceClient(this._url);
-        this._paymentAccountsClient = new PaymentAccountsClient(this._url);
-        this._offersClient = new OffersClient(this._url);
-        this._tradesClient = new TradesClient(this._url);
-        this._notificationsClient = new NotificationsClient(this._url);
-        this._shutdownServerClient = new ShutdownServerClient(this._url);
+        this._getVersionClient = new GrpcServiceClientPb_1.GetVersionClient(this._url);
+        this._accountClient = new GrpcServiceClientPb_1.AccountClient(this._url);
+        this._moneroConnectionsClient = new GrpcServiceClientPb_1.MoneroConnectionsClient(this._url);
+        this._moneroNodeClient = new GrpcServiceClientPb_1.MoneroNodeClient(this._url);
+        this._disputeAgentsClient = new GrpcServiceClientPb_1.DisputeAgentsClient(this._url);
+        this._disputesClient = new GrpcServiceClientPb_1.DisputesClient(this._url);
+        this._walletsClient = new GrpcServiceClientPb_1.WalletsClient(this._url);
+        this._priceClient = new GrpcServiceClientPb_1.PriceClient(this._url);
+        this._paymentAccountsClient = new GrpcServiceClientPb_1.PaymentAccountsClient(this._url);
+        this._offersClient = new GrpcServiceClientPb_1.OffersClient(this._url);
+        this._tradesClient = new GrpcServiceClientPb_1.TradesClient(this._url);
+        this._notificationsClient = new GrpcServiceClientPb_1.NotificationsClient(this._url);
+        this._shutdownServerClient = new GrpcServiceClientPb_1.ShutdownServerClient(this._url);
     }
     /**
      * Start a new Haveno process.
@@ -52,7 +57,7 @@ export default class HavenoClient {
     static async startProcess(havenoPath, cmd, url, enableLogging) {
         // return promise which resolves after starting havenod
         return new Promise((resolve, reject) => {
-            HavenoUtils.log(2, "Starting Haveno process: " + cmd + " on proxy url: " + url);
+            HavenoUtils_1.default.log(2, "Starting Haveno process: " + cmd + " on proxy url: " + url);
             // state variables
             let output = "";
             let isStarted = false;
@@ -114,12 +119,12 @@ export default class HavenoClient {
             });
             // handle uncaught exception
             childProcess.on("uncaughtException", async function (err, origin) {
-                console.error("Uncaught exception in Haveno process: " + err.message);
-                console.error(origin);
+                console_1.default.error("Uncaught exception in Haveno process: " + err.message);
+                console_1.default.error(origin);
                 await rejectStartup(err);
             });
             async function rejectStartup(err) {
-                await HavenoUtils.kill(childProcess);
+                await HavenoUtils_1.default.kill(childProcess);
                 reject(err);
             }
             function loggingEnabled() {
@@ -174,7 +179,7 @@ export default class HavenoClient {
      */
     async getVersion() {
         return new Promise((resolve, reject) => {
-            this._getVersionClient.getVersion(new GetVersionRequest(), { password: this._password }, function (err, response) {
+            this._getVersionClient.getVersion(new grpc_pb_1.GetVersionRequest(), { password: this._password }, function (err, response) {
                 if (err)
                     reject(err);
                 else
@@ -203,7 +208,7 @@ export default class HavenoClient {
      */
     async accountExists() {
         return new Promise((resolve, reject) => {
-            this._accountClient.accountExists(new AccountExistsRequest(), { password: this._password }, function (err, response) {
+            this._accountClient.accountExists(new grpc_pb_1.AccountExistsRequest(), { password: this._password }, function (err, response) {
                 if (err)
                     reject(err);
                 else
@@ -218,7 +223,7 @@ export default class HavenoClient {
      */
     async isAccountOpen() {
         return new Promise((resolve, reject) => {
-            this._accountClient.isAccountOpen(new IsAccountOpenRequest(), { password: this._password }, function (err, response) {
+            this._accountClient.isAccountOpen(new grpc_pb_1.IsAccountOpenRequest(), { password: this._password }, function (err, response) {
                 if (err)
                     reject(err);
                 else
@@ -233,7 +238,7 @@ export default class HavenoClient {
      */
     async createAccount(password) {
         await new Promise((resolve, reject) => {
-            this._accountClient.createAccount(new CreateAccountRequest().setPassword(password), { password: this._password }, function (err) {
+            this._accountClient.createAccount(new grpc_pb_1.CreateAccountRequest().setPassword(password), { password: this._password }, function (err) {
                 if (err)
                     reject(err);
                 else
@@ -249,7 +254,7 @@ export default class HavenoClient {
      */
     async openAccount(password) {
         await new Promise((resolve, reject) => {
-            this._accountClient.openAccount(new OpenAccountRequest().setPassword(password), { password: this._password }, function (err) {
+            this._accountClient.openAccount(new grpc_pb_1.OpenAccountRequest().setPassword(password), { password: this._password }, function (err) {
                 if (err)
                     reject(err);
                 else
@@ -265,7 +270,7 @@ export default class HavenoClient {
      */
     async changePassword(password) {
         return new Promise((resolve, reject) => {
-            this._accountClient.changePassword(new ChangePasswordRequest().setPassword(password), { password: this._password }, function (err) {
+            this._accountClient.changePassword(new grpc_pb_1.ChangePasswordRequest().setPassword(password), { password: this._password }, function (err) {
                 if (err)
                     reject(err);
                 else
@@ -278,7 +283,7 @@ export default class HavenoClient {
      */
     async closeAccount() {
         return new Promise((resolve, reject) => {
-            this._accountClient.closeAccount(new CloseAccountRequest(), { password: this._password }, function (err) {
+            this._accountClient.closeAccount(new grpc_pb_1.CloseAccountRequest(), { password: this._password }, function (err) {
                 if (err)
                     reject(err);
                 else
@@ -291,7 +296,7 @@ export default class HavenoClient {
      */
     async deleteAccount() {
         return new Promise((resolve, reject) => {
-            this._accountClient.deleteAccount(new DeleteAccountRequest(), { password: this._password }, async function (err) {
+            this._accountClient.deleteAccount(new grpc_pb_1.DeleteAccountRequest(), { password: this._password }, async function (err) {
                 if (err)
                     reject(err);
                 else
@@ -305,7 +310,7 @@ export default class HavenoClient {
     async backupAccount(stream) {
         return new Promise((resolve, reject) => {
             let total = 0;
-            const response = this._accountClient.backupAccount(new BackupAccountRequest(), { password: this._password });
+            const response = this._accountClient.backupAccount(new grpc_pb_1.BackupAccountRequest(), { password: this._password });
             response.on('data', (chunk) => {
                 const bytes = chunk.getZipBytes(); // TODO: right api?
                 total += bytes.length;
@@ -377,8 +382,8 @@ export default class HavenoClient {
     async isConnectedToMonero() {
         const connection = await this.getMoneroConnection();
         return connection !== undefined &&
-            connection.getOnlineStatus() === UrlConnection.OnlineStatus.ONLINE &&
-            connection.getAuthenticationStatus() !== UrlConnection.AuthenticationStatus.NOT_AUTHENTICATED;
+            connection.getOnlineStatus() === grpc_pb_1.UrlConnection.OnlineStatus.ONLINE &&
+            connection.getAuthenticationStatus() !== grpc_pb_1.UrlConnection.AuthenticationStatus.NOT_AUTHENTICATED;
     }
     /**
      * Add a Monero daemon connection.
@@ -387,7 +392,7 @@ export default class HavenoClient {
      */
     async addMoneroConnection(connection) {
         return new Promise((resolve, reject) => {
-            this._moneroConnectionsClient.addConnection(new AddConnectionRequest().setConnection(typeof connection === "string" ? new UrlConnection().setUrl(connection) : connection), { password: this._password }, function (err) {
+            this._moneroConnectionsClient.addConnection(new grpc_pb_1.AddConnectionRequest().setConnection(typeof connection === "string" ? new grpc_pb_1.UrlConnection().setUrl(connection) : connection), { password: this._password }, function (err) {
                 if (err)
                     reject(err);
                 else
@@ -402,7 +407,7 @@ export default class HavenoClient {
      */
     async removeMoneroConnection(url) {
         return new Promise((resolve, reject) => {
-            this._moneroConnectionsClient.removeConnection(new RemoveConnectionRequest().setUrl(url), { password: this._password }, function (err) {
+            this._moneroConnectionsClient.removeConnection(new grpc_pb_1.RemoveConnectionRequest().setUrl(url), { password: this._password }, function (err) {
                 if (err)
                     reject(err);
                 else
@@ -417,7 +422,7 @@ export default class HavenoClient {
      */
     async getMoneroConnection() {
         return new Promise((resolve, reject) => {
-            this._moneroConnectionsClient.getConnection(new GetConnectionRequest(), { password: this._password }, function (err, response) {
+            this._moneroConnectionsClient.getConnection(new grpc_pb_1.GetConnectionRequest(), { password: this._password }, function (err, response) {
                 if (err)
                     reject(err);
                 else
@@ -432,7 +437,7 @@ export default class HavenoClient {
      */
     async getMoneroConnections() {
         return new Promise((resolve, reject) => {
-            this._moneroConnectionsClient.getConnections(new GetConnectionsRequest(), { password: this._password }, function (err, response) {
+            this._moneroConnectionsClient.getConnections(new grpc_pb_1.GetConnectionsRequest(), { password: this._password }, function (err, response) {
                 if (err)
                     reject(err);
                 else
@@ -451,7 +456,7 @@ export default class HavenoClient {
      * @param {string | UrlConnection} connection - connection to set as current
      */
     async setMoneroConnection(connection) {
-        const request = new SetConnectionRequest();
+        const request = new grpc_pb_1.SetConnectionRequest();
         if (typeof connection === "string")
             request.setUrl(connection);
         else
@@ -474,7 +479,7 @@ export default class HavenoClient {
      */
     async checkMoneroConnection() {
         return new Promise((resolve, reject) => {
-            this._moneroConnectionsClient.checkConnection(new CheckConnectionRequest(), { password: this._password }, function (err, response) {
+            this._moneroConnectionsClient.checkConnection(new grpc_pb_1.CheckConnectionRequest(), { password: this._password }, function (err, response) {
                 if (err)
                     reject(err);
                 else
@@ -489,7 +494,7 @@ export default class HavenoClient {
      */
     async checkMoneroConnections() {
         return new Promise((resolve, reject) => {
-            this._moneroConnectionsClient.checkConnections(new CheckConnectionsRequest(), { password: this._password }, function (err, response) {
+            this._moneroConnectionsClient.checkConnections(new grpc_pb_1.CheckConnectionsRequest(), { password: this._password }, function (err, response) {
                 if (err)
                     reject(err);
                 else
@@ -504,7 +509,7 @@ export default class HavenoClient {
      */
     async startCheckingConnection(refreshPeriod) {
         return new Promise((resolve, reject) => {
-            this._moneroConnectionsClient.startCheckingConnections(new StartCheckingConnectionsRequest().setRefreshPeriod(refreshPeriod), { password: this._password }, function (err) {
+            this._moneroConnectionsClient.startCheckingConnections(new grpc_pb_1.StartCheckingConnectionsRequest().setRefreshPeriod(refreshPeriod), { password: this._password }, function (err) {
                 if (err)
                     reject(err);
                 else
@@ -517,7 +522,7 @@ export default class HavenoClient {
      */
     async stopCheckingConnection() {
         return new Promise((resolve, reject) => {
-            this._moneroConnectionsClient.stopCheckingConnections(new StopCheckingConnectionsRequest(), { password: this._password }, function (err) {
+            this._moneroConnectionsClient.stopCheckingConnections(new grpc_pb_1.StopCheckingConnectionsRequest(), { password: this._password }, function (err) {
                 if (err)
                     reject(err);
                 else
@@ -532,7 +537,7 @@ export default class HavenoClient {
      */
     async getBestAvailableConnection() {
         return new Promise((resolve, reject) => {
-            this._moneroConnectionsClient.getBestAvailableConnection(new GetBestAvailableConnectionRequest(), { password: this._password }, function (err, response) {
+            this._moneroConnectionsClient.getBestAvailableConnection(new grpc_pb_1.GetBestAvailableConnectionRequest(), { password: this._password }, function (err, response) {
                 if (err)
                     reject(err);
                 else
@@ -547,7 +552,7 @@ export default class HavenoClient {
      */
     async setAutoSwitch(autoSwitch) {
         return new Promise((resolve, reject) => {
-            this._moneroConnectionsClient.setAutoSwitch(new SetAutoSwitchRequest().setAutoSwitch(autoSwitch), { password: this._password }, function (err) {
+            this._moneroConnectionsClient.setAutoSwitch(new grpc_pb_1.SetAutoSwitchRequest().setAutoSwitch(autoSwitch), { password: this._password }, function (err) {
                 if (err)
                     reject(err);
                 else
@@ -560,7 +565,7 @@ export default class HavenoClient {
      */
     async isMoneroNodeRunning() {
         return new Promise((resolve, reject) => {
-            this._moneroNodeClient.isMoneroNodeRunning(new IsMoneroNodeRunningRequest(), { password: this._password }, function (err, response) {
+            this._moneroNodeClient.isMoneroNodeRunning(new grpc_pb_1.IsMoneroNodeRunningRequest(), { password: this._password }, function (err, response) {
                 if (err)
                     reject(err);
                 else
@@ -573,7 +578,7 @@ export default class HavenoClient {
      */
     async getMoneroNodeSettings() {
         return new Promise((resolve, reject) => {
-            const request = new GetMoneroNodeSettingsRequest();
+            const request = new grpc_pb_1.GetMoneroNodeSettingsRequest();
             this._moneroNodeClient.getMoneroNodeSettings(request, { password: this._password }, function (err, response) {
                 if (err)
                     reject(err);
@@ -589,7 +594,7 @@ export default class HavenoClient {
      */
     async startMoneroNode(settings) {
         return new Promise((resolve, reject) => {
-            const request = new StartMoneroNodeRequest().setSettings(settings);
+            const request = new grpc_pb_1.StartMoneroNodeRequest().setSettings(settings);
             this._moneroNodeClient.startMoneroNode(request, { password: this._password }, function (err) {
                 if (err)
                     reject(err);
@@ -603,7 +608,7 @@ export default class HavenoClient {
      */
     async stopMoneroNode() {
         return new Promise((resolve, reject) => {
-            this._moneroNodeClient.stopMoneroNode(new StopMoneroNodeRequest(), { password: this._password }, function (err) {
+            this._moneroNodeClient.stopMoneroNode(new grpc_pb_1.StopMoneroNodeRequest(), { password: this._password }, function (err) {
                 if (err)
                     reject(err);
                 else
@@ -618,7 +623,7 @@ export default class HavenoClient {
      * @param {string} registrationKey - registration key
      */
     async registerDisputeAgent(disputeAgentType, registrationKey) {
-        const request = new RegisterDisputeAgentRequest()
+        const request = new grpc_pb_1.RegisterDisputeAgentRequest()
             .setDisputeAgentType(disputeAgentType)
             .setRegistrationKey(registrationKey);
         return new Promise((resolve, reject) => {
@@ -637,7 +642,7 @@ export default class HavenoClient {
      */
     async getBalances() {
         return new Promise((resolve, reject) => {
-            this._walletsClient.getBalances(new GetBalancesRequest().setCurrencyCode("XMR"), { password: this._password }, function (err, response) {
+            this._walletsClient.getBalances(new grpc_pb_1.GetBalancesRequest().setCurrencyCode("XMR"), { password: this._password }, function (err, response) {
                 if (err)
                     reject(err);
                 else
@@ -652,7 +657,7 @@ export default class HavenoClient {
      */
     async getXmrSeed() {
         return new Promise((resolve, reject) => {
-            this._walletsClient.getXmrSeed(new GetXmrSeedRequest(), { password: this._password }, function (err, response) {
+            this._walletsClient.getXmrSeed(new grpc_pb_1.GetXmrSeedRequest(), { password: this._password }, function (err, response) {
                 if (err)
                     reject(err);
                 else
@@ -667,7 +672,7 @@ export default class HavenoClient {
      */
     async getNewDepositAddress() {
         return new Promise((resolve, reject) => {
-            this._walletsClient.getNewDepositAddress(new GetNewDepositAddressRequest(), { password: this._password }, function (err, response) {
+            this._walletsClient.getNewDepositAddress(new grpc_pb_1.GetNewDepositAddressRequest(), { password: this._password }, function (err, response) {
                 if (err)
                     reject(err);
                 else
@@ -682,7 +687,7 @@ export default class HavenoClient {
      */
     async getXmrTxs() {
         return new Promise((resolve, reject) => {
-            this._walletsClient.getXmrTxs(new GetXmrTxsRequest(), { password: this._password }, function (err, response) {
+            this._walletsClient.getXmrTxs(new grpc_pb_1.GetXmrTxsRequest(), { password: this._password }, function (err, response) {
                 if (err)
                     reject(err);
                 else
@@ -711,7 +716,7 @@ export default class HavenoClient {
      */
     async createXmrTx(destinations) {
         return new Promise((resolve, reject) => {
-            this._walletsClient.createXmrTx(new CreateXmrTxRequest().setDestinationsList(destinations), { password: this._password }, function (err, response) {
+            this._walletsClient.createXmrTx(new grpc_pb_1.CreateXmrTxRequest().setDestinationsList(destinations), { password: this._password }, function (err, response) {
                 if (err)
                     reject(err);
                 else
@@ -726,7 +731,7 @@ export default class HavenoClient {
      */
     async relayXmrTx(metadata) {
         return new Promise((resolve, reject) => {
-            this._walletsClient.relayXmrTx(new RelayXmrTxRequest().setMetadata(metadata), { password: this._password }, function (err, response) {
+            this._walletsClient.relayXmrTx(new grpc_pb_1.RelayXmrTxRequest().setMetadata(metadata), { password: this._password }, function (err, response) {
                 if (err)
                     reject(err);
                 else
@@ -735,14 +740,27 @@ export default class HavenoClient {
         });
     }
     /**
+     * Get all supported assets codes.
+     *
+     * TODO: replace this with getSupportedAssetCodes(): Promise<TradeCurrency[]>)
+     *
+     * @return {Promise<string[]>} all supported trade assets
+     */
+    async getSupportedAssetCodes() {
+        const assetCodes = [];
+        for (const price of await this.getPrices())
+            assetCodes.push(price.getCurrencyCode());
+        return assetCodes;
+    }
+    /**
      * Get the current market price per 1 XMR in the given currency.
      *
-     * @param {string} currencyCode - currency code (fiat or crypto) to get the price of
-     * @return {number} the current market price per 1 XMR in the given currency
+     * @param {string} assetCode - asset code to get the price of
+     * @return {number} the price of the asset per 1 XMR
      */
-    async getPrice(currencyCode) {
+    async getPrice(assetCode) {
         return new Promise((resolve, reject) => {
-            this._priceClient.getMarketPrice(new MarketPriceRequest().setCurrencyCode(currencyCode), { password: this._password }, function (err, response) {
+            this._priceClient.getMarketPrice(new grpc_pb_1.MarketPriceRequest().setCurrencyCode(assetCode), { password: this._password }, function (err, response) {
                 if (err)
                     reject(err);
                 else
@@ -751,13 +769,13 @@ export default class HavenoClient {
         });
     }
     /**
-     * Get the current market prices of all currencies.
+     * Get the current market prices of all a.
      *
-     * @return {MarketPrice[]} price per 1 XMR in all supported currencies (fiat & crypto)
+     * @return {MarketPrice[]} prices of the assets per 1 XMR
      */
     async getPrices() {
         return new Promise((resolve, reject) => {
-            this._priceClient.getMarketPrices(new MarketPricesRequest(), { password: this._password }, function (err, response) {
+            this._priceClient.getMarketPrices(new grpc_pb_1.MarketPricesRequest(), { password: this._password }, function (err, response) {
                 if (err)
                     reject(err);
                 else
@@ -773,7 +791,7 @@ export default class HavenoClient {
      */
     async getMarketDepth(assetCode) {
         return new Promise((resolve, reject) => {
-            this._priceClient.getMarketDepth(new MarketDepthRequest().setCurrencyCode(assetCode), { password: this._password }, function (err, response) {
+            this._priceClient.getMarketDepth(new grpc_pb_1.MarketDepthRequest().setCurrencyCode(assetCode), { password: this._password }, function (err, response) {
                 if (err)
                     reject(err);
                 else
@@ -784,17 +802,28 @@ export default class HavenoClient {
     /**
      * Get payment methods.
      *
+     * @param {string} assetCode - get payment methods supporting this asset code (optional)
      * @return {PaymentMethod[]} the payment methods
      */
-    async getPaymentMethods() {
-        return new Promise((resolve, reject) => {
-            this._paymentAccountsClient.getPaymentMethods(new GetPaymentMethodsRequest(), { password: this._password }, function (err, response) {
-                if (err)
-                    reject(err);
-                else
-                    resolve(response.getPaymentMethodsList());
+    async getPaymentMethods(assetCode) {
+        if (!this._paymentMethods) {
+            this._paymentMethods = await new Promise((resolve, reject) => {
+                this._paymentAccountsClient.getPaymentMethods(new grpc_pb_1.GetPaymentMethodsRequest(), { password: this._password }, function (err, response) {
+                    if (err)
+                        reject(err);
+                    else
+                        resolve(response.getPaymentMethodsList());
+                });
             });
-        });
+        }
+        if (!assetCode)
+            return this._paymentMethods;
+        const assetPaymentMethods = [];
+        for (const paymentMethod of this._paymentMethods) {
+            if (paymentMethod.getSupportedAssetCodesList().includes(assetCode))
+                assetPaymentMethods.push(paymentMethod);
+        }
+        return assetPaymentMethods;
     }
     /**
      * Get payment accounts.
@@ -803,7 +832,7 @@ export default class HavenoClient {
      */
     async getPaymentAccounts() {
         return new Promise((resolve, reject) => {
-            this._paymentAccountsClient.getPaymentAccounts(new GetPaymentAccountsRequest(), { password: this._password }, function (err, response) {
+            this._paymentAccountsClient.getPaymentAccounts(new grpc_pb_1.GetPaymentAccountsRequest(), { password: this._password }, function (err, response) {
                 if (err)
                     reject(err);
                 else
@@ -833,7 +862,7 @@ export default class HavenoClient {
      */
     async getPaymentAccountForm(paymentMethodId) {
         return new Promise((resolve, reject) => {
-            this._paymentAccountsClient.getPaymentAccountForm(new GetPaymentAccountFormRequest().setPaymentMethodId(paymentMethodId), { password: this._password }, function (err, response) {
+            this._paymentAccountsClient.getPaymentAccountForm(new grpc_pb_1.GetPaymentAccountFormRequest().setPaymentMethodId(paymentMethodId), { password: this._password }, function (err, response) {
                 if (err)
                     reject(err);
                 else
@@ -849,7 +878,7 @@ export default class HavenoClient {
      */
     async createPaymentAccount(paymentAccountForm) {
         return new Promise((resolve, reject) => {
-            this._paymentAccountsClient.createPaymentAccount(new CreatePaymentAccountRequest().setPaymentAccountForm(JSON.stringify(paymentAccountForm)), { password: this._password }, function (err, response) {
+            this._paymentAccountsClient.createPaymentAccount(new grpc_pb_1.CreatePaymentAccountRequest().setPaymentAccountForm(JSON.stringify(paymentAccountForm)), { password: this._password }, function (err, response) {
                 if (err)
                     reject(err);
                 else
@@ -866,7 +895,7 @@ export default class HavenoClient {
      * @return {PaymentAccount} the created payment account
      */
     async createCryptoPaymentAccount(accountName, assetCode, address) {
-        const request = new CreateCryptoCurrencyPaymentAccountRequest()
+        const request = new grpc_pb_1.CreateCryptoCurrencyPaymentAccountRequest()
             .setAccountName(accountName)
             .setCurrencyCode(assetCode)
             .setAddress(address)
@@ -891,7 +920,7 @@ export default class HavenoClient {
         if (!direction)
             return (await this.getOffers(assetCode, "buy")).concat(await this.getOffers(assetCode, "sell")); // TODO: implement in backend
         return new Promise((resolve, reject) => {
-            this._offersClient.getOffers(new GetOffersRequest().setDirection(direction).setCurrencyCode(assetCode), { password: this._password }, function (err, response) {
+            this._offersClient.getOffers(new grpc_pb_1.GetOffersRequest().setDirection(direction).setCurrencyCode(assetCode), { password: this._password }, function (err, response) {
                 if (err)
                     reject(err);
                 else
@@ -910,7 +939,7 @@ export default class HavenoClient {
         if (!direction)
             return (await this.getMyOffers(assetCode, "buy")).concat(await this.getMyOffers(assetCode, "sell")); // TODO: implement in backend
         return new Promise((resolve, reject) => {
-            this._offersClient.getMyOffers(new GetOffersRequest().setDirection(direction).setCurrencyCode(assetCode), { password: this._password }, function (err, response) {
+            this._offersClient.getMyOffers(new grpc_pb_1.GetOffersRequest().setDirection(direction).setCurrencyCode(assetCode), { password: this._password }, function (err, response) {
                 if (err)
                     reject(err);
                 else
@@ -926,7 +955,7 @@ export default class HavenoClient {
      */
     async getMyOffer(offerId) {
         return new Promise((resolve, reject) => {
-            this._offersClient.getMyOffer(new GetMyOfferRequest().setId(offerId), { password: this._password }, function (err, response) {
+            this._offersClient.getMyOffer(new grpc_pb_1.GetMyOfferRequest().setId(offerId), { password: this._password }, function (err, response) {
                 if (err)
                     reject(err);
                 else
@@ -949,7 +978,7 @@ export default class HavenoClient {
      * @return {OfferInfo} the posted offer
      */
     async postOffer(direction, amount, assetCode, paymentAccountId, buyerSecurityDeposit, price, marketPriceMargin, triggerPrice, minAmount) {
-        const request = new CreateOfferRequest()
+        const request = new grpc_pb_1.CreateOfferRequest()
             .setDirection(direction)
             .setAmount(amount.toString())
             .setCurrencyCode(assetCode)
@@ -978,7 +1007,7 @@ export default class HavenoClient {
      */
     async removeOffer(offerId) {
         return new Promise((resolve, reject) => {
-            this._offersClient.cancelOffer(new CancelOfferRequest().setId(offerId), { password: this._password }, function (err) {
+            this._offersClient.cancelOffer(new grpc_pb_1.CancelOfferRequest().setId(offerId), { password: this._password }, function (err) {
                 if (err)
                     reject(err);
                 else
@@ -994,14 +1023,14 @@ export default class HavenoClient {
      * @return {TradeInfo} the initialized trade
      */
     async takeOffer(offerId, paymentAccountId) {
-        const request = new TakeOfferRequest()
+        const request = new grpc_pb_1.TakeOfferRequest()
             .setOfferId(offerId)
             .setPaymentAccountId(paymentAccountId);
         return new Promise((resolve, reject) => {
             this._tradesClient.takeOffer(request, { password: this._password }, function (err, response) {
                 if (err)
                     reject(err);
-                else if (response.getFailureReason() && response.getFailureReason().getAvailabilityResult() !== AvailabilityResult.AVAILABLE)
+                else if (response.getFailureReason() && response.getFailureReason().getAvailabilityResult() !== pb_pb_1.AvailabilityResult.AVAILABLE)
                     reject(new Error(response.getFailureReason().getDescription())); // TODO: api should throw grpcWeb.RpcError
                 else
                     resolve(response.getTrade());
@@ -1016,7 +1045,7 @@ export default class HavenoClient {
      */
     async getTrade(tradeId) {
         return new Promise((resolve, reject) => {
-            this._tradesClient.getTrade(new GetTradeRequest().setTradeId(tradeId), { password: this._password }, function (err, response) {
+            this._tradesClient.getTrade(new grpc_pb_1.GetTradeRequest().setTradeId(tradeId), { password: this._password }, function (err, response) {
                 if (err)
                     reject(err);
                 else
@@ -1031,7 +1060,7 @@ export default class HavenoClient {
      */
     async getTrades() {
         return new Promise((resolve, reject) => {
-            this._tradesClient.getTrades(new GetTradesRequest(), { password: this._password }, function (err, response) {
+            this._tradesClient.getTrades(new grpc_pb_1.GetTradesRequest(), { password: this._password }, function (err, response) {
                 if (err)
                     reject(err);
                 else
@@ -1046,7 +1075,7 @@ export default class HavenoClient {
      */
     async confirmPaymentStarted(tradeId) {
         return new Promise((resolve, reject) => {
-            this._tradesClient.confirmPaymentStarted(new ConfirmPaymentStartedRequest().setTradeId(tradeId), { password: this._password }, function (err) {
+            this._tradesClient.confirmPaymentStarted(new grpc_pb_1.ConfirmPaymentStartedRequest().setTradeId(tradeId), { password: this._password }, function (err) {
                 if (err)
                     reject(err);
                 else
@@ -1061,7 +1090,7 @@ export default class HavenoClient {
      */
     async confirmPaymentReceived(tradeId) {
         return new Promise((resolve, reject) => {
-            this._tradesClient.confirmPaymentReceived(new ConfirmPaymentReceivedRequest().setTradeId(tradeId), { password: this._password }, function (err) {
+            this._tradesClient.confirmPaymentReceived(new grpc_pb_1.ConfirmPaymentReceivedRequest().setTradeId(tradeId), { password: this._password }, function (err) {
                 if (err)
                     reject(err);
                 else
@@ -1076,7 +1105,7 @@ export default class HavenoClient {
      */
     async getChatMessages(tradeId) {
         return new Promise((resolve, reject) => {
-            const request = new GetChatMessagesRequest().setTradeId(tradeId);
+            const request = new grpc_pb_1.GetChatMessagesRequest().setTradeId(tradeId);
             this._tradesClient.getChatMessages(request, { password: this._password }, function (err, response) {
                 if (err)
                     reject(err);
@@ -1093,7 +1122,7 @@ export default class HavenoClient {
      */
     async sendChatMessage(tradeId, message) {
         return new Promise((resolve, reject) => {
-            const request = new SendChatMessageRequest()
+            const request = new grpc_pb_1.SendChatMessageRequest()
                 .setTradeId(tradeId)
                 .setMessage(message);
             this._tradesClient.sendChatMessage(request, { password: this._password }, function (err) {
@@ -1111,7 +1140,7 @@ export default class HavenoClient {
      */
     async getDispute(tradeId) {
         return new Promise((resolve, reject) => {
-            this._disputesClient.getDispute(new GetDisputeRequest().setTradeId(tradeId), { password: this._password }, function (err, response) {
+            this._disputesClient.getDispute(new grpc_pb_1.GetDisputeRequest().setTradeId(tradeId), { password: this._password }, function (err, response) {
                 if (err)
                     reject(err);
                 else
@@ -1124,7 +1153,7 @@ export default class HavenoClient {
      */
     async getDisputes() {
         return new Promise((resolve, reject) => {
-            this._disputesClient.getDisputes(new GetDisputesRequest(), { password: this._password }, function (err, response) {
+            this._disputesClient.getDisputes(new grpc_pb_1.GetDisputesRequest(), { password: this._password }, function (err, response) {
                 if (err)
                     reject(err);
                 else
@@ -1139,7 +1168,7 @@ export default class HavenoClient {
      */
     async openDispute(tradeId) {
         return new Promise((resolve, reject) => {
-            this._disputesClient.openDispute(new OpenDisputeRequest().setTradeId(tradeId), { password: this._password }, function (err) {
+            this._disputesClient.openDispute(new grpc_pb_1.OpenDisputeRequest().setTradeId(tradeId), { password: this._password }, function (err) {
                 if (err)
                     reject(err);
                 else
@@ -1159,7 +1188,7 @@ export default class HavenoClient {
      */
     async resolveDispute(tradeId, winner, reason, summaryNotes, customWinnerAmount) {
         return new Promise((resolve, reject) => {
-            const request = new ResolveDisputeRequest()
+            const request = new grpc_pb_1.ResolveDisputeRequest()
                 .setTradeId(tradeId)
                 .setWinner(winner)
                 .setReason(reason)
@@ -1182,7 +1211,7 @@ export default class HavenoClient {
      */
     async sendDisputeChatMessage(disputeId, message, attachments) {
         return new Promise((resolve, reject) => {
-            const request = new SendDisputeChatMessageRequest()
+            const request = new grpc_pb_1.SendDisputeChatMessageRequest()
                 .setDisputeId(disputeId)
                 .setMessage(message)
                 .setAttachmentsList(attachments);
@@ -1207,7 +1236,7 @@ export default class HavenoClient {
     async shutdownServer() {
         await this.disconnect();
         await new Promise((resolve, reject) => {
-            this._shutdownServerClient.stop(new StopRequest(), { password: this._password }, function (err) {
+            this._shutdownServerClient.stop(new grpc_pb_1.StopRequest(), { password: this._password }, function (err) {
                 if (err)
                     reject(err);
                 else
@@ -1215,7 +1244,7 @@ export default class HavenoClient {
             });
         });
         if (this._process)
-            return HavenoUtils.kill(this._process);
+            return HavenoUtils_1.default.kill(this._process);
     }
     // ------------------------------- HELPERS ----------------------------------
     /**
@@ -1246,7 +1275,7 @@ export default class HavenoClient {
                 resolve();
             };
             const listener = async function (notification) {
-                if (notification.getType() === NotificationMessage.NotificationType.APP_INITIALIZED)
+                if (notification.getType() === grpc_pb_1.NotificationMessage.NotificationType.APP_INITIALIZED)
                     await resolveOnce();
             };
             await this.addNotificationListener(listener);
@@ -1257,7 +1286,7 @@ export default class HavenoClient {
     // @hidden
     async _isAppInitialized() {
         return new Promise((resolve, reject) => {
-            this._accountClient.isAppInitialized(new IsAppInitializedRequest(), { password: this._password }, function (err, response) {
+            this._accountClient.isAppInitialized(new grpc_pb_1.IsAppInitializedRequest(), { password: this._password }, function (err, response) {
                 if (err)
                     reject(err);
                 else
@@ -1277,22 +1306,22 @@ export default class HavenoClient {
         if (listening) {
             return new Promise((resolve) => {
                 // send request to register client listener
-                this._notificationStream = this._notificationsClient.registerNotificationListener(new RegisterNotificationListenerRequest(), { password: this._password })
+                this._notificationStream = this._notificationsClient.registerNotificationListener(new grpc_pb_1.RegisterNotificationListenerRequest(), { password: this._password })
                     .on('data', (data) => {
-                    if (data instanceof NotificationMessage) {
+                    if (data instanceof grpc_pb_1.NotificationMessage) {
                         for (const listener of this._notificationListeners)
                             listener(data);
                     }
                 });
                 // periodically send keep alive requests // TODO (woodser): better way to keep notification stream alive?
                 let firstRequest = true;
-                this._keepAliveLooper = new TaskLooper(async () => {
+                this._keepAliveLooper = new TaskLooper_1.default(async () => {
                     if (firstRequest) {
                         firstRequest = false;
                         return;
                     }
-                    await this._sendNotification(new NotificationMessage()
-                        .setType(NotificationMessage.NotificationType.KEEP_ALIVE)
+                    await this._sendNotification(new grpc_pb_1.NotificationMessage()
+                        .setType(grpc_pb_1.NotificationMessage.NotificationType.KEEP_ALIVE)
                         .setTimestamp(Date.now()));
                 });
                 this._keepAliveLooper.start(this._keepAlivePeriodMs);
@@ -1313,7 +1342,7 @@ export default class HavenoClient {
      */
     async _sendNotification(notification) {
         return new Promise((resolve, reject) => {
-            this._notificationsClient.sendNotification(new SendNotificationRequest().setNotification(notification), { password: this._password }, function (err) {
+            this._notificationsClient.sendNotification(new grpc_pb_1.SendNotificationRequest().setNotification(notification), { password: this._password }, function (err) {
                 if (err)
                     reject(err);
                 else
@@ -1327,7 +1356,7 @@ export default class HavenoClient {
      * @hidden
      */
     async _restoreAccountChunk(zipBytes, offset, totalLength, hasMore) {
-        const request = new RestoreAccountRequest()
+        const request = new grpc_pb_1.RestoreAccountRequest()
             .setZipBytes(zipBytes)
             .setOffset(offset)
             .setTotalLength(totalLength)
@@ -1342,6 +1371,7 @@ export default class HavenoClient {
         });
     }
 }
+exports.default = HavenoClient;
 // constants
 HavenoClient._fullyInitializedMessage = "Application fully initialized";
 HavenoClient._loginRequiredMessage = "Interactive login required";

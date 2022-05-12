@@ -30,6 +30,7 @@ export default class HavenoClient {
     _registerNotificationListenerCalled: boolean;
     _keepAliveLooper: any;
     _keepAlivePeriodMs: number;
+    _paymentMethods: PaymentMethod[] | undefined;
     static readonly _fullyInitializedMessage = "Application fully initialized";
     static readonly _loginRequiredMessage = "Interactive login required";
     /**
@@ -297,16 +298,24 @@ export default class HavenoClient {
      */
     relayXmrTx(metadata: string): Promise<string>;
     /**
+     * Get all supported assets codes.
+     *
+     * TODO: replace this with getSupportedAssetCodes(): Promise<TradeCurrency[]>)
+     *
+     * @return {Promise<string[]>} all supported trade assets
+     */
+    getSupportedAssetCodes(): Promise<string[]>;
+    /**
      * Get the current market price per 1 XMR in the given currency.
      *
-     * @param {string} currencyCode - currency code (fiat or crypto) to get the price of
-     * @return {number} the current market price per 1 XMR in the given currency
+     * @param {string} assetCode - asset code to get the price of
+     * @return {number} the price of the asset per 1 XMR
      */
-    getPrice(currencyCode: string): Promise<number>;
+    getPrice(assetCode: string): Promise<number>;
     /**
-     * Get the current market prices of all currencies.
+     * Get the current market prices of all a.
      *
-     * @return {MarketPrice[]} price per 1 XMR in all supported currencies (fiat & crypto)
+     * @return {MarketPrice[]} prices of the assets per 1 XMR
      */
     getPrices(): Promise<MarketPriceInfo[]>;
     /**
@@ -319,9 +328,10 @@ export default class HavenoClient {
     /**
      * Get payment methods.
      *
+     * @param {string} assetCode - get payment methods supporting this asset code (optional)
      * @return {PaymentMethod[]} the payment methods
      */
-    getPaymentMethods(): Promise<PaymentMethod[]>;
+    getPaymentMethods(assetCode?: string): Promise<PaymentMethod[]>;
     /**
      * Get payment accounts.
      *
