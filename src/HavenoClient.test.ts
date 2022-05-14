@@ -926,7 +926,7 @@ test("Can create crypto payment accounts", async () => {
 test("Can post and remove offers", async () => {
 
   // wait for alice to have at least 5 outputs of 0.5 XMR
-  await waitForUnlockedOutputs([aliceWallet], BigInt("500000000000"), 5);
+  await fundOutputs([aliceWallet], BigInt("500000000000"), 5);
   
   // get unlocked balance before reserving funds for offer
   const unlockedBalanceBefore = BigInt((await alice.getBalances()).getUnlockedBalance());
@@ -975,6 +975,96 @@ test("Can post and remove offers", async () => {
   
   // reserved balance released
   expect(BigInt((await alice.getBalances()).getUnlockedBalance())).toEqual(unlockedBalanceBefore);
+});
+
+// TODO: support splitting outputs
+// TODO: provide number of confirmations in offer status
+test("Can schedule offers with locked funds", async () => {
+  let charlie: HavenoClient | undefined;
+  let err: any;
+  try {
+    
+    // start charlie
+    charlie = await initHaveno();
+    const charlieWallet = await monerojs.connectToWalletRpc("http://127.0.0.1:" + charlie.getWalletRpcPort(), TestConfig.defaultHavenod.walletUsername, TestConfig.defaultHavenod.accountPassword);
+    
+    // fund charlie with 2 outputs of 0.5 XMR
+    const outputAmt = BigInt("500000000000");
+    await fundOutputs([charlieWallet], outputAmt, 2, false);
+  
+    // schedule offer
+    const assetCode = "ETH";
+    const direction = "BUY";
+    let offer: OfferInfo = await postOffer(charlie, {assetCode: assetCode, direction: direction, awaitUnlockedBalance: false}); 
+    assert.equal(offer.getState(), "SCHEDULED");
+    
+    // has offer
+    offer = await charlie.getMyOffer(offer.getId());
+    assert.equal(offer.getState(), "SCHEDULED");
+    
+    // balances unchanged
+    expect(BigInt((await charlie.getBalances()).getLockedBalance())).toEqual(outputAmt * BigInt(2));
+    expect(BigInt((await charlie.getBalances()).getReservedOfferBalance())).toEqual(BigInt(0));
+    
+    // peer does not see offer because it's scheduled
+    await wait(TestConfig.maxTimePeerNoticeMs);
+    if (getOffer(await alice.getOffers(assetCode, direction), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in peer's offers before posted");
+    
+    // cancel offer
+    await charlie.removeOffer(offer.getId());
+    if (getOffer(await charlie.getOffers(assetCode, direction), offer.getId())) throw new Error("Offer " + offer.getId() + " was found after canceling offer");
+    
+    // balances unchanged
+    expect(BigInt((await charlie.getBalances()).getLockedBalance())).toEqual(outputAmt * BigInt(2));
+    expect(BigInt((await charlie.getBalances()).getReservedOfferBalance())).toEqual(BigInt(0));
+    
+    // schedule offer
+    offer = await postOffer(charlie, {assetCode: assetCode, direction: direction, awaitUnlockedBalance: false}); 
+    assert.equal(offer.getState(), "SCHEDULED");
+    
+    // restart charlie
+    const charlieConfig = {appName: charlie.getAppName()};
+    await releaseHavenoProcess(charlie);
+    charlie = await initHaveno(charlieConfig);
+    
+    // has offer
+    offer = await charlie.getMyOffer(offer.getId());
+    assert.equal(offer.getState(), "UNKNOWN"); // TODO: offer status is unknown after restart
+    
+    // peer does not see offer because it's scheduled
+    await wait(TestConfig.maxTimePeerNoticeMs);
+    if (getOffer(await alice.getOffers(assetCode, direction), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in peer's offers before posted");
+    
+    // wait for deposit txs to unlock
+    await waitForUnlockedBalance(outputAmt, charlie);
+    
+    // one output is reserved, one is unlocked
+    expect(BigInt((await charlie.getBalances()).getUnlockedBalance())).toEqual(outputAmt);
+    expect(BigInt((await charlie.getBalances()).getLockedBalance())).toEqual(BigInt(0));
+    expect(BigInt((await charlie.getBalances()).getReservedOfferBalance())).toEqual(outputAmt);
+    
+    // peer sees offer
+    await wait(TestConfig.maxTimePeerNoticeMs);
+    if (!getOffer(await alice.getOffers(assetCode, direction), offer.getId())) throw new Error("Offer " + offer.getId() + " was not found in peer's offers after posted");
+    
+    // cancel offer
+    await charlie.removeOffer(offer.getId());
+    
+    // offer is removed from my offers
+    if (getOffer(await charlie.getMyOffers(assetCode), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in my offers after removal");
+    
+    // reserved balance becomes unlocked
+    expect(BigInt((await charlie.getBalances()).getUnlockedBalance())).toEqual(outputAmt * BigInt(2));
+    expect(BigInt((await charlie.getBalances()).getLockedBalance())).toEqual(BigInt(0));
+    expect(BigInt((await charlie.getBalances()).getReservedOfferBalance())).toEqual(BigInt(0));
+  } catch (err2) {
+    console.log(err2);
+    err = err2;
+  }
+
+  // stop and delete instances
+  if (charlie) await releaseHavenoProcess(charlie, true);
+  if (err) throw err;
 });
 
 // TODO (woodser): test grpc notifications
@@ -1108,7 +1198,7 @@ test("Can resolve disputes", async () => {
 
   // wait for alice and bob to have unlocked balance for trade
   const tradeAmount = BigInt("250000000000");
-  await waitForUnlockedOutputs([aliceWallet, bobWallet], tradeAmount * BigInt("6"), 4);
+  await fundOutputs([aliceWallet, bobWallet], tradeAmount * BigInt("6"), 4, true);
   
   // register to receive notifications
   const aliceNotifications: NotificationMessage[] = [];
@@ -1825,14 +1915,18 @@ async function waitForUnlockedTxs(...txHashes: string[]) {
 /**
  * Indicates if the wallet has an unlocked amount.
  * 
- * @param {MoneroWallet} wallet - wallet to check
+ * @param {MoneroWallet[]} wallets - wallets to check
  * @param {BigInt} amt - amount to check
  * @param {number?} numOutputs - number of outputs of the given amount (default 1)
+ * @param {boolean?} isLocked - specifies if the outputs must be locked or unlocked (default either)
  */
-async function hasUnlockedOutputs(wallet: any, amt: BigInt, numOutputs?: number): Promise<boolean> {
+async function hasUnspentOutputs(wallets: any[], amt: BigInt, numOutputs?: number, isLocked?: boolean): Promise<boolean> {
   if (numOutputs === undefined) numOutputs = 1;
-  const availableOutputs = await wallet.getOutputs({isSpent: false, isFrozen: false, minAmount: monerojs.BigInteger(amt.toString()), txQuery: {isLocked: false}});
-  return availableOutputs.length >= numOutputs;
+  for (const wallet of wallets) {
+    const unspentOutputs = await wallet.getOutputs({isSpent: false, isFrozen: false, minAmount: monerojs.BigInteger(amt.toString()), txQuery: {isLocked: isLocked}});
+    if (unspentOutputs.length < numOutputs) return false;
+  }
+  return true;
 }
 
 /**
@@ -1841,14 +1935,16 @@ async function hasUnlockedOutputs(wallet: any, amt: BigInt, numOutputs?: number)
  * @param {MoneroWallet} wallets - monerojs wallets
  * @param {BigInt} amt - the amount to fund
  * @param {number?} numOutputs - the number of outputs of the given amount (default 1)
+ * @param {boolean?} waitForUnlock - wait for outputs to unlock (default false)
  */
-async function waitForUnlockedOutputs(wallets: any[], amt: BigInt, numOutputs?: number): Promise<void> {
+async function fundOutputs(wallets: any[], amt: bigint, numOutputs?: number, waitForUnlock?: boolean): Promise<void> {
   if (numOutputs === undefined) numOutputs = 1;
+  if (waitForUnlock === undefined) waitForUnlock = true;
   
   // collect destinations
   const destinations = [];
   for (const wallet of wallets) {
-    if (await hasUnlockedOutputs(wallet, amt, numOutputs)) continue;
+    if (await hasUnspentOutputs([wallet], amt, numOutputs, waitForUnlock ? false : undefined)) continue;
     for (let i = 0; i < numOutputs; i++) {
       destinations.push(new MoneroDestination((await wallet.createSubaddress()).getAddress(), monerojs.BigInteger(amt.toString())));
     }
@@ -1869,12 +1965,16 @@ async function waitForUnlockedOutputs(wallets: any[], amt: BigInt, numOutputs?: 
     }
   }
   
-  // wait for txs to unlock
-  if (txHashes.length > 0) {
-    await waitForUnlockedTxs(...txHashes);
-    await wait(1000);
-    for (const wallet of wallets) await wallet.sync();
+  // mine until outputs unlock
+  let miningStarted = false;
+  while (!await hasUnspentOutputs(wallets, amt, numOutputs, waitForUnlock ? false : undefined)) {
+    if (!miningStarted) {
+      await startMining();
+      miningStarted = true;
+    }
+    await wait(5000);
   }
+  if (miningStarted) await monerod.stopMining();
 }
 
 // convert monero-javascript BigInteger to typescript BigInt
@@ -2038,7 +2138,13 @@ async function postOffer(maker: HavenoClient, config?: PostOfferConfig) {
   
   // unlocked balance has decreased
   const unlockedBalanceAfter = BigInt((await maker.getBalances()).getUnlockedBalance());
-  if (unlockedBalanceAfter === unlockedBalanceBefore) throw new Error("unlocked balance did not change after posting offer");
+  if (offer.getState() === "SCHEDULED") {
+    if (unlockedBalanceAfter !== unlockedBalanceBefore) throw new Error("Unlocked balance should not change for scheduled offer");
+  } else if (offer.getState() === "AVAILABLE") {
+    if (unlockedBalanceAfter === unlockedBalanceBefore) throw new Error("Unlocked balance did not change after posting offer");
+  } else {
+    throw new Error("Unexpected offer state after posting: " + offer.getState());
+  }
   
   return offer;
 }
