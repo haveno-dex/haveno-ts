@@ -599,6 +599,10 @@ test("Has a Monero wallet", async () => {
   const seed = await alice.getXmrSeed();
   await MoneroUtils.validateMnemonic(seed);
   
+  // get primary address
+  const primaryAddress = await alice.getXmrPrimaryAddress();
+  await MoneroUtils.validateAddress(primaryAddress, MoneroNetworkType.STAGENET);
+  
   // wait for alice to have unlocked balance
   const tradeAmount = BigInt("250000000000");
   await waitForUnlockedBalance(tradeAmount * BigInt("2"), alice);
@@ -615,14 +619,14 @@ test("Has a Monero wallet", async () => {
     testTx(tx, {isCreatedTx: false});
   }
   
-  // get new deposit addresses
+  // get new subaddresses
   for (let i = 0; i < 0; i++) {
-    const address = await alice.getNewDepositAddress();
+    const address = await alice.getXmrNewSubaddress();
     await MoneroUtils.validateAddress(address, MoneroNetworkType.STAGNET);
   }
   
   // create withdraw tx
-  const destination = new XmrDestination().setAddress(await alice.getNewDepositAddress()).setAmount("100000000000");
+  const destination = new XmrDestination().setAddress(await alice.getXmrNewSubaddress()).setAmount("100000000000");
   let tx = await alice.createXmrTx([destination]);
   testTx(tx, {isCreatedTx: true});
   
@@ -1838,7 +1842,7 @@ async function waitForUnlockedBalance(amount: bigint, ...wallets: any[]) {
     }
     
     async getDepositAddress(): Promise<string> {
-      if (this._wallet instanceof HavenoClient) return await this._wallet.getNewDepositAddress();
+      if (this._wallet instanceof HavenoClient) return await this._wallet.getXmrNewSubaddress();
       else return (await this._wallet.createSubaddress()).getAddress();
     }
   }
