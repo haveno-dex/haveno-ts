@@ -267,11 +267,17 @@ export default class HavenoClient {
      */
     getXmrSeed(): Promise<string>;
     /**
+     * Get the primary address of the Monero wallet.
+     *
+     * @return {string} the primary address of the Monero wallet
+     */
+    getXmrPrimaryAddress(): Promise<string>;
+    /**
      * Get a new subaddress in the Monero wallet to receive deposits.
      *
      * @return {string} the deposit address (a subaddress in the Haveno wallet)
      */
-    getNewDepositAddress(): Promise<string>;
+    getXmrNewSubaddress(): Promise<string>;
     /**
      * Get all transactions in the Monero wallet.
      *

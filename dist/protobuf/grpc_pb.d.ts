@@ -2806,33 +2806,65 @@ export namespace GetXmrSeedReply {
   }
 }
 
-export class GetNewDepositAddressRequest extends jspb.Message {
+export class GetXmrPrimaryAddressRequest extends jspb.Message {
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): GetNewDepositAddressRequest.AsObject;
-  static toObject(includeInstance: boolean, msg: GetNewDepositAddressRequest): GetNewDepositAddressRequest.AsObject;
-  static serializeBinaryToWriter(message: GetNewDepositAddressRequest, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): GetNewDepositAddressRequest;
-  static deserializeBinaryFromReader(message: GetNewDepositAddressRequest, reader: jspb.BinaryReader): GetNewDepositAddressRequest;
+  toObject(includeInstance?: boolean): GetXmrPrimaryAddressRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: GetXmrPrimaryAddressRequest): GetXmrPrimaryAddressRequest.AsObject;
+  static serializeBinaryToWriter(message: GetXmrPrimaryAddressRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GetXmrPrimaryAddressRequest;
+  static deserializeBinaryFromReader(message: GetXmrPrimaryAddressRequest, reader: jspb.BinaryReader): GetXmrPrimaryAddressRequest;
 }
 
-export namespace GetNewDepositAddressRequest {
+export namespace GetXmrPrimaryAddressRequest {
   export type AsObject = {
   }
 }
 
-export class GetNewDepositAddressReply extends jspb.Message {
-  getSubaddress(): string;
-  setSubaddress(value: string): GetNewDepositAddressReply;
+export class GetXmrPrimaryAddressReply extends jspb.Message {
+  getPrimaryAddress(): string;
+  setPrimaryAddress(value: string): GetXmrPrimaryAddressReply;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): GetNewDepositAddressReply.AsObject;
-  static toObject(includeInstance: boolean, msg: GetNewDepositAddressReply): GetNewDepositAddressReply.AsObject;
-  static serializeBinaryToWriter(message: GetNewDepositAddressReply, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): GetNewDepositAddressReply;
-  static deserializeBinaryFromReader(message: GetNewDepositAddressReply, reader: jspb.BinaryReader): GetNewDepositAddressReply;
+  toObject(includeInstance?: boolean): GetXmrPrimaryAddressReply.AsObject;
+  static toObject(includeInstance: boolean, msg: GetXmrPrimaryAddressReply): GetXmrPrimaryAddressReply.AsObject;
+  static serializeBinaryToWriter(message: GetXmrPrimaryAddressReply, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GetXmrPrimaryAddressReply;
+  static deserializeBinaryFromReader(message: GetXmrPrimaryAddressReply, reader: jspb.BinaryReader): GetXmrPrimaryAddressReply;
 }
 
-export namespace GetNewDepositAddressReply {
+export namespace GetXmrPrimaryAddressReply {
+  export type AsObject = {
+    primaryAddress: string,
+  }
+}
+
+export class GetXmrNewSubaddressRequest extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GetXmrNewSubaddressRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: GetXmrNewSubaddressRequest): GetXmrNewSubaddressRequest.AsObject;
+  static serializeBinaryToWriter(message: GetXmrNewSubaddressRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GetXmrNewSubaddressRequest;
+  static deserializeBinaryFromReader(message: GetXmrNewSubaddressRequest, reader: jspb.BinaryReader): GetXmrNewSubaddressRequest;
+}
+
+export namespace GetXmrNewSubaddressRequest {
+  export type AsObject = {
+  }
+}
+
+export class GetXmrNewSubaddressReply extends jspb.Message {
+  getSubaddress(): string;
+  setSubaddress(value: string): GetXmrNewSubaddressReply;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GetXmrNewSubaddressReply.AsObject;
+  static toObject(includeInstance: boolean, msg: GetXmrNewSubaddressReply): GetXmrNewSubaddressReply.AsObject;
+  static serializeBinaryToWriter(message: GetXmrNewSubaddressReply, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GetXmrNewSubaddressReply;
+  static deserializeBinaryFromReader(message: GetXmrNewSubaddressReply, reader: jspb.BinaryReader): GetXmrNewSubaddressReply;
+}
+
+export namespace GetXmrNewSubaddressReply {
   export type AsObject = {
     subaddress: string,
   }

@@ -666,13 +666,28 @@ class HavenoClient {
         });
     }
     /**
+     * Get the primary address of the Monero wallet.
+     *
+     * @return {string} the primary address of the Monero wallet
+     */
+    async getXmrPrimaryAddress() {
+        return new Promise((resolve, reject) => {
+            this._walletsClient.getXmrPrimaryAddress(new grpc_pb_1.GetXmrPrimaryAddressRequest(), { password: this._password }, function (err, response) {
+                if (err)
+                    reject(err);
+                else
+                    resolve(response.getPrimaryAddress());
+            });
+        });
+    }
+    /**
      * Get a new subaddress in the Monero wallet to receive deposits.
      *
      * @return {string} the deposit address (a subaddress in the Haveno wallet)
      */
-    async getNewDepositAddress() {
+    async getXmrNewSubaddress() {
         return new Promise((resolve, reject) => {
-            this._walletsClient.getNewDepositAddress(new grpc_pb_1.GetNewDepositAddressRequest(), { password: this._password }, function (err, response) {
+            this._walletsClient.getXmrNewSubaddress(new grpc_pb_1.GetXmrNewSubaddressRequest(), { password: this._password }, function (err, response) {
                 if (err)
                     reject(err);
                 else
