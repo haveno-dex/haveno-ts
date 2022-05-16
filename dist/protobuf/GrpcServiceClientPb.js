@@ -901,9 +901,12 @@ class WalletsClient {
         this.methodInfoGetXmrSeed = new grpcWeb.MethodDescriptor('/io.bisq.protobuffer.Wallets/GetXmrSeed', grpcWeb.MethodType.UNARY, grpc_pb.GetXmrSeedRequest, grpc_pb.GetXmrSeedReply, (request) => {
             return request.serializeBinary();
         }, grpc_pb.GetXmrSeedReply.deserializeBinary);
-        this.methodInfoGetNewDepositAddress = new grpcWeb.MethodDescriptor('/io.bisq.protobuffer.Wallets/GetNewDepositAddress', grpcWeb.MethodType.UNARY, grpc_pb.GetNewDepositAddressRequest, grpc_pb.GetNewDepositAddressReply, (request) => {
+        this.methodInfoGetXmrPrimaryAddress = new grpcWeb.MethodDescriptor('/io.bisq.protobuffer.Wallets/GetXmrPrimaryAddress', grpcWeb.MethodType.UNARY, grpc_pb.GetXmrPrimaryAddressRequest, grpc_pb.GetXmrPrimaryAddressReply, (request) => {
             return request.serializeBinary();
-        }, grpc_pb.GetNewDepositAddressReply.deserializeBinary);
+        }, grpc_pb.GetXmrPrimaryAddressReply.deserializeBinary);
+        this.methodInfoGetXmrNewSubaddress = new grpcWeb.MethodDescriptor('/io.bisq.protobuffer.Wallets/GetXmrNewSubaddress', grpcWeb.MethodType.UNARY, grpc_pb.GetXmrNewSubaddressRequest, grpc_pb.GetXmrNewSubaddressReply, (request) => {
+            return request.serializeBinary();
+        }, grpc_pb.GetXmrNewSubaddressReply.deserializeBinary);
         this.methodInfoGetXmrTxs = new grpcWeb.MethodDescriptor('/io.bisq.protobuffer.Wallets/GetXmrTxs', grpcWeb.MethodType.UNARY, grpc_pb.GetXmrTxsRequest, grpc_pb.GetXmrTxsReply, (request) => {
             return request.serializeBinary();
         }, grpc_pb.GetXmrTxsReply.deserializeBinary);
@@ -972,13 +975,21 @@ class WalletsClient {
         return this.client_.unaryCall(this.hostname_ +
             '/io.bisq.protobuffer.Wallets/GetXmrSeed', request, metadata || {}, this.methodInfoGetXmrSeed);
     }
-    getNewDepositAddress(request, metadata, callback) {
+    getXmrPrimaryAddress(request, metadata, callback) {
         if (callback !== undefined) {
             return this.client_.rpcCall(this.hostname_ +
-                '/io.bisq.protobuffer.Wallets/GetNewDepositAddress', request, metadata || {}, this.methodInfoGetNewDepositAddress, callback);
+                '/io.bisq.protobuffer.Wallets/GetXmrPrimaryAddress', request, metadata || {}, this.methodInfoGetXmrPrimaryAddress, callback);
         }
         return this.client_.unaryCall(this.hostname_ +
-            '/io.bisq.protobuffer.Wallets/GetNewDepositAddress', request, metadata || {}, this.methodInfoGetNewDepositAddress);
+            '/io.bisq.protobuffer.Wallets/GetXmrPrimaryAddress', request, metadata || {}, this.methodInfoGetXmrPrimaryAddress);
+    }
+    getXmrNewSubaddress(request, metadata, callback) {
+        if (callback !== undefined) {
+            return this.client_.rpcCall(this.hostname_ +
+                '/io.bisq.protobuffer.Wallets/GetXmrNewSubaddress', request, metadata || {}, this.methodInfoGetXmrNewSubaddress, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/io.bisq.protobuffer.Wallets/GetXmrNewSubaddress', request, metadata || {}, this.methodInfoGetXmrNewSubaddress);
     }
     getXmrTxs(request, metadata, callback) {
         if (callback !== undefined) {

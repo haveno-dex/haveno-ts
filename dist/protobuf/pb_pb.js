@@ -3319,7 +3319,7 @@ if (goog.DEBUG && !COMPILED) {
  * @constructor
  */
 proto.io.bisq.protobuffer.OpenOffer = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.io.bisq.protobuffer.OpenOffer.repeatedFields_, null);
 };
 goog.inherits(proto.io.bisq.protobuffer.OpenOffer, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -50563,11 +50563,12 @@ proto.io.bisq.protobuffer.Offer.serializeBinaryToWriter = function(message, writ
 proto.io.bisq.protobuffer.Offer.State = {
   PB_ERROR: 0,
   UNKNOWN: 1,
-  OFFER_FEE_PAID: 2,
-  AVAILABLE: 3,
-  NOT_AVAILABLE: 4,
-  REMOVED: 5,
-  MAKER_OFFLINE: 6
+  SCHEDULED: 2,
+  OFFER_FEE_RESERVED: 3,
+  AVAILABLE: 4,
+  NOT_AVAILABLE: 5,
+  REMOVED: 6,
+  MAKER_OFFLINE: 7
 };
 
 /**
@@ -50988,6 +50989,13 @@ proto.io.bisq.protobuffer.SignedOffer.prototype.setArbitratorSignature = functio
 
 
 
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.io.bisq.protobuffer.OpenOffer.repeatedFields_ = [6];
+
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -51023,9 +51031,12 @@ proto.io.bisq.protobuffer.OpenOffer.toObject = function(includeInstance, msg) {
     state: jspb.Message.getFieldWithDefault(msg, 2, 0),
     backupArbitrator: (f = msg.getBackupArbitrator()) && proto.io.bisq.protobuffer.NodeAddress.toObject(includeInstance, f),
     triggerPrice: jspb.Message.getFieldWithDefault(msg, 4, 0),
-    reserveTxHash: jspb.Message.getFieldWithDefault(msg, 5, ""),
-    reserveTxHex: jspb.Message.getFieldWithDefault(msg, 6, ""),
-    reserveTxKey: jspb.Message.getFieldWithDefault(msg, 7, "")
+    autoSplit: jspb.Message.getBooleanFieldWithDefault(msg, 5, false),
+    scheduledTxHashesList: (f = jspb.Message.getRepeatedField(msg, 6)) == null ? undefined : f,
+    scheduledAmount: jspb.Message.getFieldWithDefault(msg, 7, ""),
+    reserveTxHash: jspb.Message.getFieldWithDefault(msg, 8, ""),
+    reserveTxHex: jspb.Message.getFieldWithDefault(msg, 9, ""),
+    reserveTxKey: jspb.Message.getFieldWithDefault(msg, 10, "")
   };
 
   if (includeInstance) {
@@ -51081,14 +51092,26 @@ proto.io.bisq.protobuffer.OpenOffer.deserializeBinaryFromReader = function(msg, 
       msg.setTriggerPrice(value);
       break;
     case 5:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setReserveTxHash(value);
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setAutoSplit(value);
       break;
     case 6:
       var value = /** @type {string} */ (reader.readString());
-      msg.setReserveTxHex(value);
+      msg.addScheduledTxHashes(value);
       break;
     case 7:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setScheduledAmount(value);
+      break;
+    case 8:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setReserveTxHash(value);
+      break;
+    case 9:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setReserveTxHex(value);
+      break;
+    case 10:
       var value = /** @type {string} */ (reader.readString());
       msg.setReserveTxKey(value);
       break;
@@ -51151,24 +51174,45 @@ proto.io.bisq.protobuffer.OpenOffer.serializeBinaryToWriter = function(message, 
       f
     );
   }
+  f = message.getAutoSplit();
+  if (f) {
+    writer.writeBool(
+      5,
+      f
+    );
+  }
+  f = message.getScheduledTxHashesList();
+  if (f.length > 0) {
+    writer.writeRepeatedString(
+      6,
+      f
+    );
+  }
+  f = message.getScheduledAmount();
+  if (f.length > 0) {
+    writer.writeString(
+      7,
+      f
+    );
+  }
   f = message.getReserveTxHash();
   if (f.length > 0) {
     writer.writeString(
-      5,
+      8,
       f
     );
   }
   f = message.getReserveTxHex();
   if (f.length > 0) {
     writer.writeString(
-      6,
+      9,
       f
     );
   }
   f = message.getReserveTxKey();
   if (f.length > 0) {
     writer.writeString(
-      7,
+      10,
       f
     );
   }
@@ -51180,11 +51224,12 @@ proto.io.bisq.protobuffer.OpenOffer.serializeBinaryToWriter = function(message, 
  */
 proto.io.bisq.protobuffer.OpenOffer.State = {
   PB_ERROR: 0,
-  AVAILABLE: 1,
-  RESERVED: 2,
-  CLOSED: 3,
-  CANCELED: 4,
-  DEACTIVATED: 5
+  SCHEDULED: 1,
+  AVAILABLE: 2,
+  RESERVED: 3,
+  CLOSED: 4,
+  CANCELED: 5,
+  DEACTIVATED: 6
 };
 
 /**
@@ -51298,46 +51343,65 @@ proto.io.bisq.protobuffer.OpenOffer.prototype.setTriggerPrice = function(value) 
 
 
 /**
- * optional string reserve_tx_hash = 5;
- * @return {string}
+ * optional bool auto_split = 5;
+ * @return {boolean}
  */
-proto.io.bisq.protobuffer.OpenOffer.prototype.getReserveTxHash = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+proto.io.bisq.protobuffer.OpenOffer.prototype.getAutoSplit = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 5, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.io.bisq.protobuffer.OpenOffer} returns this
+ */
+proto.io.bisq.protobuffer.OpenOffer.prototype.setAutoSplit = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 5, value);
+};
+
+
+/**
+ * repeated string scheduled_tx_hashes = 6;
+ * @return {!Array<string>}
+ */
+proto.io.bisq.protobuffer.OpenOffer.prototype.getScheduledTxHashesList = function() {
+  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 6));
+};
+
+
+/**
+ * @param {!Array<string>} value
+ * @return {!proto.io.bisq.protobuffer.OpenOffer} returns this
+ */
+proto.io.bisq.protobuffer.OpenOffer.prototype.setScheduledTxHashesList = function(value) {
+  return jspb.Message.setField(this, 6, value || []);
 };
 
 
 /**
  * @param {string} value
+ * @param {number=} opt_index
  * @return {!proto.io.bisq.protobuffer.OpenOffer} returns this
  */
-proto.io.bisq.protobuffer.OpenOffer.prototype.setReserveTxHash = function(value) {
-  return jspb.Message.setProto3StringField(this, 5, value);
+proto.io.bisq.protobuffer.OpenOffer.prototype.addScheduledTxHashes = function(value, opt_index) {
+  return jspb.Message.addToRepeatedField(this, 6, value, opt_index);
 };
 
 
 /**
- * optional string reserve_tx_hex = 6;
- * @return {string}
- */
-proto.io.bisq.protobuffer.OpenOffer.prototype.getReserveTxHex = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
-};
-
-
-/**
- * @param {string} value
+ * Clears the list making it empty but non-null.
  * @return {!proto.io.bisq.protobuffer.OpenOffer} returns this
  */
-proto.io.bisq.protobuffer.OpenOffer.prototype.setReserveTxHex = function(value) {
-  return jspb.Message.setProto3StringField(this, 6, value);
+proto.io.bisq.protobuffer.OpenOffer.prototype.clearScheduledTxHashesList = function() {
+  return this.setScheduledTxHashesList([]);
 };
 
 
 /**
- * optional string reserve_tx_key = 7;
+ * optional string scheduled_amount = 7;
  * @return {string}
  */
-proto.io.bisq.protobuffer.OpenOffer.prototype.getReserveTxKey = function() {
+proto.io.bisq.protobuffer.OpenOffer.prototype.getScheduledAmount = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
 };
 
@@ -51346,8 +51410,62 @@ proto.io.bisq.protobuffer.OpenOffer.prototype.getReserveTxKey = function() {
  * @param {string} value
  * @return {!proto.io.bisq.protobuffer.OpenOffer} returns this
  */
-proto.io.bisq.protobuffer.OpenOffer.prototype.setReserveTxKey = function(value) {
+proto.io.bisq.protobuffer.OpenOffer.prototype.setScheduledAmount = function(value) {
   return jspb.Message.setProto3StringField(this, 7, value);
+};
+
+
+/**
+ * optional string reserve_tx_hash = 8;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.OpenOffer.prototype.getReserveTxHash = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 8, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.OpenOffer} returns this
+ */
+proto.io.bisq.protobuffer.OpenOffer.prototype.setReserveTxHash = function(value) {
+  return jspb.Message.setProto3StringField(this, 8, value);
+};
+
+
+/**
+ * optional string reserve_tx_hex = 9;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.OpenOffer.prototype.getReserveTxHex = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 9, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.OpenOffer} returns this
+ */
+proto.io.bisq.protobuffer.OpenOffer.prototype.setReserveTxHex = function(value) {
+  return jspb.Message.setProto3StringField(this, 9, value);
+};
+
+
+/**
+ * optional string reserve_tx_key = 10;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.OpenOffer.prototype.getReserveTxKey = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 10, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.OpenOffer} returns this
+ */
+proto.io.bisq.protobuffer.OpenOffer.prototype.setReserveTxKey = function(value) {
+  return jspb.Message.setProto3StringField(this, 10, value);
 };
 
 

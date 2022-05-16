@@ -416,9 +416,12 @@ export declare class WalletsClient {
     methodInfoGetXmrSeed: grpcWeb.MethodDescriptor<grpc_pb.GetXmrSeedRequest, grpc_pb.GetXmrSeedReply>;
     getXmrSeed(request: grpc_pb.GetXmrSeedRequest, metadata: grpcWeb.Metadata | null): Promise<grpc_pb.GetXmrSeedReply>;
     getXmrSeed(request: grpc_pb.GetXmrSeedRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.GetXmrSeedReply) => void): grpcWeb.ClientReadableStream<grpc_pb.GetXmrSeedReply>;
-    methodInfoGetNewDepositAddress: grpcWeb.MethodDescriptor<grpc_pb.GetNewDepositAddressRequest, grpc_pb.GetNewDepositAddressReply>;
-    getNewDepositAddress(request: grpc_pb.GetNewDepositAddressRequest, metadata: grpcWeb.Metadata | null): Promise<grpc_pb.GetNewDepositAddressReply>;
-    getNewDepositAddress(request: grpc_pb.GetNewDepositAddressRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.GetNewDepositAddressReply) => void): grpcWeb.ClientReadableStream<grpc_pb.GetNewDepositAddressReply>;
+    methodInfoGetXmrPrimaryAddress: grpcWeb.MethodDescriptor<grpc_pb.GetXmrPrimaryAddressRequest, grpc_pb.GetXmrPrimaryAddressReply>;
+    getXmrPrimaryAddress(request: grpc_pb.GetXmrPrimaryAddressRequest, metadata: grpcWeb.Metadata | null): Promise<grpc_pb.GetXmrPrimaryAddressReply>;
+    getXmrPrimaryAddress(request: grpc_pb.GetXmrPrimaryAddressRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.GetXmrPrimaryAddressReply) => void): grpcWeb.ClientReadableStream<grpc_pb.GetXmrPrimaryAddressReply>;
+    methodInfoGetXmrNewSubaddress: grpcWeb.MethodDescriptor<grpc_pb.GetXmrNewSubaddressRequest, grpc_pb.GetXmrNewSubaddressReply>;
+    getXmrNewSubaddress(request: grpc_pb.GetXmrNewSubaddressRequest, metadata: grpcWeb.Metadata | null): Promise<grpc_pb.GetXmrNewSubaddressReply>;
+    getXmrNewSubaddress(request: grpc_pb.GetXmrNewSubaddressRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.GetXmrNewSubaddressReply) => void): grpcWeb.ClientReadableStream<grpc_pb.GetXmrNewSubaddressReply>;
     methodInfoGetXmrTxs: grpcWeb.MethodDescriptor<grpc_pb.GetXmrTxsRequest, grpc_pb.GetXmrTxsReply>;
     getXmrTxs(request: grpc_pb.GetXmrTxsRequest, metadata: grpcWeb.Metadata | null): Promise<grpc_pb.GetXmrTxsReply>;
     getXmrTxs(request: grpc_pb.GetXmrTxsRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.GetXmrTxsReply) => void): grpcWeb.ClientReadableStream<grpc_pb.GetXmrTxsReply>;

@@ -6149,11 +6149,12 @@ export namespace Offer {
   export enum State { 
     PB_ERROR = 0,
     UNKNOWN = 1,
-    OFFER_FEE_PAID = 2,
-    AVAILABLE = 3,
-    NOT_AVAILABLE = 4,
-    REMOVED = 5,
-    MAKER_OFFLINE = 6,
+    SCHEDULED = 2,
+    OFFER_FEE_RESERVED = 3,
+    AVAILABLE = 4,
+    NOT_AVAILABLE = 5,
+    REMOVED = 6,
+    MAKER_OFFLINE = 7,
   }
 }
 
@@ -6224,6 +6225,17 @@ export class OpenOffer extends jspb.Message {
   getTriggerPrice(): number;
   setTriggerPrice(value: number): OpenOffer;
 
+  getAutoSplit(): boolean;
+  setAutoSplit(value: boolean): OpenOffer;
+
+  getScheduledTxHashesList(): Array<string>;
+  setScheduledTxHashesList(value: Array<string>): OpenOffer;
+  clearScheduledTxHashesList(): OpenOffer;
+  addScheduledTxHashes(value: string, index?: number): OpenOffer;
+
+  getScheduledAmount(): string;
+  setScheduledAmount(value: string): OpenOffer;
+
   getReserveTxHash(): string;
   setReserveTxHash(value: string): OpenOffer;
 
@@ -6247,6 +6259,9 @@ export namespace OpenOffer {
     state: OpenOffer.State,
     backupArbitrator?: NodeAddress.AsObject,
     triggerPrice: number,
+    autoSplit: boolean,
+    scheduledTxHashesList: Array<string>,
+    scheduledAmount: string,
     reserveTxHash: string,
     reserveTxHex: string,
     reserveTxKey: string,
@@ -6254,11 +6269,12 @@ export namespace OpenOffer {
 
   export enum State { 
     PB_ERROR = 0,
-    AVAILABLE = 1,
-    RESERVED = 2,
-    CLOSED = 3,
-    CANCELED = 4,
-    DEACTIVATED = 5,
+    SCHEDULED = 1,
+    AVAILABLE = 2,
+    RESERVED = 3,
+    CLOSED = 4,
+    CANCELED = 5,
+    DEACTIVATED = 6,
   }
 }
 
