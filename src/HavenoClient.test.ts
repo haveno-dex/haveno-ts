@@ -769,21 +769,20 @@ test("Can get market depth", async () => {
     expect(marketDepth.getSellPricesList().length).toEqual(marketDepth.getSellDepthList().length);
     
     // test buy prices and depths
-    const priceDivisor = 100000000; // TODO: offer price = price * 100000000
     const buyOffers = (await alice.getOffers(assetCode, "buy")).concat(await alice.getMyOffers(assetCode, "buy")).sort(function(a, b) { return b.getPrice() - a.getPrice() });
 
-    expect(marketDepth.getBuyPricesList()[0]).toEqual(buyOffers[0].getPrice() / priceDivisor);
-    expect(marketDepth.getBuyPricesList()[1]).toEqual(buyOffers[1].getPrice() / priceDivisor);
-    expect(marketDepth.getBuyPricesList()[2]).toEqual(buyOffers[2].getPrice() / priceDivisor);
+    expect(marketDepth.getBuyPricesList()[0]).toEqual(buyOffers[0].getPrice());
+    expect(marketDepth.getBuyPricesList()[1]).toEqual(buyOffers[1].getPrice());
+    expect(marketDepth.getBuyPricesList()[2]).toEqual(buyOffers[2].getPrice());
     expect(marketDepth.getBuyDepthList()[0]).toEqual(0.15);
     expect(marketDepth.getBuyDepthList()[1]).toEqual(0.30);
     expect(marketDepth.getBuyDepthList()[2]).toEqual(0.65);
     
     // test sell prices and depths
     const sellOffers = (await alice.getOffers(assetCode, "sell")).concat(await alice.getMyOffers(assetCode, "sell")).sort(function(a, b) { return a.getPrice() - b.getPrice() });
-    expect(marketDepth.getSellPricesList()[0]).toEqual(sellOffers[0].getPrice() / priceDivisor);
-    expect(marketDepth.getSellPricesList()[1]).toEqual(sellOffers[1].getPrice() / priceDivisor);
-    expect(marketDepth.getSellPricesList()[2]).toEqual(sellOffers[2].getPrice() / priceDivisor);
+    expect(marketDepth.getSellPricesList()[0]).toEqual(sellOffers[0].getPrice());
+    expect(marketDepth.getSellPricesList()[1]).toEqual(sellOffers[1].getPrice());
+    expect(marketDepth.getSellPricesList()[2]).toEqual(sellOffers[2].getPrice());
     expect(marketDepth.getSellDepthList()[0]).toEqual(0.3);
     expect(marketDepth.getSellDepthList()[1]).toEqual(0.6);
     expect(marketDepth.getSellDepthList()[2]).toEqual(1);
@@ -943,7 +942,7 @@ test("Can post and remove offers", async () => {
   assert.equal(offer.getState(), "AVAILABLE");
   assert.equal(offer.getBaseCurrencyCode(), "XMR");
   assert.equal(offer.getCounterCurrencyCode(), assetCode);
-  assert.equal(offer.getPrice(), Math.round(price * 100000000)); // TODO: price when posting crypto offer is * 100000000.
+  assert.equal(offer.getPrice(), price);
   
   // has offer
   offer = await alice.getMyOffer(offer.getId());
