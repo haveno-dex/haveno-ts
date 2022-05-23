@@ -1033,7 +1033,7 @@ test("Can schedule offers with locked funds", async () => {
     
     // has offer
     offer = await charlie.getMyOffer(offer.getId());
-    assert.equal(offer.getState(), "UNKNOWN"); // TODO: offer status is unknown after restart
+    assert.equal(offer.getState(), "SCHEDULED");
     
     // peer does not see offer because it's scheduled
     await wait(TestConfig.maxTimePeerNoticeMs);
