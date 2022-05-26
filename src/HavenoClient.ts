@@ -781,12 +781,16 @@ export default class HavenoClient {
    * @return {number} the price of the asset per 1 XMR
    */
   async getPrice(assetCode: string): Promise<number> {
-    return new Promise((resolve, reject) => {
-      this._priceClient.getMarketPrice(new MarketPriceRequest().setCurrencyCode(assetCode), {password: this._password}, function(err: grpcWeb.RpcError, response: MarketPriceReply) {
-        if (err) reject(err);
-        else resolve(response.getPrice());
+    try { // TODO (woodser): try...catch is necessary to preserve stack trace. use throughout client
+      return await new Promise((resolve, reject) => {
+        this._priceClient.getMarketPrice(new MarketPriceRequest().setCurrencyCode(assetCode), {password: this._password}, function(err: grpcWeb.RpcError, response: MarketPriceReply) {
+          if (err) reject(err);
+          else resolve(response.getPrice());
+        });
       });
-    });
+    } catch (e: any) {
+      throw new Error(e.message);
+    }
   }
   
   /**
@@ -891,12 +895,16 @@ export default class HavenoClient {
    * @return {PaymentAccount} the created payment account
    */
   async createPaymentAccount(paymentAccountForm: any): Promise<PaymentAccount> {
-    return new Promise((resolve, reject) => {
-      this._paymentAccountsClient.createPaymentAccount(new CreatePaymentAccountRequest().setPaymentAccountForm(JSON.stringify(paymentAccountForm)), {password: this._password}, function(err: grpcWeb.RpcError, response: CreatePaymentAccountReply) {
-        if (err) reject(err);
-        else resolve(response.getPaymentAccount()!);
+    try {
+      return await new Promise((resolve, reject) => {
+        this._paymentAccountsClient.createPaymentAccount(new CreatePaymentAccountRequest().setPaymentAccountForm(JSON.stringify(paymentAccountForm)), {password: this._password}, function(err: grpcWeb.RpcError, response: CreatePaymentAccountReply) {
+          if (err) reject(err);
+          else resolve(response.getPaymentAccount()!);
+        });
       });
-    });
+    } catch (e: any) {
+      throw new Error(e.message); // re-catch error to preserve stack trace TODO: repeat this pattern throughout this class
+    }
   }
   
   /**
@@ -913,12 +921,16 @@ export default class HavenoClient {
         .setCurrencyCode(assetCode)
         .setAddress(address)
         .setTradeInstant(false); // not using instant trades
-    return new Promise((resolve, reject) => {
-      this._paymentAccountsClient.createCryptoCurrencyPaymentAccount(request, {password: this._password}, function(err: grpcWeb.RpcError, response: CreateCryptoCurrencyPaymentAccountReply) {
-        if (err) reject(err);
-        else resolve(response.getPaymentAccount()!);
+    try {
+      return await new Promise((resolve, reject) => {
+        this._paymentAccountsClient.createCryptoCurrencyPaymentAccount(request, {password: this._password}, function(err: grpcWeb.RpcError, response: CreateCryptoCurrencyPaymentAccountReply) {
+          if (err) reject(err);
+          else resolve(response.getPaymentAccount()!);
+        });
       });
-    });
+    } catch (e: any) {
+      throw new Error(e.message);
+    }
   }
   
   /**
@@ -977,9 +989,9 @@ export default class HavenoClient {
    * @param {bigint} amount - amount of XMR to trade
    * @param {string} assetCode - asset code to trade for XMR
    * @param {string} paymentAccountId - payment account id
-   * @param {number} buyerSecurityDeposit - buyer security deposit as % of trade amount
+   * @param {number} buyerSecurityDepositPct - buyer security deposit as % of trade amount
    * @param {number} price - trade price (optional, default to market price)
-   * @param {number} marketPriceMargin - if using market price, % from market price to accept (optional, default 0%)
+   * @param {number} marketPriceMarginPct - if using market price, % from market price to accept (optional, default 0%)
    * @param {bigint} minAmount - minimum amount to trade (optional, default to fixed amount)
    * @param {number} triggerPrice - price to remove offer (optional)
    * @return {OfferInfo} the posted offer 
@@ -988,9 +1000,9 @@ export default class HavenoClient {
                   amount: bigint,
                   assetCode: string,
                   paymentAccountId: string,
-                  buyerSecurityDeposit: number,
+                  buyerSecurityDepositPct: number,
                   price?: number,
-                  marketPriceMargin?: number,
+                  marketPriceMarginPct?: number,
                   triggerPrice?: number,
                   minAmount?: bigint): Promise<OfferInfo> {
     const request = new CreateOfferRequest()
@@ -998,11 +1010,11 @@ export default class HavenoClient {
         .setAmount(amount.toString())
         .setCurrencyCode(assetCode)
         .setPaymentAccountId(paymentAccountId)
-        .setBuyerSecurityDeposit(buyerSecurityDeposit)
+        .setBuyerSecurityDepositPct(buyerSecurityDepositPct)
         .setPrice(price ? price.toString() : "1.0")  // TOOD (woodser): positive price required even if using market price?
         .setUseMarketBasedPrice(price === undefined) // TODO (woodser): this field is redundant; remove from api
         .setMinAmount(minAmount ? minAmount.toString() : amount.toString());
-    if (marketPriceMargin) request.setMarketPriceMargin(marketPriceMargin);
+    if (marketPriceMarginPct) request.setMarketPriceMarginPct(marketPriceMarginPct);
     if (triggerPrice) request.setTriggerPrice(triggerPrice.toString());
     return new Promise((resolve, reject) => {
       this._offersClient.createOffer(request, {password: this._password}, function(err: grpcWeb.RpcError, response: CreateOfferReply) {

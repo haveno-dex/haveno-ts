@@ -30,7 +30,7 @@ import console from "console"; // import console because jest swallows messages 
 // ------------------------------ TEST CONFIG ---------------------------------
 
 const TestConfig = {
-    logLevel: 0,
+    logLevel: 1,
     moneroBinsDir: "../haveno/.localnet",
     testDataDir: "./testdata",
     networkType: monerojs.MoneroNetworkType.STAGENET,
@@ -308,7 +308,7 @@ test("Can manage an account", async () => {
     assert(size > 0);
     
     // delete account which shuts down server
-    await charlie.deleteAccount();
+    await charlie.deleteAccount(); // TODO: support deleting and restoring account without shutting down server, #310
     assert(!await charlie.isConnectedToDaemon());
     await releaseHavenoProcess(charlie);
     
@@ -709,7 +709,7 @@ test("Can get market prices", async () => {
     const price = await alice.getPrice(assetCode);
     expect(price).toBeGreaterThan(0);
   }
-
+  
   // test that prices are reasonable
   const usd = await alice.getPrice("USD");
   expect(usd).toBeGreaterThan(50);
@@ -720,7 +720,7 @@ test("Can get market prices", async () => {
   const btc = await alice.getPrice("BTC");
   expect(btc).toBeGreaterThan(0.0004)
   expect(btc).toBeLessThan(0.4);
-
+  
   // test invalid currency
   await expect(async () => { await alice.getPrice("INVALID_CURRENCY") })
     .rejects
@@ -769,20 +769,19 @@ test("Can get market depth", async () => {
     expect(marketDepth.getSellPricesList().length).toEqual(marketDepth.getSellDepthList().length);
     
     // test buy prices and depths
-    const priceDivisor = 100000000; // TODO: offer price = price * 100000000
-    const buyOffers = (await alice.getOffers(assetCode, "buy")).concat(await alice.getMyOffers(assetCode, "buy")).sort(function(a, b) { return a.getPrice() - b.getPrice() });
-    expect(marketDepth.getBuyPricesList()[0]).toEqual(1 / (buyOffers[0].getPrice() / priceDivisor)); // TODO: price when posting offer is reversed. this assumes crypto counter currency
-    expect(marketDepth.getBuyPricesList()[1]).toEqual(1 / (buyOffers[1].getPrice() / priceDivisor));
-    expect(marketDepth.getBuyPricesList()[2]).toEqual(1 / (buyOffers[2].getPrice() / priceDivisor));
+    const buyOffers = (await alice.getOffers(assetCode, "buy")).concat(await alice.getMyOffers(assetCode, "buy")).sort(function(a, b) { return parseFloat(a.getPrice()) - parseFloat(b.getPrice()) });
+    expect(marketDepth.getBuyPricesList()[0]).toEqual(1 / parseFloat(buyOffers[0].getPrice())); // TODO: price when posting offer is reversed. this assumes crypto counter currency
+    expect(marketDepth.getBuyPricesList()[1]).toEqual(1 / parseFloat(buyOffers[1].getPrice()));
+    expect(marketDepth.getBuyPricesList()[2]).toEqual(1 / parseFloat(buyOffers[2].getPrice()));
     expect(marketDepth.getBuyDepthList()[0]).toEqual(0.15);
     expect(marketDepth.getBuyDepthList()[1]).toEqual(0.30);
     expect(marketDepth.getBuyDepthList()[2]).toEqual(0.65);
     
     // test sell prices and depths
-    const sellOffers = (await alice.getOffers(assetCode, "sell")).concat(await alice.getMyOffers(assetCode, "sell")).sort(function(a, b) { return b.getPrice() - a.getPrice() });
-    expect(marketDepth.getSellPricesList()[0]).toEqual(1 / (sellOffers[0].getPrice() / priceDivisor));
-    expect(marketDepth.getSellPricesList()[1]).toEqual(1 / (sellOffers[1].getPrice() / priceDivisor));
-    expect(marketDepth.getSellPricesList()[2]).toEqual(1 / (sellOffers[2].getPrice() / priceDivisor));
+    const sellOffers = (await alice.getOffers(assetCode, "sell")).concat(await alice.getMyOffers(assetCode, "sell")).sort(function(a, b) { return parseFloat(b.getPrice()) - parseFloat(a.getPrice()) });
+    expect(marketDepth.getSellPricesList()[0]).toEqual(1 / parseFloat(sellOffers[0].getPrice()));
+    expect(marketDepth.getSellPricesList()[1]).toEqual(1 / parseFloat(sellOffers[1].getPrice()));
+    expect(marketDepth.getSellPricesList()[2]).toEqual(1 / parseFloat(sellOffers[2].getPrice()));
     expect(marketDepth.getSellDepthList()[0]).toEqual(0.3);
     expect(marketDepth.getSellDepthList()[1]).toEqual(0.6);
     expect(marketDepth.getSellDepthList()[2]).toEqual(1);
@@ -860,6 +859,8 @@ test("Can create fiat payment accounts", async () => {
   const accountForm = await alice.getPaymentAccountForm(paymentMethodId);
   
   // edit form
+  accountForm.tradeCurrencies ="gbp,eur,usd";
+  accountForm.selectedTradeCurrency = "usd";
   accountForm.accountName = "Revolut account " + GenUtils.getUUID();
   accountForm.userName = "user123";
   
@@ -927,27 +928,49 @@ test("Can create crypto payment accounts", async () => {
   }
 });
 
-test("Can post and remove offers", async () => {
+test("Can prepare for trading", async () => {
 
-  // wait for alice to have at least 5 outputs of 0.5 XMR
-  await fundOutputs([aliceWallet], BigInt("500000000000"), 5);
+  // create payment accounts
+  if (!await hasPaymentAccount(alice, "eth")) await createPaymentAccount(alice, "eth");
+  if (!await hasPaymentAccount(alice, "bch")) await createPaymentAccount(alice, "bch");
+  if (!await hasPaymentAccount(alice, "usd")) await createPaymentAccount(alice, "usd");
+  if (!await hasPaymentAccount(bob, "eth")) await createPaymentAccount(bob, "eth");
+  if (!await hasPaymentAccount(bob, "bch")) await createPaymentAccount(bob, "bch");
+  if (!await hasPaymentAccount(bob, "usd")) await createPaymentAccount(bob, "usd");
+
+  // fund wallets
+  const tradeAmount = BigInt("250000000000");
+  await fundOutputs([aliceWallet, bobWallet], tradeAmount * BigInt("6"), 4);
+  
+  // wait for havenod to observe funds
+  await wait(TestConfig.walletSyncPeriodMs);
+});
+
+test("Can post and remove offers", async () => {
+  
+  // wait for alice to have unlocked balance to post offer
+  await waitForUnlockedBalance(BigInt("250000000000") * BigInt("2"), alice);
   
   // get unlocked balance before reserving funds for offer
   const unlockedBalanceBefore = BigInt((await alice.getBalances()).getUnlockedBalance());
   
   // post crypto offer
-  let assetCode = "ETH";
+  let assetCode = "BCH";
   let price = 1 / 17;
   price = 1 / price; // TODO: price in crypto offer is inverted
   let offer: OfferInfo = await postOffer(alice, {assetCode: assetCode, price: price}); 
   assert.equal(offer.getState(), "AVAILABLE");
   assert.equal(offer.getBaseCurrencyCode(), assetCode); // TODO: base and counter currencies inverted in crypto offer
   assert.equal(offer.getCounterCurrencyCode(), "XMR");
-  assert.equal(offer.getPrice(), price * 100000000); // TODO: price when posting crypto offer is inverted and * 100000000.
+  assert.equal(parseFloat(offer.getPrice()), price);
   
   // has offer
   offer = await alice.getMyOffer(offer.getId());
   assert.equal(offer.getState(), "AVAILABLE");
+  
+  // peer sees offer
+  await wait(TestConfig.maxTimePeerNoticeMs);
+  if (!getOffer(await bob.getOffers(assetCode, TestConfig.postOffer.direction), offer.getId())) throw new Error("Offer " + offer.getId() + " was not found in peer's offers after posted");
   
   // cancel offer
   await alice.removeOffer(offer.getId());
@@ -965,7 +988,7 @@ test("Can post and remove offers", async () => {
   assert.equal(offer.getState(), "AVAILABLE");
   assert.equal(offer.getBaseCurrencyCode(), "XMR");
   assert.equal(offer.getCounterCurrencyCode(), "USD");
-  assert.equal(offer.getPrice(), price * 10000); // TODO: price = price * 10000
+  assert.equal(parseFloat(offer.getPrice()), price);
   
   // has offer
   offer = await alice.getMyOffer(offer.getId());
@@ -997,7 +1020,7 @@ test("Can schedule offers with locked funds", async () => {
     await fundOutputs([charlieWallet], outputAmt, 2, false);
   
     // schedule offer
-    const assetCode = "ETH";
+    const assetCode = "BCH";
     const direction = "BUY";
     let offer: OfferInfo = await postOffer(charlie, {assetCode: assetCode, direction: direction, awaitUnlockedBalance: false}); 
     assert.equal(offer.getState(), "SCHEDULED");
@@ -1202,7 +1225,7 @@ test("Can resolve disputes", async () => {
 
   // wait for alice and bob to have unlocked balance for trade
   const tradeAmount = BigInt("250000000000");
-  await fundOutputs([aliceWallet, bobWallet], tradeAmount * BigInt("6"), 4, true);
+  await fundOutputs([aliceWallet, bobWallet], tradeAmount * BigInt("6"), 4);
   
   // register to receive notifications
   const aliceNotifications: NotificationMessage[] = [];
@@ -2071,25 +2094,34 @@ function testDestination(destination: XmrDestination) {
 }
 
 function getRandomAssetCode() {
-    return TestConfig.assetCodes[GenUtils.getRandomInt(0, TestConfig.assetCodes.length - 1)];
+  return TestConfig.assetCodes[GenUtils.getRandomInt(0, TestConfig.assetCodes.length - 1)];
+}
+
+async function hasPaymentAccount(trader: HavenoClient, assetCode: string): Promise<boolean> {
+  for (const paymentAccount of await trader.getPaymentAccounts()) {
+    if (paymentAccount.getSelectedTradeCurrency()!.getCode() === assetCode.toUpperCase()) return true;
+  }
+  return false;
 }
 
 async function createPaymentAccount(trader: HavenoClient, assetCode: string): Promise<PaymentAccount> {
-    return isCrypto(assetCode) ? createCryptoPaymentAccount(trader, assetCode) : createRevolutPaymentAccount(trader);
+  return isCrypto(assetCode) ? createCryptoPaymentAccount(trader, assetCode) : createRevolutPaymentAccount(trader);
 }
 
 function isCrypto(assetCode: string) {
-    return getCryptoAddress(assetCode) !== undefined;
+  return getCryptoAddress(assetCode) !== undefined;
 }
 
 function getCryptoAddress(currencyCode: string): string | undefined {
-    for (const cryptoAddress of TestConfig.cryptoAddresses) {
-        if (cryptoAddress.currencyCode === currencyCode.toUpperCase()) return cryptoAddress.address;
-    }
+  for (const cryptoAddress of TestConfig.cryptoAddresses) {
+    if (cryptoAddress.currencyCode === currencyCode.toUpperCase()) return cryptoAddress.address;
+  }
 }
 
 async function createRevolutPaymentAccount(trader: HavenoClient): Promise<PaymentAccount> {
   const accountForm = await trader.getPaymentAccountForm('REVOLUT');
+  accountForm.tradeCurrencies ="gbp,eur,usd";
+  accountForm.selectedTradeCurrency = "usd";
   accountForm.accountName = "Revolut account " + GenUtils.getUUID();
   accountForm.userName = "user123";
   return trader.createPaymentAccount(accountForm);
