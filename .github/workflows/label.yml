@@ -1,0 +1,9 @@
+name: Comment to label
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  issueLabeled:
+    uses: haveno-dex/haveno/.github/workflows/label.yml@master 
