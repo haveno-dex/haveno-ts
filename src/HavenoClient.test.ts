@@ -735,7 +735,7 @@ test("Can get market depth", async () => {
     await clearOffers(bob, assetCode);
     async function clearOffers(havenod: HavenoClient, assetCode: string) {
       for (const offer of await havenod.getMyOffers(assetCode)) {
-        if (offer.getBaseCurrencyCode().toLowerCase() === assetCode.toLowerCase()) { // TODO (woodser): offer base currency and counter currency are switched for cryptos
+        if (offer.getCounterCurrencyCode().toLowerCase() === assetCode.toLowerCase()) {
             await havenod.removeOffer(offer.getId());
         }
       }
@@ -750,10 +750,10 @@ test("Can get market depth", async () => {
     expect(marketDepth.getSellDepthList().length).toEqual(0);
     
     // post offers to buy and sell
-    await postOffer(alice, {direction: "buy", amount: BigInt("150000000000"), assetCode: assetCode, priceMargin: 0.00, awaitUnlockedBalance: true, price: 17.0}); // TODO: offer price is reversed. fix everywhere
-    await postOffer(alice, {direction: "buy", amount: BigInt("150000000000"), assetCode: assetCode, priceMargin: 0.02, awaitUnlockedBalance: true, price: 17.2});
-    await postOffer(alice, {direction: "buy", amount: BigInt("200000000000"), assetCode: assetCode, priceMargin: 0.05, awaitUnlockedBalance: true, price: 17.3});
-    await postOffer(alice, {direction: "buy", amount: BigInt("150000000000"), assetCode: assetCode, priceMargin: 0.02, awaitUnlockedBalance: true, price: 17.3});
+    await postOffer(alice, {direction: "buy", amount: BigInt("150000000000"), assetCode: assetCode, priceMargin: 0.00, awaitUnlockedBalance: true, price: 1/17.0});
+    await postOffer(alice, {direction: "buy", amount: BigInt("150000000000"), assetCode: assetCode, priceMargin: 0.02, awaitUnlockedBalance: true, price: 1/17.2});
+    await postOffer(alice, {direction: "buy", amount: BigInt("200000000000"), assetCode: assetCode, priceMargin: 0.05, awaitUnlockedBalance: true, price: 1/17.3});
+    await postOffer(alice, {direction: "buy", amount: BigInt("150000000000"), assetCode: assetCode, priceMargin: 0.02, awaitUnlockedBalance: true, price: 1/17.3});
     await postOffer(alice, {direction: "sell", amount: BigInt("300000000000"), assetCode: assetCode, priceMargin: 0.00, awaitUnlockedBalance: true});
     await postOffer(alice, {direction: "sell", amount: BigInt("300000000000"), assetCode: assetCode, priceMargin: 0.02, awaitUnlockedBalance: true});
     await postOffer(alice, {direction: "sell", amount: BigInt("400000000000"), assetCode: assetCode, priceMargin: 0.05, awaitUnlockedBalance: true});
@@ -769,19 +769,19 @@ test("Can get market depth", async () => {
     expect(marketDepth.getSellPricesList().length).toEqual(marketDepth.getSellDepthList().length);
     
     // test buy prices and depths
-    const buyOffers = (await alice.getOffers(assetCode, "buy")).concat(await alice.getMyOffers(assetCode, "buy")).sort(function(a, b) { return parseFloat(a.getPrice()) - parseFloat(b.getPrice()) });
-    expect(marketDepth.getBuyPricesList()[0]).toEqual(1 / parseFloat(buyOffers[0].getPrice())); // TODO: price when posting offer is reversed. this assumes crypto counter currency
-    expect(marketDepth.getBuyPricesList()[1]).toEqual(1 / parseFloat(buyOffers[1].getPrice()));
-    expect(marketDepth.getBuyPricesList()[2]).toEqual(1 / parseFloat(buyOffers[2].getPrice()));
+    const buyOffers = (await alice.getOffers(assetCode, "buy")).concat(await alice.getMyOffers(assetCode, "buy")).sort(function(a, b) { return parseFloat(b.getPrice()) - parseFloat(a.getPrice()) });
+    expect(marketDepth.getBuyPricesList()[0]).toEqual(parseFloat(buyOffers[0].getPrice()));
+    expect(marketDepth.getBuyPricesList()[1]).toEqual(parseFloat(buyOffers[1].getPrice()));
+    expect(marketDepth.getBuyPricesList()[2]).toEqual(parseFloat(buyOffers[2].getPrice()));
     expect(marketDepth.getBuyDepthList()[0]).toEqual(0.15);
     expect(marketDepth.getBuyDepthList()[1]).toEqual(0.30);
     expect(marketDepth.getBuyDepthList()[2]).toEqual(0.65);
     
     // test sell prices and depths
-    const sellOffers = (await alice.getOffers(assetCode, "sell")).concat(await alice.getMyOffers(assetCode, "sell")).sort(function(a, b) { return parseFloat(b.getPrice()) - parseFloat(a.getPrice()) });
-    expect(marketDepth.getSellPricesList()[0]).toEqual(1 / parseFloat(sellOffers[0].getPrice()));
-    expect(marketDepth.getSellPricesList()[1]).toEqual(1 / parseFloat(sellOffers[1].getPrice()));
-    expect(marketDepth.getSellPricesList()[2]).toEqual(1 / parseFloat(sellOffers[2].getPrice()));
+    const sellOffers = (await alice.getOffers(assetCode, "sell")).concat(await alice.getMyOffers(assetCode, "sell")).sort(function(a, b) { return parseFloat(a.getPrice()) - parseFloat(b.getPrice()) });
+    expect(marketDepth.getSellPricesList()[0]).toEqual(parseFloat(sellOffers[0].getPrice()));
+    expect(marketDepth.getSellPricesList()[1]).toEqual(parseFloat(sellOffers[1].getPrice()));
+    expect(marketDepth.getSellPricesList()[2]).toEqual(parseFloat(sellOffers[2].getPrice()));
     expect(marketDepth.getSellDepthList()[0]).toEqual(0.3);
     expect(marketDepth.getSellDepthList()[1]).toEqual(0.6);
     expect(marketDepth.getSellDepthList()[2]).toEqual(1);
@@ -957,12 +957,11 @@ test("Can post and remove offers", async () => {
   // post crypto offer
   let assetCode = "BCH";
   let price = 1 / 17;
-  price = 1 / price; // TODO: price in crypto offer is inverted
   let offer: OfferInfo = await postOffer(alice, {assetCode: assetCode, price: price}); 
   assert.equal(offer.getState(), "AVAILABLE");
-  assert.equal(offer.getBaseCurrencyCode(), assetCode); // TODO: base and counter currencies inverted in crypto offer
-  assert.equal(offer.getCounterCurrencyCode(), "XMR");
-  assert.equal(parseFloat(offer.getPrice()), price);
+  assert.equal(offer.getBaseCurrencyCode(), "XMR");
+  assert.equal(offer.getCounterCurrencyCode(), assetCode);
+  assert.equal(parseFloat(offer.getPrice()), price.toFixed(8));
   
   // has offer
   offer = await alice.getMyOffer(offer.getId());
