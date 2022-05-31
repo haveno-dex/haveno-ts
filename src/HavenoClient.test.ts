@@ -1940,7 +1940,7 @@ async function waitForUnlockedTxs(...txHashes: string[]) {
 }
 
 /**
- * Indicates if the wallet has an unlocked amount.
+ * Indicates if the given wallets have unspent outputs.
  * 
  * @param {MoneroWallet[]} wallets - wallets to check
  * @param {BigInt} amt - amount to check
@@ -1976,6 +1976,7 @@ async function fundOutputs(wallets: any[], amt: bigint, numOutputs?: number, wai
       destinations.push(new MoneroDestination((await wallet.createSubaddress()).getAddress(), monerojs.BigInteger(amt.toString())));
     }
   }
+  if (!destinations.length) return;
   
   // fund destinations
   let txConfig = new MoneroTxConfig().setAccountIndex(0).setRelay(true);
@@ -1992,9 +1993,13 @@ async function fundOutputs(wallets: any[], amt: bigint, numOutputs?: number, wai
     }
   }
   
+  // wait for wallets to see transfers
+  await wait(TestConfig.walletSyncPeriodMs);
+  
   // mine until outputs unlock
+  if (!waitForUnlock) return;
   let miningStarted = false;
-  while (!await hasUnspentOutputs(wallets, amt, numOutputs, waitForUnlock ? false : undefined)) {
+  while (!await hasUnspentOutputs(wallets, amt, numOutputs, false)) {
     if (!miningStarted) {
       await startMining();
       miningStarted = true;
