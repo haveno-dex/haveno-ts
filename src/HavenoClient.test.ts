@@ -2,8 +2,8 @@
 
 // import haveno types
 import HavenoClient from "./HavenoClient";
+import HavenoError from "./utils/HavenoError";
 import HavenoUtils from "./utils/HavenoUtils";
-import * as grpcWeb from "grpc-web";
 import { MarketPriceInfo, NotificationMessage, OfferInfo, TradeInfo, UrlConnection, XmrBalanceInfo } from "./protobuf/grpc_pb"; // TODO (woodser): better names; haveno_grpc_pb, haveno_pb
 import { Attachment, DisputeResult, PaymentMethod, PaymentAccount, MoneroNodeSettings } from "./protobuf/pb_pb";
 import { XmrDestination, XmrTx, XmrIncomingTransfer, XmrOutgoingTransfer } from "./protobuf/grpc_pb";
@@ -1492,7 +1492,7 @@ test("Cannot make or take offer with insufficient unlocked funds", async () => {
       await postOffer(charlie, {paymentAccountId: paymentAccount.getId()});
       throw new Error("Should have failed making offer with insufficient funds")
     } catch (err: any) {
-      const errTyped = err as grpcWeb.RpcError;
+      const errTyped = err as HavenoError;
       assert.equal(errTyped.code, 2);
       assert(err.message.includes("not enough money"), "Unexpected error: " + err.message);
     }
@@ -1514,7 +1514,7 @@ test("Cannot make or take offer with insufficient unlocked funds", async () => {
       await charlie.takeOffer(offer.getId(), paymentAccount.getId());
       throw new Error("Should have failed taking offer with insufficient funds")
     } catch (err: any) {
-      const errTyped = err as grpcWeb.RpcError;
+      const errTyped = err as HavenoError;
       assert(errTyped.message.includes("not enough money"), "Unexpected error: " + errTyped.message);
       assert.equal(errTyped.code, 2);
     }
@@ -1523,7 +1523,7 @@ test("Cannot make or take offer with insufficient unlocked funds", async () => {
     try {
       await charlie.getTrade(offer.getId());
     } catch (err: any) {
-      const errTyped = err as grpcWeb.RpcError;
+      const errTyped = err as HavenoError;
       assert.equal(errTyped.code, 3);
       assert(errTyped.message.includes("trade with id '" + offer.getId() + "' not found"));
     }
