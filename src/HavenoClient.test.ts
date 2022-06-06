@@ -235,7 +235,6 @@ test("Can manage an account", async () => {
   let charlie: HavenoClient | undefined;
   let err: any;
   try {
-    
     // start charlie without opening account
     charlie = await initHaveno({autoLogin: false});
     assert(!await charlie.accountExists());
@@ -249,7 +248,6 @@ test("Can manage an account", async () => {
     if (await charlie.isConnectedToMonero()) await charlie.getBalances(); // only connected if local node running
     assert(await charlie.accountExists());
     assert(await charlie.isAccountOpen());
-    
     // create payment account
     const paymentAccount = await charlie.createCryptoPaymentAccount("My ETH account", TestConfig.cryptoAddresses[0].currencyCode, TestConfig.cryptoAddresses[0].address);
     
@@ -307,21 +305,23 @@ test("Can manage an account", async () => {
     stream.end();
     assert(size > 0);
     
-    // delete account which shuts down server
-    await charlie.deleteAccount(); // TODO: support deleting and restoring account without shutting down server, #310
-    assert(!await charlie.isConnectedToDaemon());
-    await releaseHavenoProcess(charlie);
+    // delete account
+    await charlie.deleteAccount();
+    do {
+      await wait(1000);
+    } while(!await charlie.isConnectedToDaemon());
+    assert(!await charlie.accountExists());
     
-    // restore account which shuts down server
-    charlie = await initHaveno(charlieConfig);
+    // restore account
     const zipBytes: Uint8Array = new Uint8Array(fs.readFileSync(zipFile));
     await charlie.restoreAccount(zipBytes);
-    assert(!await charlie.isConnectedToDaemon());
-    await releaseHavenoProcess(charlie);
+    do {
+      await wait(1000);
+    }
+    while(!await charlie.isConnectedToDaemon());
+    assert(await charlie.accountExists());
     
     // open restored account
-    charlie = await initHaveno(charlieConfig);
-    assert(await charlie.accountExists());
     await charlie.openAccount(password);
     assert(await charlie.isAccountOpen());
     
