@@ -235,6 +235,7 @@ test("Can manage an account", async () => {
   let charlie: HavenoClient | undefined;
   let err: any;
   try {
+
     // start charlie without opening account
     charlie = await initHaveno({autoLogin: false});
     assert(!await charlie.accountExists());
@@ -248,6 +249,7 @@ test("Can manage an account", async () => {
     if (await charlie.isConnectedToMonero()) await charlie.getBalances(); // only connected if local node running
     assert(await charlie.accountExists());
     assert(await charlie.isAccountOpen());
+
     // create payment account
     const paymentAccount = await charlie.createCryptoPaymentAccount("My ETH account", TestConfig.cryptoAddresses[0].currencyCode, TestConfig.cryptoAddresses[0].address);
     
