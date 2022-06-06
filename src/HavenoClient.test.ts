@@ -434,21 +434,20 @@ test("Can manage an account (CI)", async () => {
     stream.end();
     assert(size > 0);
 
-    // delete account which shuts down server
-    await user3.deleteAccount(); // TODO: support deleting and restoring account without shutting down server, #310
-    assert(!await user3.isConnectedToDaemon());
-    await releaseHavenoProcess(user3);
+    // delete account
+    await user3.deleteAccount();
+    do { await wait(1000); }
+    while(!await user3.isConnectedToDaemon());
+    assert(!await user3.accountExists());
 
-    // restore account which shuts down server
-    user3 = await initHaveno(user3Config);
+    // restore account
     const zipBytes: Uint8Array = new Uint8Array(fs.readFileSync(zipFile));
     await user3.restoreAccount(zipBytes);
-    assert(!await user3.isConnectedToDaemon());
-    await releaseHavenoProcess(user3);
+    do { await wait(1000); }
+    while(!await user3.isConnectedToDaemon());
+    assert(await user3.accountExists());
 
     // open restored account
-    user3 = await initHaveno(user3Config);
-    assert(await user3.accountExists());
     await user3.openAccount(password);
     assert(await user3.isAccountOpen());
 
