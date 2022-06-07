@@ -98,6 +98,7 @@ goog.exportSymbol('proto.io.bisq.protobuffer.GetTradeStatisticsReply', null, glo
 goog.exportSymbol('proto.io.bisq.protobuffer.GetTradeStatisticsRequest', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.GetTradesReply', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.GetTradesRequest', null, global);
+goog.exportSymbol('proto.io.bisq.protobuffer.GetTradesRequest.Category', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.GetTransactionReply', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.GetTransactionRequest', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.GetTxFeeRateReply', null, global);
@@ -14374,10 +14375,10 @@ proto.io.bisq.protobuffer.CreateOfferRequest.toObject = function(includeInstance
     direction: jspb.Message.getFieldWithDefault(msg, 2, ""),
     price: jspb.Message.getFieldWithDefault(msg, 3, ""),
     useMarketBasedPrice: jspb.Message.getBooleanFieldWithDefault(msg, 4, false),
-    marketPriceMargin: jspb.Message.getFloatingPointFieldWithDefault(msg, 5, 0.0),
+    marketPriceMarginPct: jspb.Message.getFloatingPointFieldWithDefault(msg, 5, 0.0),
     amount: jspb.Message.getFieldWithDefault(msg, 6, "0"),
     minAmount: jspb.Message.getFieldWithDefault(msg, 7, "0"),
-    buyerSecurityDeposit: jspb.Message.getFloatingPointFieldWithDefault(msg, 8, 0.0),
+    buyerSecurityDepositPct: jspb.Message.getFloatingPointFieldWithDefault(msg, 8, 0.0),
     triggerPrice: jspb.Message.getFieldWithDefault(msg, 9, ""),
     paymentAccountId: jspb.Message.getFieldWithDefault(msg, 10, "")
   };
@@ -14434,7 +14435,7 @@ proto.io.bisq.protobuffer.CreateOfferRequest.deserializeBinaryFromReader = funct
       break;
     case 5:
       var value = /** @type {number} */ (reader.readDouble());
-      msg.setMarketPriceMargin(value);
+      msg.setMarketPriceMarginPct(value);
       break;
     case 6:
       var value = /** @type {string} */ (reader.readUint64String());
@@ -14446,7 +14447,7 @@ proto.io.bisq.protobuffer.CreateOfferRequest.deserializeBinaryFromReader = funct
       break;
     case 8:
       var value = /** @type {number} */ (reader.readDouble());
-      msg.setBuyerSecurityDeposit(value);
+      msg.setBuyerSecurityDepositPct(value);
       break;
     case 9:
       var value = /** @type {string} */ (reader.readString());
@@ -14513,7 +14514,7 @@ proto.io.bisq.protobuffer.CreateOfferRequest.serializeBinaryToWriter = function(
       f
     );
   }
-  f = message.getMarketPriceMargin();
+  f = message.getMarketPriceMarginPct();
   if (f !== 0.0) {
     writer.writeDouble(
       5,
@@ -14534,7 +14535,7 @@ proto.io.bisq.protobuffer.CreateOfferRequest.serializeBinaryToWriter = function(
       f
     );
   }
-  f = message.getBuyerSecurityDeposit();
+  f = message.getBuyerSecurityDepositPct();
   if (f !== 0.0) {
     writer.writeDouble(
       8,
@@ -14631,10 +14632,10 @@ proto.io.bisq.protobuffer.CreateOfferRequest.prototype.setUseMarketBasedPrice = 
 
 
 /**
- * optional double market_price_margin = 5;
+ * optional double market_price_margin_pct = 5;
  * @return {number}
  */
-proto.io.bisq.protobuffer.CreateOfferRequest.prototype.getMarketPriceMargin = function() {
+proto.io.bisq.protobuffer.CreateOfferRequest.prototype.getMarketPriceMarginPct = function() {
   return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 5, 0.0));
 };
 
@@ -14643,7 +14644,7 @@ proto.io.bisq.protobuffer.CreateOfferRequest.prototype.getMarketPriceMargin = fu
  * @param {number} value
  * @return {!proto.io.bisq.protobuffer.CreateOfferRequest} returns this
  */
-proto.io.bisq.protobuffer.CreateOfferRequest.prototype.setMarketPriceMargin = function(value) {
+proto.io.bisq.protobuffer.CreateOfferRequest.prototype.setMarketPriceMarginPct = function(value) {
   return jspb.Message.setProto3FloatField(this, 5, value);
 };
 
@@ -14685,10 +14686,10 @@ proto.io.bisq.protobuffer.CreateOfferRequest.prototype.setMinAmount = function(v
 
 
 /**
- * optional double buyer_security_deposit = 8;
+ * optional double buyer_security_deposit_pct = 8;
  * @return {number}
  */
-proto.io.bisq.protobuffer.CreateOfferRequest.prototype.getBuyerSecurityDeposit = function() {
+proto.io.bisq.protobuffer.CreateOfferRequest.prototype.getBuyerSecurityDepositPct = function() {
   return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 8, 0.0));
 };
 
@@ -14697,7 +14698,7 @@ proto.io.bisq.protobuffer.CreateOfferRequest.prototype.getBuyerSecurityDeposit =
  * @param {number} value
  * @return {!proto.io.bisq.protobuffer.CreateOfferRequest} returns this
  */
-proto.io.bisq.protobuffer.CreateOfferRequest.prototype.setBuyerSecurityDeposit = function(value) {
+proto.io.bisq.protobuffer.CreateOfferRequest.prototype.setBuyerSecurityDepositPct = function(value) {
   return jspb.Message.setProto3FloatField(this, 8, value);
 };
 
@@ -15154,15 +15155,15 @@ proto.io.bisq.protobuffer.OfferInfo.toObject = function(includeInstance, msg) {
   var f, obj = {
     id: jspb.Message.getFieldWithDefault(msg, 1, ""),
     direction: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    price: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    price: jspb.Message.getFieldWithDefault(msg, 3, ""),
     useMarketBasedPrice: jspb.Message.getBooleanFieldWithDefault(msg, 4, false),
-    marketPriceMargin: jspb.Message.getFloatingPointFieldWithDefault(msg, 5, 0.0),
+    marketPriceMarginPct: jspb.Message.getFloatingPointFieldWithDefault(msg, 5, 0.0),
     amount: jspb.Message.getFieldWithDefault(msg, 6, 0),
     minAmount: jspb.Message.getFieldWithDefault(msg, 7, 0),
-    volume: jspb.Message.getFieldWithDefault(msg, 8, 0),
-    minVolume: jspb.Message.getFieldWithDefault(msg, 9, 0),
+    volume: jspb.Message.getFieldWithDefault(msg, 8, ""),
+    minVolume: jspb.Message.getFieldWithDefault(msg, 9, ""),
     buyerSecurityDeposit: jspb.Message.getFieldWithDefault(msg, 10, 0),
-    triggerPrice: jspb.Message.getFieldWithDefault(msg, 11, 0),
+    triggerPrice: jspb.Message.getFieldWithDefault(msg, 11, ""),
     paymentAccountId: jspb.Message.getFieldWithDefault(msg, 12, ""),
     paymentMethodId: jspb.Message.getFieldWithDefault(msg, 13, ""),
     paymentMethodShortName: jspb.Message.getFieldWithDefault(msg, 14, ""),
@@ -15173,7 +15174,13 @@ proto.io.bisq.protobuffer.OfferInfo.toObject = function(includeInstance, msg) {
     sellerSecurityDeposit: jspb.Message.getFieldWithDefault(msg, 19, 0),
     offerFeePaymentTxId: jspb.Message.getFieldWithDefault(msg, 20, ""),
     txFee: jspb.Message.getFieldWithDefault(msg, 21, 0),
-    makerFee: jspb.Message.getFieldWithDefault(msg, 22, 0)
+    makerFee: jspb.Message.getFieldWithDefault(msg, 22, 0),
+    isActivated: jspb.Message.getBooleanFieldWithDefault(msg, 23, false),
+    isMyOffer: jspb.Message.getBooleanFieldWithDefault(msg, 24, false),
+    ownerNodeAddress: jspb.Message.getFieldWithDefault(msg, 25, ""),
+    pubKeyRing: jspb.Message.getFieldWithDefault(msg, 26, ""),
+    versionNr: jspb.Message.getFieldWithDefault(msg, 27, ""),
+    protocolVersion: jspb.Message.getFieldWithDefault(msg, 28, 0)
   };
 
   if (includeInstance) {
@@ -15219,7 +15226,7 @@ proto.io.bisq.protobuffer.OfferInfo.deserializeBinaryFromReader = function(msg, 
       msg.setDirection(value);
       break;
     case 3:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {string} */ (reader.readString());
       msg.setPrice(value);
       break;
     case 4:
@@ -15228,7 +15235,7 @@ proto.io.bisq.protobuffer.OfferInfo.deserializeBinaryFromReader = function(msg, 
       break;
     case 5:
       var value = /** @type {number} */ (reader.readDouble());
-      msg.setMarketPriceMargin(value);
+      msg.setMarketPriceMarginPct(value);
       break;
     case 6:
       var value = /** @type {number} */ (reader.readUint64());
@@ -15239,11 +15246,11 @@ proto.io.bisq.protobuffer.OfferInfo.deserializeBinaryFromReader = function(msg, 
       msg.setMinAmount(value);
       break;
     case 8:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {string} */ (reader.readString());
       msg.setVolume(value);
       break;
     case 9:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {string} */ (reader.readString());
       msg.setMinVolume(value);
       break;
     case 10:
@@ -15251,7 +15258,7 @@ proto.io.bisq.protobuffer.OfferInfo.deserializeBinaryFromReader = function(msg, 
       msg.setBuyerSecurityDeposit(value);
       break;
     case 11:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {string} */ (reader.readString());
       msg.setTriggerPrice(value);
       break;
     case 12:
@@ -15298,6 +15305,30 @@ proto.io.bisq.protobuffer.OfferInfo.deserializeBinaryFromReader = function(msg, 
       var value = /** @type {number} */ (reader.readUint64());
       msg.setMakerFee(value);
       break;
+    case 23:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setIsActivated(value);
+      break;
+    case 24:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setIsMyOffer(value);
+      break;
+    case 25:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setOwnerNodeAddress(value);
+      break;
+    case 26:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setPubKeyRing(value);
+      break;
+    case 27:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setVersionNr(value);
+      break;
+    case 28:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setProtocolVersion(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -15342,8 +15373,8 @@ proto.io.bisq.protobuffer.OfferInfo.serializeBinaryToWriter = function(message, 
     );
   }
   f = message.getPrice();
-  if (f !== 0) {
-    writer.writeUint64(
+  if (f.length > 0) {
+    writer.writeString(
       3,
       f
     );
@@ -15355,7 +15386,7 @@ proto.io.bisq.protobuffer.OfferInfo.serializeBinaryToWriter = function(message, 
       f
     );
   }
-  f = message.getMarketPriceMargin();
+  f = message.getMarketPriceMarginPct();
   if (f !== 0.0) {
     writer.writeDouble(
       5,
@@ -15377,15 +15408,15 @@ proto.io.bisq.protobuffer.OfferInfo.serializeBinaryToWriter = function(message, 
     );
   }
   f = message.getVolume();
-  if (f !== 0) {
-    writer.writeUint64(
+  if (f.length > 0) {
+    writer.writeString(
       8,
       f
     );
   }
   f = message.getMinVolume();
-  if (f !== 0) {
-    writer.writeUint64(
+  if (f.length > 0) {
+    writer.writeString(
       9,
       f
     );
@@ -15398,8 +15429,8 @@ proto.io.bisq.protobuffer.OfferInfo.serializeBinaryToWriter = function(message, 
     );
   }
   f = message.getTriggerPrice();
-  if (f !== 0) {
-    writer.writeUint64(
+  if (f.length > 0) {
+    writer.writeString(
       11,
       f
     );
@@ -15481,6 +15512,48 @@ proto.io.bisq.protobuffer.OfferInfo.serializeBinaryToWriter = function(message, 
       f
     );
   }
+  f = message.getIsActivated();
+  if (f) {
+    writer.writeBool(
+      23,
+      f
+    );
+  }
+  f = message.getIsMyOffer();
+  if (f) {
+    writer.writeBool(
+      24,
+      f
+    );
+  }
+  f = message.getOwnerNodeAddress();
+  if (f.length > 0) {
+    writer.writeString(
+      25,
+      f
+    );
+  }
+  f = message.getPubKeyRing();
+  if (f.length > 0) {
+    writer.writeString(
+      26,
+      f
+    );
+  }
+  f = message.getVersionNr();
+  if (f.length > 0) {
+    writer.writeString(
+      27,
+      f
+    );
+  }
+  f = message.getProtocolVersion();
+  if (f !== 0) {
+    writer.writeInt32(
+      28,
+      f
+    );
+  }
 };
 
 
@@ -15521,20 +15594,20 @@ proto.io.bisq.protobuffer.OfferInfo.prototype.setDirection = function(value) {
 
 
 /**
- * optional uint64 price = 3;
- * @return {number}
+ * optional string price = 3;
+ * @return {string}
  */
 proto.io.bisq.protobuffer.OfferInfo.prototype.getPrice = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
 /**
- * @param {number} value
+ * @param {string} value
  * @return {!proto.io.bisq.protobuffer.OfferInfo} returns this
  */
 proto.io.bisq.protobuffer.OfferInfo.prototype.setPrice = function(value) {
-  return jspb.Message.setProto3IntField(this, 3, value);
+  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
@@ -15557,10 +15630,10 @@ proto.io.bisq.protobuffer.OfferInfo.prototype.setUseMarketBasedPrice = function(
 
 
 /**
- * optional double market_price_margin = 5;
+ * optional double market_price_margin_pct = 5;
  * @return {number}
  */
-proto.io.bisq.protobuffer.OfferInfo.prototype.getMarketPriceMargin = function() {
+proto.io.bisq.protobuffer.OfferInfo.prototype.getMarketPriceMarginPct = function() {
   return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 5, 0.0));
 };
 
@@ -15569,7 +15642,7 @@ proto.io.bisq.protobuffer.OfferInfo.prototype.getMarketPriceMargin = function() 
  * @param {number} value
  * @return {!proto.io.bisq.protobuffer.OfferInfo} returns this
  */
-proto.io.bisq.protobuffer.OfferInfo.prototype.setMarketPriceMargin = function(value) {
+proto.io.bisq.protobuffer.OfferInfo.prototype.setMarketPriceMarginPct = function(value) {
   return jspb.Message.setProto3FloatField(this, 5, value);
 };
 
@@ -15611,38 +15684,38 @@ proto.io.bisq.protobuffer.OfferInfo.prototype.setMinAmount = function(value) {
 
 
 /**
- * optional uint64 volume = 8;
- * @return {number}
+ * optional string volume = 8;
+ * @return {string}
  */
 proto.io.bisq.protobuffer.OfferInfo.prototype.getVolume = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 8, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 8, ""));
 };
 
 
 /**
- * @param {number} value
+ * @param {string} value
  * @return {!proto.io.bisq.protobuffer.OfferInfo} returns this
  */
 proto.io.bisq.protobuffer.OfferInfo.prototype.setVolume = function(value) {
-  return jspb.Message.setProto3IntField(this, 8, value);
+  return jspb.Message.setProto3StringField(this, 8, value);
 };
 
 
 /**
- * optional uint64 min_volume = 9;
- * @return {number}
+ * optional string min_volume = 9;
+ * @return {string}
  */
 proto.io.bisq.protobuffer.OfferInfo.prototype.getMinVolume = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 9, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 9, ""));
 };
 
 
 /**
- * @param {number} value
+ * @param {string} value
  * @return {!proto.io.bisq.protobuffer.OfferInfo} returns this
  */
 proto.io.bisq.protobuffer.OfferInfo.prototype.setMinVolume = function(value) {
-  return jspb.Message.setProto3IntField(this, 9, value);
+  return jspb.Message.setProto3StringField(this, 9, value);
 };
 
 
@@ -15665,20 +15738,20 @@ proto.io.bisq.protobuffer.OfferInfo.prototype.setBuyerSecurityDeposit = function
 
 
 /**
- * optional uint64 trigger_price = 11;
- * @return {number}
+ * optional string trigger_price = 11;
+ * @return {string}
  */
 proto.io.bisq.protobuffer.OfferInfo.prototype.getTriggerPrice = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 11, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 11, ""));
 };
 
 
 /**
- * @param {number} value
+ * @param {string} value
  * @return {!proto.io.bisq.protobuffer.OfferInfo} returns this
  */
 proto.io.bisq.protobuffer.OfferInfo.prototype.setTriggerPrice = function(value) {
-  return jspb.Message.setProto3IntField(this, 11, value);
+  return jspb.Message.setProto3StringField(this, 11, value);
 };
 
 
@@ -15877,6 +15950,114 @@ proto.io.bisq.protobuffer.OfferInfo.prototype.getMakerFee = function() {
  */
 proto.io.bisq.protobuffer.OfferInfo.prototype.setMakerFee = function(value) {
   return jspb.Message.setProto3IntField(this, 22, value);
+};
+
+
+/**
+ * optional bool is_activated = 23;
+ * @return {boolean}
+ */
+proto.io.bisq.protobuffer.OfferInfo.prototype.getIsActivated = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 23, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.io.bisq.protobuffer.OfferInfo} returns this
+ */
+proto.io.bisq.protobuffer.OfferInfo.prototype.setIsActivated = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 23, value);
+};
+
+
+/**
+ * optional bool is_my_offer = 24;
+ * @return {boolean}
+ */
+proto.io.bisq.protobuffer.OfferInfo.prototype.getIsMyOffer = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 24, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.io.bisq.protobuffer.OfferInfo} returns this
+ */
+proto.io.bisq.protobuffer.OfferInfo.prototype.setIsMyOffer = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 24, value);
+};
+
+
+/**
+ * optional string owner_node_address = 25;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.OfferInfo.prototype.getOwnerNodeAddress = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 25, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.OfferInfo} returns this
+ */
+proto.io.bisq.protobuffer.OfferInfo.prototype.setOwnerNodeAddress = function(value) {
+  return jspb.Message.setProto3StringField(this, 25, value);
+};
+
+
+/**
+ * optional string pub_key_ring = 26;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.OfferInfo.prototype.getPubKeyRing = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 26, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.OfferInfo} returns this
+ */
+proto.io.bisq.protobuffer.OfferInfo.prototype.setPubKeyRing = function(value) {
+  return jspb.Message.setProto3StringField(this, 26, value);
+};
+
+
+/**
+ * optional string version_nr = 27;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.OfferInfo.prototype.getVersionNr = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 27, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.OfferInfo} returns this
+ */
+proto.io.bisq.protobuffer.OfferInfo.prototype.setVersionNr = function(value) {
+  return jspb.Message.setProto3StringField(this, 27, value);
+};
+
+
+/**
+ * optional int32 protocol_version = 28;
+ * @return {number}
+ */
+proto.io.bisq.protobuffer.OfferInfo.prototype.getProtocolVersion = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 28, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.io.bisq.protobuffer.OfferInfo} returns this
+ */
+proto.io.bisq.protobuffer.OfferInfo.prototype.setProtocolVersion = function(value) {
+  return jspb.Message.setProto3IntField(this, 28, value);
 };
 
 
@@ -20638,7 +20819,7 @@ proto.io.bisq.protobuffer.GetTradesRequest.prototype.toObject = function(opt_inc
  */
 proto.io.bisq.protobuffer.GetTradesRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
-
+    category: jspb.Message.getFieldWithDefault(msg, 1, 0)
   };
 
   if (includeInstance) {
@@ -20675,6 +20856,10 @@ proto.io.bisq.protobuffer.GetTradesRequest.deserializeBinaryFromReader = functio
     }
     var field = reader.getFieldNumber();
     switch (field) {
+    case 1:
+      var value = /** @type {!proto.io.bisq.protobuffer.GetTradesRequest.Category} */ (reader.readEnum());
+      msg.setCategory(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -20704,6 +20889,40 @@ proto.io.bisq.protobuffer.GetTradesRequest.prototype.serializeBinary = function(
  */
 proto.io.bisq.protobuffer.GetTradesRequest.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
+  f = message.getCategory();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      1,
+      f
+    );
+  }
+};
+
+
+/**
+ * @enum {number}
+ */
+proto.io.bisq.protobuffer.GetTradesRequest.Category = {
+  OPEN: 0,
+  CLOSED: 1,
+  FAILED: 2
+};
+
+/**
+ * optional Category category = 1;
+ * @return {!proto.io.bisq.protobuffer.GetTradesRequest.Category}
+ */
+proto.io.bisq.protobuffer.GetTradesRequest.prototype.getCategory = function() {
+  return /** @type {!proto.io.bisq.protobuffer.GetTradesRequest.Category} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+
+/**
+ * @param {!proto.io.bisq.protobuffer.GetTradesRequest.Category} value
+ * @return {!proto.io.bisq.protobuffer.GetTradesRequest} returns this
+ */
+proto.io.bisq.protobuffer.GetTradesRequest.prototype.setCategory = function(value) {
+  return jspb.Message.setProto3EnumField(this, 1, value);
 };
 
 
@@ -21981,20 +22200,21 @@ proto.io.bisq.protobuffer.TradeInfo.toObject = function(includeInstance, msg) {
     takerFeeAsLong: jspb.Message.getFieldWithDefault(msg, 8, 0),
     takerFeeTxId: jspb.Message.getFieldWithDefault(msg, 9, ""),
     payoutTxId: jspb.Message.getFieldWithDefault(msg, 11, ""),
-    tradeAmountAsLong: jspb.Message.getFieldWithDefault(msg, 12, 0),
-    tradePrice: jspb.Message.getFieldWithDefault(msg, 13, 0),
+    amountAsLong: jspb.Message.getFieldWithDefault(msg, 12, 0),
+    price: jspb.Message.getFieldWithDefault(msg, 13, ""),
     tradingPeerNodeAddress: jspb.Message.getFieldWithDefault(msg, 14, ""),
     state: jspb.Message.getFieldWithDefault(msg, 15, ""),
     phase: jspb.Message.getFieldWithDefault(msg, 16, ""),
-    tradePeriodState: jspb.Message.getFieldWithDefault(msg, 17, ""),
+    periodState: jspb.Message.getFieldWithDefault(msg, 17, ""),
     isDepositPublished: jspb.Message.getBooleanFieldWithDefault(msg, 18, false),
     isDepositUnlocked: jspb.Message.getBooleanFieldWithDefault(msg, 19, false),
     isPaymentSent: jspb.Message.getBooleanFieldWithDefault(msg, 20, false),
     isPaymentReceived: jspb.Message.getBooleanFieldWithDefault(msg, 21, false),
     isPayoutPublished: jspb.Message.getBooleanFieldWithDefault(msg, 22, false),
-    isWithdrawn: jspb.Message.getBooleanFieldWithDefault(msg, 23, false),
+    isCompleted: jspb.Message.getBooleanFieldWithDefault(msg, 23, false),
     contractAsJson: jspb.Message.getFieldWithDefault(msg, 24, ""),
     contract: (f = msg.getContract()) && proto.io.bisq.protobuffer.ContractInfo.toObject(includeInstance, f),
+    tradeVolume: jspb.Message.getFieldWithDefault(msg, 26, ""),
     makerDepositTxId: jspb.Message.getFieldWithDefault(msg, 100, ""),
     takerDepositTxId: jspb.Message.getFieldWithDefault(msg, 101, "")
   };
@@ -22072,11 +22292,11 @@ proto.io.bisq.protobuffer.TradeInfo.deserializeBinaryFromReader = function(msg, 
       break;
     case 12:
       var value = /** @type {number} */ (reader.readUint64());
-      msg.setTradeAmountAsLong(value);
+      msg.setAmountAsLong(value);
       break;
     case 13:
-      var value = /** @type {number} */ (reader.readUint64());
-      msg.setTradePrice(value);
+      var value = /** @type {string} */ (reader.readString());
+      msg.setPrice(value);
       break;
     case 14:
       var value = /** @type {string} */ (reader.readString());
@@ -22092,7 +22312,7 @@ proto.io.bisq.protobuffer.TradeInfo.deserializeBinaryFromReader = function(msg, 
       break;
     case 17:
       var value = /** @type {string} */ (reader.readString());
-      msg.setTradePeriodState(value);
+      msg.setPeriodState(value);
       break;
     case 18:
       var value = /** @type {boolean} */ (reader.readBool());
@@ -22116,7 +22336,7 @@ proto.io.bisq.protobuffer.TradeInfo.deserializeBinaryFromReader = function(msg, 
       break;
     case 23:
       var value = /** @type {boolean} */ (reader.readBool());
-      msg.setIsWithdrawn(value);
+      msg.setIsCompleted(value);
       break;
     case 24:
       var value = /** @type {string} */ (reader.readString());
@@ -22126,6 +22346,10 @@ proto.io.bisq.protobuffer.TradeInfo.deserializeBinaryFromReader = function(msg, 
       var value = new proto.io.bisq.protobuffer.ContractInfo;
       reader.readMessage(value,proto.io.bisq.protobuffer.ContractInfo.deserializeBinaryFromReader);
       msg.setContract(value);
+      break;
+    case 26:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setTradeVolume(value);
       break;
     case 100:
       var value = /** @type {string} */ (reader.readString());
@@ -22228,16 +22452,16 @@ proto.io.bisq.protobuffer.TradeInfo.serializeBinaryToWriter = function(message, 
       f
     );
   }
-  f = message.getTradeAmountAsLong();
+  f = message.getAmountAsLong();
   if (f !== 0) {
     writer.writeUint64(
       12,
       f
     );
   }
-  f = message.getTradePrice();
-  if (f !== 0) {
-    writer.writeUint64(
+  f = message.getPrice();
+  if (f.length > 0) {
+    writer.writeString(
       13,
       f
     );
@@ -22263,7 +22487,7 @@ proto.io.bisq.protobuffer.TradeInfo.serializeBinaryToWriter = function(message, 
       f
     );
   }
-  f = message.getTradePeriodState();
+  f = message.getPeriodState();
   if (f.length > 0) {
     writer.writeString(
       17,
@@ -22305,7 +22529,7 @@ proto.io.bisq.protobuffer.TradeInfo.serializeBinaryToWriter = function(message, 
       f
     );
   }
-  f = message.getIsWithdrawn();
+  f = message.getIsCompleted();
   if (f) {
     writer.writeBool(
       23,
@@ -22325,6 +22549,13 @@ proto.io.bisq.protobuffer.TradeInfo.serializeBinaryToWriter = function(message, 
       25,
       f,
       proto.io.bisq.protobuffer.ContractInfo.serializeBinaryToWriter
+    );
+  }
+  f = message.getTradeVolume();
+  if (f.length > 0) {
+    writer.writeString(
+      26,
+      f
     );
   }
   f = message.getMakerDepositTxId();
@@ -22526,10 +22757,10 @@ proto.io.bisq.protobuffer.TradeInfo.prototype.setPayoutTxId = function(value) {
 
 
 /**
- * optional uint64 trade_amount_as_long = 12;
+ * optional uint64 amount_as_long = 12;
  * @return {number}
  */
-proto.io.bisq.protobuffer.TradeInfo.prototype.getTradeAmountAsLong = function() {
+proto.io.bisq.protobuffer.TradeInfo.prototype.getAmountAsLong = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 12, 0));
 };
 
@@ -22538,26 +22769,26 @@ proto.io.bisq.protobuffer.TradeInfo.prototype.getTradeAmountAsLong = function() 
  * @param {number} value
  * @return {!proto.io.bisq.protobuffer.TradeInfo} returns this
  */
-proto.io.bisq.protobuffer.TradeInfo.prototype.setTradeAmountAsLong = function(value) {
+proto.io.bisq.protobuffer.TradeInfo.prototype.setAmountAsLong = function(value) {
   return jspb.Message.setProto3IntField(this, 12, value);
 };
 
 
 /**
- * optional uint64 trade_price = 13;
- * @return {number}
+ * optional string price = 13;
+ * @return {string}
  */
-proto.io.bisq.protobuffer.TradeInfo.prototype.getTradePrice = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 13, 0));
+proto.io.bisq.protobuffer.TradeInfo.prototype.getPrice = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 13, ""));
 };
 
 
 /**
- * @param {number} value
+ * @param {string} value
  * @return {!proto.io.bisq.protobuffer.TradeInfo} returns this
  */
-proto.io.bisq.protobuffer.TradeInfo.prototype.setTradePrice = function(value) {
-  return jspb.Message.setProto3IntField(this, 13, value);
+proto.io.bisq.protobuffer.TradeInfo.prototype.setPrice = function(value) {
+  return jspb.Message.setProto3StringField(this, 13, value);
 };
 
 
@@ -22616,10 +22847,10 @@ proto.io.bisq.protobuffer.TradeInfo.prototype.setPhase = function(value) {
 
 
 /**
- * optional string trade_period_state = 17;
+ * optional string period_state = 17;
  * @return {string}
  */
-proto.io.bisq.protobuffer.TradeInfo.prototype.getTradePeriodState = function() {
+proto.io.bisq.protobuffer.TradeInfo.prototype.getPeriodState = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 17, ""));
 };
 
@@ -22628,7 +22859,7 @@ proto.io.bisq.protobuffer.TradeInfo.prototype.getTradePeriodState = function() {
  * @param {string} value
  * @return {!proto.io.bisq.protobuffer.TradeInfo} returns this
  */
-proto.io.bisq.protobuffer.TradeInfo.prototype.setTradePeriodState = function(value) {
+proto.io.bisq.protobuffer.TradeInfo.prototype.setPeriodState = function(value) {
   return jspb.Message.setProto3StringField(this, 17, value);
 };
 
@@ -22724,10 +22955,10 @@ proto.io.bisq.protobuffer.TradeInfo.prototype.setIsPayoutPublished = function(va
 
 
 /**
- * optional bool is_withdrawn = 23;
+ * optional bool is_completed = 23;
  * @return {boolean}
  */
-proto.io.bisq.protobuffer.TradeInfo.prototype.getIsWithdrawn = function() {
+proto.io.bisq.protobuffer.TradeInfo.prototype.getIsCompleted = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 23, false));
 };
 
@@ -22736,7 +22967,7 @@ proto.io.bisq.protobuffer.TradeInfo.prototype.getIsWithdrawn = function() {
  * @param {boolean} value
  * @return {!proto.io.bisq.protobuffer.TradeInfo} returns this
  */
-proto.io.bisq.protobuffer.TradeInfo.prototype.setIsWithdrawn = function(value) {
+proto.io.bisq.protobuffer.TradeInfo.prototype.setIsCompleted = function(value) {
   return jspb.Message.setProto3BooleanField(this, 23, value);
 };
 
@@ -22793,6 +23024,24 @@ proto.io.bisq.protobuffer.TradeInfo.prototype.clearContract = function() {
  */
 proto.io.bisq.protobuffer.TradeInfo.prototype.hasContract = function() {
   return jspb.Message.getField(this, 25) != null;
+};
+
+
+/**
+ * optional string trade_volume = 26;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.TradeInfo.prototype.getTradeVolume = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 26, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.TradeInfo} returns this
+ */
+proto.io.bisq.protobuffer.TradeInfo.prototype.setTradeVolume = function(value) {
+  return jspb.Message.setProto3StringField(this, 26, value);
 };
 
 
@@ -23338,7 +23587,8 @@ proto.io.bisq.protobuffer.PaymentAccountPayloadInfo.toObject = function(includeI
   var f, obj = {
     id: jspb.Message.getFieldWithDefault(msg, 1, ""),
     paymentMethodId: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    address: jspb.Message.getFieldWithDefault(msg, 3, "")
+    address: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    paymentDetails: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
 
   if (includeInstance) {
@@ -23387,6 +23637,10 @@ proto.io.bisq.protobuffer.PaymentAccountPayloadInfo.deserializeBinaryFromReader 
       var value = /** @type {string} */ (reader.readString());
       msg.setAddress(value);
       break;
+    case 4:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setPaymentDetails(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -23434,6 +23688,13 @@ proto.io.bisq.protobuffer.PaymentAccountPayloadInfo.serializeBinaryToWriter = fu
   if (f.length > 0) {
     writer.writeString(
       3,
+      f
+    );
+  }
+  f = message.getPaymentDetails();
+  if (f.length > 0) {
+    writer.writeString(
+      4,
       f
     );
   }
@@ -23491,6 +23752,24 @@ proto.io.bisq.protobuffer.PaymentAccountPayloadInfo.prototype.getAddress = funct
  */
 proto.io.bisq.protobuffer.PaymentAccountPayloadInfo.prototype.setAddress = function(value) {
   return jspb.Message.setProto3StringField(this, 3, value);
+};
+
+
+/**
+ * optional string payment_details = 4;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.PaymentAccountPayloadInfo.prototype.getPaymentDetails = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.PaymentAccountPayloadInfo} returns this
+ */
+proto.io.bisq.protobuffer.PaymentAccountPayloadInfo.prototype.setPaymentDetails = function(value) {
+  return jspb.Message.setProto3StringField(this, 4, value);
 };
 
 

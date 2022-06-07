@@ -17,6 +17,7 @@ var global = Function('return this')();
 
 goog.exportSymbol('proto.io.bisq.protobuffer.AccountAgeWitness', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.AccountAgeWitnessStore', null, global);
+goog.exportSymbol('proto.io.bisq.protobuffer.AchTransferAccountPayload', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.AckMessage', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.AddDataMessage', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.AddPersistableNetworkPayloadMessage', null, global);
@@ -38,14 +39,17 @@ goog.exportSymbol('proto.io.bisq.protobuffer.AutoConfirmSettings', null, global)
 goog.exportSymbol('proto.io.bisq.protobuffer.AvailabilityResult', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.BankAccountPayload', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.BankAccountPayload.MessageCase', null, global);
+goog.exportSymbol('proto.io.bisq.protobuffer.BizumAccountPayload', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.BlockChainExplorer', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.BundleOfEnvelopes', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.BuyerAsMakerTrade', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.BuyerAsTakerTrade', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.ByteArray', null, global);
+goog.exportSymbol('proto.io.bisq.protobuffer.CapitualAccountPayload', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.CashAppAccountPayload', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.CashByMailAccountPayload', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.CashDepositAccountPayload', null, global);
+goog.exportSymbol('proto.io.bisq.protobuffer.CelPayAccountPayload', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.ChaseQuickPayAccountPayload', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.ChatMessage', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.ClearXchangeAccountPayload', null, global);
@@ -71,6 +75,7 @@ goog.exportSymbol('proto.io.bisq.protobuffer.DisputeResult', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.DisputeResult.Reason', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.DisputeResult.Winner', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.DisputeResultMessage', null, global);
+goog.exportSymbol('proto.io.bisq.protobuffer.DomesticWireTransferAccountPayload', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.EncryptedConnection', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.EncryptedConnectionList', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.F2FAccountPayload', null, global);
@@ -85,7 +90,10 @@ goog.exportSymbol('proto.io.bisq.protobuffer.GetPeersRequest', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.GetPeersResponse', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.GetUpdatedDataRequest', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.HalCashAccountPayload', null, global);
+goog.exportSymbol('proto.io.bisq.protobuffer.IfscBasedAccountPayload', null, global);
+goog.exportSymbol('proto.io.bisq.protobuffer.IfscBasedAccountPayload.MessageCase', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.IgnoredMailboxMap', null, global);
+goog.exportSymbol('proto.io.bisq.protobuffer.ImpsAccountPayload', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.InitMultisigRequest', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.InitTradeRequest', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.InputsForDepositTxRequest', null, global);
@@ -106,10 +114,13 @@ goog.exportSymbol('proto.io.bisq.protobuffer.Mediator', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.MockMailboxPayload', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.MockPayload', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.MoneroNodeSettings', null, global);
+goog.exportSymbol('proto.io.bisq.protobuffer.MoneseAccountPayload', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.MoneyBeamAccountPayload', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.MoneyGramAccountPayload', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.NationalBankAccountPayload', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.NavigationPath', null, global);
+goog.exportSymbol('proto.io.bisq.protobuffer.NeftAccountPayload', null, global);
+goog.exportSymbol('proto.io.bisq.protobuffer.NequiAccountPayload', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.NetworkEnvelope', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.NetworkEnvelope.MessageCase', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.NodeAddress', null, global);
@@ -118,11 +129,12 @@ goog.exportSymbol('proto.io.bisq.protobuffer.Offer', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.Offer.State', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.OfferAvailabilityRequest', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.OfferAvailabilityResponse', null, global);
+goog.exportSymbol('proto.io.bisq.protobuffer.OfferDirection', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.OfferPayload', null, global);
-goog.exportSymbol('proto.io.bisq.protobuffer.OfferPayload.Direction', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.OpenNewDisputeMessage', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.OpenOffer', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.OpenOffer.State', null, global);
+goog.exportSymbol('proto.io.bisq.protobuffer.PaxumAccountPayload', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.PaymentAccount', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.PaymentAccountFilter', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.PaymentAccountList', null, global);
@@ -133,6 +145,8 @@ goog.exportSymbol('proto.io.bisq.protobuffer.PaymentMethod', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.PaymentReceivedMessage', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.PaymentSentMessage', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.PayoutTxPublishedMessage', null, global);
+goog.exportSymbol('proto.io.bisq.protobuffer.PayseraAccountPayload', null, global);
+goog.exportSymbol('proto.io.bisq.protobuffer.PaytmAccountPayload', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.Peer', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.PeerList', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.PeerOpenedDisputeMessage', null, global);
@@ -145,6 +159,7 @@ goog.exportSymbol('proto.io.bisq.protobuffer.PersistableNetworkPayload', null, g
 goog.exportSymbol('proto.io.bisq.protobuffer.PersistableNetworkPayload.MessageCase', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.PersistedEntryMap', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.Ping', null, global);
+goog.exportSymbol('proto.io.bisq.protobuffer.PixAccountPayload', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.Pong', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.PopmoneyAccountPayload', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.PreferencesPayload', null, global);
@@ -169,7 +184,9 @@ goog.exportSymbol('proto.io.bisq.protobuffer.RemoveDataMessage', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.RemoveMailboxDataMessage', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.RemovedPayloadsMap', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.RevolutAccountPayload', null, global);
+goog.exportSymbol('proto.io.bisq.protobuffer.RtgsAccountPayload', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.SameBankAccountPayload', null, global);
+goog.exportSymbol('proto.io.bisq.protobuffer.SatispayAccountPayload', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.SealedAndSigned', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.SellerAsMakerTrade', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.SellerAsTakerTrade', null, global);
@@ -191,8 +208,11 @@ goog.exportSymbol('proto.io.bisq.protobuffer.StorageEntryWrapper', null, global)
 goog.exportSymbol('proto.io.bisq.protobuffer.StorageEntryWrapper.MessageCase', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.StoragePayload', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.StoragePayload.MessageCase', null, global);
+goog.exportSymbol('proto.io.bisq.protobuffer.StrikeAccountPayload', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.SupportType', null, global);
+goog.exportSymbol('proto.io.bisq.protobuffer.SwiftAccountPayload', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.SwishAccountPayload', null, global);
+goog.exportSymbol('proto.io.bisq.protobuffer.TikkieAccountPayload', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.Tradable', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.Tradable.MessageCase', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.TradableList', null, global);
@@ -210,12 +230,15 @@ goog.exportSymbol('proto.io.bisq.protobuffer.TradeStatistics3Store', null, globa
 goog.exportSymbol('proto.io.bisq.protobuffer.TraderSignedWitnessMessage', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.TradingPeer', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.TransferwiseAccountPayload', null, global);
+goog.exportSymbol('proto.io.bisq.protobuffer.TransferwiseUsdAccountPayload', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.USPostalMoneyOrderAccountPayload', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.UpdateMultisigRequest', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.UpdateMultisigResponse', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.UpholdAccountPayload', null, global);
+goog.exportSymbol('proto.io.bisq.protobuffer.UpiAccountPayload', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.UserPayload', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.VenmoAccountPayload', null, global);
+goog.exportSymbol('proto.io.bisq.protobuffer.VerseAccountPayload', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.WeChatPayAccountPayload', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.WesternUnionAccountPayload', null, global);
 goog.exportSymbol('proto.io.bisq.protobuffer.XmrAddressEntry', null, global);
@@ -2226,6 +2249,48 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
+proto.io.bisq.protobuffer.AchTransferAccountPayload = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.io.bisq.protobuffer.AchTransferAccountPayload, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.io.bisq.protobuffer.AchTransferAccountPayload.displayName = 'proto.io.bisq.protobuffer.AchTransferAccountPayload';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.io.bisq.protobuffer.DomesticWireTransferAccountPayload = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.io.bisq.protobuffer.DomesticWireTransferAccountPayload, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.io.bisq.protobuffer.DomesticWireTransferAccountPayload.displayName = 'proto.io.bisq.protobuffer.DomesticWireTransferAccountPayload';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
 proto.io.bisq.protobuffer.NationalBankAccountPayload = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
@@ -2793,6 +2858,132 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
+proto.io.bisq.protobuffer.IfscBasedAccountPayload = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, proto.io.bisq.protobuffer.IfscBasedAccountPayload.oneofGroups_);
+};
+goog.inherits(proto.io.bisq.protobuffer.IfscBasedAccountPayload, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.io.bisq.protobuffer.IfscBasedAccountPayload.displayName = 'proto.io.bisq.protobuffer.IfscBasedAccountPayload';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.io.bisq.protobuffer.NeftAccountPayload = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.io.bisq.protobuffer.NeftAccountPayload, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.io.bisq.protobuffer.NeftAccountPayload.displayName = 'proto.io.bisq.protobuffer.NeftAccountPayload';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.io.bisq.protobuffer.RtgsAccountPayload = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.io.bisq.protobuffer.RtgsAccountPayload, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.io.bisq.protobuffer.RtgsAccountPayload.displayName = 'proto.io.bisq.protobuffer.RtgsAccountPayload';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.io.bisq.protobuffer.ImpsAccountPayload = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.io.bisq.protobuffer.ImpsAccountPayload, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.io.bisq.protobuffer.ImpsAccountPayload.displayName = 'proto.io.bisq.protobuffer.ImpsAccountPayload';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.io.bisq.protobuffer.UpiAccountPayload = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.io.bisq.protobuffer.UpiAccountPayload, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.io.bisq.protobuffer.UpiAccountPayload.displayName = 'proto.io.bisq.protobuffer.UpiAccountPayload';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.io.bisq.protobuffer.PaytmAccountPayload = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.io.bisq.protobuffer.PaytmAccountPayload, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.io.bisq.protobuffer.PaytmAccountPayload.displayName = 'proto.io.bisq.protobuffer.PaytmAccountPayload';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
 proto.io.bisq.protobuffer.CashByMailAccountPayload = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
@@ -2866,6 +3057,300 @@ if (goog.DEBUG && !COMPILED) {
    * @override
    */
   proto.io.bisq.protobuffer.TransferwiseAccountPayload.displayName = 'proto.io.bisq.protobuffer.TransferwiseAccountPayload';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.io.bisq.protobuffer.TransferwiseUsdAccountPayload = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.io.bisq.protobuffer.TransferwiseUsdAccountPayload, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.io.bisq.protobuffer.TransferwiseUsdAccountPayload.displayName = 'proto.io.bisq.protobuffer.TransferwiseUsdAccountPayload';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.io.bisq.protobuffer.PayseraAccountPayload = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.io.bisq.protobuffer.PayseraAccountPayload, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.io.bisq.protobuffer.PayseraAccountPayload.displayName = 'proto.io.bisq.protobuffer.PayseraAccountPayload';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.io.bisq.protobuffer.PaxumAccountPayload = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.io.bisq.protobuffer.PaxumAccountPayload, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.io.bisq.protobuffer.PaxumAccountPayload.displayName = 'proto.io.bisq.protobuffer.PaxumAccountPayload';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.io.bisq.protobuffer.CapitualAccountPayload = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.io.bisq.protobuffer.CapitualAccountPayload, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.io.bisq.protobuffer.CapitualAccountPayload.displayName = 'proto.io.bisq.protobuffer.CapitualAccountPayload';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.io.bisq.protobuffer.CelPayAccountPayload = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.io.bisq.protobuffer.CelPayAccountPayload, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.io.bisq.protobuffer.CelPayAccountPayload.displayName = 'proto.io.bisq.protobuffer.CelPayAccountPayload';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.io.bisq.protobuffer.NequiAccountPayload = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.io.bisq.protobuffer.NequiAccountPayload, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.io.bisq.protobuffer.NequiAccountPayload.displayName = 'proto.io.bisq.protobuffer.NequiAccountPayload';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.io.bisq.protobuffer.BizumAccountPayload = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.io.bisq.protobuffer.BizumAccountPayload, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.io.bisq.protobuffer.BizumAccountPayload.displayName = 'proto.io.bisq.protobuffer.BizumAccountPayload';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.io.bisq.protobuffer.PixAccountPayload = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.io.bisq.protobuffer.PixAccountPayload, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.io.bisq.protobuffer.PixAccountPayload.displayName = 'proto.io.bisq.protobuffer.PixAccountPayload';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.io.bisq.protobuffer.MoneseAccountPayload = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.io.bisq.protobuffer.MoneseAccountPayload, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.io.bisq.protobuffer.MoneseAccountPayload.displayName = 'proto.io.bisq.protobuffer.MoneseAccountPayload';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.io.bisq.protobuffer.SatispayAccountPayload = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.io.bisq.protobuffer.SatispayAccountPayload, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.io.bisq.protobuffer.SatispayAccountPayload.displayName = 'proto.io.bisq.protobuffer.SatispayAccountPayload';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.io.bisq.protobuffer.StrikeAccountPayload = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.io.bisq.protobuffer.StrikeAccountPayload, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.io.bisq.protobuffer.StrikeAccountPayload.displayName = 'proto.io.bisq.protobuffer.StrikeAccountPayload';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.io.bisq.protobuffer.TikkieAccountPayload = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.io.bisq.protobuffer.TikkieAccountPayload, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.io.bisq.protobuffer.TikkieAccountPayload.displayName = 'proto.io.bisq.protobuffer.TikkieAccountPayload';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.io.bisq.protobuffer.VerseAccountPayload = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.io.bisq.protobuffer.VerseAccountPayload, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.io.bisq.protobuffer.VerseAccountPayload.displayName = 'proto.io.bisq.protobuffer.VerseAccountPayload';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.io.bisq.protobuffer.SwiftAccountPayload = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.io.bisq.protobuffer.SwiftAccountPayload, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.io.bisq.protobuffer.SwiftAccountPayload.displayName = 'proto.io.bisq.protobuffer.SwiftAccountPayload';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -30917,7 +31402,7 @@ proto.io.bisq.protobuffer.TradeStatistics2.deserializeBinaryFromReader = functio
       msg.setCounterCurrency(value);
       break;
     case 3:
-      var value = /** @type {!proto.io.bisq.protobuffer.OfferPayload.Direction} */ (reader.readEnum());
+      var value = /** @type {!proto.io.bisq.protobuffer.OfferDirection} */ (reader.readEnum());
       msg.setDirection(value);
       break;
     case 4:
@@ -31174,16 +31659,16 @@ proto.io.bisq.protobuffer.TradeStatistics2.prototype.setCounterCurrency = functi
 
 
 /**
- * optional OfferPayload.Direction direction = 3;
- * @return {!proto.io.bisq.protobuffer.OfferPayload.Direction}
+ * optional OfferDirection direction = 3;
+ * @return {!proto.io.bisq.protobuffer.OfferDirection}
  */
 proto.io.bisq.protobuffer.TradeStatistics2.prototype.getDirection = function() {
-  return /** @type {!proto.io.bisq.protobuffer.OfferPayload.Direction} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+  return /** @type {!proto.io.bisq.protobuffer.OfferDirection} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
 /**
- * @param {!proto.io.bisq.protobuffer.OfferPayload.Direction} value
+ * @param {!proto.io.bisq.protobuffer.OfferDirection} value
  * @return {!proto.io.bisq.protobuffer.TradeStatistics2} returns this
  */
 proto.io.bisq.protobuffer.TradeStatistics2.prototype.setDirection = function(value) {
@@ -32253,7 +32738,7 @@ proto.io.bisq.protobuffer.OfferPayload.toObject = function(includeInstance, msg)
     pubKeyRing: (f = msg.getPubKeyRing()) && proto.io.bisq.protobuffer.PubKeyRing.toObject(includeInstance, f),
     direction: jspb.Message.getFieldWithDefault(msg, 5, 0),
     price: jspb.Message.getFieldWithDefault(msg, 6, 0),
-    marketPriceMargin: jspb.Message.getFloatingPointFieldWithDefault(msg, 7, 0.0),
+    marketPriceMarginPct: jspb.Message.getFloatingPointFieldWithDefault(msg, 7, 0.0),
     useMarketBasedPrice: jspb.Message.getBooleanFieldWithDefault(msg, 8, false),
     amount: jspb.Message.getFieldWithDefault(msg, 9, 0),
     minAmount: jspb.Message.getFieldWithDefault(msg, 10, 0),
@@ -32340,7 +32825,7 @@ proto.io.bisq.protobuffer.OfferPayload.deserializeBinaryFromReader = function(ms
       msg.setPubKeyRing(value);
       break;
     case 5:
-      var value = /** @type {!proto.io.bisq.protobuffer.OfferPayload.Direction} */ (reader.readEnum());
+      var value = /** @type {!proto.io.bisq.protobuffer.OfferDirection} */ (reader.readEnum());
       msg.setDirection(value);
       break;
     case 6:
@@ -32349,7 +32834,7 @@ proto.io.bisq.protobuffer.OfferPayload.deserializeBinaryFromReader = function(ms
       break;
     case 7:
       var value = /** @type {number} */ (reader.readDouble());
-      msg.setMarketPriceMargin(value);
+      msg.setMarketPriceMarginPct(value);
       break;
     case 8:
       var value = /** @type {boolean} */ (reader.readBool());
@@ -32551,7 +33036,7 @@ proto.io.bisq.protobuffer.OfferPayload.serializeBinaryToWriter = function(messag
       f
     );
   }
-  f = message.getMarketPriceMargin();
+  f = message.getMarketPriceMarginPct();
   if (f !== 0.0) {
     writer.writeDouble(
       7,
@@ -32777,15 +33262,6 @@ proto.io.bisq.protobuffer.OfferPayload.serializeBinaryToWriter = function(messag
 
 
 /**
- * @enum {number}
- */
-proto.io.bisq.protobuffer.OfferPayload.Direction = {
-  PB_ERROR: 0,
-  BUY: 1,
-  SELL: 2
-};
-
-/**
  * optional string id = 1;
  * @return {string}
  */
@@ -32896,16 +33372,16 @@ proto.io.bisq.protobuffer.OfferPayload.prototype.hasPubKeyRing = function() {
 
 
 /**
- * optional Direction direction = 5;
- * @return {!proto.io.bisq.protobuffer.OfferPayload.Direction}
+ * optional OfferDirection direction = 5;
+ * @return {!proto.io.bisq.protobuffer.OfferDirection}
  */
 proto.io.bisq.protobuffer.OfferPayload.prototype.getDirection = function() {
-  return /** @type {!proto.io.bisq.protobuffer.OfferPayload.Direction} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+  return /** @type {!proto.io.bisq.protobuffer.OfferDirection} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
 };
 
 
 /**
- * @param {!proto.io.bisq.protobuffer.OfferPayload.Direction} value
+ * @param {!proto.io.bisq.protobuffer.OfferDirection} value
  * @return {!proto.io.bisq.protobuffer.OfferPayload} returns this
  */
 proto.io.bisq.protobuffer.OfferPayload.prototype.setDirection = function(value) {
@@ -32932,10 +33408,10 @@ proto.io.bisq.protobuffer.OfferPayload.prototype.setPrice = function(value) {
 
 
 /**
- * optional double market_price_margin = 7;
+ * optional double market_price_margin_pct = 7;
  * @return {number}
  */
-proto.io.bisq.protobuffer.OfferPayload.prototype.getMarketPriceMargin = function() {
+proto.io.bisq.protobuffer.OfferPayload.prototype.getMarketPriceMarginPct = function() {
   return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 7, 0.0));
 };
 
@@ -32944,7 +33420,7 @@ proto.io.bisq.protobuffer.OfferPayload.prototype.getMarketPriceMargin = function
  * @param {number} value
  * @return {!proto.io.bisq.protobuffer.OfferPayload} returns this
  */
-proto.io.bisq.protobuffer.OfferPayload.prototype.setMarketPriceMargin = function(value) {
+proto.io.bisq.protobuffer.OfferPayload.prototype.setMarketPriceMarginPct = function(value) {
   return jspb.Message.setProto3FloatField(this, 7, value);
 };
 
@@ -37506,7 +37982,7 @@ proto.io.bisq.protobuffer.RawTransactionInput.prototype.setValue = function(valu
  * @private {!Array<!Array<number>>}
  * @const
  */
-proto.io.bisq.protobuffer.PaymentAccountPayload.oneofGroups_ = [[4,5,6,7,8,9,10,11,12,13,14,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32]];
+proto.io.bisq.protobuffer.PaymentAccountPayload.oneofGroups_ = [[4,5,6,7,8,9,10,11,12,13,14,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39]];
 
 /**
  * @enum {number}
@@ -37540,7 +38016,14 @@ proto.io.bisq.protobuffer.PaymentAccountPayload.MessageCase = {
   TRANSFERWISE_ACCOUNT_PAYLOAD: 29,
   AUSTRALIA_PAYID_PAYLOAD: 30,
   AMAZON_GIFT_CARD_ACCOUNT_PAYLOAD: 31,
-  CASH_BY_MAIL_ACCOUNT_PAYLOAD: 32
+  CASH_BY_MAIL_ACCOUNT_PAYLOAD: 32,
+  CAPITUAL_ACCOUNT_PAYLOAD: 33,
+  PAYSERA_ACCOUNT_PAYLOAD: 34,
+  PAXUM_ACCOUNT_PAYLOAD: 35,
+  SWIFT_ACCOUNT_PAYLOAD: 36,
+  CEL_PAY_ACCOUNT_PAYLOAD: 37,
+  MONESE_ACCOUNT_PAYLOAD: 38,
+  VERSE_ACCOUNT_PAYLOAD: 39
 };
 
 /**
@@ -37612,6 +38095,13 @@ proto.io.bisq.protobuffer.PaymentAccountPayload.toObject = function(includeInsta
     australiaPayidPayload: (f = msg.getAustraliaPayidPayload()) && proto.io.bisq.protobuffer.AustraliaPayidPayload.toObject(includeInstance, f),
     amazonGiftCardAccountPayload: (f = msg.getAmazonGiftCardAccountPayload()) && proto.io.bisq.protobuffer.AmazonGiftCardAccountPayload.toObject(includeInstance, f),
     cashByMailAccountPayload: (f = msg.getCashByMailAccountPayload()) && proto.io.bisq.protobuffer.CashByMailAccountPayload.toObject(includeInstance, f),
+    capitualAccountPayload: (f = msg.getCapitualAccountPayload()) && proto.io.bisq.protobuffer.CapitualAccountPayload.toObject(includeInstance, f),
+    payseraAccountPayload: (f = msg.getPayseraAccountPayload()) && proto.io.bisq.protobuffer.PayseraAccountPayload.toObject(includeInstance, f),
+    paxumAccountPayload: (f = msg.getPaxumAccountPayload()) && proto.io.bisq.protobuffer.PaxumAccountPayload.toObject(includeInstance, f),
+    swiftAccountPayload: (f = msg.getSwiftAccountPayload()) && proto.io.bisq.protobuffer.SwiftAccountPayload.toObject(includeInstance, f),
+    celPayAccountPayload: (f = msg.getCelPayAccountPayload()) && proto.io.bisq.protobuffer.CelPayAccountPayload.toObject(includeInstance, f),
+    moneseAccountPayload: (f = msg.getMoneseAccountPayload()) && proto.io.bisq.protobuffer.MoneseAccountPayload.toObject(includeInstance, f),
+    verseAccountPayload: (f = msg.getVerseAccountPayload()) && proto.io.bisq.protobuffer.VerseAccountPayload.toObject(includeInstance, f),
     excludeFromJsonDataMap: (f = msg.getExcludeFromJsonDataMap()) ? f.toObject(includeInstance, undefined) : []
   };
 
@@ -37800,6 +38290,41 @@ proto.io.bisq.protobuffer.PaymentAccountPayload.deserializeBinaryFromReader = fu
       var value = new proto.io.bisq.protobuffer.CashByMailAccountPayload;
       reader.readMessage(value,proto.io.bisq.protobuffer.CashByMailAccountPayload.deserializeBinaryFromReader);
       msg.setCashByMailAccountPayload(value);
+      break;
+    case 33:
+      var value = new proto.io.bisq.protobuffer.CapitualAccountPayload;
+      reader.readMessage(value,proto.io.bisq.protobuffer.CapitualAccountPayload.deserializeBinaryFromReader);
+      msg.setCapitualAccountPayload(value);
+      break;
+    case 34:
+      var value = new proto.io.bisq.protobuffer.PayseraAccountPayload;
+      reader.readMessage(value,proto.io.bisq.protobuffer.PayseraAccountPayload.deserializeBinaryFromReader);
+      msg.setPayseraAccountPayload(value);
+      break;
+    case 35:
+      var value = new proto.io.bisq.protobuffer.PaxumAccountPayload;
+      reader.readMessage(value,proto.io.bisq.protobuffer.PaxumAccountPayload.deserializeBinaryFromReader);
+      msg.setPaxumAccountPayload(value);
+      break;
+    case 36:
+      var value = new proto.io.bisq.protobuffer.SwiftAccountPayload;
+      reader.readMessage(value,proto.io.bisq.protobuffer.SwiftAccountPayload.deserializeBinaryFromReader);
+      msg.setSwiftAccountPayload(value);
+      break;
+    case 37:
+      var value = new proto.io.bisq.protobuffer.CelPayAccountPayload;
+      reader.readMessage(value,proto.io.bisq.protobuffer.CelPayAccountPayload.deserializeBinaryFromReader);
+      msg.setCelPayAccountPayload(value);
+      break;
+    case 38:
+      var value = new proto.io.bisq.protobuffer.MoneseAccountPayload;
+      reader.readMessage(value,proto.io.bisq.protobuffer.MoneseAccountPayload.deserializeBinaryFromReader);
+      msg.setMoneseAccountPayload(value);
+      break;
+    case 39:
+      var value = new proto.io.bisq.protobuffer.VerseAccountPayload;
+      reader.readMessage(value,proto.io.bisq.protobuffer.VerseAccountPayload.deserializeBinaryFromReader);
+      msg.setVerseAccountPayload(value);
       break;
     case 15:
       var value = msg.getExcludeFromJsonDataMap();
@@ -38079,6 +38604,62 @@ proto.io.bisq.protobuffer.PaymentAccountPayload.serializeBinaryToWriter = functi
       32,
       f,
       proto.io.bisq.protobuffer.CashByMailAccountPayload.serializeBinaryToWriter
+    );
+  }
+  f = message.getCapitualAccountPayload();
+  if (f != null) {
+    writer.writeMessage(
+      33,
+      f,
+      proto.io.bisq.protobuffer.CapitualAccountPayload.serializeBinaryToWriter
+    );
+  }
+  f = message.getPayseraAccountPayload();
+  if (f != null) {
+    writer.writeMessage(
+      34,
+      f,
+      proto.io.bisq.protobuffer.PayseraAccountPayload.serializeBinaryToWriter
+    );
+  }
+  f = message.getPaxumAccountPayload();
+  if (f != null) {
+    writer.writeMessage(
+      35,
+      f,
+      proto.io.bisq.protobuffer.PaxumAccountPayload.serializeBinaryToWriter
+    );
+  }
+  f = message.getSwiftAccountPayload();
+  if (f != null) {
+    writer.writeMessage(
+      36,
+      f,
+      proto.io.bisq.protobuffer.SwiftAccountPayload.serializeBinaryToWriter
+    );
+  }
+  f = message.getCelPayAccountPayload();
+  if (f != null) {
+    writer.writeMessage(
+      37,
+      f,
+      proto.io.bisq.protobuffer.CelPayAccountPayload.serializeBinaryToWriter
+    );
+  }
+  f = message.getMoneseAccountPayload();
+  if (f != null) {
+    writer.writeMessage(
+      38,
+      f,
+      proto.io.bisq.protobuffer.MoneseAccountPayload.serializeBinaryToWriter
+    );
+  }
+  f = message.getVerseAccountPayload();
+  if (f != null) {
+    writer.writeMessage(
+      39,
+      f,
+      proto.io.bisq.protobuffer.VerseAccountPayload.serializeBinaryToWriter
     );
   }
   f = message.getExcludeFromJsonDataMap(true);
@@ -39179,6 +39760,265 @@ proto.io.bisq.protobuffer.PaymentAccountPayload.prototype.hasCashByMailAccountPa
 
 
 /**
+ * optional CapitualAccountPayload capitual_account_payload = 33;
+ * @return {?proto.io.bisq.protobuffer.CapitualAccountPayload}
+ */
+proto.io.bisq.protobuffer.PaymentAccountPayload.prototype.getCapitualAccountPayload = function() {
+  return /** @type{?proto.io.bisq.protobuffer.CapitualAccountPayload} */ (
+    jspb.Message.getWrapperField(this, proto.io.bisq.protobuffer.CapitualAccountPayload, 33));
+};
+
+
+/**
+ * @param {?proto.io.bisq.protobuffer.CapitualAccountPayload|undefined} value
+ * @return {!proto.io.bisq.protobuffer.PaymentAccountPayload} returns this
+*/
+proto.io.bisq.protobuffer.PaymentAccountPayload.prototype.setCapitualAccountPayload = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 33, proto.io.bisq.protobuffer.PaymentAccountPayload.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.io.bisq.protobuffer.PaymentAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.PaymentAccountPayload.prototype.clearCapitualAccountPayload = function() {
+  return this.setCapitualAccountPayload(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.io.bisq.protobuffer.PaymentAccountPayload.prototype.hasCapitualAccountPayload = function() {
+  return jspb.Message.getField(this, 33) != null;
+};
+
+
+/**
+ * optional PayseraAccountPayload Paysera_account_payload = 34;
+ * @return {?proto.io.bisq.protobuffer.PayseraAccountPayload}
+ */
+proto.io.bisq.protobuffer.PaymentAccountPayload.prototype.getPayseraAccountPayload = function() {
+  return /** @type{?proto.io.bisq.protobuffer.PayseraAccountPayload} */ (
+    jspb.Message.getWrapperField(this, proto.io.bisq.protobuffer.PayseraAccountPayload, 34));
+};
+
+
+/**
+ * @param {?proto.io.bisq.protobuffer.PayseraAccountPayload|undefined} value
+ * @return {!proto.io.bisq.protobuffer.PaymentAccountPayload} returns this
+*/
+proto.io.bisq.protobuffer.PaymentAccountPayload.prototype.setPayseraAccountPayload = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 34, proto.io.bisq.protobuffer.PaymentAccountPayload.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.io.bisq.protobuffer.PaymentAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.PaymentAccountPayload.prototype.clearPayseraAccountPayload = function() {
+  return this.setPayseraAccountPayload(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.io.bisq.protobuffer.PaymentAccountPayload.prototype.hasPayseraAccountPayload = function() {
+  return jspb.Message.getField(this, 34) != null;
+};
+
+
+/**
+ * optional PaxumAccountPayload Paxum_account_payload = 35;
+ * @return {?proto.io.bisq.protobuffer.PaxumAccountPayload}
+ */
+proto.io.bisq.protobuffer.PaymentAccountPayload.prototype.getPaxumAccountPayload = function() {
+  return /** @type{?proto.io.bisq.protobuffer.PaxumAccountPayload} */ (
+    jspb.Message.getWrapperField(this, proto.io.bisq.protobuffer.PaxumAccountPayload, 35));
+};
+
+
+/**
+ * @param {?proto.io.bisq.protobuffer.PaxumAccountPayload|undefined} value
+ * @return {!proto.io.bisq.protobuffer.PaymentAccountPayload} returns this
+*/
+proto.io.bisq.protobuffer.PaymentAccountPayload.prototype.setPaxumAccountPayload = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 35, proto.io.bisq.protobuffer.PaymentAccountPayload.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.io.bisq.protobuffer.PaymentAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.PaymentAccountPayload.prototype.clearPaxumAccountPayload = function() {
+  return this.setPaxumAccountPayload(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.io.bisq.protobuffer.PaymentAccountPayload.prototype.hasPaxumAccountPayload = function() {
+  return jspb.Message.getField(this, 35) != null;
+};
+
+
+/**
+ * optional SwiftAccountPayload swift_account_payload = 36;
+ * @return {?proto.io.bisq.protobuffer.SwiftAccountPayload}
+ */
+proto.io.bisq.protobuffer.PaymentAccountPayload.prototype.getSwiftAccountPayload = function() {
+  return /** @type{?proto.io.bisq.protobuffer.SwiftAccountPayload} */ (
+    jspb.Message.getWrapperField(this, proto.io.bisq.protobuffer.SwiftAccountPayload, 36));
+};
+
+
+/**
+ * @param {?proto.io.bisq.protobuffer.SwiftAccountPayload|undefined} value
+ * @return {!proto.io.bisq.protobuffer.PaymentAccountPayload} returns this
+*/
+proto.io.bisq.protobuffer.PaymentAccountPayload.prototype.setSwiftAccountPayload = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 36, proto.io.bisq.protobuffer.PaymentAccountPayload.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.io.bisq.protobuffer.PaymentAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.PaymentAccountPayload.prototype.clearSwiftAccountPayload = function() {
+  return this.setSwiftAccountPayload(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.io.bisq.protobuffer.PaymentAccountPayload.prototype.hasSwiftAccountPayload = function() {
+  return jspb.Message.getField(this, 36) != null;
+};
+
+
+/**
+ * optional CelPayAccountPayload cel_pay_account_payload = 37;
+ * @return {?proto.io.bisq.protobuffer.CelPayAccountPayload}
+ */
+proto.io.bisq.protobuffer.PaymentAccountPayload.prototype.getCelPayAccountPayload = function() {
+  return /** @type{?proto.io.bisq.protobuffer.CelPayAccountPayload} */ (
+    jspb.Message.getWrapperField(this, proto.io.bisq.protobuffer.CelPayAccountPayload, 37));
+};
+
+
+/**
+ * @param {?proto.io.bisq.protobuffer.CelPayAccountPayload|undefined} value
+ * @return {!proto.io.bisq.protobuffer.PaymentAccountPayload} returns this
+*/
+proto.io.bisq.protobuffer.PaymentAccountPayload.prototype.setCelPayAccountPayload = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 37, proto.io.bisq.protobuffer.PaymentAccountPayload.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.io.bisq.protobuffer.PaymentAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.PaymentAccountPayload.prototype.clearCelPayAccountPayload = function() {
+  return this.setCelPayAccountPayload(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.io.bisq.protobuffer.PaymentAccountPayload.prototype.hasCelPayAccountPayload = function() {
+  return jspb.Message.getField(this, 37) != null;
+};
+
+
+/**
+ * optional MoneseAccountPayload monese_account_payload = 38;
+ * @return {?proto.io.bisq.protobuffer.MoneseAccountPayload}
+ */
+proto.io.bisq.protobuffer.PaymentAccountPayload.prototype.getMoneseAccountPayload = function() {
+  return /** @type{?proto.io.bisq.protobuffer.MoneseAccountPayload} */ (
+    jspb.Message.getWrapperField(this, proto.io.bisq.protobuffer.MoneseAccountPayload, 38));
+};
+
+
+/**
+ * @param {?proto.io.bisq.protobuffer.MoneseAccountPayload|undefined} value
+ * @return {!proto.io.bisq.protobuffer.PaymentAccountPayload} returns this
+*/
+proto.io.bisq.protobuffer.PaymentAccountPayload.prototype.setMoneseAccountPayload = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 38, proto.io.bisq.protobuffer.PaymentAccountPayload.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.io.bisq.protobuffer.PaymentAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.PaymentAccountPayload.prototype.clearMoneseAccountPayload = function() {
+  return this.setMoneseAccountPayload(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.io.bisq.protobuffer.PaymentAccountPayload.prototype.hasMoneseAccountPayload = function() {
+  return jspb.Message.getField(this, 38) != null;
+};
+
+
+/**
+ * optional VerseAccountPayload verse_account_payload = 39;
+ * @return {?proto.io.bisq.protobuffer.VerseAccountPayload}
+ */
+proto.io.bisq.protobuffer.PaymentAccountPayload.prototype.getVerseAccountPayload = function() {
+  return /** @type{?proto.io.bisq.protobuffer.VerseAccountPayload} */ (
+    jspb.Message.getWrapperField(this, proto.io.bisq.protobuffer.VerseAccountPayload, 39));
+};
+
+
+/**
+ * @param {?proto.io.bisq.protobuffer.VerseAccountPayload|undefined} value
+ * @return {!proto.io.bisq.protobuffer.PaymentAccountPayload} returns this
+*/
+proto.io.bisq.protobuffer.PaymentAccountPayload.prototype.setVerseAccountPayload = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 39, proto.io.bisq.protobuffer.PaymentAccountPayload.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.io.bisq.protobuffer.PaymentAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.PaymentAccountPayload.prototype.clearVerseAccountPayload = function() {
+  return this.setVerseAccountPayload(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.io.bisq.protobuffer.PaymentAccountPayload.prototype.hasVerseAccountPayload = function() {
+  return jspb.Message.getField(this, 39) != null;
+};
+
+
+/**
  * map<string, string> exclude_from_json_data = 15;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
@@ -39789,7 +40629,7 @@ proto.io.bisq.protobuffer.ClearXchangeAccountPayload.prototype.setEmailOrMobileN
  * @private {!Array<!Array<number>>}
  * @const
  */
-proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.oneofGroups_ = [[2,3,4,5,6,7]];
+proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.oneofGroups_ = [[2,3,4,5,6,7,9,10,11,12,13,14,15,16,17,18]];
 
 /**
  * @enum {number}
@@ -39801,7 +40641,17 @@ proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.MessageCase = {
   SEPA_ACCOUNT_PAYLOAD: 4,
   WESTERN_UNION_ACCOUNT_PAYLOAD: 5,
   SEPA_INSTANT_ACCOUNT_PAYLOAD: 6,
-  F2F_ACCOUNT_PAYLOAD: 7
+  F2F_ACCOUNT_PAYLOAD: 7,
+  UPI_ACCOUNT_PAYLOAD: 9,
+  PAYTM_ACCOUNT_PAYLOAD: 10,
+  IFSC_BASED_ACCOUNT_PAYLOAD: 11,
+  NEQUI_ACCOUNT_PAYLOAD: 12,
+  BIZUM_ACCOUNT_PAYLOAD: 13,
+  PIX_ACCOUNT_PAYLOAD: 14,
+  SATISPAY_ACCOUNT_PAYLOAD: 15,
+  STRIKE_ACCOUNT_PAYLOAD: 16,
+  TIKKIE_ACCOUNT_PAYLOAD: 17,
+  TRANSFERWISE_USD_ACCOUNT_PAYLOAD: 18
 };
 
 /**
@@ -39848,7 +40698,17 @@ proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.toObject = function(
     sepaAccountPayload: (f = msg.getSepaAccountPayload()) && proto.io.bisq.protobuffer.SepaAccountPayload.toObject(includeInstance, f),
     westernUnionAccountPayload: (f = msg.getWesternUnionAccountPayload()) && proto.io.bisq.protobuffer.WesternUnionAccountPayload.toObject(includeInstance, f),
     sepaInstantAccountPayload: (f = msg.getSepaInstantAccountPayload()) && proto.io.bisq.protobuffer.SepaInstantAccountPayload.toObject(includeInstance, f),
-    f2fAccountPayload: (f = msg.getF2fAccountPayload()) && proto.io.bisq.protobuffer.F2FAccountPayload.toObject(includeInstance, f)
+    f2fAccountPayload: (f = msg.getF2fAccountPayload()) && proto.io.bisq.protobuffer.F2FAccountPayload.toObject(includeInstance, f),
+    upiAccountPayload: (f = msg.getUpiAccountPayload()) && proto.io.bisq.protobuffer.UpiAccountPayload.toObject(includeInstance, f),
+    paytmAccountPayload: (f = msg.getPaytmAccountPayload()) && proto.io.bisq.protobuffer.PaytmAccountPayload.toObject(includeInstance, f),
+    ifscBasedAccountPayload: (f = msg.getIfscBasedAccountPayload()) && proto.io.bisq.protobuffer.IfscBasedAccountPayload.toObject(includeInstance, f),
+    nequiAccountPayload: (f = msg.getNequiAccountPayload()) && proto.io.bisq.protobuffer.NequiAccountPayload.toObject(includeInstance, f),
+    bizumAccountPayload: (f = msg.getBizumAccountPayload()) && proto.io.bisq.protobuffer.BizumAccountPayload.toObject(includeInstance, f),
+    pixAccountPayload: (f = msg.getPixAccountPayload()) && proto.io.bisq.protobuffer.PixAccountPayload.toObject(includeInstance, f),
+    satispayAccountPayload: (f = msg.getSatispayAccountPayload()) && proto.io.bisq.protobuffer.SatispayAccountPayload.toObject(includeInstance, f),
+    strikeAccountPayload: (f = msg.getStrikeAccountPayload()) && proto.io.bisq.protobuffer.StrikeAccountPayload.toObject(includeInstance, f),
+    tikkieAccountPayload: (f = msg.getTikkieAccountPayload()) && proto.io.bisq.protobuffer.TikkieAccountPayload.toObject(includeInstance, f),
+    transferwiseUsdAccountPayload: (f = msg.getTransferwiseUsdAccountPayload()) && proto.io.bisq.protobuffer.TransferwiseUsdAccountPayload.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -39918,6 +40778,56 @@ proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.deserializeBinaryFro
       var value = new proto.io.bisq.protobuffer.F2FAccountPayload;
       reader.readMessage(value,proto.io.bisq.protobuffer.F2FAccountPayload.deserializeBinaryFromReader);
       msg.setF2fAccountPayload(value);
+      break;
+    case 9:
+      var value = new proto.io.bisq.protobuffer.UpiAccountPayload;
+      reader.readMessage(value,proto.io.bisq.protobuffer.UpiAccountPayload.deserializeBinaryFromReader);
+      msg.setUpiAccountPayload(value);
+      break;
+    case 10:
+      var value = new proto.io.bisq.protobuffer.PaytmAccountPayload;
+      reader.readMessage(value,proto.io.bisq.protobuffer.PaytmAccountPayload.deserializeBinaryFromReader);
+      msg.setPaytmAccountPayload(value);
+      break;
+    case 11:
+      var value = new proto.io.bisq.protobuffer.IfscBasedAccountPayload;
+      reader.readMessage(value,proto.io.bisq.protobuffer.IfscBasedAccountPayload.deserializeBinaryFromReader);
+      msg.setIfscBasedAccountPayload(value);
+      break;
+    case 12:
+      var value = new proto.io.bisq.protobuffer.NequiAccountPayload;
+      reader.readMessage(value,proto.io.bisq.protobuffer.NequiAccountPayload.deserializeBinaryFromReader);
+      msg.setNequiAccountPayload(value);
+      break;
+    case 13:
+      var value = new proto.io.bisq.protobuffer.BizumAccountPayload;
+      reader.readMessage(value,proto.io.bisq.protobuffer.BizumAccountPayload.deserializeBinaryFromReader);
+      msg.setBizumAccountPayload(value);
+      break;
+    case 14:
+      var value = new proto.io.bisq.protobuffer.PixAccountPayload;
+      reader.readMessage(value,proto.io.bisq.protobuffer.PixAccountPayload.deserializeBinaryFromReader);
+      msg.setPixAccountPayload(value);
+      break;
+    case 15:
+      var value = new proto.io.bisq.protobuffer.SatispayAccountPayload;
+      reader.readMessage(value,proto.io.bisq.protobuffer.SatispayAccountPayload.deserializeBinaryFromReader);
+      msg.setSatispayAccountPayload(value);
+      break;
+    case 16:
+      var value = new proto.io.bisq.protobuffer.StrikeAccountPayload;
+      reader.readMessage(value,proto.io.bisq.protobuffer.StrikeAccountPayload.deserializeBinaryFromReader);
+      msg.setStrikeAccountPayload(value);
+      break;
+    case 17:
+      var value = new proto.io.bisq.protobuffer.TikkieAccountPayload;
+      reader.readMessage(value,proto.io.bisq.protobuffer.TikkieAccountPayload.deserializeBinaryFromReader);
+      msg.setTikkieAccountPayload(value);
+      break;
+    case 18:
+      var value = new proto.io.bisq.protobuffer.TransferwiseUsdAccountPayload;
+      reader.readMessage(value,proto.io.bisq.protobuffer.TransferwiseUsdAccountPayload.deserializeBinaryFromReader);
+      msg.setTransferwiseUsdAccountPayload(value);
       break;
     default:
       reader.skipField();
@@ -40001,6 +40911,86 @@ proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.serializeBinaryToWri
       7,
       f,
       proto.io.bisq.protobuffer.F2FAccountPayload.serializeBinaryToWriter
+    );
+  }
+  f = message.getUpiAccountPayload();
+  if (f != null) {
+    writer.writeMessage(
+      9,
+      f,
+      proto.io.bisq.protobuffer.UpiAccountPayload.serializeBinaryToWriter
+    );
+  }
+  f = message.getPaytmAccountPayload();
+  if (f != null) {
+    writer.writeMessage(
+      10,
+      f,
+      proto.io.bisq.protobuffer.PaytmAccountPayload.serializeBinaryToWriter
+    );
+  }
+  f = message.getIfscBasedAccountPayload();
+  if (f != null) {
+    writer.writeMessage(
+      11,
+      f,
+      proto.io.bisq.protobuffer.IfscBasedAccountPayload.serializeBinaryToWriter
+    );
+  }
+  f = message.getNequiAccountPayload();
+  if (f != null) {
+    writer.writeMessage(
+      12,
+      f,
+      proto.io.bisq.protobuffer.NequiAccountPayload.serializeBinaryToWriter
+    );
+  }
+  f = message.getBizumAccountPayload();
+  if (f != null) {
+    writer.writeMessage(
+      13,
+      f,
+      proto.io.bisq.protobuffer.BizumAccountPayload.serializeBinaryToWriter
+    );
+  }
+  f = message.getPixAccountPayload();
+  if (f != null) {
+    writer.writeMessage(
+      14,
+      f,
+      proto.io.bisq.protobuffer.PixAccountPayload.serializeBinaryToWriter
+    );
+  }
+  f = message.getSatispayAccountPayload();
+  if (f != null) {
+    writer.writeMessage(
+      15,
+      f,
+      proto.io.bisq.protobuffer.SatispayAccountPayload.serializeBinaryToWriter
+    );
+  }
+  f = message.getStrikeAccountPayload();
+  if (f != null) {
+    writer.writeMessage(
+      16,
+      f,
+      proto.io.bisq.protobuffer.StrikeAccountPayload.serializeBinaryToWriter
+    );
+  }
+  f = message.getTikkieAccountPayload();
+  if (f != null) {
+    writer.writeMessage(
+      17,
+      f,
+      proto.io.bisq.protobuffer.TikkieAccountPayload.serializeBinaryToWriter
+    );
+  }
+  f = message.getTransferwiseUsdAccountPayload();
+  if (f != null) {
+    writer.writeMessage(
+      18,
+      f,
+      proto.io.bisq.protobuffer.TransferwiseUsdAccountPayload.serializeBinaryToWriter
     );
   }
 };
@@ -40246,6 +41236,376 @@ proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.prototype.hasF2fAcco
 };
 
 
+/**
+ * optional UpiAccountPayload upi_account_payload = 9;
+ * @return {?proto.io.bisq.protobuffer.UpiAccountPayload}
+ */
+proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.prototype.getUpiAccountPayload = function() {
+  return /** @type{?proto.io.bisq.protobuffer.UpiAccountPayload} */ (
+    jspb.Message.getWrapperField(this, proto.io.bisq.protobuffer.UpiAccountPayload, 9));
+};
+
+
+/**
+ * @param {?proto.io.bisq.protobuffer.UpiAccountPayload|undefined} value
+ * @return {!proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload} returns this
+*/
+proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.prototype.setUpiAccountPayload = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 9, proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.prototype.clearUpiAccountPayload = function() {
+  return this.setUpiAccountPayload(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.prototype.hasUpiAccountPayload = function() {
+  return jspb.Message.getField(this, 9) != null;
+};
+
+
+/**
+ * optional PaytmAccountPayload paytm_account_payload = 10;
+ * @return {?proto.io.bisq.protobuffer.PaytmAccountPayload}
+ */
+proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.prototype.getPaytmAccountPayload = function() {
+  return /** @type{?proto.io.bisq.protobuffer.PaytmAccountPayload} */ (
+    jspb.Message.getWrapperField(this, proto.io.bisq.protobuffer.PaytmAccountPayload, 10));
+};
+
+
+/**
+ * @param {?proto.io.bisq.protobuffer.PaytmAccountPayload|undefined} value
+ * @return {!proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload} returns this
+*/
+proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.prototype.setPaytmAccountPayload = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 10, proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.prototype.clearPaytmAccountPayload = function() {
+  return this.setPaytmAccountPayload(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.prototype.hasPaytmAccountPayload = function() {
+  return jspb.Message.getField(this, 10) != null;
+};
+
+
+/**
+ * optional IfscBasedAccountPayload ifsc_based_account_payload = 11;
+ * @return {?proto.io.bisq.protobuffer.IfscBasedAccountPayload}
+ */
+proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.prototype.getIfscBasedAccountPayload = function() {
+  return /** @type{?proto.io.bisq.protobuffer.IfscBasedAccountPayload} */ (
+    jspb.Message.getWrapperField(this, proto.io.bisq.protobuffer.IfscBasedAccountPayload, 11));
+};
+
+
+/**
+ * @param {?proto.io.bisq.protobuffer.IfscBasedAccountPayload|undefined} value
+ * @return {!proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload} returns this
+*/
+proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.prototype.setIfscBasedAccountPayload = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 11, proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.prototype.clearIfscBasedAccountPayload = function() {
+  return this.setIfscBasedAccountPayload(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.prototype.hasIfscBasedAccountPayload = function() {
+  return jspb.Message.getField(this, 11) != null;
+};
+
+
+/**
+ * optional NequiAccountPayload nequi_account_payload = 12;
+ * @return {?proto.io.bisq.protobuffer.NequiAccountPayload}
+ */
+proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.prototype.getNequiAccountPayload = function() {
+  return /** @type{?proto.io.bisq.protobuffer.NequiAccountPayload} */ (
+    jspb.Message.getWrapperField(this, proto.io.bisq.protobuffer.NequiAccountPayload, 12));
+};
+
+
+/**
+ * @param {?proto.io.bisq.protobuffer.NequiAccountPayload|undefined} value
+ * @return {!proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload} returns this
+*/
+proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.prototype.setNequiAccountPayload = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 12, proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.prototype.clearNequiAccountPayload = function() {
+  return this.setNequiAccountPayload(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.prototype.hasNequiAccountPayload = function() {
+  return jspb.Message.getField(this, 12) != null;
+};
+
+
+/**
+ * optional BizumAccountPayload bizum_account_payload = 13;
+ * @return {?proto.io.bisq.protobuffer.BizumAccountPayload}
+ */
+proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.prototype.getBizumAccountPayload = function() {
+  return /** @type{?proto.io.bisq.protobuffer.BizumAccountPayload} */ (
+    jspb.Message.getWrapperField(this, proto.io.bisq.protobuffer.BizumAccountPayload, 13));
+};
+
+
+/**
+ * @param {?proto.io.bisq.protobuffer.BizumAccountPayload|undefined} value
+ * @return {!proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload} returns this
+*/
+proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.prototype.setBizumAccountPayload = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 13, proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.prototype.clearBizumAccountPayload = function() {
+  return this.setBizumAccountPayload(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.prototype.hasBizumAccountPayload = function() {
+  return jspb.Message.getField(this, 13) != null;
+};
+
+
+/**
+ * optional PixAccountPayload pix_account_payload = 14;
+ * @return {?proto.io.bisq.protobuffer.PixAccountPayload}
+ */
+proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.prototype.getPixAccountPayload = function() {
+  return /** @type{?proto.io.bisq.protobuffer.PixAccountPayload} */ (
+    jspb.Message.getWrapperField(this, proto.io.bisq.protobuffer.PixAccountPayload, 14));
+};
+
+
+/**
+ * @param {?proto.io.bisq.protobuffer.PixAccountPayload|undefined} value
+ * @return {!proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload} returns this
+*/
+proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.prototype.setPixAccountPayload = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 14, proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.prototype.clearPixAccountPayload = function() {
+  return this.setPixAccountPayload(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.prototype.hasPixAccountPayload = function() {
+  return jspb.Message.getField(this, 14) != null;
+};
+
+
+/**
+ * optional SatispayAccountPayload satispay_account_payload = 15;
+ * @return {?proto.io.bisq.protobuffer.SatispayAccountPayload}
+ */
+proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.prototype.getSatispayAccountPayload = function() {
+  return /** @type{?proto.io.bisq.protobuffer.SatispayAccountPayload} */ (
+    jspb.Message.getWrapperField(this, proto.io.bisq.protobuffer.SatispayAccountPayload, 15));
+};
+
+
+/**
+ * @param {?proto.io.bisq.protobuffer.SatispayAccountPayload|undefined} value
+ * @return {!proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload} returns this
+*/
+proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.prototype.setSatispayAccountPayload = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 15, proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.prototype.clearSatispayAccountPayload = function() {
+  return this.setSatispayAccountPayload(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.prototype.hasSatispayAccountPayload = function() {
+  return jspb.Message.getField(this, 15) != null;
+};
+
+
+/**
+ * optional StrikeAccountPayload strike_account_payload = 16;
+ * @return {?proto.io.bisq.protobuffer.StrikeAccountPayload}
+ */
+proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.prototype.getStrikeAccountPayload = function() {
+  return /** @type{?proto.io.bisq.protobuffer.StrikeAccountPayload} */ (
+    jspb.Message.getWrapperField(this, proto.io.bisq.protobuffer.StrikeAccountPayload, 16));
+};
+
+
+/**
+ * @param {?proto.io.bisq.protobuffer.StrikeAccountPayload|undefined} value
+ * @return {!proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload} returns this
+*/
+proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.prototype.setStrikeAccountPayload = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 16, proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.prototype.clearStrikeAccountPayload = function() {
+  return this.setStrikeAccountPayload(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.prototype.hasStrikeAccountPayload = function() {
+  return jspb.Message.getField(this, 16) != null;
+};
+
+
+/**
+ * optional TikkieAccountPayload tikkie_account_payload = 17;
+ * @return {?proto.io.bisq.protobuffer.TikkieAccountPayload}
+ */
+proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.prototype.getTikkieAccountPayload = function() {
+  return /** @type{?proto.io.bisq.protobuffer.TikkieAccountPayload} */ (
+    jspb.Message.getWrapperField(this, proto.io.bisq.protobuffer.TikkieAccountPayload, 17));
+};
+
+
+/**
+ * @param {?proto.io.bisq.protobuffer.TikkieAccountPayload|undefined} value
+ * @return {!proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload} returns this
+*/
+proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.prototype.setTikkieAccountPayload = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 17, proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.prototype.clearTikkieAccountPayload = function() {
+  return this.setTikkieAccountPayload(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.prototype.hasTikkieAccountPayload = function() {
+  return jspb.Message.getField(this, 17) != null;
+};
+
+
+/**
+ * optional TransferwiseUsdAccountPayload transferwise_usd_account_payload = 18;
+ * @return {?proto.io.bisq.protobuffer.TransferwiseUsdAccountPayload}
+ */
+proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.prototype.getTransferwiseUsdAccountPayload = function() {
+  return /** @type{?proto.io.bisq.protobuffer.TransferwiseUsdAccountPayload} */ (
+    jspb.Message.getWrapperField(this, proto.io.bisq.protobuffer.TransferwiseUsdAccountPayload, 18));
+};
+
+
+/**
+ * @param {?proto.io.bisq.protobuffer.TransferwiseUsdAccountPayload|undefined} value
+ * @return {!proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload} returns this
+*/
+proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.prototype.setTransferwiseUsdAccountPayload = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 18, proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.prototype.clearTransferwiseUsdAccountPayload = function() {
+  return this.setTransferwiseUsdAccountPayload(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.prototype.hasTransferwiseUsdAccountPayload = function() {
+  return jspb.Message.getField(this, 18) != null;
+};
+
+
 
 /**
  * Oneof group definitions for this message. Each group defines the field
@@ -40255,7 +41615,7 @@ proto.io.bisq.protobuffer.CountryBasedPaymentAccountPayload.prototype.hasF2fAcco
  * @private {!Array<!Array<number>>}
  * @const
  */
-proto.io.bisq.protobuffer.BankAccountPayload.oneofGroups_ = [[9,10,11]];
+proto.io.bisq.protobuffer.BankAccountPayload.oneofGroups_ = [[9,10,11,13,14]];
 
 /**
  * @enum {number}
@@ -40264,7 +41624,9 @@ proto.io.bisq.protobuffer.BankAccountPayload.MessageCase = {
   MESSAGE_NOT_SET: 0,
   NATIONAL_BANK_ACCOUNT_PAYLOAD: 9,
   SAME_BANK_ACCONT_PAYLOAD: 10,
-  SPECIFIC_BANKS_ACCOUNT_PAYLOAD: 11
+  SPECIFIC_BANKS_ACCOUNT_PAYLOAD: 11,
+  ACH_TRANSFER_ACCOUNT_PAYLOAD: 13,
+  DOMESTIC_WIRE_TRANSFER_ACCOUNT_PAYLOAD: 14
 };
 
 /**
@@ -40316,6 +41678,8 @@ proto.io.bisq.protobuffer.BankAccountPayload.toObject = function(includeInstance
     nationalBankAccountPayload: (f = msg.getNationalBankAccountPayload()) && proto.io.bisq.protobuffer.NationalBankAccountPayload.toObject(includeInstance, f),
     sameBankAccontPayload: (f = msg.getSameBankAccontPayload()) && proto.io.bisq.protobuffer.SameBankAccountPayload.toObject(includeInstance, f),
     specificBanksAccountPayload: (f = msg.getSpecificBanksAccountPayload()) && proto.io.bisq.protobuffer.SpecificBanksAccountPayload.toObject(includeInstance, f),
+    achTransferAccountPayload: (f = msg.getAchTransferAccountPayload()) && proto.io.bisq.protobuffer.AchTransferAccountPayload.toObject(includeInstance, f),
+    domesticWireTransferAccountPayload: (f = msg.getDomesticWireTransferAccountPayload()) && proto.io.bisq.protobuffer.DomesticWireTransferAccountPayload.toObject(includeInstance, f),
     nationalAccountId: jspb.Message.getFieldWithDefault(msg, 12, "")
   };
 
@@ -40399,6 +41763,16 @@ proto.io.bisq.protobuffer.BankAccountPayload.deserializeBinaryFromReader = funct
       var value = new proto.io.bisq.protobuffer.SpecificBanksAccountPayload;
       reader.readMessage(value,proto.io.bisq.protobuffer.SpecificBanksAccountPayload.deserializeBinaryFromReader);
       msg.setSpecificBanksAccountPayload(value);
+      break;
+    case 13:
+      var value = new proto.io.bisq.protobuffer.AchTransferAccountPayload;
+      reader.readMessage(value,proto.io.bisq.protobuffer.AchTransferAccountPayload.deserializeBinaryFromReader);
+      msg.setAchTransferAccountPayload(value);
+      break;
+    case 14:
+      var value = new proto.io.bisq.protobuffer.DomesticWireTransferAccountPayload;
+      reader.readMessage(value,proto.io.bisq.protobuffer.DomesticWireTransferAccountPayload.deserializeBinaryFromReader);
+      msg.setDomesticWireTransferAccountPayload(value);
       break;
     case 12:
       var value = /** @type {string} */ (reader.readString());
@@ -40511,6 +41885,22 @@ proto.io.bisq.protobuffer.BankAccountPayload.serializeBinaryToWriter = function(
       11,
       f,
       proto.io.bisq.protobuffer.SpecificBanksAccountPayload.serializeBinaryToWriter
+    );
+  }
+  f = message.getAchTransferAccountPayload();
+  if (f != null) {
+    writer.writeMessage(
+      13,
+      f,
+      proto.io.bisq.protobuffer.AchTransferAccountPayload.serializeBinaryToWriter
+    );
+  }
+  f = message.getDomesticWireTransferAccountPayload();
+  if (f != null) {
+    writer.writeMessage(
+      14,
+      f,
+      proto.io.bisq.protobuffer.DomesticWireTransferAccountPayload.serializeBinaryToWriter
     );
   }
   f = message.getNationalAccountId();
@@ -40779,6 +42169,80 @@ proto.io.bisq.protobuffer.BankAccountPayload.prototype.hasSpecificBanksAccountPa
 
 
 /**
+ * optional AchTransferAccountPayload ach_transfer_account_payload = 13;
+ * @return {?proto.io.bisq.protobuffer.AchTransferAccountPayload}
+ */
+proto.io.bisq.protobuffer.BankAccountPayload.prototype.getAchTransferAccountPayload = function() {
+  return /** @type{?proto.io.bisq.protobuffer.AchTransferAccountPayload} */ (
+    jspb.Message.getWrapperField(this, proto.io.bisq.protobuffer.AchTransferAccountPayload, 13));
+};
+
+
+/**
+ * @param {?proto.io.bisq.protobuffer.AchTransferAccountPayload|undefined} value
+ * @return {!proto.io.bisq.protobuffer.BankAccountPayload} returns this
+*/
+proto.io.bisq.protobuffer.BankAccountPayload.prototype.setAchTransferAccountPayload = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 13, proto.io.bisq.protobuffer.BankAccountPayload.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.io.bisq.protobuffer.BankAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.BankAccountPayload.prototype.clearAchTransferAccountPayload = function() {
+  return this.setAchTransferAccountPayload(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.io.bisq.protobuffer.BankAccountPayload.prototype.hasAchTransferAccountPayload = function() {
+  return jspb.Message.getField(this, 13) != null;
+};
+
+
+/**
+ * optional DomesticWireTransferAccountPayload domestic_wire_transfer_account_payload = 14;
+ * @return {?proto.io.bisq.protobuffer.DomesticWireTransferAccountPayload}
+ */
+proto.io.bisq.protobuffer.BankAccountPayload.prototype.getDomesticWireTransferAccountPayload = function() {
+  return /** @type{?proto.io.bisq.protobuffer.DomesticWireTransferAccountPayload} */ (
+    jspb.Message.getWrapperField(this, proto.io.bisq.protobuffer.DomesticWireTransferAccountPayload, 14));
+};
+
+
+/**
+ * @param {?proto.io.bisq.protobuffer.DomesticWireTransferAccountPayload|undefined} value
+ * @return {!proto.io.bisq.protobuffer.BankAccountPayload} returns this
+*/
+proto.io.bisq.protobuffer.BankAccountPayload.prototype.setDomesticWireTransferAccountPayload = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 14, proto.io.bisq.protobuffer.BankAccountPayload.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.io.bisq.protobuffer.BankAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.BankAccountPayload.prototype.clearDomesticWireTransferAccountPayload = function() {
+  return this.setDomesticWireTransferAccountPayload(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.io.bisq.protobuffer.BankAccountPayload.prototype.hasDomesticWireTransferAccountPayload = function() {
+  return jspb.Message.getField(this, 14) != null;
+};
+
+
+/**
  * optional string national_account_id = 12;
  * @return {string}
  */
@@ -40793,6 +42257,266 @@ proto.io.bisq.protobuffer.BankAccountPayload.prototype.getNationalAccountId = fu
  */
 proto.io.bisq.protobuffer.BankAccountPayload.prototype.setNationalAccountId = function(value) {
   return jspb.Message.setProto3StringField(this, 12, value);
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.io.bisq.protobuffer.AchTransferAccountPayload.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.bisq.protobuffer.AchTransferAccountPayload.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.io.bisq.protobuffer.AchTransferAccountPayload} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.AchTransferAccountPayload.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    holderAddress: jspb.Message.getFieldWithDefault(msg, 1, "")
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.io.bisq.protobuffer.AchTransferAccountPayload}
+ */
+proto.io.bisq.protobuffer.AchTransferAccountPayload.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.io.bisq.protobuffer.AchTransferAccountPayload;
+  return proto.io.bisq.protobuffer.AchTransferAccountPayload.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.io.bisq.protobuffer.AchTransferAccountPayload} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.io.bisq.protobuffer.AchTransferAccountPayload}
+ */
+proto.io.bisq.protobuffer.AchTransferAccountPayload.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setHolderAddress(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.io.bisq.protobuffer.AchTransferAccountPayload.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.io.bisq.protobuffer.AchTransferAccountPayload.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.io.bisq.protobuffer.AchTransferAccountPayload} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.AchTransferAccountPayload.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getHolderAddress();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string holder_address = 1;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.AchTransferAccountPayload.prototype.getHolderAddress = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.AchTransferAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.AchTransferAccountPayload.prototype.setHolderAddress = function(value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.io.bisq.protobuffer.DomesticWireTransferAccountPayload.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.bisq.protobuffer.DomesticWireTransferAccountPayload.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.io.bisq.protobuffer.DomesticWireTransferAccountPayload} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.DomesticWireTransferAccountPayload.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    holderAddress: jspb.Message.getFieldWithDefault(msg, 1, "")
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.io.bisq.protobuffer.DomesticWireTransferAccountPayload}
+ */
+proto.io.bisq.protobuffer.DomesticWireTransferAccountPayload.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.io.bisq.protobuffer.DomesticWireTransferAccountPayload;
+  return proto.io.bisq.protobuffer.DomesticWireTransferAccountPayload.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.io.bisq.protobuffer.DomesticWireTransferAccountPayload} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.io.bisq.protobuffer.DomesticWireTransferAccountPayload}
+ */
+proto.io.bisq.protobuffer.DomesticWireTransferAccountPayload.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setHolderAddress(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.io.bisq.protobuffer.DomesticWireTransferAccountPayload.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.io.bisq.protobuffer.DomesticWireTransferAccountPayload.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.io.bisq.protobuffer.DomesticWireTransferAccountPayload} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.DomesticWireTransferAccountPayload.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getHolderAddress();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string holder_address = 1;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.DomesticWireTransferAccountPayload.prototype.getHolderAddress = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.DomesticWireTransferAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.DomesticWireTransferAccountPayload.prototype.setHolderAddress = function(value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
@@ -44108,7 +45832,8 @@ proto.io.bisq.protobuffer.UpholdAccountPayload.prototype.toObject = function(opt
  */
 proto.io.bisq.protobuffer.UpholdAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    accountId: jspb.Message.getFieldWithDefault(msg, 1, "")
+    accountId: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    accountOwner: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -44149,6 +45874,10 @@ proto.io.bisq.protobuffer.UpholdAccountPayload.deserializeBinaryFromReader = fun
       var value = /** @type {string} */ (reader.readString());
       msg.setAccountId(value);
       break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setAccountOwner(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -44185,6 +45914,13 @@ proto.io.bisq.protobuffer.UpholdAccountPayload.serializeBinaryToWriter = functio
       f
     );
   }
+  f = message.getAccountOwner();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
 };
 
 
@@ -44203,6 +45939,24 @@ proto.io.bisq.protobuffer.UpholdAccountPayload.prototype.getAccountId = function
  */
 proto.io.bisq.protobuffer.UpholdAccountPayload.prototype.setAccountId = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional string account_owner = 2;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.UpholdAccountPayload.prototype.getAccountOwner = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.UpholdAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.UpholdAccountPayload.prototype.setAccountOwner = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
@@ -45587,6 +47341,939 @@ proto.io.bisq.protobuffer.F2FAccountPayload.prototype.setExtraInfo = function(va
 
 
 
+/**
+ * Oneof group definitions for this message. Each group defines the field
+ * numbers belonging to that group. When of these fields' value is set, all
+ * other fields in the group are cleared. During deserialization, if multiple
+ * fields are encountered for a group, only the last value seen will be kept.
+ * @private {!Array<!Array<number>>}
+ * @const
+ */
+proto.io.bisq.protobuffer.IfscBasedAccountPayload.oneofGroups_ = [[4,5,6]];
+
+/**
+ * @enum {number}
+ */
+proto.io.bisq.protobuffer.IfscBasedAccountPayload.MessageCase = {
+  MESSAGE_NOT_SET: 0,
+  NEFT_ACCOUNT_PAYLOAD: 4,
+  RTGS_ACCOUNT_PAYLOAD: 5,
+  IMPS_ACCOUNT_PAYLOAD: 6
+};
+
+/**
+ * @return {proto.io.bisq.protobuffer.IfscBasedAccountPayload.MessageCase}
+ */
+proto.io.bisq.protobuffer.IfscBasedAccountPayload.prototype.getMessageCase = function() {
+  return /** @type {proto.io.bisq.protobuffer.IfscBasedAccountPayload.MessageCase} */(jspb.Message.computeOneofCase(this, proto.io.bisq.protobuffer.IfscBasedAccountPayload.oneofGroups_[0]));
+};
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.io.bisq.protobuffer.IfscBasedAccountPayload.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.bisq.protobuffer.IfscBasedAccountPayload.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.io.bisq.protobuffer.IfscBasedAccountPayload} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.IfscBasedAccountPayload.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    holderName: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    accountNr: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    ifsc: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    neftAccountPayload: (f = msg.getNeftAccountPayload()) && proto.io.bisq.protobuffer.NeftAccountPayload.toObject(includeInstance, f),
+    rtgsAccountPayload: (f = msg.getRtgsAccountPayload()) && proto.io.bisq.protobuffer.RtgsAccountPayload.toObject(includeInstance, f),
+    impsAccountPayload: (f = msg.getImpsAccountPayload()) && proto.io.bisq.protobuffer.ImpsAccountPayload.toObject(includeInstance, f)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.io.bisq.protobuffer.IfscBasedAccountPayload}
+ */
+proto.io.bisq.protobuffer.IfscBasedAccountPayload.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.io.bisq.protobuffer.IfscBasedAccountPayload;
+  return proto.io.bisq.protobuffer.IfscBasedAccountPayload.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.io.bisq.protobuffer.IfscBasedAccountPayload} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.io.bisq.protobuffer.IfscBasedAccountPayload}
+ */
+proto.io.bisq.protobuffer.IfscBasedAccountPayload.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setHolderName(value);
+      break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setAccountNr(value);
+      break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setIfsc(value);
+      break;
+    case 4:
+      var value = new proto.io.bisq.protobuffer.NeftAccountPayload;
+      reader.readMessage(value,proto.io.bisq.protobuffer.NeftAccountPayload.deserializeBinaryFromReader);
+      msg.setNeftAccountPayload(value);
+      break;
+    case 5:
+      var value = new proto.io.bisq.protobuffer.RtgsAccountPayload;
+      reader.readMessage(value,proto.io.bisq.protobuffer.RtgsAccountPayload.deserializeBinaryFromReader);
+      msg.setRtgsAccountPayload(value);
+      break;
+    case 6:
+      var value = new proto.io.bisq.protobuffer.ImpsAccountPayload;
+      reader.readMessage(value,proto.io.bisq.protobuffer.ImpsAccountPayload.deserializeBinaryFromReader);
+      msg.setImpsAccountPayload(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.io.bisq.protobuffer.IfscBasedAccountPayload.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.io.bisq.protobuffer.IfscBasedAccountPayload.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.io.bisq.protobuffer.IfscBasedAccountPayload} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.IfscBasedAccountPayload.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getHolderName();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+  f = message.getAccountNr();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
+  f = message.getIfsc();
+  if (f.length > 0) {
+    writer.writeString(
+      3,
+      f
+    );
+  }
+  f = message.getNeftAccountPayload();
+  if (f != null) {
+    writer.writeMessage(
+      4,
+      f,
+      proto.io.bisq.protobuffer.NeftAccountPayload.serializeBinaryToWriter
+    );
+  }
+  f = message.getRtgsAccountPayload();
+  if (f != null) {
+    writer.writeMessage(
+      5,
+      f,
+      proto.io.bisq.protobuffer.RtgsAccountPayload.serializeBinaryToWriter
+    );
+  }
+  f = message.getImpsAccountPayload();
+  if (f != null) {
+    writer.writeMessage(
+      6,
+      f,
+      proto.io.bisq.protobuffer.ImpsAccountPayload.serializeBinaryToWriter
+    );
+  }
+};
+
+
+/**
+ * optional string holder_name = 1;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.IfscBasedAccountPayload.prototype.getHolderName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.IfscBasedAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.IfscBasedAccountPayload.prototype.setHolderName = function(value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional string account_nr = 2;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.IfscBasedAccountPayload.prototype.getAccountNr = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.IfscBasedAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.IfscBasedAccountPayload.prototype.setAccountNr = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * optional string ifsc = 3;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.IfscBasedAccountPayload.prototype.getIfsc = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.IfscBasedAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.IfscBasedAccountPayload.prototype.setIfsc = function(value) {
+  return jspb.Message.setProto3StringField(this, 3, value);
+};
+
+
+/**
+ * optional NeftAccountPayload neft_account_payload = 4;
+ * @return {?proto.io.bisq.protobuffer.NeftAccountPayload}
+ */
+proto.io.bisq.protobuffer.IfscBasedAccountPayload.prototype.getNeftAccountPayload = function() {
+  return /** @type{?proto.io.bisq.protobuffer.NeftAccountPayload} */ (
+    jspb.Message.getWrapperField(this, proto.io.bisq.protobuffer.NeftAccountPayload, 4));
+};
+
+
+/**
+ * @param {?proto.io.bisq.protobuffer.NeftAccountPayload|undefined} value
+ * @return {!proto.io.bisq.protobuffer.IfscBasedAccountPayload} returns this
+*/
+proto.io.bisq.protobuffer.IfscBasedAccountPayload.prototype.setNeftAccountPayload = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 4, proto.io.bisq.protobuffer.IfscBasedAccountPayload.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.io.bisq.protobuffer.IfscBasedAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.IfscBasedAccountPayload.prototype.clearNeftAccountPayload = function() {
+  return this.setNeftAccountPayload(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.io.bisq.protobuffer.IfscBasedAccountPayload.prototype.hasNeftAccountPayload = function() {
+  return jspb.Message.getField(this, 4) != null;
+};
+
+
+/**
+ * optional RtgsAccountPayload rtgs_account_payload = 5;
+ * @return {?proto.io.bisq.protobuffer.RtgsAccountPayload}
+ */
+proto.io.bisq.protobuffer.IfscBasedAccountPayload.prototype.getRtgsAccountPayload = function() {
+  return /** @type{?proto.io.bisq.protobuffer.RtgsAccountPayload} */ (
+    jspb.Message.getWrapperField(this, proto.io.bisq.protobuffer.RtgsAccountPayload, 5));
+};
+
+
+/**
+ * @param {?proto.io.bisq.protobuffer.RtgsAccountPayload|undefined} value
+ * @return {!proto.io.bisq.protobuffer.IfscBasedAccountPayload} returns this
+*/
+proto.io.bisq.protobuffer.IfscBasedAccountPayload.prototype.setRtgsAccountPayload = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 5, proto.io.bisq.protobuffer.IfscBasedAccountPayload.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.io.bisq.protobuffer.IfscBasedAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.IfscBasedAccountPayload.prototype.clearRtgsAccountPayload = function() {
+  return this.setRtgsAccountPayload(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.io.bisq.protobuffer.IfscBasedAccountPayload.prototype.hasRtgsAccountPayload = function() {
+  return jspb.Message.getField(this, 5) != null;
+};
+
+
+/**
+ * optional ImpsAccountPayload imps_account_payload = 6;
+ * @return {?proto.io.bisq.protobuffer.ImpsAccountPayload}
+ */
+proto.io.bisq.protobuffer.IfscBasedAccountPayload.prototype.getImpsAccountPayload = function() {
+  return /** @type{?proto.io.bisq.protobuffer.ImpsAccountPayload} */ (
+    jspb.Message.getWrapperField(this, proto.io.bisq.protobuffer.ImpsAccountPayload, 6));
+};
+
+
+/**
+ * @param {?proto.io.bisq.protobuffer.ImpsAccountPayload|undefined} value
+ * @return {!proto.io.bisq.protobuffer.IfscBasedAccountPayload} returns this
+*/
+proto.io.bisq.protobuffer.IfscBasedAccountPayload.prototype.setImpsAccountPayload = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 6, proto.io.bisq.protobuffer.IfscBasedAccountPayload.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.io.bisq.protobuffer.IfscBasedAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.IfscBasedAccountPayload.prototype.clearImpsAccountPayload = function() {
+  return this.setImpsAccountPayload(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.io.bisq.protobuffer.IfscBasedAccountPayload.prototype.hasImpsAccountPayload = function() {
+  return jspb.Message.getField(this, 6) != null;
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.io.bisq.protobuffer.NeftAccountPayload.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.bisq.protobuffer.NeftAccountPayload.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.io.bisq.protobuffer.NeftAccountPayload} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.NeftAccountPayload.toObject = function(includeInstance, msg) {
+  var f, obj = {
+
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.io.bisq.protobuffer.NeftAccountPayload}
+ */
+proto.io.bisq.protobuffer.NeftAccountPayload.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.io.bisq.protobuffer.NeftAccountPayload;
+  return proto.io.bisq.protobuffer.NeftAccountPayload.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.io.bisq.protobuffer.NeftAccountPayload} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.io.bisq.protobuffer.NeftAccountPayload}
+ */
+proto.io.bisq.protobuffer.NeftAccountPayload.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.io.bisq.protobuffer.NeftAccountPayload.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.io.bisq.protobuffer.NeftAccountPayload.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.io.bisq.protobuffer.NeftAccountPayload} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.NeftAccountPayload.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.io.bisq.protobuffer.RtgsAccountPayload.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.bisq.protobuffer.RtgsAccountPayload.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.io.bisq.protobuffer.RtgsAccountPayload} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.RtgsAccountPayload.toObject = function(includeInstance, msg) {
+  var f, obj = {
+
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.io.bisq.protobuffer.RtgsAccountPayload}
+ */
+proto.io.bisq.protobuffer.RtgsAccountPayload.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.io.bisq.protobuffer.RtgsAccountPayload;
+  return proto.io.bisq.protobuffer.RtgsAccountPayload.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.io.bisq.protobuffer.RtgsAccountPayload} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.io.bisq.protobuffer.RtgsAccountPayload}
+ */
+proto.io.bisq.protobuffer.RtgsAccountPayload.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.io.bisq.protobuffer.RtgsAccountPayload.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.io.bisq.protobuffer.RtgsAccountPayload.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.io.bisq.protobuffer.RtgsAccountPayload} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.RtgsAccountPayload.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.io.bisq.protobuffer.ImpsAccountPayload.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.bisq.protobuffer.ImpsAccountPayload.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.io.bisq.protobuffer.ImpsAccountPayload} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.ImpsAccountPayload.toObject = function(includeInstance, msg) {
+  var f, obj = {
+
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.io.bisq.protobuffer.ImpsAccountPayload}
+ */
+proto.io.bisq.protobuffer.ImpsAccountPayload.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.io.bisq.protobuffer.ImpsAccountPayload;
+  return proto.io.bisq.protobuffer.ImpsAccountPayload.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.io.bisq.protobuffer.ImpsAccountPayload} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.io.bisq.protobuffer.ImpsAccountPayload}
+ */
+proto.io.bisq.protobuffer.ImpsAccountPayload.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.io.bisq.protobuffer.ImpsAccountPayload.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.io.bisq.protobuffer.ImpsAccountPayload.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.io.bisq.protobuffer.ImpsAccountPayload} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.ImpsAccountPayload.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.io.bisq.protobuffer.UpiAccountPayload.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.bisq.protobuffer.UpiAccountPayload.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.io.bisq.protobuffer.UpiAccountPayload} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.UpiAccountPayload.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    virtualPaymentAddress: jspb.Message.getFieldWithDefault(msg, 1, "")
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.io.bisq.protobuffer.UpiAccountPayload}
+ */
+proto.io.bisq.protobuffer.UpiAccountPayload.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.io.bisq.protobuffer.UpiAccountPayload;
+  return proto.io.bisq.protobuffer.UpiAccountPayload.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.io.bisq.protobuffer.UpiAccountPayload} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.io.bisq.protobuffer.UpiAccountPayload}
+ */
+proto.io.bisq.protobuffer.UpiAccountPayload.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setVirtualPaymentAddress(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.io.bisq.protobuffer.UpiAccountPayload.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.io.bisq.protobuffer.UpiAccountPayload.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.io.bisq.protobuffer.UpiAccountPayload} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.UpiAccountPayload.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getVirtualPaymentAddress();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string virtual_payment_address = 1;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.UpiAccountPayload.prototype.getVirtualPaymentAddress = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.UpiAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.UpiAccountPayload.prototype.setVirtualPaymentAddress = function(value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.io.bisq.protobuffer.PaytmAccountPayload.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.bisq.protobuffer.PaytmAccountPayload.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.io.bisq.protobuffer.PaytmAccountPayload} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.PaytmAccountPayload.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    emailOrMobileNr: jspb.Message.getFieldWithDefault(msg, 1, "")
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.io.bisq.protobuffer.PaytmAccountPayload}
+ */
+proto.io.bisq.protobuffer.PaytmAccountPayload.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.io.bisq.protobuffer.PaytmAccountPayload;
+  return proto.io.bisq.protobuffer.PaytmAccountPayload.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.io.bisq.protobuffer.PaytmAccountPayload} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.io.bisq.protobuffer.PaytmAccountPayload}
+ */
+proto.io.bisq.protobuffer.PaytmAccountPayload.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setEmailOrMobileNr(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.io.bisq.protobuffer.PaytmAccountPayload.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.io.bisq.protobuffer.PaytmAccountPayload.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.io.bisq.protobuffer.PaytmAccountPayload} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.PaytmAccountPayload.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getEmailOrMobileNr();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string email_or_mobile_nr = 1;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.PaytmAccountPayload.prototype.getEmailOrMobileNr = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.PaytmAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.PaytmAccountPayload.prototype.setEmailOrMobileNr = function(value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -46163,6 +48850,2396 @@ proto.io.bisq.protobuffer.TransferwiseAccountPayload.prototype.getEmail = functi
  */
 proto.io.bisq.protobuffer.TransferwiseAccountPayload.prototype.setEmail = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.io.bisq.protobuffer.TransferwiseUsdAccountPayload.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.bisq.protobuffer.TransferwiseUsdAccountPayload.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.io.bisq.protobuffer.TransferwiseUsdAccountPayload} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.TransferwiseUsdAccountPayload.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    email: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    holderName: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    beneficiaryAddress: jspb.Message.getFieldWithDefault(msg, 3, "")
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.io.bisq.protobuffer.TransferwiseUsdAccountPayload}
+ */
+proto.io.bisq.protobuffer.TransferwiseUsdAccountPayload.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.io.bisq.protobuffer.TransferwiseUsdAccountPayload;
+  return proto.io.bisq.protobuffer.TransferwiseUsdAccountPayload.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.io.bisq.protobuffer.TransferwiseUsdAccountPayload} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.io.bisq.protobuffer.TransferwiseUsdAccountPayload}
+ */
+proto.io.bisq.protobuffer.TransferwiseUsdAccountPayload.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setEmail(value);
+      break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setHolderName(value);
+      break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setBeneficiaryAddress(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.io.bisq.protobuffer.TransferwiseUsdAccountPayload.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.io.bisq.protobuffer.TransferwiseUsdAccountPayload.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.io.bisq.protobuffer.TransferwiseUsdAccountPayload} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.TransferwiseUsdAccountPayload.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getEmail();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+  f = message.getHolderName();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
+  f = message.getBeneficiaryAddress();
+  if (f.length > 0) {
+    writer.writeString(
+      3,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string email = 1;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.TransferwiseUsdAccountPayload.prototype.getEmail = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.TransferwiseUsdAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.TransferwiseUsdAccountPayload.prototype.setEmail = function(value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional string holder_name = 2;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.TransferwiseUsdAccountPayload.prototype.getHolderName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.TransferwiseUsdAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.TransferwiseUsdAccountPayload.prototype.setHolderName = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * optional string beneficiary_address = 3;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.TransferwiseUsdAccountPayload.prototype.getBeneficiaryAddress = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.TransferwiseUsdAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.TransferwiseUsdAccountPayload.prototype.setBeneficiaryAddress = function(value) {
+  return jspb.Message.setProto3StringField(this, 3, value);
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.io.bisq.protobuffer.PayseraAccountPayload.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.bisq.protobuffer.PayseraAccountPayload.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.io.bisq.protobuffer.PayseraAccountPayload} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.PayseraAccountPayload.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    email: jspb.Message.getFieldWithDefault(msg, 1, "")
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.io.bisq.protobuffer.PayseraAccountPayload}
+ */
+proto.io.bisq.protobuffer.PayseraAccountPayload.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.io.bisq.protobuffer.PayseraAccountPayload;
+  return proto.io.bisq.protobuffer.PayseraAccountPayload.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.io.bisq.protobuffer.PayseraAccountPayload} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.io.bisq.protobuffer.PayseraAccountPayload}
+ */
+proto.io.bisq.protobuffer.PayseraAccountPayload.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setEmail(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.io.bisq.protobuffer.PayseraAccountPayload.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.io.bisq.protobuffer.PayseraAccountPayload.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.io.bisq.protobuffer.PayseraAccountPayload} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.PayseraAccountPayload.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getEmail();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string email = 1;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.PayseraAccountPayload.prototype.getEmail = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.PayseraAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.PayseraAccountPayload.prototype.setEmail = function(value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.io.bisq.protobuffer.PaxumAccountPayload.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.bisq.protobuffer.PaxumAccountPayload.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.io.bisq.protobuffer.PaxumAccountPayload} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.PaxumAccountPayload.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    email: jspb.Message.getFieldWithDefault(msg, 1, "")
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.io.bisq.protobuffer.PaxumAccountPayload}
+ */
+proto.io.bisq.protobuffer.PaxumAccountPayload.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.io.bisq.protobuffer.PaxumAccountPayload;
+  return proto.io.bisq.protobuffer.PaxumAccountPayload.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.io.bisq.protobuffer.PaxumAccountPayload} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.io.bisq.protobuffer.PaxumAccountPayload}
+ */
+proto.io.bisq.protobuffer.PaxumAccountPayload.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setEmail(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.io.bisq.protobuffer.PaxumAccountPayload.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.io.bisq.protobuffer.PaxumAccountPayload.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.io.bisq.protobuffer.PaxumAccountPayload} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.PaxumAccountPayload.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getEmail();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string email = 1;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.PaxumAccountPayload.prototype.getEmail = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.PaxumAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.PaxumAccountPayload.prototype.setEmail = function(value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.io.bisq.protobuffer.CapitualAccountPayload.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.bisq.protobuffer.CapitualAccountPayload.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.io.bisq.protobuffer.CapitualAccountPayload} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.CapitualAccountPayload.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    accountNr: jspb.Message.getFieldWithDefault(msg, 1, "")
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.io.bisq.protobuffer.CapitualAccountPayload}
+ */
+proto.io.bisq.protobuffer.CapitualAccountPayload.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.io.bisq.protobuffer.CapitualAccountPayload;
+  return proto.io.bisq.protobuffer.CapitualAccountPayload.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.io.bisq.protobuffer.CapitualAccountPayload} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.io.bisq.protobuffer.CapitualAccountPayload}
+ */
+proto.io.bisq.protobuffer.CapitualAccountPayload.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setAccountNr(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.io.bisq.protobuffer.CapitualAccountPayload.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.io.bisq.protobuffer.CapitualAccountPayload.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.io.bisq.protobuffer.CapitualAccountPayload} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.CapitualAccountPayload.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getAccountNr();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string account_nr = 1;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.CapitualAccountPayload.prototype.getAccountNr = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.CapitualAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.CapitualAccountPayload.prototype.setAccountNr = function(value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.io.bisq.protobuffer.CelPayAccountPayload.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.bisq.protobuffer.CelPayAccountPayload.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.io.bisq.protobuffer.CelPayAccountPayload} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.CelPayAccountPayload.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    email: jspb.Message.getFieldWithDefault(msg, 1, "")
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.io.bisq.protobuffer.CelPayAccountPayload}
+ */
+proto.io.bisq.protobuffer.CelPayAccountPayload.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.io.bisq.protobuffer.CelPayAccountPayload;
+  return proto.io.bisq.protobuffer.CelPayAccountPayload.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.io.bisq.protobuffer.CelPayAccountPayload} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.io.bisq.protobuffer.CelPayAccountPayload}
+ */
+proto.io.bisq.protobuffer.CelPayAccountPayload.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setEmail(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.io.bisq.protobuffer.CelPayAccountPayload.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.io.bisq.protobuffer.CelPayAccountPayload.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.io.bisq.protobuffer.CelPayAccountPayload} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.CelPayAccountPayload.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getEmail();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string email = 1;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.CelPayAccountPayload.prototype.getEmail = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.CelPayAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.CelPayAccountPayload.prototype.setEmail = function(value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.io.bisq.protobuffer.NequiAccountPayload.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.bisq.protobuffer.NequiAccountPayload.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.io.bisq.protobuffer.NequiAccountPayload} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.NequiAccountPayload.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    mobileNr: jspb.Message.getFieldWithDefault(msg, 1, "")
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.io.bisq.protobuffer.NequiAccountPayload}
+ */
+proto.io.bisq.protobuffer.NequiAccountPayload.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.io.bisq.protobuffer.NequiAccountPayload;
+  return proto.io.bisq.protobuffer.NequiAccountPayload.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.io.bisq.protobuffer.NequiAccountPayload} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.io.bisq.protobuffer.NequiAccountPayload}
+ */
+proto.io.bisq.protobuffer.NequiAccountPayload.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setMobileNr(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.io.bisq.protobuffer.NequiAccountPayload.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.io.bisq.protobuffer.NequiAccountPayload.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.io.bisq.protobuffer.NequiAccountPayload} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.NequiAccountPayload.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getMobileNr();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string mobile_nr = 1;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.NequiAccountPayload.prototype.getMobileNr = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.NequiAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.NequiAccountPayload.prototype.setMobileNr = function(value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.io.bisq.protobuffer.BizumAccountPayload.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.bisq.protobuffer.BizumAccountPayload.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.io.bisq.protobuffer.BizumAccountPayload} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.BizumAccountPayload.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    mobileNr: jspb.Message.getFieldWithDefault(msg, 1, "")
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.io.bisq.protobuffer.BizumAccountPayload}
+ */
+proto.io.bisq.protobuffer.BizumAccountPayload.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.io.bisq.protobuffer.BizumAccountPayload;
+  return proto.io.bisq.protobuffer.BizumAccountPayload.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.io.bisq.protobuffer.BizumAccountPayload} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.io.bisq.protobuffer.BizumAccountPayload}
+ */
+proto.io.bisq.protobuffer.BizumAccountPayload.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setMobileNr(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.io.bisq.protobuffer.BizumAccountPayload.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.io.bisq.protobuffer.BizumAccountPayload.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.io.bisq.protobuffer.BizumAccountPayload} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.BizumAccountPayload.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getMobileNr();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string mobile_nr = 1;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.BizumAccountPayload.prototype.getMobileNr = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.BizumAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.BizumAccountPayload.prototype.setMobileNr = function(value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.io.bisq.protobuffer.PixAccountPayload.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.bisq.protobuffer.PixAccountPayload.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.io.bisq.protobuffer.PixAccountPayload} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.PixAccountPayload.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    pixKey: jspb.Message.getFieldWithDefault(msg, 1, "")
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.io.bisq.protobuffer.PixAccountPayload}
+ */
+proto.io.bisq.protobuffer.PixAccountPayload.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.io.bisq.protobuffer.PixAccountPayload;
+  return proto.io.bisq.protobuffer.PixAccountPayload.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.io.bisq.protobuffer.PixAccountPayload} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.io.bisq.protobuffer.PixAccountPayload}
+ */
+proto.io.bisq.protobuffer.PixAccountPayload.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setPixKey(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.io.bisq.protobuffer.PixAccountPayload.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.io.bisq.protobuffer.PixAccountPayload.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.io.bisq.protobuffer.PixAccountPayload} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.PixAccountPayload.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getPixKey();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string pix_key = 1;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.PixAccountPayload.prototype.getPixKey = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.PixAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.PixAccountPayload.prototype.setPixKey = function(value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.io.bisq.protobuffer.MoneseAccountPayload.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.bisq.protobuffer.MoneseAccountPayload.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.io.bisq.protobuffer.MoneseAccountPayload} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.MoneseAccountPayload.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    mobileNr: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    holderName: jspb.Message.getFieldWithDefault(msg, 2, "")
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.io.bisq.protobuffer.MoneseAccountPayload}
+ */
+proto.io.bisq.protobuffer.MoneseAccountPayload.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.io.bisq.protobuffer.MoneseAccountPayload;
+  return proto.io.bisq.protobuffer.MoneseAccountPayload.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.io.bisq.protobuffer.MoneseAccountPayload} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.io.bisq.protobuffer.MoneseAccountPayload}
+ */
+proto.io.bisq.protobuffer.MoneseAccountPayload.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setMobileNr(value);
+      break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setHolderName(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.io.bisq.protobuffer.MoneseAccountPayload.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.io.bisq.protobuffer.MoneseAccountPayload.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.io.bisq.protobuffer.MoneseAccountPayload} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.MoneseAccountPayload.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getMobileNr();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+  f = message.getHolderName();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string mobile_nr = 1;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.MoneseAccountPayload.prototype.getMobileNr = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.MoneseAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.MoneseAccountPayload.prototype.setMobileNr = function(value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional string holder_name = 2;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.MoneseAccountPayload.prototype.getHolderName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.MoneseAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.MoneseAccountPayload.prototype.setHolderName = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.io.bisq.protobuffer.SatispayAccountPayload.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.bisq.protobuffer.SatispayAccountPayload.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.io.bisq.protobuffer.SatispayAccountPayload} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.SatispayAccountPayload.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    mobileNr: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    holderName: jspb.Message.getFieldWithDefault(msg, 2, "")
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.io.bisq.protobuffer.SatispayAccountPayload}
+ */
+proto.io.bisq.protobuffer.SatispayAccountPayload.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.io.bisq.protobuffer.SatispayAccountPayload;
+  return proto.io.bisq.protobuffer.SatispayAccountPayload.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.io.bisq.protobuffer.SatispayAccountPayload} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.io.bisq.protobuffer.SatispayAccountPayload}
+ */
+proto.io.bisq.protobuffer.SatispayAccountPayload.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setMobileNr(value);
+      break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setHolderName(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.io.bisq.protobuffer.SatispayAccountPayload.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.io.bisq.protobuffer.SatispayAccountPayload.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.io.bisq.protobuffer.SatispayAccountPayload} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.SatispayAccountPayload.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getMobileNr();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+  f = message.getHolderName();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string mobile_nr = 1;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.SatispayAccountPayload.prototype.getMobileNr = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.SatispayAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.SatispayAccountPayload.prototype.setMobileNr = function(value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional string holder_name = 2;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.SatispayAccountPayload.prototype.getHolderName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.SatispayAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.SatispayAccountPayload.prototype.setHolderName = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.io.bisq.protobuffer.StrikeAccountPayload.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.bisq.protobuffer.StrikeAccountPayload.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.io.bisq.protobuffer.StrikeAccountPayload} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.StrikeAccountPayload.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    holderName: jspb.Message.getFieldWithDefault(msg, 1, "")
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.io.bisq.protobuffer.StrikeAccountPayload}
+ */
+proto.io.bisq.protobuffer.StrikeAccountPayload.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.io.bisq.protobuffer.StrikeAccountPayload;
+  return proto.io.bisq.protobuffer.StrikeAccountPayload.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.io.bisq.protobuffer.StrikeAccountPayload} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.io.bisq.protobuffer.StrikeAccountPayload}
+ */
+proto.io.bisq.protobuffer.StrikeAccountPayload.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setHolderName(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.io.bisq.protobuffer.StrikeAccountPayload.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.io.bisq.protobuffer.StrikeAccountPayload.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.io.bisq.protobuffer.StrikeAccountPayload} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.StrikeAccountPayload.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getHolderName();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string holder_name = 1;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.StrikeAccountPayload.prototype.getHolderName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.StrikeAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.StrikeAccountPayload.prototype.setHolderName = function(value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.io.bisq.protobuffer.TikkieAccountPayload.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.bisq.protobuffer.TikkieAccountPayload.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.io.bisq.protobuffer.TikkieAccountPayload} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.TikkieAccountPayload.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    iban: jspb.Message.getFieldWithDefault(msg, 1, "")
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.io.bisq.protobuffer.TikkieAccountPayload}
+ */
+proto.io.bisq.protobuffer.TikkieAccountPayload.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.io.bisq.protobuffer.TikkieAccountPayload;
+  return proto.io.bisq.protobuffer.TikkieAccountPayload.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.io.bisq.protobuffer.TikkieAccountPayload} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.io.bisq.protobuffer.TikkieAccountPayload}
+ */
+proto.io.bisq.protobuffer.TikkieAccountPayload.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setIban(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.io.bisq.protobuffer.TikkieAccountPayload.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.io.bisq.protobuffer.TikkieAccountPayload.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.io.bisq.protobuffer.TikkieAccountPayload} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.TikkieAccountPayload.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getIban();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string iban = 1;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.TikkieAccountPayload.prototype.getIban = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.TikkieAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.TikkieAccountPayload.prototype.setIban = function(value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.io.bisq.protobuffer.VerseAccountPayload.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.bisq.protobuffer.VerseAccountPayload.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.io.bisq.protobuffer.VerseAccountPayload} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.VerseAccountPayload.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    holderName: jspb.Message.getFieldWithDefault(msg, 1, "")
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.io.bisq.protobuffer.VerseAccountPayload}
+ */
+proto.io.bisq.protobuffer.VerseAccountPayload.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.io.bisq.protobuffer.VerseAccountPayload;
+  return proto.io.bisq.protobuffer.VerseAccountPayload.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.io.bisq.protobuffer.VerseAccountPayload} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.io.bisq.protobuffer.VerseAccountPayload}
+ */
+proto.io.bisq.protobuffer.VerseAccountPayload.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setHolderName(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.io.bisq.protobuffer.VerseAccountPayload.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.io.bisq.protobuffer.VerseAccountPayload.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.io.bisq.protobuffer.VerseAccountPayload} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.VerseAccountPayload.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getHolderName();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string holder_name = 1;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.VerseAccountPayload.prototype.getHolderName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.VerseAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.VerseAccountPayload.prototype.setHolderName = function(value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.io.bisq.protobuffer.SwiftAccountPayload.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.bisq.protobuffer.SwiftAccountPayload.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.io.bisq.protobuffer.SwiftAccountPayload} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.SwiftAccountPayload.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    beneficiaryName: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    beneficiaryAccountNr: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    beneficiaryAddress: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    beneficiaryCity: jspb.Message.getFieldWithDefault(msg, 4, ""),
+    beneficiaryPhone: jspb.Message.getFieldWithDefault(msg, 5, ""),
+    specialInstructions: jspb.Message.getFieldWithDefault(msg, 6, ""),
+    bankSwiftCode: jspb.Message.getFieldWithDefault(msg, 7, ""),
+    bankCountryCode: jspb.Message.getFieldWithDefault(msg, 8, ""),
+    bankName: jspb.Message.getFieldWithDefault(msg, 9, ""),
+    bankBranch: jspb.Message.getFieldWithDefault(msg, 10, ""),
+    bankAddress: jspb.Message.getFieldWithDefault(msg, 11, ""),
+    intermediarySwiftCode: jspb.Message.getFieldWithDefault(msg, 12, ""),
+    intermediaryCountryCode: jspb.Message.getFieldWithDefault(msg, 13, ""),
+    intermediaryName: jspb.Message.getFieldWithDefault(msg, 14, ""),
+    intermediaryBranch: jspb.Message.getFieldWithDefault(msg, 15, ""),
+    intermediaryAddress: jspb.Message.getFieldWithDefault(msg, 16, "")
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.io.bisq.protobuffer.SwiftAccountPayload}
+ */
+proto.io.bisq.protobuffer.SwiftAccountPayload.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.io.bisq.protobuffer.SwiftAccountPayload;
+  return proto.io.bisq.protobuffer.SwiftAccountPayload.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.io.bisq.protobuffer.SwiftAccountPayload} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.io.bisq.protobuffer.SwiftAccountPayload}
+ */
+proto.io.bisq.protobuffer.SwiftAccountPayload.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setBeneficiaryName(value);
+      break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setBeneficiaryAccountNr(value);
+      break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setBeneficiaryAddress(value);
+      break;
+    case 4:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setBeneficiaryCity(value);
+      break;
+    case 5:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setBeneficiaryPhone(value);
+      break;
+    case 6:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setSpecialInstructions(value);
+      break;
+    case 7:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setBankSwiftCode(value);
+      break;
+    case 8:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setBankCountryCode(value);
+      break;
+    case 9:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setBankName(value);
+      break;
+    case 10:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setBankBranch(value);
+      break;
+    case 11:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setBankAddress(value);
+      break;
+    case 12:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setIntermediarySwiftCode(value);
+      break;
+    case 13:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setIntermediaryCountryCode(value);
+      break;
+    case 14:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setIntermediaryName(value);
+      break;
+    case 15:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setIntermediaryBranch(value);
+      break;
+    case 16:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setIntermediaryAddress(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.io.bisq.protobuffer.SwiftAccountPayload.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.io.bisq.protobuffer.SwiftAccountPayload.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.io.bisq.protobuffer.SwiftAccountPayload} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.bisq.protobuffer.SwiftAccountPayload.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getBeneficiaryName();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+  f = message.getBeneficiaryAccountNr();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
+  f = message.getBeneficiaryAddress();
+  if (f.length > 0) {
+    writer.writeString(
+      3,
+      f
+    );
+  }
+  f = message.getBeneficiaryCity();
+  if (f.length > 0) {
+    writer.writeString(
+      4,
+      f
+    );
+  }
+  f = message.getBeneficiaryPhone();
+  if (f.length > 0) {
+    writer.writeString(
+      5,
+      f
+    );
+  }
+  f = message.getSpecialInstructions();
+  if (f.length > 0) {
+    writer.writeString(
+      6,
+      f
+    );
+  }
+  f = message.getBankSwiftCode();
+  if (f.length > 0) {
+    writer.writeString(
+      7,
+      f
+    );
+  }
+  f = message.getBankCountryCode();
+  if (f.length > 0) {
+    writer.writeString(
+      8,
+      f
+    );
+  }
+  f = message.getBankName();
+  if (f.length > 0) {
+    writer.writeString(
+      9,
+      f
+    );
+  }
+  f = message.getBankBranch();
+  if (f.length > 0) {
+    writer.writeString(
+      10,
+      f
+    );
+  }
+  f = message.getBankAddress();
+  if (f.length > 0) {
+    writer.writeString(
+      11,
+      f
+    );
+  }
+  f = message.getIntermediarySwiftCode();
+  if (f.length > 0) {
+    writer.writeString(
+      12,
+      f
+    );
+  }
+  f = message.getIntermediaryCountryCode();
+  if (f.length > 0) {
+    writer.writeString(
+      13,
+      f
+    );
+  }
+  f = message.getIntermediaryName();
+  if (f.length > 0) {
+    writer.writeString(
+      14,
+      f
+    );
+  }
+  f = message.getIntermediaryBranch();
+  if (f.length > 0) {
+    writer.writeString(
+      15,
+      f
+    );
+  }
+  f = message.getIntermediaryAddress();
+  if (f.length > 0) {
+    writer.writeString(
+      16,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string beneficiary_name = 1;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.SwiftAccountPayload.prototype.getBeneficiaryName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.SwiftAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.SwiftAccountPayload.prototype.setBeneficiaryName = function(value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional string beneficiary_account_nr = 2;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.SwiftAccountPayload.prototype.getBeneficiaryAccountNr = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.SwiftAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.SwiftAccountPayload.prototype.setBeneficiaryAccountNr = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * optional string beneficiary_address = 3;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.SwiftAccountPayload.prototype.getBeneficiaryAddress = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.SwiftAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.SwiftAccountPayload.prototype.setBeneficiaryAddress = function(value) {
+  return jspb.Message.setProto3StringField(this, 3, value);
+};
+
+
+/**
+ * optional string beneficiary_city = 4;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.SwiftAccountPayload.prototype.getBeneficiaryCity = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.SwiftAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.SwiftAccountPayload.prototype.setBeneficiaryCity = function(value) {
+  return jspb.Message.setProto3StringField(this, 4, value);
+};
+
+
+/**
+ * optional string beneficiary_phone = 5;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.SwiftAccountPayload.prototype.getBeneficiaryPhone = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.SwiftAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.SwiftAccountPayload.prototype.setBeneficiaryPhone = function(value) {
+  return jspb.Message.setProto3StringField(this, 5, value);
+};
+
+
+/**
+ * optional string special_instructions = 6;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.SwiftAccountPayload.prototype.getSpecialInstructions = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.SwiftAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.SwiftAccountPayload.prototype.setSpecialInstructions = function(value) {
+  return jspb.Message.setProto3StringField(this, 6, value);
+};
+
+
+/**
+ * optional string bank_swift_code = 7;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.SwiftAccountPayload.prototype.getBankSwiftCode = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.SwiftAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.SwiftAccountPayload.prototype.setBankSwiftCode = function(value) {
+  return jspb.Message.setProto3StringField(this, 7, value);
+};
+
+
+/**
+ * optional string bank_country_code = 8;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.SwiftAccountPayload.prototype.getBankCountryCode = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 8, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.SwiftAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.SwiftAccountPayload.prototype.setBankCountryCode = function(value) {
+  return jspb.Message.setProto3StringField(this, 8, value);
+};
+
+
+/**
+ * optional string bank_name = 9;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.SwiftAccountPayload.prototype.getBankName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 9, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.SwiftAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.SwiftAccountPayload.prototype.setBankName = function(value) {
+  return jspb.Message.setProto3StringField(this, 9, value);
+};
+
+
+/**
+ * optional string bank_branch = 10;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.SwiftAccountPayload.prototype.getBankBranch = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 10, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.SwiftAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.SwiftAccountPayload.prototype.setBankBranch = function(value) {
+  return jspb.Message.setProto3StringField(this, 10, value);
+};
+
+
+/**
+ * optional string bank_address = 11;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.SwiftAccountPayload.prototype.getBankAddress = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 11, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.SwiftAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.SwiftAccountPayload.prototype.setBankAddress = function(value) {
+  return jspb.Message.setProto3StringField(this, 11, value);
+};
+
+
+/**
+ * optional string intermediary_swift_code = 12;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.SwiftAccountPayload.prototype.getIntermediarySwiftCode = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 12, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.SwiftAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.SwiftAccountPayload.prototype.setIntermediarySwiftCode = function(value) {
+  return jspb.Message.setProto3StringField(this, 12, value);
+};
+
+
+/**
+ * optional string intermediary_country_code = 13;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.SwiftAccountPayload.prototype.getIntermediaryCountryCode = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 13, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.SwiftAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.SwiftAccountPayload.prototype.setIntermediaryCountryCode = function(value) {
+  return jspb.Message.setProto3StringField(this, 13, value);
+};
+
+
+/**
+ * optional string intermediary_name = 14;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.SwiftAccountPayload.prototype.getIntermediaryName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 14, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.SwiftAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.SwiftAccountPayload.prototype.setIntermediaryName = function(value) {
+  return jspb.Message.setProto3StringField(this, 14, value);
+};
+
+
+/**
+ * optional string intermediary_branch = 15;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.SwiftAccountPayload.prototype.getIntermediaryBranch = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 15, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.SwiftAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.SwiftAccountPayload.prototype.setIntermediaryBranch = function(value) {
+  return jspb.Message.setProto3StringField(this, 15, value);
+};
+
+
+/**
+ * optional string intermediary_address = 16;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.SwiftAccountPayload.prototype.getIntermediaryAddress = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 16, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.SwiftAccountPayload} returns this
+ */
+proto.io.bisq.protobuffer.SwiftAccountPayload.prototype.setIntermediaryAddress = function(value) {
+  return jspb.Message.setProto3StringField(this, 16, value);
 };
 
 
@@ -50563,12 +55640,11 @@ proto.io.bisq.protobuffer.Offer.serializeBinaryToWriter = function(message, writ
 proto.io.bisq.protobuffer.Offer.State = {
   PB_ERROR: 0,
   UNKNOWN: 1,
-  SCHEDULED: 2,
-  OFFER_FEE_RESERVED: 3,
-  AVAILABLE: 4,
-  NOT_AVAILABLE: 5,
-  REMOVED: 6,
-  MAKER_OFFLINE: 7
+  OFFER_FEE_RESERVED: 2,
+  AVAILABLE: 3,
+  NOT_AVAILABLE: 4,
+  REMOVED: 5,
+  MAKER_OFFLINE: 6
 };
 
 /**
@@ -52000,14 +57076,14 @@ proto.io.bisq.protobuffer.Trade.toObject = function(includeInstance, msg) {
     processModel: (f = msg.getProcessModel()) && proto.io.bisq.protobuffer.ProcessModel.toObject(includeInstance, f),
     takerFeeTxId: jspb.Message.getFieldWithDefault(msg, 3, ""),
     payoutTxId: jspb.Message.getFieldWithDefault(msg, 5, ""),
-    tradeAmountAsLong: jspb.Message.getFieldWithDefault(msg, 6, 0),
+    amountAsLong: jspb.Message.getFieldWithDefault(msg, 6, 0),
     txFeeAsLong: jspb.Message.getFieldWithDefault(msg, 7, 0),
     takerFeeAsLong: jspb.Message.getFieldWithDefault(msg, 8, 0),
     takeOfferDate: jspb.Message.getFieldWithDefault(msg, 9, 0),
-    tradePrice: jspb.Message.getFieldWithDefault(msg, 10, 0),
+    price: jspb.Message.getFieldWithDefault(msg, 10, 0),
     state: jspb.Message.getFieldWithDefault(msg, 11, 0),
     disputeState: jspb.Message.getFieldWithDefault(msg, 12, 0),
-    tradePeriodState: jspb.Message.getFieldWithDefault(msg, 13, 0),
+    periodState: jspb.Message.getFieldWithDefault(msg, 13, 0),
     contract: (f = msg.getContract()) && proto.io.bisq.protobuffer.Contract.toObject(includeInstance, f),
     contractAsJson: jspb.Message.getFieldWithDefault(msg, 15, ""),
     contractHash: msg.getContractHash_asB64(),
@@ -52091,7 +57167,7 @@ proto.io.bisq.protobuffer.Trade.deserializeBinaryFromReader = function(msg, read
       break;
     case 6:
       var value = /** @type {number} */ (reader.readInt64());
-      msg.setTradeAmountAsLong(value);
+      msg.setAmountAsLong(value);
       break;
     case 7:
       var value = /** @type {number} */ (reader.readInt64());
@@ -52107,7 +57183,7 @@ proto.io.bisq.protobuffer.Trade.deserializeBinaryFromReader = function(msg, read
       break;
     case 10:
       var value = /** @type {number} */ (reader.readInt64());
-      msg.setTradePrice(value);
+      msg.setPrice(value);
       break;
     case 11:
       var value = /** @type {!proto.io.bisq.protobuffer.Trade.State} */ (reader.readEnum());
@@ -52119,7 +57195,7 @@ proto.io.bisq.protobuffer.Trade.deserializeBinaryFromReader = function(msg, read
       break;
     case 13:
       var value = /** @type {!proto.io.bisq.protobuffer.Trade.TradePeriodState} */ (reader.readEnum());
-      msg.setTradePeriodState(value);
+      msg.setPeriodState(value);
       break;
     case 14:
       var value = new proto.io.bisq.protobuffer.Contract;
@@ -52296,7 +57372,7 @@ proto.io.bisq.protobuffer.Trade.serializeBinaryToWriter = function(message, writ
       f
     );
   }
-  f = message.getTradeAmountAsLong();
+  f = message.getAmountAsLong();
   if (f !== 0) {
     writer.writeInt64(
       6,
@@ -52324,7 +57400,7 @@ proto.io.bisq.protobuffer.Trade.serializeBinaryToWriter = function(message, writ
       f
     );
   }
-  f = message.getTradePrice();
+  f = message.getPrice();
   if (f !== 0) {
     writer.writeInt64(
       10,
@@ -52345,7 +57421,7 @@ proto.io.bisq.protobuffer.Trade.serializeBinaryToWriter = function(message, writ
       f
     );
   }
-  f = message.getTradePeriodState();
+  f = message.getPeriodState();
   if (f !== 0.0) {
     writer.writeEnum(
       13,
@@ -52747,10 +57823,10 @@ proto.io.bisq.protobuffer.Trade.prototype.setPayoutTxId = function(value) {
 
 
 /**
- * optional int64 trade_amount_as_long = 6;
+ * optional int64 amount_as_long = 6;
  * @return {number}
  */
-proto.io.bisq.protobuffer.Trade.prototype.getTradeAmountAsLong = function() {
+proto.io.bisq.protobuffer.Trade.prototype.getAmountAsLong = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
 };
 
@@ -52759,7 +57835,7 @@ proto.io.bisq.protobuffer.Trade.prototype.getTradeAmountAsLong = function() {
  * @param {number} value
  * @return {!proto.io.bisq.protobuffer.Trade} returns this
  */
-proto.io.bisq.protobuffer.Trade.prototype.setTradeAmountAsLong = function(value) {
+proto.io.bisq.protobuffer.Trade.prototype.setAmountAsLong = function(value) {
   return jspb.Message.setProto3IntField(this, 6, value);
 };
 
@@ -52819,10 +57895,10 @@ proto.io.bisq.protobuffer.Trade.prototype.setTakeOfferDate = function(value) {
 
 
 /**
- * optional int64 trade_price = 10;
+ * optional int64 price = 10;
  * @return {number}
  */
-proto.io.bisq.protobuffer.Trade.prototype.getTradePrice = function() {
+proto.io.bisq.protobuffer.Trade.prototype.getPrice = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 10, 0));
 };
 
@@ -52831,7 +57907,7 @@ proto.io.bisq.protobuffer.Trade.prototype.getTradePrice = function() {
  * @param {number} value
  * @return {!proto.io.bisq.protobuffer.Trade} returns this
  */
-proto.io.bisq.protobuffer.Trade.prototype.setTradePrice = function(value) {
+proto.io.bisq.protobuffer.Trade.prototype.setPrice = function(value) {
   return jspb.Message.setProto3IntField(this, 10, value);
 };
 
@@ -52873,10 +57949,10 @@ proto.io.bisq.protobuffer.Trade.prototype.setDisputeState = function(value) {
 
 
 /**
- * optional TradePeriodState trade_period_state = 13;
+ * optional TradePeriodState period_state = 13;
  * @return {!proto.io.bisq.protobuffer.Trade.TradePeriodState}
  */
-proto.io.bisq.protobuffer.Trade.prototype.getTradePeriodState = function() {
+proto.io.bisq.protobuffer.Trade.prototype.getPeriodState = function() {
   return /** @type {!proto.io.bisq.protobuffer.Trade.TradePeriodState} */ (jspb.Message.getFieldWithDefault(this, 13, 0));
 };
 
@@ -52885,7 +57961,7 @@ proto.io.bisq.protobuffer.Trade.prototype.getTradePeriodState = function() {
  * @param {!proto.io.bisq.protobuffer.Trade.TradePeriodState} value
  * @return {!proto.io.bisq.protobuffer.Trade} returns this
  */
-proto.io.bisq.protobuffer.Trade.prototype.setTradePeriodState = function(value) {
+proto.io.bisq.protobuffer.Trade.prototype.setPeriodState = function(value) {
   return jspb.Message.setProto3EnumField(this, 13, value);
 };
 
@@ -57874,11 +62950,15 @@ proto.io.bisq.protobuffer.PreferencesPayload.toObject = function(includeInstance
     tacAcceptedV120: jspb.Message.getBooleanFieldWithDefault(msg, 52, false),
     autoConfirmSettingsList: jspb.Message.toObjectList(msg.getAutoConfirmSettingsList(),
     proto.io.bisq.protobuffer.AutoConfirmSettings.toObject, includeInstance),
-    hideNonAccountPaymentMethods: jspb.Message.getBooleanFieldWithDefault(msg, 54, false),
-    showOffersMatchingMyAccounts: jspb.Message.getBooleanFieldWithDefault(msg, 55, false),
-    denyApiTaker: jspb.Message.getBooleanFieldWithDefault(msg, 56, false),
-    notifyOnPreRelease: jspb.Message.getBooleanFieldWithDefault(msg, 57, false),
-    moneroNodeSettings: (f = msg.getMoneroNodeSettings()) && proto.io.bisq.protobuffer.MoneroNodeSettings.toObject(includeInstance, f)
+    bsqAverageTrimThreshold: jspb.Message.getFloatingPointFieldWithDefault(msg, 54, 0.0),
+    hideNonAccountPaymentMethods: jspb.Message.getBooleanFieldWithDefault(msg, 55, false),
+    showOffersMatchingMyAccounts: jspb.Message.getBooleanFieldWithDefault(msg, 56, false),
+    denyApiTaker: jspb.Message.getBooleanFieldWithDefault(msg, 57, false),
+    notifyOnPreRelease: jspb.Message.getBooleanFieldWithDefault(msg, 58, false),
+    moneroNodeSettings: (f = msg.getMoneroNodeSettings()) && proto.io.bisq.protobuffer.MoneroNodeSettings.toObject(includeInstance, f),
+    clearDataAfterDays: jspb.Message.getFieldWithDefault(msg, 60, 0),
+    buyScreenCryptoCurrencyCode: jspb.Message.getFieldWithDefault(msg, 61, ""),
+    sellScreenCryptoCurrencyCode: jspb.Message.getFieldWithDefault(msg, 62, "")
   };
 
   if (includeInstance) {
@@ -58140,25 +63220,41 @@ proto.io.bisq.protobuffer.PreferencesPayload.deserializeBinaryFromReader = funct
       msg.addAutoConfirmSettings(value);
       break;
     case 54:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setHideNonAccountPaymentMethods(value);
+      var value = /** @type {number} */ (reader.readDouble());
+      msg.setBsqAverageTrimThreshold(value);
       break;
     case 55:
       var value = /** @type {boolean} */ (reader.readBool());
-      msg.setShowOffersMatchingMyAccounts(value);
+      msg.setHideNonAccountPaymentMethods(value);
       break;
     case 56:
       var value = /** @type {boolean} */ (reader.readBool());
-      msg.setDenyApiTaker(value);
+      msg.setShowOffersMatchingMyAccounts(value);
       break;
     case 57:
       var value = /** @type {boolean} */ (reader.readBool());
-      msg.setNotifyOnPreRelease(value);
+      msg.setDenyApiTaker(value);
       break;
     case 58:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setNotifyOnPreRelease(value);
+      break;
+    case 59:
       var value = new proto.io.bisq.protobuffer.MoneroNodeSettings;
       reader.readMessage(value,proto.io.bisq.protobuffer.MoneroNodeSettings.deserializeBinaryFromReader);
       msg.setMoneroNodeSettings(value);
+      break;
+    case 60:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setClearDataAfterDays(value);
+      break;
+    case 61:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setBuyScreenCryptoCurrencyCode(value);
+      break;
+    case 62:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setSellScreenCryptoCurrencyCode(value);
       break;
     default:
       reader.skipField();
@@ -58562,40 +63658,68 @@ proto.io.bisq.protobuffer.PreferencesPayload.serializeBinaryToWriter = function(
       proto.io.bisq.protobuffer.AutoConfirmSettings.serializeBinaryToWriter
     );
   }
-  f = message.getHideNonAccountPaymentMethods();
-  if (f) {
-    writer.writeBool(
+  f = message.getBsqAverageTrimThreshold();
+  if (f !== 0.0) {
+    writer.writeDouble(
       54,
       f
     );
   }
-  f = message.getShowOffersMatchingMyAccounts();
+  f = message.getHideNonAccountPaymentMethods();
   if (f) {
     writer.writeBool(
       55,
       f
     );
   }
-  f = message.getDenyApiTaker();
+  f = message.getShowOffersMatchingMyAccounts();
   if (f) {
     writer.writeBool(
       56,
       f
     );
   }
-  f = message.getNotifyOnPreRelease();
+  f = message.getDenyApiTaker();
   if (f) {
     writer.writeBool(
       57,
       f
     );
   }
+  f = message.getNotifyOnPreRelease();
+  if (f) {
+    writer.writeBool(
+      58,
+      f
+    );
+  }
   f = message.getMoneroNodeSettings();
   if (f != null) {
     writer.writeMessage(
-      58,
+      59,
       f,
       proto.io.bisq.protobuffer.MoneroNodeSettings.serializeBinaryToWriter
+    );
+  }
+  f = message.getClearDataAfterDays();
+  if (f !== 0) {
+    writer.writeInt32(
+      60,
+      f
+    );
+  }
+  f = message.getBuyScreenCryptoCurrencyCode();
+  if (f.length > 0) {
+    writer.writeString(
+      61,
+      f
+    );
+  }
+  f = message.getSellScreenCryptoCurrencyCode();
+  if (f.length > 0) {
+    writer.writeString(
+      62,
+      f
     );
   }
 };
@@ -59757,28 +64881,28 @@ proto.io.bisq.protobuffer.PreferencesPayload.prototype.clearAutoConfirmSettingsL
 
 
 /**
- * optional bool hide_non_account_payment_methods = 54;
+ * optional double bsq_average_trim_threshold = 54;
+ * @return {number}
+ */
+proto.io.bisq.protobuffer.PreferencesPayload.prototype.getBsqAverageTrimThreshold = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 54, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.io.bisq.protobuffer.PreferencesPayload} returns this
+ */
+proto.io.bisq.protobuffer.PreferencesPayload.prototype.setBsqAverageTrimThreshold = function(value) {
+  return jspb.Message.setProto3FloatField(this, 54, value);
+};
+
+
+/**
+ * optional bool hide_non_account_payment_methods = 55;
  * @return {boolean}
  */
 proto.io.bisq.protobuffer.PreferencesPayload.prototype.getHideNonAccountPaymentMethods = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 54, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.io.bisq.protobuffer.PreferencesPayload} returns this
- */
-proto.io.bisq.protobuffer.PreferencesPayload.prototype.setHideNonAccountPaymentMethods = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 54, value);
-};
-
-
-/**
- * optional bool show_offers_matching_my_accounts = 55;
- * @return {boolean}
- */
-proto.io.bisq.protobuffer.PreferencesPayload.prototype.getShowOffersMatchingMyAccounts = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 55, false));
 };
 
@@ -59787,16 +64911,16 @@ proto.io.bisq.protobuffer.PreferencesPayload.prototype.getShowOffersMatchingMyAc
  * @param {boolean} value
  * @return {!proto.io.bisq.protobuffer.PreferencesPayload} returns this
  */
-proto.io.bisq.protobuffer.PreferencesPayload.prototype.setShowOffersMatchingMyAccounts = function(value) {
+proto.io.bisq.protobuffer.PreferencesPayload.prototype.setHideNonAccountPaymentMethods = function(value) {
   return jspb.Message.setProto3BooleanField(this, 55, value);
 };
 
 
 /**
- * optional bool deny_api_taker = 56;
+ * optional bool show_offers_matching_my_accounts = 56;
  * @return {boolean}
  */
-proto.io.bisq.protobuffer.PreferencesPayload.prototype.getDenyApiTaker = function() {
+proto.io.bisq.protobuffer.PreferencesPayload.prototype.getShowOffersMatchingMyAccounts = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 56, false));
 };
 
@@ -59805,16 +64929,16 @@ proto.io.bisq.protobuffer.PreferencesPayload.prototype.getDenyApiTaker = functio
  * @param {boolean} value
  * @return {!proto.io.bisq.protobuffer.PreferencesPayload} returns this
  */
-proto.io.bisq.protobuffer.PreferencesPayload.prototype.setDenyApiTaker = function(value) {
+proto.io.bisq.protobuffer.PreferencesPayload.prototype.setShowOffersMatchingMyAccounts = function(value) {
   return jspb.Message.setProto3BooleanField(this, 56, value);
 };
 
 
 /**
- * optional bool notify_on_pre_release = 57;
+ * optional bool deny_api_taker = 57;
  * @return {boolean}
  */
-proto.io.bisq.protobuffer.PreferencesPayload.prototype.getNotifyOnPreRelease = function() {
+proto.io.bisq.protobuffer.PreferencesPayload.prototype.getDenyApiTaker = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 57, false));
 };
 
@@ -59823,18 +64947,36 @@ proto.io.bisq.protobuffer.PreferencesPayload.prototype.getNotifyOnPreRelease = f
  * @param {boolean} value
  * @return {!proto.io.bisq.protobuffer.PreferencesPayload} returns this
  */
-proto.io.bisq.protobuffer.PreferencesPayload.prototype.setNotifyOnPreRelease = function(value) {
+proto.io.bisq.protobuffer.PreferencesPayload.prototype.setDenyApiTaker = function(value) {
   return jspb.Message.setProto3BooleanField(this, 57, value);
 };
 
 
 /**
- * optional MoneroNodeSettings monero_node_settings = 58;
+ * optional bool notify_on_pre_release = 58;
+ * @return {boolean}
+ */
+proto.io.bisq.protobuffer.PreferencesPayload.prototype.getNotifyOnPreRelease = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 58, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.io.bisq.protobuffer.PreferencesPayload} returns this
+ */
+proto.io.bisq.protobuffer.PreferencesPayload.prototype.setNotifyOnPreRelease = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 58, value);
+};
+
+
+/**
+ * optional MoneroNodeSettings monero_node_settings = 59;
  * @return {?proto.io.bisq.protobuffer.MoneroNodeSettings}
  */
 proto.io.bisq.protobuffer.PreferencesPayload.prototype.getMoneroNodeSettings = function() {
   return /** @type{?proto.io.bisq.protobuffer.MoneroNodeSettings} */ (
-    jspb.Message.getWrapperField(this, proto.io.bisq.protobuffer.MoneroNodeSettings, 58));
+    jspb.Message.getWrapperField(this, proto.io.bisq.protobuffer.MoneroNodeSettings, 59));
 };
 
 
@@ -59843,7 +64985,7 @@ proto.io.bisq.protobuffer.PreferencesPayload.prototype.getMoneroNodeSettings = f
  * @return {!proto.io.bisq.protobuffer.PreferencesPayload} returns this
 */
 proto.io.bisq.protobuffer.PreferencesPayload.prototype.setMoneroNodeSettings = function(value) {
-  return jspb.Message.setWrapperField(this, 58, value);
+  return jspb.Message.setWrapperField(this, 59, value);
 };
 
 
@@ -59861,7 +65003,61 @@ proto.io.bisq.protobuffer.PreferencesPayload.prototype.clearMoneroNodeSettings =
  * @return {boolean}
  */
 proto.io.bisq.protobuffer.PreferencesPayload.prototype.hasMoneroNodeSettings = function() {
-  return jspb.Message.getField(this, 58) != null;
+  return jspb.Message.getField(this, 59) != null;
+};
+
+
+/**
+ * optional int32 clear_data_after_days = 60;
+ * @return {number}
+ */
+proto.io.bisq.protobuffer.PreferencesPayload.prototype.getClearDataAfterDays = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 60, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.io.bisq.protobuffer.PreferencesPayload} returns this
+ */
+proto.io.bisq.protobuffer.PreferencesPayload.prototype.setClearDataAfterDays = function(value) {
+  return jspb.Message.setProto3IntField(this, 60, value);
+};
+
+
+/**
+ * optional string buy_screen_crypto_currency_code = 61;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.PreferencesPayload.prototype.getBuyScreenCryptoCurrencyCode = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 61, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.PreferencesPayload} returns this
+ */
+proto.io.bisq.protobuffer.PreferencesPayload.prototype.setBuyScreenCryptoCurrencyCode = function(value) {
+  return jspb.Message.setProto3StringField(this, 61, value);
+};
+
+
+/**
+ * optional string sell_screen_crypto_currency_code = 62;
+ * @return {string}
+ */
+proto.io.bisq.protobuffer.PreferencesPayload.prototype.getSellScreenCryptoCurrencyCode = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 62, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.bisq.protobuffer.PreferencesPayload} returns this
+ */
+proto.io.bisq.protobuffer.PreferencesPayload.prototype.setSellScreenCryptoCurrencyCode = function(value) {
+  return jspb.Message.setProto3StringField(this, 62, value);
 };
 
 
@@ -63994,6 +69190,15 @@ proto.io.bisq.protobuffer.SupportType = {
   MEDIATION: 1,
   TRADE: 2,
   REFUND: 3
+};
+
+/**
+ * @enum {number}
+ */
+proto.io.bisq.protobuffer.OfferDirection = {
+  OFFER_DIRECTION_ERROR: 0,
+  BUY: 1,
+  SELL: 2
 };
 
 /**

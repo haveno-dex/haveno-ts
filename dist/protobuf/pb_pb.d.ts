@@ -3481,8 +3481,8 @@ export class TradeStatistics2 extends jspb.Message {
   getCounterCurrency(): string;
   setCounterCurrency(value: string): TradeStatistics2;
 
-  getDirection(): OfferPayload.Direction;
-  setDirection(value: OfferPayload.Direction): TradeStatistics2;
+  getDirection(): OfferDirection;
+  setDirection(value: OfferDirection): TradeStatistics2;
 
   getTradePrice(): number;
   setTradePrice(value: number): TradeStatistics2;
@@ -3543,7 +3543,7 @@ export namespace TradeStatistics2 {
   export type AsObject = {
     baseCurrency: string,
     counterCurrency: string,
-    direction: OfferPayload.Direction,
+    direction: OfferDirection,
     tradePrice: number,
     tradeAmount: number,
     tradeDate: number,
@@ -3671,14 +3671,14 @@ export class OfferPayload extends jspb.Message {
   hasPubKeyRing(): boolean;
   clearPubKeyRing(): OfferPayload;
 
-  getDirection(): OfferPayload.Direction;
-  setDirection(value: OfferPayload.Direction): OfferPayload;
+  getDirection(): OfferDirection;
+  setDirection(value: OfferDirection): OfferPayload;
 
   getPrice(): number;
   setPrice(value: number): OfferPayload;
 
-  getMarketPriceMargin(): number;
-  setMarketPriceMargin(value: number): OfferPayload;
+  getMarketPriceMarginPct(): number;
+  setMarketPriceMarginPct(value: number): OfferPayload;
 
   getUseMarketBasedPrice(): boolean;
   setUseMarketBasedPrice(value: boolean): OfferPayload;
@@ -3795,9 +3795,9 @@ export namespace OfferPayload {
     date: number,
     ownerNodeAddress?: NodeAddress.AsObject,
     pubKeyRing?: PubKeyRing.AsObject,
-    direction: OfferPayload.Direction,
+    direction: OfferDirection,
     price: number,
-    marketPriceMargin: number,
+    marketPriceMarginPct: number,
     useMarketBasedPrice: boolean,
     amount: number,
     minAmount: number,
@@ -3829,12 +3829,6 @@ export namespace OfferPayload {
     arbitratorSigner?: NodeAddress.AsObject,
     arbitratorSignature: string,
     reserveTxKeyImagesList: Array<string>,
-  }
-
-  export enum Direction { 
-    PB_ERROR = 0,
-    BUY = 1,
-    SELL = 2,
   }
 }
 
@@ -4514,6 +4508,41 @@ export class PaymentAccountPayload extends jspb.Message {
   hasCashByMailAccountPayload(): boolean;
   clearCashByMailAccountPayload(): PaymentAccountPayload;
 
+  getCapitualAccountPayload(): CapitualAccountPayload | undefined;
+  setCapitualAccountPayload(value?: CapitualAccountPayload): PaymentAccountPayload;
+  hasCapitualAccountPayload(): boolean;
+  clearCapitualAccountPayload(): PaymentAccountPayload;
+
+  getPayseraAccountPayload(): PayseraAccountPayload | undefined;
+  setPayseraAccountPayload(value?: PayseraAccountPayload): PaymentAccountPayload;
+  hasPayseraAccountPayload(): boolean;
+  clearPayseraAccountPayload(): PaymentAccountPayload;
+
+  getPaxumAccountPayload(): PaxumAccountPayload | undefined;
+  setPaxumAccountPayload(value?: PaxumAccountPayload): PaymentAccountPayload;
+  hasPaxumAccountPayload(): boolean;
+  clearPaxumAccountPayload(): PaymentAccountPayload;
+
+  getSwiftAccountPayload(): SwiftAccountPayload | undefined;
+  setSwiftAccountPayload(value?: SwiftAccountPayload): PaymentAccountPayload;
+  hasSwiftAccountPayload(): boolean;
+  clearSwiftAccountPayload(): PaymentAccountPayload;
+
+  getCelPayAccountPayload(): CelPayAccountPayload | undefined;
+  setCelPayAccountPayload(value?: CelPayAccountPayload): PaymentAccountPayload;
+  hasCelPayAccountPayload(): boolean;
+  clearCelPayAccountPayload(): PaymentAccountPayload;
+
+  getMoneseAccountPayload(): MoneseAccountPayload | undefined;
+  setMoneseAccountPayload(value?: MoneseAccountPayload): PaymentAccountPayload;
+  hasMoneseAccountPayload(): boolean;
+  clearMoneseAccountPayload(): PaymentAccountPayload;
+
+  getVerseAccountPayload(): VerseAccountPayload | undefined;
+  setVerseAccountPayload(value?: VerseAccountPayload): PaymentAccountPayload;
+  hasVerseAccountPayload(): boolean;
+  clearVerseAccountPayload(): PaymentAccountPayload;
+
   getExcludeFromJsonDataMap(): jspb.Map<string, string>;
   clearExcludeFromJsonDataMap(): PaymentAccountPayload;
 
@@ -4560,6 +4589,13 @@ export namespace PaymentAccountPayload {
     australiaPayidPayload?: AustraliaPayidPayload.AsObject,
     amazonGiftCardAccountPayload?: AmazonGiftCardAccountPayload.AsObject,
     cashByMailAccountPayload?: CashByMailAccountPayload.AsObject,
+    capitualAccountPayload?: CapitualAccountPayload.AsObject,
+    payseraAccountPayload?: PayseraAccountPayload.AsObject,
+    paxumAccountPayload?: PaxumAccountPayload.AsObject,
+    swiftAccountPayload?: SwiftAccountPayload.AsObject,
+    celPayAccountPayload?: CelPayAccountPayload.AsObject,
+    moneseAccountPayload?: MoneseAccountPayload.AsObject,
+    verseAccountPayload?: VerseAccountPayload.AsObject,
     excludeFromJsonDataMap: Array<[string, string]>,
   }
 
@@ -4593,6 +4629,13 @@ export namespace PaymentAccountPayload {
     AUSTRALIA_PAYID_PAYLOAD = 30,
     AMAZON_GIFT_CARD_ACCOUNT_PAYLOAD = 31,
     CASH_BY_MAIL_ACCOUNT_PAYLOAD = 32,
+    CAPITUAL_ACCOUNT_PAYLOAD = 33,
+    PAYSERA_ACCOUNT_PAYLOAD = 34,
+    PAXUM_ACCOUNT_PAYLOAD = 35,
+    SWIFT_ACCOUNT_PAYLOAD = 36,
+    CEL_PAY_ACCOUNT_PAYLOAD = 37,
+    MONESE_ACCOUNT_PAYLOAD = 38,
+    VERSE_ACCOUNT_PAYLOAD = 39,
   }
 }
 
@@ -4710,6 +4753,56 @@ export class CountryBasedPaymentAccountPayload extends jspb.Message {
   hasF2fAccountPayload(): boolean;
   clearF2fAccountPayload(): CountryBasedPaymentAccountPayload;
 
+  getUpiAccountPayload(): UpiAccountPayload | undefined;
+  setUpiAccountPayload(value?: UpiAccountPayload): CountryBasedPaymentAccountPayload;
+  hasUpiAccountPayload(): boolean;
+  clearUpiAccountPayload(): CountryBasedPaymentAccountPayload;
+
+  getPaytmAccountPayload(): PaytmAccountPayload | undefined;
+  setPaytmAccountPayload(value?: PaytmAccountPayload): CountryBasedPaymentAccountPayload;
+  hasPaytmAccountPayload(): boolean;
+  clearPaytmAccountPayload(): CountryBasedPaymentAccountPayload;
+
+  getIfscBasedAccountPayload(): IfscBasedAccountPayload | undefined;
+  setIfscBasedAccountPayload(value?: IfscBasedAccountPayload): CountryBasedPaymentAccountPayload;
+  hasIfscBasedAccountPayload(): boolean;
+  clearIfscBasedAccountPayload(): CountryBasedPaymentAccountPayload;
+
+  getNequiAccountPayload(): NequiAccountPayload | undefined;
+  setNequiAccountPayload(value?: NequiAccountPayload): CountryBasedPaymentAccountPayload;
+  hasNequiAccountPayload(): boolean;
+  clearNequiAccountPayload(): CountryBasedPaymentAccountPayload;
+
+  getBizumAccountPayload(): BizumAccountPayload | undefined;
+  setBizumAccountPayload(value?: BizumAccountPayload): CountryBasedPaymentAccountPayload;
+  hasBizumAccountPayload(): boolean;
+  clearBizumAccountPayload(): CountryBasedPaymentAccountPayload;
+
+  getPixAccountPayload(): PixAccountPayload | undefined;
+  setPixAccountPayload(value?: PixAccountPayload): CountryBasedPaymentAccountPayload;
+  hasPixAccountPayload(): boolean;
+  clearPixAccountPayload(): CountryBasedPaymentAccountPayload;
+
+  getSatispayAccountPayload(): SatispayAccountPayload | undefined;
+  setSatispayAccountPayload(value?: SatispayAccountPayload): CountryBasedPaymentAccountPayload;
+  hasSatispayAccountPayload(): boolean;
+  clearSatispayAccountPayload(): CountryBasedPaymentAccountPayload;
+
+  getStrikeAccountPayload(): StrikeAccountPayload | undefined;
+  setStrikeAccountPayload(value?: StrikeAccountPayload): CountryBasedPaymentAccountPayload;
+  hasStrikeAccountPayload(): boolean;
+  clearStrikeAccountPayload(): CountryBasedPaymentAccountPayload;
+
+  getTikkieAccountPayload(): TikkieAccountPayload | undefined;
+  setTikkieAccountPayload(value?: TikkieAccountPayload): CountryBasedPaymentAccountPayload;
+  hasTikkieAccountPayload(): boolean;
+  clearTikkieAccountPayload(): CountryBasedPaymentAccountPayload;
+
+  getTransferwiseUsdAccountPayload(): TransferwiseUsdAccountPayload | undefined;
+  setTransferwiseUsdAccountPayload(value?: TransferwiseUsdAccountPayload): CountryBasedPaymentAccountPayload;
+  hasTransferwiseUsdAccountPayload(): boolean;
+  clearTransferwiseUsdAccountPayload(): CountryBasedPaymentAccountPayload;
+
   getMessageCase(): CountryBasedPaymentAccountPayload.MessageCase;
 
   serializeBinary(): Uint8Array;
@@ -4729,6 +4822,16 @@ export namespace CountryBasedPaymentAccountPayload {
     westernUnionAccountPayload?: WesternUnionAccountPayload.AsObject,
     sepaInstantAccountPayload?: SepaInstantAccountPayload.AsObject,
     f2fAccountPayload?: F2FAccountPayload.AsObject,
+    upiAccountPayload?: UpiAccountPayload.AsObject,
+    paytmAccountPayload?: PaytmAccountPayload.AsObject,
+    ifscBasedAccountPayload?: IfscBasedAccountPayload.AsObject,
+    nequiAccountPayload?: NequiAccountPayload.AsObject,
+    bizumAccountPayload?: BizumAccountPayload.AsObject,
+    pixAccountPayload?: PixAccountPayload.AsObject,
+    satispayAccountPayload?: SatispayAccountPayload.AsObject,
+    strikeAccountPayload?: StrikeAccountPayload.AsObject,
+    tikkieAccountPayload?: TikkieAccountPayload.AsObject,
+    transferwiseUsdAccountPayload?: TransferwiseUsdAccountPayload.AsObject,
   }
 
   export enum MessageCase { 
@@ -4739,6 +4842,16 @@ export namespace CountryBasedPaymentAccountPayload {
     WESTERN_UNION_ACCOUNT_PAYLOAD = 5,
     SEPA_INSTANT_ACCOUNT_PAYLOAD = 6,
     F2F_ACCOUNT_PAYLOAD = 7,
+    UPI_ACCOUNT_PAYLOAD = 9,
+    PAYTM_ACCOUNT_PAYLOAD = 10,
+    IFSC_BASED_ACCOUNT_PAYLOAD = 11,
+    NEQUI_ACCOUNT_PAYLOAD = 12,
+    BIZUM_ACCOUNT_PAYLOAD = 13,
+    PIX_ACCOUNT_PAYLOAD = 14,
+    SATISPAY_ACCOUNT_PAYLOAD = 15,
+    STRIKE_ACCOUNT_PAYLOAD = 16,
+    TIKKIE_ACCOUNT_PAYLOAD = 17,
+    TRANSFERWISE_USD_ACCOUNT_PAYLOAD = 18,
   }
 }
 
@@ -4782,6 +4895,16 @@ export class BankAccountPayload extends jspb.Message {
   hasSpecificBanksAccountPayload(): boolean;
   clearSpecificBanksAccountPayload(): BankAccountPayload;
 
+  getAchTransferAccountPayload(): AchTransferAccountPayload | undefined;
+  setAchTransferAccountPayload(value?: AchTransferAccountPayload): BankAccountPayload;
+  hasAchTransferAccountPayload(): boolean;
+  clearAchTransferAccountPayload(): BankAccountPayload;
+
+  getDomesticWireTransferAccountPayload(): DomesticWireTransferAccountPayload | undefined;
+  setDomesticWireTransferAccountPayload(value?: DomesticWireTransferAccountPayload): BankAccountPayload;
+  hasDomesticWireTransferAccountPayload(): boolean;
+  clearDomesticWireTransferAccountPayload(): BankAccountPayload;
+
   getNationalAccountId(): string;
   setNationalAccountId(value: string): BankAccountPayload;
 
@@ -4808,6 +4931,8 @@ export namespace BankAccountPayload {
     nationalBankAccountPayload?: NationalBankAccountPayload.AsObject,
     sameBankAccontPayload?: SameBankAccountPayload.AsObject,
     specificBanksAccountPayload?: SpecificBanksAccountPayload.AsObject,
+    achTransferAccountPayload?: AchTransferAccountPayload.AsObject,
+    domesticWireTransferAccountPayload?: DomesticWireTransferAccountPayload.AsObject,
     nationalAccountId: string,
   }
 
@@ -4816,6 +4941,44 @@ export namespace BankAccountPayload {
     NATIONAL_BANK_ACCOUNT_PAYLOAD = 9,
     SAME_BANK_ACCONT_PAYLOAD = 10,
     SPECIFIC_BANKS_ACCOUNT_PAYLOAD = 11,
+    ACH_TRANSFER_ACCOUNT_PAYLOAD = 13,
+    DOMESTIC_WIRE_TRANSFER_ACCOUNT_PAYLOAD = 14,
+  }
+}
+
+export class AchTransferAccountPayload extends jspb.Message {
+  getHolderAddress(): string;
+  setHolderAddress(value: string): AchTransferAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AchTransferAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: AchTransferAccountPayload): AchTransferAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: AchTransferAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AchTransferAccountPayload;
+  static deserializeBinaryFromReader(message: AchTransferAccountPayload, reader: jspb.BinaryReader): AchTransferAccountPayload;
+}
+
+export namespace AchTransferAccountPayload {
+  export type AsObject = {
+    holderAddress: string,
+  }
+}
+
+export class DomesticWireTransferAccountPayload extends jspb.Message {
+  getHolderAddress(): string;
+  setHolderAddress(value: string): DomesticWireTransferAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): DomesticWireTransferAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: DomesticWireTransferAccountPayload): DomesticWireTransferAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: DomesticWireTransferAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): DomesticWireTransferAccountPayload;
+  static deserializeBinaryFromReader(message: DomesticWireTransferAccountPayload, reader: jspb.BinaryReader): DomesticWireTransferAccountPayload;
+}
+
+export namespace DomesticWireTransferAccountPayload {
+  export type AsObject = {
+    holderAddress: string,
   }
 }
 
@@ -5267,6 +5430,9 @@ export class UpholdAccountPayload extends jspb.Message {
   getAccountId(): string;
   setAccountId(value: string): UpholdAccountPayload;
 
+  getAccountOwner(): string;
+  setAccountOwner(value: string): UpholdAccountPayload;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UpholdAccountPayload.AsObject;
   static toObject(includeInstance: boolean, msg: UpholdAccountPayload): UpholdAccountPayload.AsObject;
@@ -5278,6 +5444,7 @@ export class UpholdAccountPayload extends jspb.Message {
 export namespace UpholdAccountPayload {
   export type AsObject = {
     accountId: string,
+    accountOwner: string,
   }
 }
 
@@ -5471,6 +5638,137 @@ export namespace F2FAccountPayload {
   }
 }
 
+export class IfscBasedAccountPayload extends jspb.Message {
+  getHolderName(): string;
+  setHolderName(value: string): IfscBasedAccountPayload;
+
+  getAccountNr(): string;
+  setAccountNr(value: string): IfscBasedAccountPayload;
+
+  getIfsc(): string;
+  setIfsc(value: string): IfscBasedAccountPayload;
+
+  getNeftAccountPayload(): NeftAccountPayload | undefined;
+  setNeftAccountPayload(value?: NeftAccountPayload): IfscBasedAccountPayload;
+  hasNeftAccountPayload(): boolean;
+  clearNeftAccountPayload(): IfscBasedAccountPayload;
+
+  getRtgsAccountPayload(): RtgsAccountPayload | undefined;
+  setRtgsAccountPayload(value?: RtgsAccountPayload): IfscBasedAccountPayload;
+  hasRtgsAccountPayload(): boolean;
+  clearRtgsAccountPayload(): IfscBasedAccountPayload;
+
+  getImpsAccountPayload(): ImpsAccountPayload | undefined;
+  setImpsAccountPayload(value?: ImpsAccountPayload): IfscBasedAccountPayload;
+  hasImpsAccountPayload(): boolean;
+  clearImpsAccountPayload(): IfscBasedAccountPayload;
+
+  getMessageCase(): IfscBasedAccountPayload.MessageCase;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): IfscBasedAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: IfscBasedAccountPayload): IfscBasedAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: IfscBasedAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): IfscBasedAccountPayload;
+  static deserializeBinaryFromReader(message: IfscBasedAccountPayload, reader: jspb.BinaryReader): IfscBasedAccountPayload;
+}
+
+export namespace IfscBasedAccountPayload {
+  export type AsObject = {
+    holderName: string,
+    accountNr: string,
+    ifsc: string,
+    neftAccountPayload?: NeftAccountPayload.AsObject,
+    rtgsAccountPayload?: RtgsAccountPayload.AsObject,
+    impsAccountPayload?: ImpsAccountPayload.AsObject,
+  }
+
+  export enum MessageCase { 
+    MESSAGE_NOT_SET = 0,
+    NEFT_ACCOUNT_PAYLOAD = 4,
+    RTGS_ACCOUNT_PAYLOAD = 5,
+    IMPS_ACCOUNT_PAYLOAD = 6,
+  }
+}
+
+export class NeftAccountPayload extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): NeftAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: NeftAccountPayload): NeftAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: NeftAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): NeftAccountPayload;
+  static deserializeBinaryFromReader(message: NeftAccountPayload, reader: jspb.BinaryReader): NeftAccountPayload;
+}
+
+export namespace NeftAccountPayload {
+  export type AsObject = {
+  }
+}
+
+export class RtgsAccountPayload extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): RtgsAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: RtgsAccountPayload): RtgsAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: RtgsAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): RtgsAccountPayload;
+  static deserializeBinaryFromReader(message: RtgsAccountPayload, reader: jspb.BinaryReader): RtgsAccountPayload;
+}
+
+export namespace RtgsAccountPayload {
+  export type AsObject = {
+  }
+}
+
+export class ImpsAccountPayload extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ImpsAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: ImpsAccountPayload): ImpsAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: ImpsAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ImpsAccountPayload;
+  static deserializeBinaryFromReader(message: ImpsAccountPayload, reader: jspb.BinaryReader): ImpsAccountPayload;
+}
+
+export namespace ImpsAccountPayload {
+  export type AsObject = {
+  }
+}
+
+export class UpiAccountPayload extends jspb.Message {
+  getVirtualPaymentAddress(): string;
+  setVirtualPaymentAddress(value: string): UpiAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpiAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: UpiAccountPayload): UpiAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: UpiAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpiAccountPayload;
+  static deserializeBinaryFromReader(message: UpiAccountPayload, reader: jspb.BinaryReader): UpiAccountPayload;
+}
+
+export namespace UpiAccountPayload {
+  export type AsObject = {
+    virtualPaymentAddress: string,
+  }
+}
+
+export class PaytmAccountPayload extends jspb.Message {
+  getEmailOrMobileNr(): string;
+  setEmailOrMobileNr(value: string): PaytmAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PaytmAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: PaytmAccountPayload): PaytmAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: PaytmAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PaytmAccountPayload;
+  static deserializeBinaryFromReader(message: PaytmAccountPayload, reader: jspb.BinaryReader): PaytmAccountPayload;
+}
+
+export namespace PaytmAccountPayload {
+  export type AsObject = {
+    emailOrMobileNr: string,
+  }
+}
+
 export class CashByMailAccountPayload extends jspb.Message {
   getPostalAddress(): string;
   setPostalAddress(value: string): CashByMailAccountPayload;
@@ -5548,6 +5846,334 @@ export class TransferwiseAccountPayload extends jspb.Message {
 export namespace TransferwiseAccountPayload {
   export type AsObject = {
     email: string,
+  }
+}
+
+export class TransferwiseUsdAccountPayload extends jspb.Message {
+  getEmail(): string;
+  setEmail(value: string): TransferwiseUsdAccountPayload;
+
+  getHolderName(): string;
+  setHolderName(value: string): TransferwiseUsdAccountPayload;
+
+  getBeneficiaryAddress(): string;
+  setBeneficiaryAddress(value: string): TransferwiseUsdAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): TransferwiseUsdAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: TransferwiseUsdAccountPayload): TransferwiseUsdAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: TransferwiseUsdAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): TransferwiseUsdAccountPayload;
+  static deserializeBinaryFromReader(message: TransferwiseUsdAccountPayload, reader: jspb.BinaryReader): TransferwiseUsdAccountPayload;
+}
+
+export namespace TransferwiseUsdAccountPayload {
+  export type AsObject = {
+    email: string,
+    holderName: string,
+    beneficiaryAddress: string,
+  }
+}
+
+export class PayseraAccountPayload extends jspb.Message {
+  getEmail(): string;
+  setEmail(value: string): PayseraAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PayseraAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: PayseraAccountPayload): PayseraAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: PayseraAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PayseraAccountPayload;
+  static deserializeBinaryFromReader(message: PayseraAccountPayload, reader: jspb.BinaryReader): PayseraAccountPayload;
+}
+
+export namespace PayseraAccountPayload {
+  export type AsObject = {
+    email: string,
+  }
+}
+
+export class PaxumAccountPayload extends jspb.Message {
+  getEmail(): string;
+  setEmail(value: string): PaxumAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PaxumAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: PaxumAccountPayload): PaxumAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: PaxumAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PaxumAccountPayload;
+  static deserializeBinaryFromReader(message: PaxumAccountPayload, reader: jspb.BinaryReader): PaxumAccountPayload;
+}
+
+export namespace PaxumAccountPayload {
+  export type AsObject = {
+    email: string,
+  }
+}
+
+export class CapitualAccountPayload extends jspb.Message {
+  getAccountNr(): string;
+  setAccountNr(value: string): CapitualAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): CapitualAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: CapitualAccountPayload): CapitualAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: CapitualAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): CapitualAccountPayload;
+  static deserializeBinaryFromReader(message: CapitualAccountPayload, reader: jspb.BinaryReader): CapitualAccountPayload;
+}
+
+export namespace CapitualAccountPayload {
+  export type AsObject = {
+    accountNr: string,
+  }
+}
+
+export class CelPayAccountPayload extends jspb.Message {
+  getEmail(): string;
+  setEmail(value: string): CelPayAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): CelPayAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: CelPayAccountPayload): CelPayAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: CelPayAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): CelPayAccountPayload;
+  static deserializeBinaryFromReader(message: CelPayAccountPayload, reader: jspb.BinaryReader): CelPayAccountPayload;
+}
+
+export namespace CelPayAccountPayload {
+  export type AsObject = {
+    email: string,
+  }
+}
+
+export class NequiAccountPayload extends jspb.Message {
+  getMobileNr(): string;
+  setMobileNr(value: string): NequiAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): NequiAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: NequiAccountPayload): NequiAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: NequiAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): NequiAccountPayload;
+  static deserializeBinaryFromReader(message: NequiAccountPayload, reader: jspb.BinaryReader): NequiAccountPayload;
+}
+
+export namespace NequiAccountPayload {
+  export type AsObject = {
+    mobileNr: string,
+  }
+}
+
+export class BizumAccountPayload extends jspb.Message {
+  getMobileNr(): string;
+  setMobileNr(value: string): BizumAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): BizumAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: BizumAccountPayload): BizumAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: BizumAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): BizumAccountPayload;
+  static deserializeBinaryFromReader(message: BizumAccountPayload, reader: jspb.BinaryReader): BizumAccountPayload;
+}
+
+export namespace BizumAccountPayload {
+  export type AsObject = {
+    mobileNr: string,
+  }
+}
+
+export class PixAccountPayload extends jspb.Message {
+  getPixKey(): string;
+  setPixKey(value: string): PixAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PixAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: PixAccountPayload): PixAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: PixAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PixAccountPayload;
+  static deserializeBinaryFromReader(message: PixAccountPayload, reader: jspb.BinaryReader): PixAccountPayload;
+}
+
+export namespace PixAccountPayload {
+  export type AsObject = {
+    pixKey: string,
+  }
+}
+
+export class MoneseAccountPayload extends jspb.Message {
+  getMobileNr(): string;
+  setMobileNr(value: string): MoneseAccountPayload;
+
+  getHolderName(): string;
+  setHolderName(value: string): MoneseAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): MoneseAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: MoneseAccountPayload): MoneseAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: MoneseAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): MoneseAccountPayload;
+  static deserializeBinaryFromReader(message: MoneseAccountPayload, reader: jspb.BinaryReader): MoneseAccountPayload;
+}
+
+export namespace MoneseAccountPayload {
+  export type AsObject = {
+    mobileNr: string,
+    holderName: string,
+  }
+}
+
+export class SatispayAccountPayload extends jspb.Message {
+  getMobileNr(): string;
+  setMobileNr(value: string): SatispayAccountPayload;
+
+  getHolderName(): string;
+  setHolderName(value: string): SatispayAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): SatispayAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: SatispayAccountPayload): SatispayAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: SatispayAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): SatispayAccountPayload;
+  static deserializeBinaryFromReader(message: SatispayAccountPayload, reader: jspb.BinaryReader): SatispayAccountPayload;
+}
+
+export namespace SatispayAccountPayload {
+  export type AsObject = {
+    mobileNr: string,
+    holderName: string,
+  }
+}
+
+export class StrikeAccountPayload extends jspb.Message {
+  getHolderName(): string;
+  setHolderName(value: string): StrikeAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): StrikeAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: StrikeAccountPayload): StrikeAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: StrikeAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): StrikeAccountPayload;
+  static deserializeBinaryFromReader(message: StrikeAccountPayload, reader: jspb.BinaryReader): StrikeAccountPayload;
+}
+
+export namespace StrikeAccountPayload {
+  export type AsObject = {
+    holderName: string,
+  }
+}
+
+export class TikkieAccountPayload extends jspb.Message {
+  getIban(): string;
+  setIban(value: string): TikkieAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): TikkieAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: TikkieAccountPayload): TikkieAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: TikkieAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): TikkieAccountPayload;
+  static deserializeBinaryFromReader(message: TikkieAccountPayload, reader: jspb.BinaryReader): TikkieAccountPayload;
+}
+
+export namespace TikkieAccountPayload {
+  export type AsObject = {
+    iban: string,
+  }
+}
+
+export class VerseAccountPayload extends jspb.Message {
+  getHolderName(): string;
+  setHolderName(value: string): VerseAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): VerseAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: VerseAccountPayload): VerseAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: VerseAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): VerseAccountPayload;
+  static deserializeBinaryFromReader(message: VerseAccountPayload, reader: jspb.BinaryReader): VerseAccountPayload;
+}
+
+export namespace VerseAccountPayload {
+  export type AsObject = {
+    holderName: string,
+  }
+}
+
+export class SwiftAccountPayload extends jspb.Message {
+  getBeneficiaryName(): string;
+  setBeneficiaryName(value: string): SwiftAccountPayload;
+
+  getBeneficiaryAccountNr(): string;
+  setBeneficiaryAccountNr(value: string): SwiftAccountPayload;
+
+  getBeneficiaryAddress(): string;
+  setBeneficiaryAddress(value: string): SwiftAccountPayload;
+
+  getBeneficiaryCity(): string;
+  setBeneficiaryCity(value: string): SwiftAccountPayload;
+
+  getBeneficiaryPhone(): string;
+  setBeneficiaryPhone(value: string): SwiftAccountPayload;
+
+  getSpecialInstructions(): string;
+  setSpecialInstructions(value: string): SwiftAccountPayload;
+
+  getBankSwiftCode(): string;
+  setBankSwiftCode(value: string): SwiftAccountPayload;
+
+  getBankCountryCode(): string;
+  setBankCountryCode(value: string): SwiftAccountPayload;
+
+  getBankName(): string;
+  setBankName(value: string): SwiftAccountPayload;
+
+  getBankBranch(): string;
+  setBankBranch(value: string): SwiftAccountPayload;
+
+  getBankAddress(): string;
+  setBankAddress(value: string): SwiftAccountPayload;
+
+  getIntermediarySwiftCode(): string;
+  setIntermediarySwiftCode(value: string): SwiftAccountPayload;
+
+  getIntermediaryCountryCode(): string;
+  setIntermediaryCountryCode(value: string): SwiftAccountPayload;
+
+  getIntermediaryName(): string;
+  setIntermediaryName(value: string): SwiftAccountPayload;
+
+  getIntermediaryBranch(): string;
+  setIntermediaryBranch(value: string): SwiftAccountPayload;
+
+  getIntermediaryAddress(): string;
+  setIntermediaryAddress(value: string): SwiftAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): SwiftAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: SwiftAccountPayload): SwiftAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: SwiftAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): SwiftAccountPayload;
+  static deserializeBinaryFromReader(message: SwiftAccountPayload, reader: jspb.BinaryReader): SwiftAccountPayload;
+}
+
+export namespace SwiftAccountPayload {
+  export type AsObject = {
+    beneficiaryName: string,
+    beneficiaryAccountNr: string,
+    beneficiaryAddress: string,
+    beneficiaryCity: string,
+    beneficiaryPhone: string,
+    specialInstructions: string,
+    bankSwiftCode: string,
+    bankCountryCode: string,
+    bankName: string,
+    bankBranch: string,
+    bankAddress: string,
+    intermediarySwiftCode: string,
+    intermediaryCountryCode: string,
+    intermediaryName: string,
+    intermediaryBranch: string,
+    intermediaryAddress: string,
   }
 }
 
@@ -6149,12 +6775,11 @@ export namespace Offer {
   export enum State { 
     PB_ERROR = 0,
     UNKNOWN = 1,
-    SCHEDULED = 2,
-    OFFER_FEE_RESERVED = 3,
-    AVAILABLE = 4,
-    NOT_AVAILABLE = 5,
-    REMOVED = 6,
-    MAKER_OFFLINE = 7,
+    OFFER_FEE_RESERVED = 2,
+    AVAILABLE = 3,
+    NOT_AVAILABLE = 4,
+    REMOVED = 5,
+    MAKER_OFFLINE = 6,
   }
 }
 
@@ -6364,8 +6989,8 @@ export class Trade extends jspb.Message {
   getPayoutTxId(): string;
   setPayoutTxId(value: string): Trade;
 
-  getTradeAmountAsLong(): number;
-  setTradeAmountAsLong(value: number): Trade;
+  getAmountAsLong(): number;
+  setAmountAsLong(value: number): Trade;
 
   getTxFeeAsLong(): number;
   setTxFeeAsLong(value: number): Trade;
@@ -6376,8 +7001,8 @@ export class Trade extends jspb.Message {
   getTakeOfferDate(): number;
   setTakeOfferDate(value: number): Trade;
 
-  getTradePrice(): number;
-  setTradePrice(value: number): Trade;
+  getPrice(): number;
+  setPrice(value: number): Trade;
 
   getState(): Trade.State;
   setState(value: Trade.State): Trade;
@@ -6385,8 +7010,8 @@ export class Trade extends jspb.Message {
   getDisputeState(): Trade.DisputeState;
   setDisputeState(value: Trade.DisputeState): Trade;
 
-  getTradePeriodState(): Trade.TradePeriodState;
-  setTradePeriodState(value: Trade.TradePeriodState): Trade;
+  getPeriodState(): Trade.TradePeriodState;
+  setPeriodState(value: Trade.TradePeriodState): Trade;
 
   getContract(): Contract | undefined;
   setContract(value?: Contract): Trade;
@@ -6510,14 +7135,14 @@ export namespace Trade {
     processModel?: ProcessModel.AsObject,
     takerFeeTxId: string,
     payoutTxId: string,
-    tradeAmountAsLong: number,
+    amountAsLong: number,
     txFeeAsLong: number,
     takerFeeAsLong: number,
     takeOfferDate: number,
-    tradePrice: number,
+    price: number,
     state: Trade.State,
     disputeState: Trade.DisputeState,
-    tradePeriodState: Trade.TradePeriodState,
+    periodState: Trade.TradePeriodState,
     contract?: Contract.AsObject,
     contractAsJson: string,
     contractHash: Uint8Array | string,
@@ -7322,6 +7947,9 @@ export class PreferencesPayload extends jspb.Message {
   clearAutoConfirmSettingsList(): PreferencesPayload;
   addAutoConfirmSettings(value?: AutoConfirmSettings, index?: number): AutoConfirmSettings;
 
+  getBsqAverageTrimThreshold(): number;
+  setBsqAverageTrimThreshold(value: number): PreferencesPayload;
+
   getHideNonAccountPaymentMethods(): boolean;
   setHideNonAccountPaymentMethods(value: boolean): PreferencesPayload;
 
@@ -7338,6 +7966,15 @@ export class PreferencesPayload extends jspb.Message {
   setMoneroNodeSettings(value?: MoneroNodeSettings): PreferencesPayload;
   hasMoneroNodeSettings(): boolean;
   clearMoneroNodeSettings(): PreferencesPayload;
+
+  getClearDataAfterDays(): number;
+  setClearDataAfterDays(value: number): PreferencesPayload;
+
+  getBuyScreenCryptoCurrencyCode(): string;
+  setBuyScreenCryptoCurrencyCode(value: string): PreferencesPayload;
+
+  getSellScreenCryptoCurrencyCode(): string;
+  setSellScreenCryptoCurrencyCode(value: string): PreferencesPayload;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PreferencesPayload.AsObject;
@@ -7402,11 +8039,15 @@ export namespace PreferencesPayload {
     cssTheme: number,
     tacAcceptedV120: boolean,
     autoConfirmSettingsList: Array<AutoConfirmSettings.AsObject>,
+    bsqAverageTrimThreshold: number,
     hideNonAccountPaymentMethods: boolean,
     showOffersMatchingMyAccounts: boolean,
     denyApiTaker: boolean,
     notifyOnPreRelease: boolean,
     moneroNodeSettings?: MoneroNodeSettings.AsObject,
+    clearDataAfterDays: number,
+    buyScreenCryptoCurrencyCode: string,
+    sellScreenCryptoCurrencyCode: string,
   }
 }
 
@@ -7951,6 +8592,11 @@ export enum SupportType {
   MEDIATION = 1,
   TRADE = 2,
   REFUND = 3,
+}
+export enum OfferDirection { 
+  OFFER_DIRECTION_ERROR = 0,
+  BUY = 1,
+  SELL = 2,
 }
 export enum AvailabilityResult { 
   PB_ERROR = 0,

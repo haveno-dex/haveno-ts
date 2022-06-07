@@ -1447,8 +1447,8 @@ export class CreateOfferRequest extends jspb.Message {
   getUseMarketBasedPrice(): boolean;
   setUseMarketBasedPrice(value: boolean): CreateOfferRequest;
 
-  getMarketPriceMargin(): number;
-  setMarketPriceMargin(value: number): CreateOfferRequest;
+  getMarketPriceMarginPct(): number;
+  setMarketPriceMarginPct(value: number): CreateOfferRequest;
 
   getAmount(): string;
   setAmount(value: string): CreateOfferRequest;
@@ -1456,8 +1456,8 @@ export class CreateOfferRequest extends jspb.Message {
   getMinAmount(): string;
   setMinAmount(value: string): CreateOfferRequest;
 
-  getBuyerSecurityDeposit(): number;
-  setBuyerSecurityDeposit(value: number): CreateOfferRequest;
+  getBuyerSecurityDepositPct(): number;
+  setBuyerSecurityDepositPct(value: number): CreateOfferRequest;
 
   getTriggerPrice(): string;
   setTriggerPrice(value: string): CreateOfferRequest;
@@ -1479,10 +1479,10 @@ export namespace CreateOfferRequest {
     direction: string,
     price: string,
     useMarketBasedPrice: boolean,
-    marketPriceMargin: number,
+    marketPriceMarginPct: number,
     amount: string,
     minAmount: string,
-    buyerSecurityDeposit: number,
+    buyerSecurityDepositPct: number,
     triggerPrice: string,
     paymentAccountId: string,
   }
@@ -1547,14 +1547,14 @@ export class OfferInfo extends jspb.Message {
   getDirection(): string;
   setDirection(value: string): OfferInfo;
 
-  getPrice(): number;
-  setPrice(value: number): OfferInfo;
+  getPrice(): string;
+  setPrice(value: string): OfferInfo;
 
   getUseMarketBasedPrice(): boolean;
   setUseMarketBasedPrice(value: boolean): OfferInfo;
 
-  getMarketPriceMargin(): number;
-  setMarketPriceMargin(value: number): OfferInfo;
+  getMarketPriceMarginPct(): number;
+  setMarketPriceMarginPct(value: number): OfferInfo;
 
   getAmount(): number;
   setAmount(value: number): OfferInfo;
@@ -1562,17 +1562,17 @@ export class OfferInfo extends jspb.Message {
   getMinAmount(): number;
   setMinAmount(value: number): OfferInfo;
 
-  getVolume(): number;
-  setVolume(value: number): OfferInfo;
+  getVolume(): string;
+  setVolume(value: string): OfferInfo;
 
-  getMinVolume(): number;
-  setMinVolume(value: number): OfferInfo;
+  getMinVolume(): string;
+  setMinVolume(value: string): OfferInfo;
 
   getBuyerSecurityDeposit(): number;
   setBuyerSecurityDeposit(value: number): OfferInfo;
 
-  getTriggerPrice(): number;
-  setTriggerPrice(value: number): OfferInfo;
+  getTriggerPrice(): string;
+  setTriggerPrice(value: string): OfferInfo;
 
   getPaymentAccountId(): string;
   setPaymentAccountId(value: string): OfferInfo;
@@ -1607,6 +1607,24 @@ export class OfferInfo extends jspb.Message {
   getMakerFee(): number;
   setMakerFee(value: number): OfferInfo;
 
+  getIsActivated(): boolean;
+  setIsActivated(value: boolean): OfferInfo;
+
+  getIsMyOffer(): boolean;
+  setIsMyOffer(value: boolean): OfferInfo;
+
+  getOwnerNodeAddress(): string;
+  setOwnerNodeAddress(value: string): OfferInfo;
+
+  getPubKeyRing(): string;
+  setPubKeyRing(value: string): OfferInfo;
+
+  getVersionNr(): string;
+  setVersionNr(value: string): OfferInfo;
+
+  getProtocolVersion(): number;
+  setProtocolVersion(value: number): OfferInfo;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): OfferInfo.AsObject;
   static toObject(includeInstance: boolean, msg: OfferInfo): OfferInfo.AsObject;
@@ -1619,15 +1637,15 @@ export namespace OfferInfo {
   export type AsObject = {
     id: string,
     direction: string,
-    price: number,
+    price: string,
     useMarketBasedPrice: boolean,
-    marketPriceMargin: number,
+    marketPriceMarginPct: number,
     amount: number,
     minAmount: number,
-    volume: number,
-    minVolume: number,
+    volume: string,
+    minVolume: string,
     buyerSecurityDeposit: number,
-    triggerPrice: number,
+    triggerPrice: string,
     paymentAccountId: string,
     paymentMethodId: string,
     paymentMethodShortName: string,
@@ -1639,6 +1657,12 @@ export namespace OfferInfo {
     offerFeePaymentTxId: string,
     txFee: number,
     makerFee: number,
+    isActivated: boolean,
+    isMyOffer: boolean,
+    ownerNodeAddress: string,
+    pubKeyRing: string,
+    versionNr: string,
+    protocolVersion: number,
   }
 }
 
@@ -2275,6 +2299,9 @@ export namespace GetTradeReply {
 }
 
 export class GetTradesRequest extends jspb.Message {
+  getCategory(): GetTradesRequest.Category;
+  setCategory(value: GetTradesRequest.Category): GetTradesRequest;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GetTradesRequest.AsObject;
   static toObject(includeInstance: boolean, msg: GetTradesRequest): GetTradesRequest.AsObject;
@@ -2285,6 +2312,13 @@ export class GetTradesRequest extends jspb.Message {
 
 export namespace GetTradesRequest {
   export type AsObject = {
+    category: GetTradesRequest.Category,
+  }
+
+  export enum Category { 
+    OPEN = 0,
+    CLOSED = 1,
+    FAILED = 2,
   }
 }
 
@@ -2484,11 +2518,11 @@ export class TradeInfo extends jspb.Message {
   getPayoutTxId(): string;
   setPayoutTxId(value: string): TradeInfo;
 
-  getTradeAmountAsLong(): number;
-  setTradeAmountAsLong(value: number): TradeInfo;
+  getAmountAsLong(): number;
+  setAmountAsLong(value: number): TradeInfo;
 
-  getTradePrice(): number;
-  setTradePrice(value: number): TradeInfo;
+  getPrice(): string;
+  setPrice(value: string): TradeInfo;
 
   getTradingPeerNodeAddress(): string;
   setTradingPeerNodeAddress(value: string): TradeInfo;
@@ -2499,8 +2533,8 @@ export class TradeInfo extends jspb.Message {
   getPhase(): string;
   setPhase(value: string): TradeInfo;
 
-  getTradePeriodState(): string;
-  setTradePeriodState(value: string): TradeInfo;
+  getPeriodState(): string;
+  setPeriodState(value: string): TradeInfo;
 
   getIsDepositPublished(): boolean;
   setIsDepositPublished(value: boolean): TradeInfo;
@@ -2517,8 +2551,8 @@ export class TradeInfo extends jspb.Message {
   getIsPayoutPublished(): boolean;
   setIsPayoutPublished(value: boolean): TradeInfo;
 
-  getIsWithdrawn(): boolean;
-  setIsWithdrawn(value: boolean): TradeInfo;
+  getIsCompleted(): boolean;
+  setIsCompleted(value: boolean): TradeInfo;
 
   getContractAsJson(): string;
   setContractAsJson(value: string): TradeInfo;
@@ -2527,6 +2561,9 @@ export class TradeInfo extends jspb.Message {
   setContract(value?: ContractInfo): TradeInfo;
   hasContract(): boolean;
   clearContract(): TradeInfo;
+
+  getTradeVolume(): string;
+  setTradeVolume(value: string): TradeInfo;
 
   getMakerDepositTxId(): string;
   setMakerDepositTxId(value: string): TradeInfo;
@@ -2553,20 +2590,21 @@ export namespace TradeInfo {
     takerFeeAsLong: number,
     takerFeeTxId: string,
     payoutTxId: string,
-    tradeAmountAsLong: number,
-    tradePrice: number,
+    amountAsLong: number,
+    price: string,
     tradingPeerNodeAddress: string,
     state: string,
     phase: string,
-    tradePeriodState: string,
+    periodState: string,
     isDepositPublished: boolean,
     isDepositUnlocked: boolean,
     isPaymentSent: boolean,
     isPaymentReceived: boolean,
     isPayoutPublished: boolean,
-    isWithdrawn: boolean,
+    isCompleted: boolean,
     contractAsJson: string,
     contract?: ContractInfo.AsObject,
+    tradeVolume: string,
     makerDepositTxId: string,
     takerDepositTxId: string,
   }
@@ -2644,6 +2682,9 @@ export class PaymentAccountPayloadInfo extends jspb.Message {
   getAddress(): string;
   setAddress(value: string): PaymentAccountPayloadInfo;
 
+  getPaymentDetails(): string;
+  setPaymentDetails(value: string): PaymentAccountPayloadInfo;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PaymentAccountPayloadInfo.AsObject;
   static toObject(includeInstance: boolean, msg: PaymentAccountPayloadInfo): PaymentAccountPayloadInfo.AsObject;
@@ -2657,6 +2698,7 @@ export namespace PaymentAccountPayloadInfo {
     id: string,
     paymentMethodId: string,
     address: string,
+    paymentDetails: string,
   }
 }
 
