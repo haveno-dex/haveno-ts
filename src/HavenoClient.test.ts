@@ -22,6 +22,7 @@ const TaskLooper = monerojs.TaskLooper;
 
 // other required imports
 import fs from "fs";
+import fsPromises from "fs/promises";
 import path from "path";
 import net from "net";
 import assert from "assert";
@@ -204,7 +205,7 @@ beforeAll(async () => {
   await initFundingWallet();
   
   // create test data directory if it doesn't exist
-  if (!fs.existsSync(TestConfig.testDataDir)) fs.mkdirSync(TestConfig.testDataDir);
+  if (!await exists(TestConfig.testDataDir)) await fsPromises.mkdir(TestConfig.testDataDir);
 });
 
 beforeEach(async () => {
@@ -1692,6 +1693,15 @@ test("Handles unexpected errors during trade initialization", async () => {
 
 // ------------------------------- HELPERS ------------------------------------
 
+async function exists(path: string) {
+  try {
+    await fsPromises.access(path)
+    return true
+  } catch {
+    return false
+  }
+}
+
 async function initHavenos(numDaemons: number, config?: any) {
   const traderPromises: Promise<HavenoClient>[] = [];
   for (let i = 0; i < numDaemons; i++) traderPromises.push(initHaveno(config));
@@ -1777,11 +1787,11 @@ async function releaseHavenoProcess(havenod: HavenoClient, deleteAppDir?: boolea
 /**
  * Delete a Haveno instance from disk.
  */
-function deleteHavenoInstance(havenod: HavenoClient) {
-    if (!havenod.getAppName()) throw new Error("Cannot delete Haveno instance owned by different process")
-    const userDataDir = process.env.APPDATA || (process.platform === 'darwin' ? process.env.HOME + '/Library/Application Support' : process.env.HOME + "/.local/share");
-    const appPath = path.normalize(userDataDir + "/" + havenod.getAppName()!);
-    fs.rmSync(appPath, { recursive: true, force: true });
+async function deleteHavenoInstance(havenod: HavenoClient) {
+  if (!havenod.getAppName()) throw new Error("Cannot delete Haveno instance owned by different process")
+  const userDataDir = process.env.APPDATA || (process.platform === 'darwin' ? process.env.HOME + '/Library/Application Support' : process.env.HOME + "/.local/share");
+  const appPath = path.normalize(userDataDir + "/" + havenod.getAppName()!);
+  await fsPromises.rm(appPath, { recursive: true });
 }
 
 /**
