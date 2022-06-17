@@ -5,7 +5,7 @@ import HavenoClient from "./HavenoClient";
 import HavenoError from "./utils/HavenoError";
 import HavenoUtils from "./utils/HavenoUtils";
 import { MarketPriceInfo, NotificationMessage, OfferInfo, TradeInfo, UrlConnection, XmrBalanceInfo } from "./protobuf/grpc_pb"; // TODO (woodser): better names; haveno_grpc_pb, haveno_pb
-import { Attachment, DisputeResult, PaymentMethod, PaymentAccount, MoneroNodeSettings } from "./protobuf/pb_pb";
+import { Attachment, DisputeResult, PaymentMethod, PaymentAccountForm, PaymentAccountFormField, PaymentAccount, MoneroNodeSettings} from "./protobuf/pb_pb";
 import { XmrDestination, XmrTx, XmrIncomingTransfer, XmrOutgoingTransfer } from "./protobuf/grpc_pb";
 import AuthenticationStatus = UrlConnection.AuthenticationStatus;
 import OnlineStatus = UrlConnection.OnlineStatus;
@@ -444,7 +444,7 @@ test("Can manage Monero daemon connections", async () => {
     await monerod2.stopProcess();
 
     // test auto switch after periodic connection check
-    await wait(TestConfig.daemonPollPeriodMs);
+    await wait(TestConfig.daemonPollPeriodMs * 2);
     connection = await charlie.getMoneroConnection();
     testConnection(connection!, monerodUrl1, OnlineStatus.ONLINE, AuthenticationStatus.AUTHENTICATED, 1);
 
@@ -852,6 +852,64 @@ test("Can get payment accounts", async () => {
   }
 });
 
+// TODO: rename ClearXChange to Zelle
+// TODO: FieldId represented as number
+test("Can validate payment account forms", async () => {
+  
+  // supported payment methods  
+  const expectedPaymentMethods = ["REVOLUT", "SEPA", "TRANSFERWISE", "CLEAR_X_CHANGE", "SWIFT", "F2F", "STRIKE"];
+  
+  // get payment methods
+  const paymentMethods = await alice.getPaymentMethods();
+  expect(paymentMethods.length).toEqual(expectedPaymentMethods.length);
+  for (const paymentMethod of paymentMethods) {
+    assert(GenUtils.arrayContains(expectedPaymentMethods, paymentMethod.getId()), "Payment method is not expected: " + paymentMethod.getId());
+  }
+  
+  // test form for each payment method
+  for (const paymentMethod of paymentMethods) {
+    
+    // generate form
+    const accountForm = await alice.getPaymentAccountForm(paymentMethod.getId());
+    
+    // complete form, validating each field
+    for (const field of accountForm.getFieldsList()) {
+      
+      // validate invalid form field
+      try {
+        const invalidInput = getInvalidFormInput(accountForm, field.getId());
+        await alice.validateFormField(accountForm, field.getId(), invalidInput);
+        throw new Error("Should have thrown error validating form field '" + field.getId() + "' with invalid value '" + invalidInput + "'");
+      } catch (err: any) {
+        if (err.message.indexOf("Not implemented") >= 0) throw err;
+        if (err.message.indexOf("Should have thrown") >= 0) throw err;
+      }
+      
+      // validate valid form field
+      const validInput = getValidFormInput(field.getId(), accountForm);
+      await alice.validateFormField(accountForm, field.getId(), validInput);
+      field.setValue(validInput);
+    }
+    
+    // create payment account
+    const fiatAccount = await alice.createPaymentAccount(accountForm);
+    
+    // payment account added
+    let found = false;
+    for (const paymentAccount of await alice.getPaymentAccounts()) {
+      if (paymentAccount.getId() === fiatAccount.getId()) {
+        found = true;
+        break;
+      }
+    }
+    assert(found, "Payment account not found after adding");
+    
+    // test payment account
+    expect(fiatAccount.getPaymentMethod().getId()).toEqual(paymentMethod.getId());
+    testFiatAccount(fiatAccount, accountForm);
+  }
+});
+
 test("Can create fiat payment accounts", async () => {
   
   // get payment account form
@@ -859,25 +917,25 @@ test("Can create fiat payment accounts", async () => {
   const accountForm = await alice.getPaymentAccountForm(paymentMethodId);
   
   // edit form
-  accountForm.tradeCurrencies ="gbp,eur,usd";
-  accountForm.selectedTradeCurrency = "usd";
-  accountForm.accountName = "Revolut account " + GenUtils.getUUID();
-  accountForm.userName = "user123";
+  HavenoUtils.setFormValue(PaymentAccountFormField.FieldId.ACCOUNT_NAME, "Revolut account " + GenUtils.getUUID(), accountForm);
+  HavenoUtils.setFormValue(PaymentAccountFormField.FieldId.USER_NAME, "user123", accountForm);
+  HavenoUtils.setFormValue(PaymentAccountFormField.FieldId.TRADE_CURRENCIES, "gbp,eur,usd", accountForm);
   
   // create payment account
   const fiatAccount = await alice.createPaymentAccount(accountForm);
-  expect(fiatAccount.getAccountName()).toEqual(accountForm.accountName);
+  expect(fiatAccount.getAccountName()).toEqual(HavenoUtils.getFormValue(PaymentAccountFormField.FieldId.ACCOUNT_NAME, accountForm));
+  expect(fiatAccount.getSelectedTradeCurrency().getCode()).toEqual("USD");
   expect(fiatAccount.getTradeCurrenciesList().length).toBeGreaterThan(0);
   expect(fiatAccount.getPaymentAccountPayload()!.getPaymentMethodId()).toEqual(paymentMethodId);
-  expect(fiatAccount.getPaymentAccountPayload()!.getRevolutAccountPayload()!.getAccountId()).toEqual(accountForm.userName);
-  expect(fiatAccount.getPaymentAccountPayload()!.getRevolutAccountPayload()!.getUserName()).toEqual(accountForm.userName);
+  expect(fiatAccount.getPaymentAccountPayload()!.getRevolutAccountPayload()!.getAccountId()).toEqual(HavenoUtils.getFormValue(PaymentAccountFormField.FieldId.USER_NAME, accountForm)); // TODO: payment payload account id is username?
+  expect(fiatAccount.getPaymentAccountPayload()!.getRevolutAccountPayload()!.getUserName()).toEqual(HavenoUtils.getFormValue(PaymentAccountFormField.FieldId.USER_NAME, accountForm));
   
   // payment account added
   let found = false;
   for (const paymentAccount of await alice.getPaymentAccounts()) {
     if (paymentAccount.getId() === fiatAccount.getId()) {
-        found = true;
-        break;
+      found = true;
+      break;
     }
   }
   assert(found, "Payment account not found after adding");
@@ -1085,7 +1143,6 @@ test("Can schedule offers with locked funds", async () => {
     expect(BigInt((await charlie.getBalances()).getLockedBalance())).toEqual(BigInt(0));
     expect(BigInt((await charlie.getBalances()).getReservedOfferBalance())).toEqual(BigInt(0));
   } catch (err2) {
-    console.log(err2);
     err = err2;
   }
 
@@ -2125,10 +2182,9 @@ function getCryptoAddress(currencyCode: string): string | undefined {
 
 async function createRevolutPaymentAccount(trader: HavenoClient): Promise<PaymentAccount> {
   const accountForm = await trader.getPaymentAccountForm('REVOLUT');
-  accountForm.tradeCurrencies ="gbp,eur,usd";
-  accountForm.selectedTradeCurrency = "usd";
-  accountForm.accountName = "Revolut account " + GenUtils.getUUID();
-  accountForm.userName = "user123";
+  HavenoUtils.setFormValue(PaymentAccountFormField.FieldId.TRADE_CURRENCIES, "gbp,eur,usd", accountForm);
+  HavenoUtils.setFormValue(PaymentAccountFormField.FieldId.ACCOUNT_NAME, "Revolut account " + GenUtils.getUUID(), accountForm);
+  HavenoUtils.setFormValue(PaymentAccountFormField.FieldId.USER_NAME, "user123", accountForm);
   return trader.createPaymentAccount(accountForm);
 }
 
@@ -2304,4 +2360,306 @@ function testMoneroNodeSettingsEqual(settingsBefore: MoneroNodeSettings, setting
     expect(settingsBefore.getBlockchainPath()).toEqual(settingsAfter.getBlockchainPath());
     expect(settingsBefore.getBootstrapUrl()).toEqual(settingsAfter.getBootstrapUrl());
     expect(settingsBefore.getStartupFlagsList()).toEqual(settingsAfter.getStartupFlagsList());
+}
+
+function getFormField(form: PaymentAccountForm, fieldId: PaymentAccountFormField.FieldId): PaymentAccountFormField {
+    for (const field of form.getFieldsList()) {
+      if (field.getId() == fieldId) return field;
+    }
+    throw new Error("Form field not found: " + fieldId);
+}
+
+function getValidFormInput(fieldId: PaymentAccountFormField.FieldId, form: PaymentAccountForm): string {
+  const field = getFormField(form, fieldId);
+  switch (fieldId) {
+    case PaymentAccountFormField.FieldId.ACCEPTED_COUNTRY_CODES:
+      if (form.getId().toString() === "SEPA") return "BE," + field.getSupportedSepaEuroCountriesList().map(country => country.getCode()).join(',');
+      return field.getSupportedCountriesList().map(country => country.getCode()).join(',');
+    case PaymentAccountFormField.FieldId.ACCOUNT_ID:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.ACCOUNT_NAME:
+      return form.getId().toString() + " " + GenUtils.getUUID(); // TODO: rename to form.getPaymentMethodId()
+    case PaymentAccountFormField.FieldId.ACCOUNT_NR:
+      return "1234567890";
+    case PaymentAccountFormField.FieldId.ACCOUNT_OWNER:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.ACCOUNT_TYPE:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.ANSWER:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.BANK_ACCOUNT_NAME:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.BANK_ACCOUNT_NUMBER:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.BANK_ACCOUNT_TYPE:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.BANK_ADDRESS:
+      return "456 example st";
+    case PaymentAccountFormField.FieldId.BANK_BRANCH:
+      return "Bank branch XYZ";
+    case PaymentAccountFormField.FieldId.BANK_BRANCH_CODE:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.BANK_BRANCH_NAME:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.BANK_ID:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.BANK_NAME:
+      return "Bank XYZ";
+    case PaymentAccountFormField.FieldId.BANK_SWIFT_CODE:
+      return "12345678901"; // TODO: use real swift code
+    case PaymentAccountFormField.FieldId.BENEFICIARY_ACCOUNT_NR:
+      return "1234567890";
+    case PaymentAccountFormField.FieldId.BENEFICIARY_ADDRESS:
+      return "123 example st";
+    case PaymentAccountFormField.FieldId.BENEFICIARY_CITY:
+      return "Acme";
+    case PaymentAccountFormField.FieldId.BENEFICIARY_NAME:
+      return "Jane Doe";
+    case PaymentAccountFormField.FieldId.BENEFICIARY_PHONE:
+      return "123-456-7890";
+    case PaymentAccountFormField.FieldId.BIC:
+      return "ATLNFRPP";
+    case PaymentAccountFormField.FieldId.BRANCH_ID:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.CITY:
+      return "Atlanta";
+    case PaymentAccountFormField.FieldId.CONTACT:
+      return "Email please";
+    case PaymentAccountFormField.FieldId.COUNTRY:
+    case PaymentAccountFormField.FieldId.BANK_COUNTRY_CODE:
+    case PaymentAccountFormField.FieldId.INTERMEDIARY_COUNTRY_CODE:
+      return field.getSupportedCountriesList().length ? field.getSupportedCountriesList().at(0).getCode() : "FR";
+    case PaymentAccountFormField.FieldId.EMAIL:
+      return "jdoe@no.com";
+    case PaymentAccountFormField.FieldId.EMAIL_OR_MOBILE_NR:
+      return "876-512-7813";
+    case PaymentAccountFormField.FieldId.EXTRA_INFO:
+      return "Please and thanks";
+    case PaymentAccountFormField.FieldId.HOLDER_ADDRESS:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.HOLDER_EMAIL:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.HOLDER_NAME:
+      return "Alice Doe";
+    case PaymentAccountFormField.FieldId.HOLDER_TAX_ID:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.IBAN:
+      return "FR1420041010050500013M02606";
+    case PaymentAccountFormField.FieldId.IFSC:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.INTERMEDIARY_ADDRESS:
+      return "123 intermediary example st";
+    case PaymentAccountFormField.FieldId.INTERMEDIARY_BRANCH:
+      return "Intermediary bank branch XYZ";
+    case PaymentAccountFormField.FieldId.INTERMEDIARY_NAME:
+      return "Intermediary bank XYZ";
+    case PaymentAccountFormField.FieldId.INTERMEDIARY_SWIFT_CODE:
+      return "10987654321"; // TODO: use real swift code
+    case PaymentAccountFormField.FieldId.MOBILE_NR:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.NATIONAL_ACCOUNT_ID:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.PAYID:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.PIX_KEY:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.POSTAL_ADDRESS:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.PROMPT_PAY_ID:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.QUESTION:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.REQUIREMENTS:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.SALT:
+      return "";
+    case PaymentAccountFormField.FieldId.SPECIAL_INSTRUCTIONS:
+      return "asap plz";
+    case PaymentAccountFormField.FieldId.STATE:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.TRADE_CURRENCIES:
+      return field.getSupportedCurrenciesList().map(currency => currency.getCode()).join(',');
+    case PaymentAccountFormField.FieldId.USER_NAME:
+      return "user123";
+    case PaymentAccountFormField.FieldId.VIRTUAL_PAYMENT_ADDRESS:
+      throw new Error("Not implemented");
+    default:
+      throw new Error("Unhandled form field: " + fieldId);
+  }
+}
+
+// TODO: improve invalid inputs
+function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFormField.FieldId): string {
+  switch (fieldId) {
+    case PaymentAccountFormField.FieldId.ACCEPTED_COUNTRY_CODES:
+      return "US,XX";
+    case PaymentAccountFormField.FieldId.ACCOUNT_ID:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.ACCOUNT_NAME:
+      return "";
+    case PaymentAccountFormField.FieldId.ACCOUNT_NR:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.ACCOUNT_OWNER:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.ACCOUNT_TYPE:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.ANSWER:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.BANK_ACCOUNT_NAME:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.BANK_ACCOUNT_NUMBER:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.BANK_ACCOUNT_TYPE:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.BANK_ADDRESS:
+      return "";
+    case PaymentAccountFormField.FieldId.BANK_BRANCH:
+      return "A";
+    case PaymentAccountFormField.FieldId.BANK_BRANCH_CODE:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.BANK_BRANCH_NAME:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.BANK_CODE:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.BANK_COUNTRY_CODE:
+      return "A";
+    case PaymentAccountFormField.FieldId.BANK_ID:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.BANK_NAME:
+      return "A";
+    case PaymentAccountFormField.FieldId.BANK_SWIFT_CODE:
+      return "A";
+    case PaymentAccountFormField.FieldId.BENEFICIARY_ACCOUNT_NR:
+      return "1";
+    case PaymentAccountFormField.FieldId.BENEFICIARY_ADDRESS:
+      return "";
+    case PaymentAccountFormField.FieldId.BENEFICIARY_CITY:
+      return "A";
+    case PaymentAccountFormField.FieldId.BENEFICIARY_NAME:
+      return "A";
+    case PaymentAccountFormField.FieldId.BENEFICIARY_PHONE:
+      return "1";
+    case PaymentAccountFormField.FieldId.BIC:
+      return "123";
+    case PaymentAccountFormField.FieldId.BRANCH_ID:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.CITY:
+      return "A";
+    case PaymentAccountFormField.FieldId.CONTACT:
+      return "";
+    case PaymentAccountFormField.FieldId.COUNTRY:
+      return "abc"
+    case PaymentAccountFormField.FieldId.EMAIL:
+      return "@no.com";
+    case PaymentAccountFormField.FieldId.EMAIL_OR_MOBILE_NR:
+      return ""; // TODO: validate phone numbers, e.g. 876
+    case PaymentAccountFormField.FieldId.EXTRA_INFO:
+      throw new Error("Extra info has no invalid input");
+    case PaymentAccountFormField.FieldId.HOLDER_ADDRESS:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.HOLDER_EMAIL:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.HOLDER_NAME:
+      return "A";
+    case PaymentAccountFormField.FieldId.HOLDER_TAX_ID:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.IBAN:
+      return "abc";
+    case PaymentAccountFormField.FieldId.IFSC:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.INTERMEDIARY_ADDRESS:
+      return "";
+    case PaymentAccountFormField.FieldId.INTERMEDIARY_BRANCH:
+      return "A";
+    case PaymentAccountFormField.FieldId.INTERMEDIARY_COUNTRY_CODE:
+      return "A";
+    case PaymentAccountFormField.FieldId.INTERMEDIARY_NAME:
+      return "A";
+    case PaymentAccountFormField.FieldId.INTERMEDIARY_SWIFT_CODE:
+      return "A";
+    case PaymentAccountFormField.FieldId.MOBILE_NR:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.NATIONAL_ACCOUNT_ID:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.PAYID:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.PIX_KEY:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.POSTAL_ADDRESS:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.PROMPT_PAY_ID:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.QUESTION:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.REQUIREMENTS:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.SALT:
+      return "abc";
+    case PaymentAccountFormField.FieldId.SPECIAL_INSTRUCTIONS:
+      throw new Error("Special instructions have no invalid input");
+    case PaymentAccountFormField.FieldId.STATE:
+      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.TRADE_CURRENCIES:
+      return "abc,def";
+    case PaymentAccountFormField.FieldId.USER_NAME:
+      return "A";
+    case PaymentAccountFormField.FieldId.VIRTUAL_PAYMENT_ADDRESS:
+      throw new Error("Not implemented");
+    default:
+      throw new Error("Unhandled form field: " + fieldId);
+  }
+}
+
+function testFiatAccount(account: PaymentAccount, form: PaymentAccountForm) {
+    expect(account.getAccountName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.ACCOUNT_NAME).getValue()); // TODO: using number as payment method, account payload's account name = user name
+    const isCountryBased = account.getPaymentAccountPayload().getCountryBasedPaymentAccountPayload() !== undefined;
+    if (isCountryBased) expect(account.getPaymentAccountPayload().getCountryBasedPaymentAccountPayload()!.getCountryCode()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.COUNTRY).getValue());
+    switch (form.getId()) {
+      case PaymentAccountForm.FormId.REVOLUT: 
+        expect(account.getPaymentAccountPayload().getRevolutAccountPayload().getUserName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.USER_NAME).getValue());
+        expect(account.getTradeCurrenciesList().map(currency => currency.getCode()).join(",")).toEqual(getFormField(form, PaymentAccountFormField.FieldId.TRADE_CURRENCIES).getValue());
+        break;
+      case PaymentAccountForm.FormId.SEPA:
+        expect(account.getPaymentAccountPayload().getCountryBasedPaymentAccountPayload()!.getSepaAccountPayload().getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
+        //expect(account.getPaymentAccountPayload().getCountryBasedPaymentAccountPayload()!.getSepaAccountPayload().getEmail()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.EMAIL).getValue()); // TODO: if this is deprecated, remove from sepa model
+        expect(account.getPaymentAccountPayload().getCountryBasedPaymentAccountPayload()!.getSepaAccountPayload().getIban()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.IBAN).getValue());
+        expect(account.getPaymentAccountPayload().getCountryBasedPaymentAccountPayload()!.getSepaAccountPayload().getBic()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.BIC).getValue());
+        expect(account.getPaymentAccountPayload().getCountryBasedPaymentAccountPayload()!.getAcceptedCountryCodesList().join(",")).toEqual(getFormField(form, PaymentAccountFormField.FieldId.ACCEPTED_COUNTRY_CODES).getValue());
+        break;
+      case PaymentAccountForm.FormId.TRANSFERWISE:
+        expect(account.getPaymentAccountPayload().getTransferwiseAccountPayload().getEmail()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.EMAIL).getValue());
+        break;
+      case PaymentAccountForm.FormId.CLEAR_X_CHANGE:
+        expect(account.getPaymentAccountPayload().getClearXchangeAccountPayload().getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
+        expect(account.getPaymentAccountPayload().getClearXchangeAccountPayload().getEmailOrMobileNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.EMAIL_OR_MOBILE_NR).getValue());
+        break;
+      case PaymentAccountForm.FormId.SWIFT:
+        expect(account.getPaymentAccountPayload().getSwiftAccountPayload().getBankSwiftCode()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.BANK_SWIFT_CODE).getValue());
+        expect(account.getPaymentAccountPayload().getSwiftAccountPayload().getBankCountryCode()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.BANK_COUNTRY_CODE).getValue());
+        expect(account.getPaymentAccountPayload().getSwiftAccountPayload().getBankName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.BANK_NAME).getValue());
+        expect(account.getPaymentAccountPayload().getSwiftAccountPayload().getBankBranch()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.BANK_BRANCH).getValue());
+        expect(account.getPaymentAccountPayload().getSwiftAccountPayload().getBankAddress()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.BANK_ADDRESS).getValue());
+        expect(account.getPaymentAccountPayload().getSwiftAccountPayload().getIntermediarySwiftCode()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.INTERMEDIARY_SWIFT_CODE).getValue());
+        expect(account.getPaymentAccountPayload().getSwiftAccountPayload().getIntermediaryCountryCode()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.INTERMEDIARY_COUNTRY_CODE).getValue());
+        expect(account.getPaymentAccountPayload().getSwiftAccountPayload().getIntermediaryName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.INTERMEDIARY_NAME).getValue());
+        expect(account.getPaymentAccountPayload().getSwiftAccountPayload().getIntermediaryBranch()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.INTERMEDIARY_BRANCH).getValue());
+        expect(account.getPaymentAccountPayload().getSwiftAccountPayload().getIntermediaryAddress()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.INTERMEDIARY_ADDRESS).getValue());
+        expect(account.getPaymentAccountPayload().getSwiftAccountPayload().getBeneficiaryName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.BENEFICIARY_NAME).getValue());
+        expect(account.getPaymentAccountPayload().getSwiftAccountPayload().getBeneficiaryAccountNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.BENEFICIARY_ACCOUNT_NR).getValue());
+        expect(account.getPaymentAccountPayload().getSwiftAccountPayload().getBeneficiaryAddress()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.BENEFICIARY_ADDRESS).getValue());
+        expect(account.getPaymentAccountPayload().getSwiftAccountPayload().getBeneficiaryCity()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.BENEFICIARY_CITY).getValue());
+        expect(account.getPaymentAccountPayload().getSwiftAccountPayload().getBeneficiaryPhone()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.BENEFICIARY_PHONE).getValue());
+        expect(account.getPaymentAccountPayload().getSwiftAccountPayload().getSpecialInstructions()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.SPECIAL_INSTRUCTIONS).getValue());
+        break;
+      case PaymentAccountForm.FormId.F2F:
+        expect(account.getPaymentAccountPayload().getCountryBasedPaymentAccountPayload()!.getF2fAccountPayload().getCity()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.CITY).getValue());
+        expect(account.getPaymentAccountPayload().getCountryBasedPaymentAccountPayload()!.getF2fAccountPayload().getContact()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.CONTACT).getValue());
+        expect(account.getPaymentAccountPayload().getCountryBasedPaymentAccountPayload()!.getF2fAccountPayload().getExtraInfo()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.EXTRA_INFO).getValue());
+        break;
+      case PaymentAccountForm.FormId.STRIKE:
+        expect(account.getPaymentAccountPayload().getCountryBasedPaymentAccountPayload()!.getStrikeAccountPayload().getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
+        break;
+      default:
+        throw new Error("Unhandled payment method type: " + form.getId());
+    }
 }
