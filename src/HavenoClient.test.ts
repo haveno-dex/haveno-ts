@@ -857,7 +857,7 @@ test("Can get payment accounts", async () => {
 test("Can validate payment account forms", async () => {
   
   // supported payment methods  
-  const expectedPaymentMethods = ["REVOLUT", "SEPA", "TRANSFERWISE", "CLEAR_X_CHANGE", "SWIFT", "F2F", "STRIKE"];
+  const expectedPaymentMethods = ["REVOLUT", "SEPA", "TRANSFERWISE", "CLEAR_X_CHANGE", "SWIFT", "F2F", "STRIKE", "MONEY_GRAM"];
   
   // get payment methods
   const paymentMethods = await alice.getPaymentMethods();
@@ -2475,8 +2475,10 @@ function getValidFormInput(fieldId: PaymentAccountFormField.FieldId, form: Payme
       return "";
     case PaymentAccountFormField.FieldId.SPECIAL_INSTRUCTIONS:
       return "asap plz";
-    case PaymentAccountFormField.FieldId.STATE:
-      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.STATE: {
+      const country = HavenoUtils.getFormValue(PaymentAccountFormField.FieldId.COUNTRY, form);
+      return GenUtils.arrayContains(field.getRequiredForCountriesList(), country) ? "My state" : "";
+    }
     case PaymentAccountFormField.FieldId.TRADE_CURRENCIES:
       return field.getSupportedCurrenciesList().map(currency => currency.getCode()).join(',');
     case PaymentAccountFormField.FieldId.USER_NAME:
@@ -2490,6 +2492,7 @@ function getValidFormInput(fieldId: PaymentAccountFormField.FieldId, form: Payme
 
 // TODO: improve invalid inputs
 function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFormField.FieldId): string {
+  const field = getFormField(form, fieldId);
   switch (fieldId) {
     case PaymentAccountFormField.FieldId.ACCEPTED_COUNTRY_CODES:
       return "US,XX";
@@ -2597,8 +2600,10 @@ function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFo
       return "abc";
     case PaymentAccountFormField.FieldId.SPECIAL_INSTRUCTIONS:
       throw new Error("Special instructions have no invalid input");
-    case PaymentAccountFormField.FieldId.STATE:
-      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.STATE: {
+      const country = HavenoUtils.getFormValue(PaymentAccountFormField.FieldId.COUNTRY, form);
+      return GenUtils.arrayContains(field.getRequiredForCountriesList(), country) ? "" : "My state";
+    }
     case PaymentAccountFormField.FieldId.TRADE_CURRENCIES:
       return "abc,def";
     case PaymentAccountFormField.FieldId.USER_NAME:
@@ -2658,6 +2663,13 @@ function testFiatAccount(account: PaymentAccount, form: PaymentAccountForm) {
         break;
       case PaymentAccountForm.FormId.STRIKE:
         expect(account.getPaymentAccountPayload().getCountryBasedPaymentAccountPayload()!.getStrikeAccountPayload().getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
+        break;
+      case PaymentAccountForm.FormId.MONEY_GRAM:
+        expect(account.getPaymentAccountPayload().getMoneyGramAccountPayload().getCountryCode()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.COUNTRY).getValue()); // TODO: ok to not be CountryBasedPaymentAccountPayload?
+        expect(account.getPaymentAccountPayload().getMoneyGramAccountPayload().getState()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.STATE).getValue());
+        expect(account.getPaymentAccountPayload().getMoneyGramAccountPayload().getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
+        expect(account.getPaymentAccountPayload().getMoneyGramAccountPayload().getEmail()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.EMAIL).getValue());
+        expect(account.getTradeCurrenciesList().map(currency => currency.getCode()).join(",")).toEqual(getFormField(form, PaymentAccountFormField.FieldId.TRADE_CURRENCIES).getValue());
         break;
       default:
         throw new Error("Unhandled payment method type: " + form.getId());
