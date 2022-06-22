@@ -857,7 +857,7 @@ test("Can get payment accounts", async () => {
 test("Can validate payment account forms", async () => {
   
   // supported payment methods  
-  const expectedPaymentMethods = ["REVOLUT", "SEPA", "TRANSFERWISE", "CLEAR_X_CHANGE", "SWIFT", "F2F", "STRIKE", "MONEY_GRAM"];
+  const expectedPaymentMethods = ["REVOLUT", "SEPA", "SEPA_INSTANT", "TRANSFERWISE", "CLEAR_X_CHANGE", "SWIFT", "F2F", "STRIKE", "MONEY_GRAM"];
   
   // get payment methods
   const paymentMethods = await alice.getPaymentMethods();
@@ -2373,7 +2373,7 @@ function getValidFormInput(fieldId: PaymentAccountFormField.FieldId, form: Payme
   const field = getFormField(form, fieldId);
   switch (fieldId) {
     case PaymentAccountFormField.FieldId.ACCEPTED_COUNTRY_CODES:
-      if (form.getId().toString() === "SEPA") return "BE," + field.getSupportedSepaEuroCountriesList().map(country => country.getCode()).join(',');
+      if (form.getId().toString() === "SEPA" || form.getId().toString() === "SEPA_INSTANT") return "BE," + field.getSupportedSepaEuroCountriesList().map(country => country.getCode()).join(',');
       return field.getSupportedCountriesList().map(country => country.getCode()).join(',');
     case PaymentAccountFormField.FieldId.ACCOUNT_ID:
       throw new Error("Not implemented");
@@ -2629,6 +2629,12 @@ function testFiatAccount(account: PaymentAccount, form: PaymentAccountForm) {
         //expect(account.getPaymentAccountPayload().getCountryBasedPaymentAccountPayload()!.getSepaAccountPayload().getEmail()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.EMAIL).getValue()); // TODO: if this is deprecated, remove from sepa model
         expect(account.getPaymentAccountPayload().getCountryBasedPaymentAccountPayload()!.getSepaAccountPayload().getIban()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.IBAN).getValue());
         expect(account.getPaymentAccountPayload().getCountryBasedPaymentAccountPayload()!.getSepaAccountPayload().getBic()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.BIC).getValue());
+        expect(account.getPaymentAccountPayload().getCountryBasedPaymentAccountPayload()!.getAcceptedCountryCodesList().join(",")).toEqual(getFormField(form, PaymentAccountFormField.FieldId.ACCEPTED_COUNTRY_CODES).getValue());
+        break;
+      case PaymentAccountForm.FormId.SEPA_INSTANT:
+        expect(account.getPaymentAccountPayload().getCountryBasedPaymentAccountPayload()!.getSepaInstantAccountPayload().getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
+        expect(account.getPaymentAccountPayload().getCountryBasedPaymentAccountPayload()!.getSepaInstantAccountPayload().getIban()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.IBAN).getValue());
+        expect(account.getPaymentAccountPayload().getCountryBasedPaymentAccountPayload()!.getSepaInstantAccountPayload().getBic()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.BIC).getValue());
         expect(account.getPaymentAccountPayload().getCountryBasedPaymentAccountPayload()!.getAcceptedCountryCodesList().join(",")).toEqual(getFormField(form, PaymentAccountFormField.FieldId.ACCEPTED_COUNTRY_CODES).getValue());
         break;
       case PaymentAccountForm.FormId.TRANSFERWISE:
