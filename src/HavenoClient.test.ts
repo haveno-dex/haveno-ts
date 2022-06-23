@@ -857,7 +857,7 @@ test("Can get payment accounts", async () => {
 test("Can validate payment account forms", async () => {
   
   // supported payment methods  
-  const expectedPaymentMethods = ["REVOLUT", "SEPA", "SEPA_INSTANT", "TRANSFERWISE", "CLEAR_X_CHANGE", "SWIFT", "F2F", "STRIKE", "MONEY_GRAM", "FASTER_PAYMENTS"];
+  const expectedPaymentMethods = ["REVOLUT", "SEPA", "SEPA_INSTANT", "TRANSFERWISE", "CLEAR_X_CHANGE", "SWIFT", "F2F", "STRIKE", "MONEY_GRAM", "FASTER_PAYMENTS", "UPHOLD"];
   
   // get payment methods
   const paymentMethods = await alice.getPaymentMethods();
@@ -2376,13 +2376,13 @@ function getValidFormInput(fieldId: PaymentAccountFormField.FieldId, form: Payme
       if (form.getId().toString() === "SEPA" || form.getId().toString() === "SEPA_INSTANT") return "BE," + field.getSupportedSepaEuroCountriesList().map(country => country.getCode()).join(',');
       return field.getSupportedCountriesList().map(country => country.getCode()).join(',');
     case PaymentAccountFormField.FieldId.ACCOUNT_ID:
-      throw new Error("Not implemented");
+      return "jdoe@no.com";
     case PaymentAccountFormField.FieldId.ACCOUNT_NAME:
       return form.getId().toString() + " " + GenUtils.getUUID(); // TODO: rename to form.getPaymentMethodId()
     case PaymentAccountFormField.FieldId.ACCOUNT_NR:
       return "12345678";
     case PaymentAccountFormField.FieldId.ACCOUNT_OWNER:
-      throw new Error("Not implemented");
+      return "John Doe";
     case PaymentAccountFormField.FieldId.ACCOUNT_TYPE:
       throw new Error("Not implemented");
     case PaymentAccountFormField.FieldId.ANSWER:
@@ -2499,13 +2499,13 @@ function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFo
     case PaymentAccountFormField.FieldId.ACCEPTED_COUNTRY_CODES:
       return "US,XX";
     case PaymentAccountFormField.FieldId.ACCOUNT_ID:
-      throw new Error("Not implemented");
+      return "";
     case PaymentAccountFormField.FieldId.ACCOUNT_NAME:
       return "";
     case PaymentAccountFormField.FieldId.ACCOUNT_NR:
       return "123457A";
     case PaymentAccountFormField.FieldId.ACCOUNT_OWNER:
-      throw new Error("Not implemented");
+      return "J";
     case PaymentAccountFormField.FieldId.ACCOUNT_TYPE:
       throw new Error("Not implemented");
     case PaymentAccountFormField.FieldId.ANSWER:
@@ -2685,6 +2685,10 @@ function testFiatAccount(account: PaymentAccount, form: PaymentAccountForm) {
         expect(account.getPaymentAccountPayload().getFasterPaymentsAccountPayload().getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
         expect(account.getPaymentAccountPayload().getFasterPaymentsAccountPayload().getSortCode()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.SORT_CODE).getValue());
         expect(account.getPaymentAccountPayload().getFasterPaymentsAccountPayload().getAccountNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.ACCOUNT_NR).getValue());
+        break;
+      case PaymentAccountForm.FormId.UPHOLD:
+        expect(account.getPaymentAccountPayload().getUpholdAccountPayload().getAccountOwner()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.ACCOUNT_OWNER).getValue());
+        expect(account.getPaymentAccountPayload().getUpholdAccountPayload().getAccountId()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.ACCOUNT_ID).getValue());
         break;
       default:
         throw new Error("Unhandled payment method type: " + form.getId());
