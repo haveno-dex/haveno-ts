@@ -1217,7 +1217,7 @@ test("Can complete a trade", async () => {
   HavenoUtils.log(1, "Bob done taking offer in " + (Date.now() - startTime) + " ms");
   
   // alice is notified that offer is taken
-  await wait(1000);
+  await wait(TestConfig.maxTimePeerNoticeMs);
   const tradeNotifications = getNotifications(aliceNotifications, NotificationMessage.NotificationType.TRADE_UPDATE);
   expect(tradeNotifications.length).toBe(1);
   expect(tradeNotifications[0].getTrade()!.getPhase()).toEqual("DEPOSIT_PUBLISHED");
@@ -1773,7 +1773,7 @@ function getBaseCurrencyNetwork(): BaseCurrencyNetwork {
           return arg.substring(arg.indexOf("=") + 1);
         }
       }
-      throw new Error("Must provide base currency network, e.g.: `npm run test -- --baseCurrencyNetwork=XMR_LOCAL`");
+      throw new Error("Must provide base currency network, e.g.: `npm run test -- --baseCurrencyNetwork=XMR_LOCAL -t \"my test\"`");
     }
 }
 
