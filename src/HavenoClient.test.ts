@@ -1773,7 +1773,7 @@ function getBaseCurrencyNetwork(): BaseCurrencyNetwork {
           return arg.substring(arg.indexOf("=") + 1);
         }
       }
-      return "XMR_LOCAL";
+      throw new Error("Must provide base currency network, e.g.: `npm run test -- --baseCurrencyNetwork=XMR_LOCAL`");
     }
 }
 
