@@ -410,7 +410,7 @@ test("Can manage Monero daemon connections", async () => {
       "--data-dir",  TestConfig.moneroBinsDir + "/" + TestConfig.baseCurrencyNetwork.toLowerCase() + "/testnode",
       "--p2p-bind-port", TestConfig.monerod2.p2pBindPort,
       "--rpc-bind-port", TestConfig.monerod2.rpcBindPort,
-      "--zmq-rpc-bind-port", TestConfig.monerod2.zmqRpcBindPort
+      "--no-zmq"
     ];
     if (TestConfig.monerod2.username) cmd.push("--rpc-login", TestConfig.monerod2.username + ":" + TestConfig.monerod2.password);
     monerod2 = await monerojs.connectToDaemonRpc(cmd);
