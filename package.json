@@ -9,7 +9,7 @@
     "prepare": "scripts/build_protobuf.sh",
     "pretest": "scripts/build_protobuf.sh",
     "build": "./scripts/build_dist.sh",
-    "test": "jest ",
+    "test": "jest",
     "eslint": "eslint .",
     "eslintfix": "eslint src/* --fix",
     "typedoc": "typedoc ./src/index.ts --entryPointStrategy expand src/ --exclude **/*.test.ts"

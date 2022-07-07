@@ -14,49 +14,59 @@ import OnlineStatus = UrlConnection.OnlineStatus;
 const monerojs = require("monero-javascript"); // TODO (woodser): support typescript and `npm install @types/monero-javascript` in monero-javascript
 const GenUtils = monerojs.GenUtils;
 const BigInteger = monerojs.BigInteger;
-const MoneroNetworkType = monerojs.MoneroNetworkType;
 const MoneroTxConfig = monerojs.MoneroTxConfig;
 const MoneroDestination = monerojs.MoneroDestination;
 const MoneroUtils = monerojs.MoneroUtils;
 const TaskLooper = monerojs.TaskLooper;
 
-// other required imports
+// other imports
 import fs from "fs";
 import path from "path";
 import net from "net";
 import assert from "assert";
 import console from "console"; // import console because jest swallows messages in real time
+import * as os from 'os';
 
 // ------------------------------ TEST CONFIG ---------------------------------
 
+enum BaseCurrencyNetwork {
+    XMR_MAINNET = "XMR_MAINNET",
+    XMR_STAGENET = "XMR_STAGENET",
+    XMR_LOCAL = "XMR_LOCAL"
+}
+
 const TestConfig = {
-    logLevel: 1,
+    logLevel: 3,
+    baseCurrencyNetwork: getBaseCurrencyNetwork(),
+    networkType: getBaseCurrencyNetwork() == BaseCurrencyNetwork.XMR_MAINNET ? monerojs.MoneroNetworkType.MAINNET : getBaseCurrencyNetwork() == BaseCurrencyNetwork.XMR_LOCAL ? monerojs.MoneroNetworkType.TESTNET : monerojs.MoneroNetworkType.STAGENET,
     moneroBinsDir: "../haveno/.localnet",
     testDataDir: "./testdata",
-    networkType: monerojs.MoneroNetworkType.STAGENET,
     haveno: {
         path: "../haveno",
         version: "1.6.2"
     },
     monerod: {
-        url: "http://localhost:38081",
-        username: "superuser",
-        password: "abctesting123"
+        url: "http://localhost:" + getNetworkStartPort() + "8081", // 18081, 28081, 38081 for mainnet, testnet, stagenet respectively
+        username: "",
+        password: ""
     },
     monerod2: {
         url: "http://localhost:58081",
         username: "superuser",
-        password: "abctesting123"
+        password: "abctesting123",
+        p2pBindPort: "58080",
+        rpcBindPort: "58081",
+        zmqRpcBindPort: "58082"
     },
     fundingWallet: {
-        url: "http://localhost:38084",
+        url: "http://localhost:" + getNetworkStartPort() + "8084", // 18084, 28084, 38084 for mainnet, testnet, stagenet respectively
         username: "rpc_user",
         password: "abc123",
-        defaultPath: "test_funding_wallet",
+        defaultPath: "funding_wallet-" + getBaseCurrencyNetwork(),
         minimumFunding: BigInt("5000000000000")
     },
     defaultHavenod: {
-        logProcessOutput: false, // log output for processes started by tests (except arbitrator, alice, and bob which are configured separately)
+        logProcessOutput: true, // log output for processes started by tests (except arbitrator, alice, and bob which are configured separately)
         apiPassword: "apitest",
         walletUsername: "haveno_user",
         walletDefaultPassword: "password", // only used if account password not set
@@ -65,21 +75,21 @@ const TestConfig = {
         autoLogin: true
     },
     startupHavenods: [{
-            appName: "haveno-XMR_STAGENET_arbitrator",  // arbritrator
-            logProcessOutput: false,
+            appName: "haveno-" + getBaseCurrencyNetwork() + "_arbitrator",  // arbritrator
+            logProcessOutput: true,
             url: "http://localhost:8079",
             accountPasswordRequired: false,
             accountPassword: "abctesting123",
         }, {
-            appName: "haveno-XMR_STAGENET_alice",       // alice
-            logProcessOutput: false,
+            appName: "haveno-" + getBaseCurrencyNetwork() + "_alice",       // alice
+            logProcessOutput: true,
             url: "http://localhost:8080",
             accountPasswordRequired: false,
             accountPassword: "abctesting456",
             walletUrl: "http://127.0.0.1:38091",
         }, {
-            appName: "haveno-XMR_STAGENET_bob",         // bob
-            logProcessOutput: false,
+            appName: "haveno-" + getBaseCurrencyNetwork() + "_bob",         // bob
+            logProcessOutput: true,
             url: "http://localhost:8081",
             accountPasswordRequired: false,
             accountPassword: "abctesting789",
@@ -91,6 +101,7 @@ const TestConfig = {
     daemonPollPeriodMs: 15000,
     maxWalletStartupMs: 10000, // TODO (woodser): make shorter by switching to jni
     maxTimePeerNoticeMs: 3000,
+    maxCpuPct: 0.25,
     assetCodes: ["USD", "GBP", "EUR", "ETH", "BTC", "BCH", "LTC", "ZEC"], // primary asset codes
     cryptoAddresses: [{
             currencyCode: "ETH",
@@ -119,9 +130,9 @@ const TestConfig = {
         ["8085", ["10004", "7780"]],
         ["8086", ["10005", "7781"]],
     ]),
-    devPrivilegePrivKey: "6ac43ea1df2a290c1c8391736aa42e4339c5cb4f110ff0257a13b63211977b7a", // from DEV_PRIVILEGE_PRIV_KEY
+    arbitratorPrivKey: getArbitratorPrivKey(),
     tradeInitTimeout: 60000,
-    timeout: 900000, // timeout in ms for all tests to complete (15 minutes)
+    testTimeout: getBaseCurrencyNetwork() === BaseCurrencyNetwork.XMR_LOCAL ? 900000 : 3000000, // timeout in ms for each test to complete (15 minutes for private network, 50 minutes for public network)
     postOffer: {     // default post offer config
         direction: "buy",               // buy or sell xmr
         amount: BigInt("200000000000"), // amount of xmr to trade
@@ -172,12 +183,19 @@ const OFFLINE_ERR_MSG = "Http response at 400 or 500 level";
 
 // -------------------------- BEFORE / AFTER TESTS ----------------------------
 
-jest.setTimeout(TestConfig.timeout);
+jest.setTimeout(TestConfig.testTimeout);
 
 beforeAll(async () => {
   
   // set log level for tests
   HavenoUtils.setLogLevel(TestConfig.logLevel);
+  
+  // initialize funding wallet
+  await initFundingWallet();
+  HavenoUtils.log(0, "Funding wallet balance: " + await fundingWallet.getBalance());
+  HavenoUtils.log(0, "Funding wallet unlocked balance: " + await fundingWallet.getUnlockedBalance());
+  const subaddress = await fundingWallet.createSubaddress(0);
+  HavenoUtils.log(0, "Funding wallet new subaddress: " + subaddress.getAddress());
   
   // start configured haveno daemons
   const promises = [];
@@ -193,15 +211,12 @@ beforeAll(async () => {
   bob = startupHavenods[2];
   
   // register arbitrator dispute agent
-  await arbitrator.registerDisputeAgent("arbitrator", TestConfig.devPrivilegePrivKey);
+  await arbitrator.registerDisputeAgent("arbitrator", TestConfig.arbitratorPrivKey);
 
   // connect monero clients
   monerod = await monerojs.connectToDaemonRpc(TestConfig.monerod.url, TestConfig.monerod.username, TestConfig.monerod.password);
   aliceWallet = await monerojs.connectToWalletRpc(TestConfig.startupHavenods[1].walletUrl, TestConfig.defaultHavenod.walletUsername, TestConfig.startupHavenods[1].accountPasswordRequired ? TestConfig.startupHavenods[1].accountPassword : TestConfig.defaultHavenod.walletDefaultPassword);
   bobWallet = await monerojs.connectToWalletRpc(TestConfig.startupHavenods[2].walletUrl, TestConfig.defaultHavenod.walletUsername, TestConfig.startupHavenods[2].accountPasswordRequired ? TestConfig.startupHavenods[2].accountPassword : TestConfig.defaultHavenod.walletDefaultPassword);
-  
-  // initialize funding wallet
-  await initFundingWallet();
   
   // create test data directory if it doesn't exist
   if (!fs.existsSync(TestConfig.testDataDir)) fs.mkdirSync(TestConfig.testDataDir);
@@ -329,7 +344,6 @@ test("Can manage an account", async () => {
     const paymentAccount2 = await charlie.getPaymentAccount(paymentAccount.getId());
     testCryptoPaymentAccountsEqual(paymentAccount, paymentAccount2);
   } catch (err2) {
-    console.log(err2);
     err = err2;
   }
 
@@ -359,16 +373,14 @@ test("Can manage Monero daemon connections", async () => {
     charlie = await initHaveno();
 
     // test default connections
-    const monerodUrl1 = "http://127.0.0.1:38081"; // TODO: (woodser): move to config
-    const monerodUrl2 = "http://haveno.exchange:38081";
+    const monerodUrl1 = "http://127.0.0.1:" + getNetworkStartPort() + "8081"; // TODO: (woodser): move to config
     let connections: UrlConnection[] = await charlie.getMoneroConnections();
     testConnection(getConnection(connections, monerodUrl1)!, monerodUrl1, OnlineStatus.ONLINE, AuthenticationStatus.AUTHENTICATED, 1);
-    testConnection(getConnection(connections, monerodUrl2)!, monerodUrl2, OnlineStatus.UNKNOWN, AuthenticationStatus.NO_AUTHENTICATION, 2);
 
     // test default connection
     let connection: UrlConnection | undefined = await charlie.getMoneroConnection();
     assert(await charlie.isConnectedToMonero());
-    testConnection(connection!, monerodUrl1, OnlineStatus.ONLINE, AuthenticationStatus.AUTHENTICATED, 1);
+    testConnection(connection!, monerodUrl1, OnlineStatus.ONLINE, AuthenticationStatus.AUTHENTICATED, 1); // TODO: should be no authentication?
 
     // add a new connection
     const fooBarUrl = "http://foo.bar";
@@ -395,12 +407,12 @@ test("Can manage Monero daemon connections", async () => {
       "--" + monerojs.MoneroNetworkType.toString(TestConfig.networkType).toLowerCase(),
       "--no-igd",
       "--hide-my-port",
-      "--data-dir",  TestConfig.moneroBinsDir + "/stagenet/testnode",
-      "--p2p-bind-port", "58080",
-      "--rpc-bind-port", "58081",
-      "--rpc-login", "superuser:abctesting123",
-      "--zmq-rpc-bind-port", "58082"
+      "--data-dir",  TestConfig.moneroBinsDir + "/" + TestConfig.baseCurrencyNetwork.toLowerCase() + "/testnode",
+      "--p2p-bind-port", TestConfig.monerod2.p2pBindPort,
+      "--rpc-bind-port", TestConfig.monerod2.rpcBindPort,
+      "--no-zmq"
     ];
+    if (TestConfig.monerod2.username) cmd.push("--rpc-login", TestConfig.monerod2.username + ":" + TestConfig.monerod2.password);
     monerod2 = await monerojs.connectToDaemonRpc(cmd);
 
     // connection is online and not authenticated
@@ -448,7 +460,8 @@ test("Can manage Monero daemon connections", async () => {
     connection = await charlie.getMoneroConnection();
     testConnection(connection!, monerodUrl1, OnlineStatus.ONLINE, AuthenticationStatus.AUTHENTICATED, 1);
 
-    // stop checking connection periodically
+    // stop auto switch and checking connection periodically
+    await charlie.setAutoSwitch(false);
     await charlie.stopCheckingConnection();
 
     // remove current connection
@@ -462,7 +475,6 @@ test("Can manage Monero daemon connections", async () => {
     await charlie.checkMoneroConnections();
     connections = await charlie.getMoneroConnections();
     testConnection(getConnection(connections, fooBarUrl)!, fooBarUrl, OnlineStatus.OFFLINE, AuthenticationStatus.NO_AUTHENTICATION, 0);
-    for (const connection of connections) testConnection(connection!, connection.getUrl(), OnlineStatus.OFFLINE, AuthenticationStatus.NO_AUTHENTICATION);
 
     // set connection to previous url
     await charlie.setMoneroConnection(fooBarUrl);
@@ -545,7 +557,7 @@ test("Can start and stop a local Monero node", async() => {
     // expect successful start with custom settings
     const connectionsBefore = await alice.getMoneroConnections();
     const settings: MoneroNodeSettings = new MoneroNodeSettings();
-    const dataDir = TestConfig.moneroBinsDir + "/stagenet/node1";
+    const dataDir = TestConfig.moneroBinsDir + "/" + TestConfig.baseCurrencyNetwork + "/node1";
     const logFile = dataDir + "/test.log";
     const p2pPort = 38080;
     const rpcPort = 38081;
@@ -601,7 +613,7 @@ test("Has a Monero wallet", async () => {
   
   // get primary address
   const primaryAddress = await alice.getXmrPrimaryAddress();
-  await MoneroUtils.validateAddress(primaryAddress, MoneroNetworkType.STAGENET);
+  await MoneroUtils.validateAddress(primaryAddress, TestConfig.networkType);
   
   // wait for alice to have unlocked balance
   const tradeAmount = BigInt("250000000000");
@@ -622,7 +634,7 @@ test("Has a Monero wallet", async () => {
   // get new subaddresses
   for (let i = 0; i < 0; i++) {
     const address = await alice.getXmrNewSubaddress();
-    await MoneroUtils.validateAddress(address, MoneroNetworkType.STAGNET);
+    await MoneroUtils.validateAddress(address, TestConfig.networkType);
   }
   
   // create withdraw tx
@@ -796,14 +808,11 @@ test("Can get market depth", async () => {
         .toThrow('Currency not found: INVALID_CURRENCY');
 });
 
-test("Can register as dispute agents", async () => {
-  await arbitrator.registerDisputeAgent("arbitrator", TestConfig.devPrivilegePrivKey);
-  await arbitrator.registerDisputeAgent("mediator", TestConfig.devPrivilegePrivKey);
-  await arbitrator.registerDisputeAgent("refundagent", TestConfig.devPrivilegePrivKey);
+test("Can register as an arbitrator", async () => {
   
   // test bad dispute agent type
   try {
-    await arbitrator.registerDisputeAgent("unsupported type", TestConfig.devPrivilegePrivKey);
+    await arbitrator.registerDisputeAgent("unsupported type", TestConfig.arbitratorPrivKey);
     throw new Error("should have thrown error registering bad type");
   } catch (err: any) {
     if (err.message !== "unknown dispute agent type 'unsupported type'") throw new Error("Unexpected error: " + err.message);
@@ -811,11 +820,14 @@ test("Can register as dispute agents", async () => {
   
   // test bad key
   try {
-    await arbitrator.registerDisputeAgent("arbitrator", "bad key");
+    await arbitrator.registerDisputeAgent("mediator", "bad key");
     throw new Error("should have thrown error registering bad key");
   } catch (err: any) {
     if (err.message !== "invalid registration key") throw new Error("Unexpected error: " + err.message);
   }
+  
+  // register arbitrator with good key
+  await arbitrator.registerDisputeAgent("arbitrator", TestConfig.arbitratorPrivKey);
 });
 
 test("Can get offers", async () => {
@@ -998,7 +1010,7 @@ test("Can prepare for trading", async () => {
 
   // fund wallets
   const tradeAmount = BigInt("250000000000");
-  await fundOutputs([aliceWallet, bobWallet], tradeAmount * BigInt("6"), 4);
+  await fundOutputs([aliceWallet, bobWallet], tradeAmount * BigInt("2"), 4);
   
   // wait for havenod to observe funds
   await wait(TestConfig.walletSyncPeriodMs);
@@ -1205,7 +1217,7 @@ test("Can complete a trade", async () => {
   HavenoUtils.log(1, "Bob done taking offer in " + (Date.now() - startTime) + " ms");
   
   // alice is notified that offer is taken
-  await wait(1000);
+  await wait(TestConfig.maxTimePeerNoticeMs);
   const tradeNotifications = getNotifications(aliceNotifications, NotificationMessage.NotificationType.TRADE_UPDATE);
   expect(tradeNotifications.length).toBe(1);
   expect(tradeNotifications[0].getTrade()!.getPhase()).toEqual("DEPOSIT_PUBLISHED");
@@ -1282,7 +1294,7 @@ test("Can resolve disputes", async () => {
 
   // wait for alice and bob to have unlocked balance for trade
   const tradeAmount = BigInt("250000000000");
-  await fundOutputs([aliceWallet, bobWallet], tradeAmount * BigInt("6"), 4);
+  await fundOutputs([aliceWallet, bobWallet], tradeAmount * BigInt("2"), 4);
   
   // register to receive notifications
   const aliceNotifications: NotificationMessage[] = [];
@@ -1749,6 +1761,44 @@ test("Handles unexpected errors during trade initialization", async () => {
 
 // ------------------------------- HELPERS ------------------------------------
 
+function getBaseCurrencyNetwork(): BaseCurrencyNetwork {
+    const str = getBaseCurrencyNetworkStr();
+    if (str === "XMR_MAINNET") return BaseCurrencyNetwork.XMR_MAINNET;
+    else if (str === "XMR_STAGENET") return BaseCurrencyNetwork.XMR_STAGENET;
+    else if (str === "XMR_LOCAL") return BaseCurrencyNetwork.XMR_LOCAL;
+    else throw new Error("Unhandled base currency network: " + str);
+    function getBaseCurrencyNetworkStr() {
+      for (const arg of process.argv) {
+        if (arg.indexOf("--baseCurrencyNetwork") === 0) {
+          return arg.substring(arg.indexOf("=") + 1);
+        }
+      }
+      throw new Error("Must provide base currency network, e.g.: `npm run test -- --baseCurrencyNetwork=XMR_LOCAL -t \"my test\"`");
+    }
+}
+
+function getNetworkStartPort() {
+    switch (getBaseCurrencyNetwork()) {
+        case BaseCurrencyNetwork.XMR_MAINNET: return 1;
+        case BaseCurrencyNetwork.XMR_LOCAL: return 2;
+        case BaseCurrencyNetwork.XMR_STAGENET: return 3;
+        default: throw new Error("Unhandled base currency network: " + getBaseCurrencyNetwork());
+    }
+}
+
+function getArbitratorPrivKey() {
+    switch (getBaseCurrencyNetwork()) {
+        case BaseCurrencyNetwork.XMR_MAINNET:
+          throw new Error("Cannot get private key for MAINNET");
+        case BaseCurrencyNetwork.XMR_STAGENET:
+          return "1aa111f817b7fdaaec1c8d5281a1837cc71c336db09b87cf23344a0a4e3bb2cb";
+        case BaseCurrencyNetwork.XMR_LOCAL:
+          return "6ac43ea1df2a290c1c8391736aa42e4339c5cb4f110ff0257a13b63211977b7a"; // from DEV_PRIVILEGE_PRIV_KEY
+        default:
+          throw new Error("Unhandled base currency network: " + getBaseCurrencyNetwork());
+    }
+}
+
 async function initHavenos(numDaemons: number, config?: any) {
   const traderPromises: Promise<HavenoClient>[] = [];
   for (let i = 0; i < numDaemons; i++) traderPromises.push(initHaveno(config));
@@ -1757,7 +1807,7 @@ async function initHavenos(numDaemons: number, config?: any) {
 
 async function initHaveno(config?: any): Promise<HavenoClient> {
   config = Object.assign({}, TestConfig.defaultHavenod, config);
-  if (!config.appName) config.appName = "haveno-XMR_STAGENET_instance_" + GenUtils.getUUID();
+  if (!config.appName) config.appName = "haveno-" + TestConfig.baseCurrencyNetwork + "_instance_" + GenUtils.getUUID();
   
   // connect to existing server or start new process
   let havenod;
@@ -1786,9 +1836,9 @@ async function initHaveno(config?: any): Promise<HavenoClient> {
     // start haveno process using configured ports if available
     const cmd: string[] = [
       "./haveno-daemon",
-      "--baseCurrencyNetwork", "XMR_STAGENET",
-      "--useLocalhostForP2P", "true",
-      "--useDevPrivilegeKeys", "true",
+      "--baseCurrencyNetwork", TestConfig.baseCurrencyNetwork,
+      "--useLocalhostForP2P", TestConfig.baseCurrencyNetwork === BaseCurrencyNetwork.XMR_MAINNET ? "false" : "true", // TODO: disable for stagenet too
+      "--useDevPrivilegeKeys", TestConfig.baseCurrencyNetwork === BaseCurrencyNetwork.XMR_LOCAL ? "true" : "false",
       "--nodePort", TestConfig.proxyPorts.get(proxyPort)![1],
       "--appName", config.appName,
       "--apiPassword", "apitest",
@@ -1891,7 +1941,7 @@ async function initFundingWallet() {
 
 async function startMining() {
   try {
-    await monerod.startMining(await fundingWallet.getPrimaryAddress(), 3);
+    await monerod.startMining(await fundingWallet.getPrimaryAddress(), Math.max(1, Math.floor(os.cpus().length * TestConfig.maxCpuPct)));
   } catch (err: any) {
     if (err.message !== "Already mining") throw err;
   }
@@ -1953,10 +2003,14 @@ async function waitForUnlockedBalance(amount: bigint, ...wallets: any[]) {
   if (!miningNeeded) return;
   
   // wait for funds to unlock
-  HavenoUtils.log(0, "Mining for unlocked balance of " + amount);
+  HavenoUtils.log(1, "Mining for unlocked balance of " + amount);
   await startMining();
   const promises: Promise<void>[] = [];
   for (const wallet of wallets) {
+    if (wallet._wallet === fundingWallet) {
+      const subaddress = await fundingWallet.createSubaddress(0);
+      HavenoUtils.log(0, "Mining to funding wallet. Alternatively, deposit to: " + subaddress.getAddress());
+    }
     // eslint-disable-next-line no-async-promise-executor
     promises.push(new Promise(async (resolve) => {
       const taskLooper: any = new TaskLooper(async function() {
@@ -2028,7 +2082,7 @@ async function fundOutputs(wallets: any[], amt: bigint, numOutputs?: number, wai
   // collect destinations
   const destinations = [];
   for (const wallet of wallets) {
-    if (await hasUnspentOutputs([wallet], amt, numOutputs, waitForUnlock ? false : undefined)) continue;
+    if (await hasUnspentOutputs([wallet], amt, numOutputs, undefined)) continue;
     for (let i = 0; i < numOutputs; i++) {
       destinations.push(new MoneroDestination((await wallet.createSubaddress()).getAddress(), monerojs.BigInteger(amt.toString())));
     }
@@ -2056,8 +2110,9 @@ async function fundOutputs(wallets: any[], amt: bigint, numOutputs?: number, wai
   // mine until outputs unlock
   if (!waitForUnlock) return;
   let miningStarted = false;
-  while (!await hasUnspentOutputs(wallets, amt, numOutputs, false)) {
+  while (!await hasUnspentOutputs(wallets, amt, numOutputs, waitForUnlock ? false : undefined)) {
     if (!miningStarted) {
+      HavenoUtils.log(1, "Mining to fund outputs");
       await startMining();
       miningStarted = true;
     }
