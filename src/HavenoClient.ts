@@ -356,7 +356,7 @@ export default class HavenoClient {
   }
   
   /**
-   * Permanently delete the Haveno account and shutdown the server. // TODO: possible to not shutdown server?
+   * Permanently delete the Haveno account.
    */
   async deleteAccount(): Promise<void> {
     try {
