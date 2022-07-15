@@ -529,8 +529,8 @@ test("Can start and stop a local Monero node", async() => {
     }
   }
 
-  let isMoneroNodeRunning = await user1.isMoneroNodeRunning();
-  if (isMoneroNodeRunning) {
+  let isMoneroNodeOnline = await user1.isMoneroNodeOnline();
+  if (isMoneroNodeOnline) {
     HavenoUtils.log(0, "Warning: local Monero node is already running, skipping start and stop local Monero node tests");
 
     // expect error due to existing running node
@@ -539,7 +539,7 @@ test("Can start and stop a local Monero node", async() => {
       await user1.startMoneroNode(newSettings);
       throw new Error("should have thrown");
     } catch (err: any) {
-      if (err.message !== "Local Monero node already running") throw new Error("Unexpected error: " + err.message);
+      if (err.message !== "Local Monero node already online") throw new Error("Unexpected error: " + err.message);
     }
 
   } else {
@@ -564,8 +564,8 @@ test("Can start and stop a local Monero node", async() => {
     settings.setBlockchainPath(dataDir);
     settings.setStartupFlagsList(["--log-file", logFile, "--p2p-bind-port", p2pPort.toString(), "--rpc-bind-port", rpcPort.toString(), "--no-zmq"]);
     await user1.startMoneroNode(settings);
-    isMoneroNodeRunning = await user1.isMoneroNodeRunning();
-    assert(isMoneroNodeRunning);
+    isMoneroNodeOnline = await user1.isMoneroNodeOnline();
+    assert(isMoneroNodeOnline);
     
     // expect settings are updated
     const settingsAfter = await user1.getMoneroNodeSettings();
@@ -592,8 +592,8 @@ test("Can start and stop a local Monero node", async() => {
 
     // expect stopped node
     await user1.stopMoneroNode();
-    isMoneroNodeRunning = await user1.isMoneroNodeRunning();
-    assert(!isMoneroNodeRunning);
+    isMoneroNodeOnline = await user1.isMoneroNodeOnline();
+    assert(!isMoneroNodeOnline);
     try {
       daemon = await monerojs.connectToDaemonRpc(rpcUrl);
       height = await daemon.getHeight();
