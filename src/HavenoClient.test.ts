@@ -43,7 +43,7 @@ const TestConfig = {
     testDataDir: "./testdata",
     haveno: {
         path: "../haveno",
-        version: "1.6.2"
+        version: "0.0.1"
     },
     monerod: {
         url: "http://localhost:" + getNetworkStartPort() + "8081", // 18081, 28081, 38081 for mainnet, testnet, stagenet respectively
@@ -1723,7 +1723,7 @@ test("Handles unexpected errors during trade initialization", async () => {
         assert.equal(offer.getState(), "AVAILABLE");
     }
     
-    // trader 0 spends trade funds then trader 2 takes offer
+    // trader 0 spends trade funds after trader 2 takes offer
     wait(3000).then(async function() {
       try {
         const traderWallet = await monerojs.connectToWalletRpc("http://localhost:" + traders[0].getWalletRpcPort(), TestConfig.defaultHavenod.walletUsername, TestConfig.defaultHavenod.accountPassword);
