@@ -62,6 +62,7 @@ const TestConfig = {
         url: "http://localhost:" + getNetworkStartPort() + "8084", // 18084, 28084, 38084 for mainnet, testnet, stagenet respectively
         username: "rpc_user",
         password: "abc123",
+        walletPassword: "abc123",
         defaultPath: "funding_wallet-" + getBaseCurrencyNetwork(),
         minimumFunding: BigInt("5000000000000")
     },
@@ -1290,11 +1291,79 @@ test("Can complete a trade", async () => {
   expect(user2Fee).toBeGreaterThan(BigInt("0"));
 });
 
+test("Can complete trades at the same time", async () => {
+  
+  // wait for user1 and user2 to have unlocked balance for trade
+  const tradeAmount = BigInt("250000000000");
+  await fundOutputs([user1Wallet, user2Wallet], tradeAmount * BigInt("2"), 4);
+  await wait(TestConfig.walletSyncPeriodMs);
+  
+  // user1 posts offers to buy xmr
+  const numOffers = 4;
+  HavenoUtils.log(1, "user1 posting offers");
+  const direction = "buy";
+  let offers = [];
+  for (let i = 0; i < numOffers; i++) offers.push(postOffer(user1, {direction: direction, amount: tradeAmount, awaitUnlockedBalance: true}));
+  offers = await Promise.all(offers);
+  HavenoUtils.log(1, "user1 done posting offers");
+  for (let i = 0; i < offers.length; i++) HavenoUtils.log(2, "Offer " + i +  ": " + (await user1.getMyOffer(offers[i].getId())).getId());
+  
+  // wait for offers to post
+  await wait(TestConfig.walletSyncPeriodMs * 2);
+  
+  // user2 takes offers
+  const paymentAccount = await createPaymentAccount(user2, "eth");
+  HavenoUtils.log(1, "user2 taking offers");
+  let trades = [];
+  for (let i = 0; i < numOffers; i++) trades.push(user2.takeOffer(offers[i].getId(), paymentAccount.getId()));
+  trades = await Promise.all(trades);
+  HavenoUtils.log(1, "user2 done taking offers");
+  
+  // test trades
+  const depositTxIds: string[] = [];
+  for (const trade of trades) {
+    if (trade.getPhase() !== "DEPOSIT_PUBLISHED") throw new Error("Trade phase expected to be DEPOSIT_PUBLISHED but was " + trade.getPhase() + " for trade " + trade.getTradeId());
+    expect(trade.getPhase()).toEqual("DEPOSIT_PUBLISHED");
+    const fetchedTrade: TradeInfo = await user2.getTrade(trade.getTradeId());
+    if (fetchedTrade.getPhase() !== "DEPOSIT_PUBLISHED") throw new Error("Fetched phase expected to be DEPOSIT_PUBLISHED but was " + fetchedTrade.getPhase() + " for trade " + fetchedTrade.getTradeId());
+    expect(fetchedTrade.getPhase()).toEqual("DEPOSIT_PUBLISHED");
+    depositTxIds.push(fetchedTrade.getMakerDepositTxId());
+    depositTxIds.push(fetchedTrade.getTakerDepositTxId());
+  }
+  
+  // mine until deposit txs unlock
+  await waitForUnlockedTxs(...depositTxIds);
+  
+  // wait for notifications
+  await wait(TestConfig.walletSyncPeriodMs * 2);
+  
+  // confirm payment sent
+  HavenoUtils.log(1, "Confirming payment sent");
+  const paymentSentReqs = [];
+  for (let i = 0; i < numOffers; i++) paymentSentReqs.push(user1.confirmPaymentStarted(offers[i].getId()));
+  await Promise.all(paymentSentReqs);
+  
+  // wait for notifications
+  await wait(TestConfig.walletSyncPeriodMs * 2);
+  
+  // confirm payment received
+  HavenoUtils.log(1, "Confirming payment received");
+  const paymentReceivedReqs = [];
+  for (let i = 0; i < numOffers; i++) paymentReceivedReqs.push(user2.confirmPaymentReceived(offers[i].getId()));
+  await Promise.all(paymentReceivedReqs);
+  
+  // wait for notifications
+  await wait(TestConfig.walletSyncPeriodMs * 2);
+  
+  // TODO: test state
+});
+
 test("Can resolve disputes", async () => {
 
   // wait for user1 and user2 to have unlocked balance for trade
   const tradeAmount = BigInt("250000000000");
   await fundOutputs([user1Wallet, user2Wallet], tradeAmount * BigInt("2"), 4);
+  await wait(TestConfig.walletSyncPeriodMs);
   
   // register to receive notifications
   const user1Notifications: NotificationMessage[] = [];
@@ -1923,7 +1992,7 @@ async function initFundingWallet() {
     
     // attempt to open funding wallet
     try {
-      await fundingWallet.openWallet({path: TestConfig.fundingWallet.defaultPath, password: TestConfig.fundingWallet.password});
+      await fundingWallet.openWallet({path: TestConfig.fundingWallet.defaultPath, password: TestConfig.fundingWallet.walletPassword});
     } catch (err: any) {
       if (!(err instanceof monerojs.MoneroRpcError)) throw err;
       
@@ -1931,7 +2000,7 @@ async function initFundingWallet() {
       if (err.getCode() === -1) {
         
         // create wallet
-        await fundingWallet.createWallet({path: TestConfig.fundingWallet.defaultPath, password: TestConfig.fundingWallet.password});
+        await fundingWallet.createWallet({path: TestConfig.fundingWallet.defaultPath, password: TestConfig.fundingWallet.walletPassword});
       } else {
         throw err;
       }
