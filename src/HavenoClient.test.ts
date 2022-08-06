@@ -64,7 +64,10 @@ const TestConfig = {
         password: "abc123",
         walletPassword: "abc123",
         defaultPath: "funding_wallet-" + getBaseCurrencyNetwork(),
-        minimumFunding: BigInt("5000000000000")
+        minimumFunding: BigInt("5000000000000"),
+        mnemonic: "silk mocked cucumber lettuce hope adrenalin aching lush roles fuel revamp baptism wrist long tender teardrop midst pastry pigment equip frying inbound pinched ravine frying",
+        primaryAddress: "A1y9sbVt8nqhZAVm3me1U18rUVXcjeNKuBd1oE2cTs8biA9cozPMeyYLhe77nPv12JA3ejJN3qprmREriit2fi6tJDi99RR",
+        restoreHeight: 150
     },
     defaultHavenod: {
         logProcessOutput: true, // log output for processes started by tests (except arbitrator, user1, and user2 which are configured separately)
@@ -196,6 +199,9 @@ beforeAll(async () => {
   HavenoUtils.log(0, "Funding wallet balance: " + await fundingWallet.getBalance());
   HavenoUtils.log(0, "Funding wallet unlocked balance: " + await fundingWallet.getUnlockedBalance());
   const subaddress = await fundingWallet.createSubaddress(0);
+  HavenoUtils.log(0, "Funding wallet height: " + await fundingWallet.getHeight());
+  HavenoUtils.log(0, "Funding wallet mnemonic: " + await fundingWallet.getMnemonic());
+  HavenoUtils.log(0, "Funding wallet primary address: " + await fundingWallet.getPrimaryAddress());
   HavenoUtils.log(0, "Funding wallet new subaddress: " + subaddress.getAddress());
   
   // start configured haveno daemons
@@ -2000,7 +2006,12 @@ async function initFundingWallet() {
       if (err.getCode() === -1) {
         
         // create wallet
-        await fundingWallet.createWallet({path: TestConfig.fundingWallet.defaultPath, password: TestConfig.fundingWallet.walletPassword});
+        await fundingWallet.createWallet({
+            path: TestConfig.fundingWallet.defaultPath,
+            password: TestConfig.fundingWallet.walletPassword,
+            mnemonic: TestConfig.fundingWallet.mnemonic,
+            restoreHeight: TestConfig.fundingWallet.restoreHeight
+        });
       } else {
         throw err;
       }
