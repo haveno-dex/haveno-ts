@@ -1220,14 +1220,14 @@ test("Can complete a trade", async () => {
   const startTime = Date.now();
   HavenoUtils.log(1, "user2 taking offer");
   const trade: TradeInfo = await user2.takeOffer(offer.getId(), paymentAccount.getId());
-  expect(trade.getPhase()).toEqual("DEPOSIT_PUBLISHED");
+  expect(trade.getPhase()).toEqual("DEPOSITS_PUBLISHED");
   HavenoUtils.log(1, "user2 done taking offer in " + (Date.now() - startTime) + " ms");
   
   // user1 is notified that offer is taken
   await wait(TestConfig.maxTimePeerNoticeMs);
   const tradeNotifications = getNotifications(user1Notifications, NotificationMessage.NotificationType.TRADE_UPDATE);
   expect(tradeNotifications.length).toBe(1);
-  expect(tradeNotifications[0].getTrade()!.getPhase()).toEqual("DEPOSIT_PUBLISHED");
+  expect(tradeNotifications[0].getTrade()!.getPhase()).toEqual("DEPOSITS_PUBLISHED");
   expect(tradeNotifications[0].getTitle()).toEqual("Offer Taken");
   expect(tradeNotifications[0].getMessage()).toEqual("Your offer " + offer.getId() + " has been accepted");
 
@@ -1235,7 +1235,7 @@ test("Can complete a trade", async () => {
   
   // user2 can get trade
   let fetchedTrade: TradeInfo = await user2.getTrade(trade.getTradeId());
-  expect(fetchedTrade.getPhase()).toEqual("DEPOSIT_PUBLISHED");
+  expect(fetchedTrade.getPhase()).toEqual("DEPOSITS_PUBLISHED");
   // TODO: test fetched trade
   
   // test user2's balances after taking trade
@@ -1247,7 +1247,7 @@ test("Can complete a trade", async () => {
 
   // user1 can get trade
   fetchedTrade = await user1.getTrade(trade.getTradeId());
-  expect(fetchedTrade.getPhase()).toEqual("DEPOSIT_PUBLISHED");
+  expect(fetchedTrade.getPhase()).toEqual("DEPOSITS_PUBLISHED");
 
   // test trader chat
   await testTradeChat(trade.getTradeId(), user1, user2);
@@ -1259,10 +1259,10 @@ test("Can complete a trade", async () => {
   await wait(TestConfig.maxWalletStartupMs + TestConfig.walletSyncPeriodMs * 2);
   fetchedTrade = await user1.getTrade(trade.getTradeId());
   expect(fetchedTrade.getIsDepositUnlocked()).toBe(true);
-  expect(fetchedTrade.getPhase()).toEqual("DEPOSIT_UNLOCKED");
+  expect(fetchedTrade.getPhase()).toEqual("DEPOSITS_UNLOCKED");
   fetchedTrade = await user2.getTrade(trade.getTradeId());
   expect(fetchedTrade.getIsDepositUnlocked()).toBe(true);
-  expect(fetchedTrade.getPhase()).toEqual("DEPOSIT_UNLOCKED");
+  expect(fetchedTrade.getPhase()).toEqual("DEPOSITS_UNLOCKED");
   
   // user1 indicates payment is sent
   HavenoUtils.log(1, "user1 confirming payment sent");
@@ -1328,11 +1328,11 @@ test("Can complete trades at the same time", async () => {
   // test trades
   const depositTxIds: string[] = [];
   for (const trade of trades) {
-    if (trade.getPhase() !== "DEPOSIT_PUBLISHED") throw new Error("Trade phase expected to be DEPOSIT_PUBLISHED but was " + trade.getPhase() + " for trade " + trade.getTradeId());
-    expect(trade.getPhase()).toEqual("DEPOSIT_PUBLISHED");
+    if (trade.getPhase() !== "DEPOSITS_PUBLISHED") throw new Error("Trade phase expected to be DEPOSITS_PUBLISHED but was " + trade.getPhase() + " for trade " + trade.getTradeId());
+    expect(trade.getPhase()).toEqual("DEPOSITS_PUBLISHED");
     const fetchedTrade: TradeInfo = await user2.getTrade(trade.getTradeId());
-    if (fetchedTrade.getPhase() !== "DEPOSIT_PUBLISHED") throw new Error("Fetched phase expected to be DEPOSIT_PUBLISHED but was " + fetchedTrade.getPhase() + " for trade " + fetchedTrade.getTradeId());
-    expect(fetchedTrade.getPhase()).toEqual("DEPOSIT_PUBLISHED");
+    if (fetchedTrade.getPhase() !== "DEPOSITS_PUBLISHED") throw new Error("Fetched phase expected to be DEPOSITS_PUBLISHED but was " + fetchedTrade.getPhase() + " for trade " + fetchedTrade.getTradeId());
+    expect(fetchedTrade.getPhase()).toEqual("DEPOSITS_PUBLISHED");
     depositTxIds.push(fetchedTrade.getMakerDepositTxId());
     depositTxIds.push(fetchedTrade.getTakerDepositTxId());
   }
@@ -1405,11 +1405,11 @@ test("Can resolve disputes", async () => {
   // test trades
   const depositTxIds: string[] = [];
   for (const trade of trades) {
-    if (trade.getPhase() !== "DEPOSIT_PUBLISHED") throw new Error("Trade phase expected to be DEPOSIT_PUBLISHED but was " + trade.getPhase() + " for trade " + trade.getTradeId());
-    expect(trade.getPhase()).toEqual("DEPOSIT_PUBLISHED");
+    if (trade.getPhase() !== "DEPOSITS_PUBLISHED") throw new Error("Trade phase expected to be DEPOSITS_PUBLISHED but was " + trade.getPhase() + " for trade " + trade.getTradeId());
+    expect(trade.getPhase()).toEqual("DEPOSITS_PUBLISHED");
     const fetchedTrade: TradeInfo = await user2.getTrade(trade.getTradeId());
-    if (fetchedTrade.getPhase() !== "DEPOSIT_PUBLISHED") throw new Error("Fetched phase expected to be DEPOSIT_PUBLISHED but was " + fetchedTrade.getPhase() + " for trade " + fetchedTrade.getTradeId());
-    expect(fetchedTrade.getPhase()).toEqual("DEPOSIT_PUBLISHED");
+    if (fetchedTrade.getPhase() !== "DEPOSITS_PUBLISHED") throw new Error("Fetched phase expected to be DEPOSITS_PUBLISHED but was " + fetchedTrade.getPhase() + " for trade " + fetchedTrade.getTradeId());
+    expect(fetchedTrade.getPhase()).toEqual("DEPOSITS_PUBLISHED");
     depositTxIds.push(fetchedTrade.getMakerDepositTxId());
     depositTxIds.push(fetchedTrade.getTakerDepositTxId());
   }
