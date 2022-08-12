@@ -134,10 +134,14 @@ const TestConfig = {
         ["8085", ["10004", "7780"]],
         ["8086", ["10005", "7781"]],
     ]),
-    arbitratorPrivKey: getArbitratorPrivKey(),
+    arbitratorPrivKeys: {
+        XMR_LOCAL: ["6ac43ea1df2a290c1c8391736aa42e4339c5cb4f110ff0257a13b63211977b7a", "d96c4e7be030564cfa64a4040060574a8e92a79f574104ab8bb0c1166db28047", "6d5c86cbc5fc7ce3c97b06969661eae5c018cb2923856cc51341d182a45d1e9d"],
+        XMR_STAGENET: ["1aa111f817b7fdaaec1c8d5281a1837cc71c336db09b87cf23344a0a4e3bb2cb", "6b5a404eb5ff7154f2357126c84c3becfe2e7c59ca3844954ce9476bec2a6228", "fd4ef301a2e4faa3c77bc26393919895fa29b0908f2bbd51f6f6de3e46fb7a6e"],
+        XMR_MAINNET: []
+    },
     tradeInitTimeout: 60000,
     testTimeout: getBaseCurrencyNetwork() === BaseCurrencyNetwork.XMR_LOCAL ? 900000 : 3000000, // timeout in ms for each test to complete (15 minutes for private network, 50 minutes for public network)
-    postOffer: {     // default post offer config
+    postOffer: { // default post offer config
         direction: "buy",               // buy or sell xmr
         amount: BigInt("200000000000"), // amount of xmr to trade
         assetCode: "eth",               // counter asset to trade
@@ -218,7 +222,7 @@ beforeAll(async () => {
   user2 = startupHavenods[2];
   
   // register arbitrator dispute agent
-  await arbitrator.registerDisputeAgent("arbitrator", TestConfig.arbitratorPrivKey);
+  await arbitrator.registerDisputeAgent("arbitrator", getArbitratorPrivKey(0));
 
   // connect monero clients
   monerod = await monerojs.connectToDaemonRpc(TestConfig.monerod.url, TestConfig.monerod.username, TestConfig.monerod.password);
@@ -819,7 +823,7 @@ test("Can register as an arbitrator", async () => {
   
   // test bad dispute agent type
   try {
-    await arbitrator.registerDisputeAgent("unsupported type", TestConfig.arbitratorPrivKey);
+    await arbitrator.registerDisputeAgent("unsupported type", getArbitratorPrivKey(0));
     throw new Error("should have thrown error registering bad type");
   } catch (err: any) {
     if (err.message !== "unknown dispute agent type 'unsupported type'") throw new Error("Unexpected error: " + err.message);
@@ -834,7 +838,7 @@ test("Can register as an arbitrator", async () => {
   }
   
   // register arbitrator with good key
-  await arbitrator.registerDisputeAgent("arbitrator", TestConfig.arbitratorPrivKey);
+  await arbitrator.registerDisputeAgent("arbitrator", getArbitratorPrivKey(0));
 });
 
 test("Can get offers", async () => {
@@ -1006,24 +1010,10 @@ test("Can create crypto payment accounts", async () => {
 });
 
 test("Can prepare for trading", async () => {
-
-  // create payment accounts
-  if (!await hasPaymentAccount(user1, "eth")) await createPaymentAccount(user1, "eth");
-  if (!await hasPaymentAccount(user1, "bch")) await createPaymentAccount(user1, "bch");
-  if (!await hasPaymentAccount(user1, "usd")) await createPaymentAccount(user1, "usd");
-  if (!await hasPaymentAccount(user2, "eth")) await createPaymentAccount(user2, "eth");
-  if (!await hasPaymentAccount(user2, "bch")) await createPaymentAccount(user2, "bch");
-  if (!await hasPaymentAccount(user2, "usd")) await createPaymentAccount(user2, "usd");
-
-  // fund wallets
-  const tradeAmount = BigInt("250000000000");
-  await fundOutputs([user1Wallet, user2Wallet], tradeAmount * BigInt("2"), 4);
-  
-  // wait for havenod to observe funds
-  await wait(TestConfig.walletSyncPeriodMs);
+  await prepareForTrading(4, user1, user2);
 });
 
-test("Can post and remove offers", async () => {
+test("Can post offers", async () => {
   
   // wait for user1 to have unlocked balance to post offer
   await waitForUnlockedBalance(BigInt("250000000000") * BigInt("2"), user1);
@@ -1204,6 +1194,7 @@ test("Can complete a trade", async () => {
   // cannot take offer with invalid payment id
   const user1TradesBefore = await user1.getTrades();
   const user2TradesBefore = await user2.getTrades();
+  
   try {
     await user2.takeOffer(offer.getId(), "abc");
     throw new Error("taking offer with invalid payment account id should fail");
@@ -1220,14 +1211,14 @@ test("Can complete a trade", async () => {
   const startTime = Date.now();
   HavenoUtils.log(1, "user2 taking offer");
   const trade: TradeInfo = await user2.takeOffer(offer.getId(), paymentAccount.getId());
-  expect(trade.getPhase()).toEqual("DEPOSIT_PUBLISHED");
+  expect(trade.getPhase()).toEqual("DEPOSITS_PUBLISHED");
   HavenoUtils.log(1, "user2 done taking offer in " + (Date.now() - startTime) + " ms");
   
   // user1 is notified that offer is taken
   await wait(TestConfig.maxTimePeerNoticeMs);
   const tradeNotifications = getNotifications(user1Notifications, NotificationMessage.NotificationType.TRADE_UPDATE);
   expect(tradeNotifications.length).toBe(1);
-  expect(tradeNotifications[0].getTrade()!.getPhase()).toEqual("DEPOSIT_PUBLISHED");
+  expect(tradeNotifications[0].getTrade()!.getPhase()).toEqual("DEPOSITS_PUBLISHED");
   expect(tradeNotifications[0].getTitle()).toEqual("Offer Taken");
   expect(tradeNotifications[0].getMessage()).toEqual("Your offer " + offer.getId() + " has been accepted");
 
@@ -1235,7 +1226,7 @@ test("Can complete a trade", async () => {
   
   // user2 can get trade
   let fetchedTrade: TradeInfo = await user2.getTrade(trade.getTradeId());
-  expect(fetchedTrade.getPhase()).toEqual("DEPOSIT_PUBLISHED");
+  expect(fetchedTrade.getPhase()).toEqual("DEPOSITS_PUBLISHED");
   // TODO: test fetched trade
   
   // test user2's balances after taking trade
@@ -1247,7 +1238,7 @@ test("Can complete a trade", async () => {
 
   // user1 can get trade
   fetchedTrade = await user1.getTrade(trade.getTradeId());
-  expect(fetchedTrade.getPhase()).toEqual("DEPOSIT_PUBLISHED");
+  expect(fetchedTrade.getPhase()).toEqual("DEPOSITS_PUBLISHED");
 
   // test trader chat
   await testTradeChat(trade.getTradeId(), user1, user2);
@@ -1259,10 +1250,10 @@ test("Can complete a trade", async () => {
   await wait(TestConfig.maxWalletStartupMs + TestConfig.walletSyncPeriodMs * 2);
   fetchedTrade = await user1.getTrade(trade.getTradeId());
   expect(fetchedTrade.getIsDepositUnlocked()).toBe(true);
-  expect(fetchedTrade.getPhase()).toEqual("DEPOSIT_UNLOCKED");
+  expect(fetchedTrade.getPhase()).toEqual("DEPOSITS_UNLOCKED");
   fetchedTrade = await user2.getTrade(trade.getTradeId());
   expect(fetchedTrade.getIsDepositUnlocked()).toBe(true);
-  expect(fetchedTrade.getPhase()).toEqual("DEPOSIT_UNLOCKED");
+  expect(fetchedTrade.getPhase()).toEqual("DEPOSITS_UNLOCKED");
   
   // user1 indicates payment is sent
   HavenoUtils.log(1, "user1 confirming payment sent");
@@ -1298,70 +1289,7 @@ test("Can complete a trade", async () => {
 });
 
 test("Can complete trades at the same time", async () => {
-  
-  // wait for user1 and user2 to have unlocked balance for trade
-  const tradeAmount = BigInt("250000000000");
-  await fundOutputs([user1Wallet, user2Wallet], tradeAmount * BigInt("2"), 4);
-  await wait(TestConfig.walletSyncPeriodMs);
-  
-  // user1 posts offers to buy xmr
-  const numOffers = 4;
-  HavenoUtils.log(1, "user1 posting offers");
-  const direction = "buy";
-  let offers = [];
-  for (let i = 0; i < numOffers; i++) offers.push(postOffer(user1, {direction: direction, amount: tradeAmount, awaitUnlockedBalance: true}));
-  offers = await Promise.all(offers);
-  HavenoUtils.log(1, "user1 done posting offers");
-  for (let i = 0; i < offers.length; i++) HavenoUtils.log(2, "Offer " + i +  ": " + (await user1.getMyOffer(offers[i].getId())).getId());
-  
-  // wait for offers to post
-  await wait(TestConfig.walletSyncPeriodMs * 2);
-  
-  // user2 takes offers
-  const paymentAccount = await createPaymentAccount(user2, "eth");
-  HavenoUtils.log(1, "user2 taking offers");
-  let trades = [];
-  for (let i = 0; i < numOffers; i++) trades.push(user2.takeOffer(offers[i].getId(), paymentAccount.getId()));
-  trades = await Promise.all(trades);
-  HavenoUtils.log(1, "user2 done taking offers");
-  
-  // test trades
-  const depositTxIds: string[] = [];
-  for (const trade of trades) {
-    if (trade.getPhase() !== "DEPOSIT_PUBLISHED") throw new Error("Trade phase expected to be DEPOSIT_PUBLISHED but was " + trade.getPhase() + " for trade " + trade.getTradeId());
-    expect(trade.getPhase()).toEqual("DEPOSIT_PUBLISHED");
-    const fetchedTrade: TradeInfo = await user2.getTrade(trade.getTradeId());
-    if (fetchedTrade.getPhase() !== "DEPOSIT_PUBLISHED") throw new Error("Fetched phase expected to be DEPOSIT_PUBLISHED but was " + fetchedTrade.getPhase() + " for trade " + fetchedTrade.getTradeId());
-    expect(fetchedTrade.getPhase()).toEqual("DEPOSIT_PUBLISHED");
-    depositTxIds.push(fetchedTrade.getMakerDepositTxId());
-    depositTxIds.push(fetchedTrade.getTakerDepositTxId());
-  }
-  
-  // mine until deposit txs unlock
-  await waitForUnlockedTxs(...depositTxIds);
-  
-  // wait for notifications
-  await wait(TestConfig.walletSyncPeriodMs * 2);
-  
-  // confirm payment sent
-  HavenoUtils.log(1, "Confirming payment sent");
-  const paymentSentReqs = [];
-  for (let i = 0; i < numOffers; i++) paymentSentReqs.push(user1.confirmPaymentStarted(offers[i].getId()));
-  await Promise.all(paymentSentReqs);
-  
-  // wait for notifications
-  await wait(TestConfig.walletSyncPeriodMs * 2);
-  
-  // confirm payment received
-  HavenoUtils.log(1, "Confirming payment received");
-  const paymentReceivedReqs = [];
-  for (let i = 0; i < numOffers; i++) paymentReceivedReqs.push(user2.confirmPaymentReceived(offers[i].getId()));
-  await Promise.all(paymentReceivedReqs);
-  
-  // wait for notifications
-  await wait(TestConfig.walletSyncPeriodMs * 2);
-  
-  // TODO: test state
+  await completeTrades(user1, user2, 6);
 });
 
 test("Can resolve disputes", async () => {
@@ -1405,11 +1333,11 @@ test("Can resolve disputes", async () => {
   // test trades
   const depositTxIds: string[] = [];
   for (const trade of trades) {
-    if (trade.getPhase() !== "DEPOSIT_PUBLISHED") throw new Error("Trade phase expected to be DEPOSIT_PUBLISHED but was " + trade.getPhase() + " for trade " + trade.getTradeId());
-    expect(trade.getPhase()).toEqual("DEPOSIT_PUBLISHED");
+    if (trade.getPhase() !== "DEPOSITS_PUBLISHED") throw new Error("Trade phase expected to be DEPOSITS_PUBLISHED but was " + trade.getPhase() + " for trade " + trade.getTradeId());
+    expect(trade.getPhase()).toEqual("DEPOSITS_PUBLISHED");
     const fetchedTrade: TradeInfo = await user2.getTrade(trade.getTradeId());
-    if (fetchedTrade.getPhase() !== "DEPOSIT_PUBLISHED") throw new Error("Fetched phase expected to be DEPOSIT_PUBLISHED but was " + fetchedTrade.getPhase() + " for trade " + fetchedTrade.getTradeId());
-    expect(fetchedTrade.getPhase()).toEqual("DEPOSIT_PUBLISHED");
+    if (fetchedTrade.getPhase() !== "DEPOSITS_PUBLISHED") throw new Error("Fetched phase expected to be DEPOSITS_PUBLISHED but was " + fetchedTrade.getPhase() + " for trade " + fetchedTrade.getTradeId());
+    expect(fetchedTrade.getPhase()).toEqual("DEPOSITS_PUBLISHED");
     depositTxIds.push(fetchedTrade.getMakerDepositTxId());
     depositTxIds.push(fetchedTrade.getTakerDepositTxId());
   }
@@ -1786,7 +1714,7 @@ test("Handles unexpected errors during trade initialization", async () => {
       assert(err.message.includes("not enough unlocked money"), "Unexpected error: " + err.message);
     }
     
-    // TODO: test that unavailable right after taking (taker will know before maker)
+    // TODO: test it's unavailable right after taking (taker will know before maker)
     
     // trader 0's offer remains available
     await wait(10000); // give time for trade initialization to fail and offer to become available
@@ -1834,50 +1762,148 @@ test("Handles unexpected errors during trade initialization", async () => {
   if (err) throw err;
 });
 
+// TODO: test opening and resolving dispute as arbitrator and traders go offline
+test("Selects arbitrators which are online, registered, and least used", async () => {
+  
+  // complete 2 trades using main arbitrator so it's most used
+  // TODO: these trades are not registered with seednode until it's restarted
+  HavenoUtils.log(1, "Preparing for trades");
+  await prepareForTrading(4, user1, user2);
+  HavenoUtils.log(1, "Completing trades with main arbitrator");
+  await completeTrades(user1, user2, 2);
+  
+  // start and register arbitrator2
+  let arbitrator2 = await initHaveno();
+  HavenoUtils.log(1, "Registering arbitrator2");
+  await arbitrator2.registerDisputeAgent("arbitrator", getArbitratorPrivKey(1)); // TODO: re-registering with same address corrupts messages (Cannot decrypt) because existing pub key; overwrite? or throw when registration fails because dispute map can't be updated
+  await wait(TestConfig.walletSyncPeriodMs * 2);
+  
+  // get internal api addresses
+  const arbitratorApiUrl = "localhost:" + TestConfig.proxyPorts.get(getPort(arbitrator.getUrl()))[1]; // TODO: havenod.getApiUrl()?
+  const arbitrator2ApiUrl = "localhost:" + TestConfig.proxyPorts.get(getPort(arbitrator2.getUrl()))[1];
+  
+  let err = undefined;
+  try {
+    
+    // post 2 offers which use arbitrator2 since it's least used
+    HavenoUtils.log(1, "Posting offers signed by arbitrator2");
+    const offers = [];
+    for (let i = 0; i < 2; i++) {
+      const offer = await postOffer(user1);
+      assert.equal(offer.getArbitratorSigner(), arbitrator2ApiUrl);
+      offers.push(offer);
+    }
+    await wait(TestConfig.walletSyncPeriodMs * 2);
+    
+    // complete a trade which uses arbitrator2 since it's least used
+    HavenoUtils.log(1, "Completing trade using arbitrator2");
+    await completeTradesById(user1, user2, offers[0].getId());
+    let trade = await user1.getTrade(offers[0].getId());
+    assert.equal(trade.getArbitratorNodeAddress(), arbitrator2ApiUrl);
+    
+    // arbitrator2 goes offline without unregistering
+    HavenoUtils.log(1, "Arbitrator2 going offline");
+    const arbitrator2AppName = arbitrator2.getAppName()
+    await releaseHavenoProcess(arbitrator2);
+    
+    // post offer which uses main arbitrator since least used is offline
+    HavenoUtils.log(1, "Posting offer which uses main arbitrator since least used is offline");
+    let offer = await postOffer(user1);
+    assert.equal(offer.getArbitratorSigner(), arbitratorApiUrl);
+    
+    // complete a trade which uses main arbitrator since signer/least used is offline
+    HavenoUtils.log(1, "Completing trade using main arbitrator since signer/least used is offline");
+    await completeTradesById(user1, user2, offers[1].getId());
+    trade = await user1.getTrade(offers[1].getId());
+    assert.equal(trade.getArbitratorNodeAddress(), arbitratorApiUrl);
+    
+    // start and unregister arbitrator2
+    HavenoUtils.log(1, "Starting and unregistering arbitrator2");
+    arbitrator2 = await initHaveno({appName: arbitrator2AppName});
+    await arbitrator2.unregisterDisputeAgent("arbitrator");
+    await wait(TestConfig.walletSyncPeriodMs * 2); // TODO: test these with network wait times
+    
+    // cannot take offers signed by unregistered arbitrator
+    HavenoUtils.log(1, "Taking offer signed by unregistered arbitrator");
+    try {
+      await completeTradesById(user1, user2, offers[1].getId());
+      throw new Error("Should have failed taking offer signed by unregistered arbitrator");
+    } catch (e2) {
+      assert (e2.message.indexOf("not found") > 0);
+    }
+    
+    // TODO: offer is removed and unreserved or re-signed, ideally keeping the same id
+    
+    // post offer which uses main arbitrator since least used is unregistered
+    offer = await postOffer(user1);
+    assert.equal(offer.getArbitratorSigner(), arbitratorApiUrl);
+    await wait(TestConfig.walletSyncPeriodMs * 2);
+    
+    // complete a trade which uses main arbitrator since least used is unregistered
+    HavenoUtils.log(1, "Completing trade with main arbitrator since least used is unregistered");
+    await completeTradesById(user1, user2, offer.getId());
+    HavenoUtils.log(1, "Done completing trade with main arbitrator since least used is unregistered");
+    trade = await user2.getTrade(offer.getId());
+    HavenoUtils.log(1, "Done getting trade");
+    assert.equal(trade.getArbitratorNodeAddress(), arbitratorApiUrl);
+    
+    // release arbitrator2
+    HavenoUtils.log(1, "Done getting trade");
+    await releaseHavenoProcess(arbitrator2, true);
+  } catch (e) {
+    err = e;
+  }
+  
+  // cleanup if error
+  if (err) {
+    try { await arbitrator2.unregisterDisputeAgent("arbitrator"); }
+    catch (err) { /*ignore*/ }
+    await releaseHavenoProcess(arbitrator2, true);
+    throw err;
+  }
+});
+
 // ------------------------------- HELPERS ------------------------------------
 
+function getPort(url: string): string {
+  return new URL(url).port;
+}
+
 function getBaseCurrencyNetwork(): BaseCurrencyNetwork {
-    const str = getBaseCurrencyNetworkStr();
-    if (str === "XMR_MAINNET") return BaseCurrencyNetwork.XMR_MAINNET;
-    else if (str === "XMR_STAGENET") return BaseCurrencyNetwork.XMR_STAGENET;
-    else if (str === "XMR_LOCAL") return BaseCurrencyNetwork.XMR_LOCAL;
-    else throw new Error("Unhandled base currency network: " + str);
-    function getBaseCurrencyNetworkStr() {
-      for (const arg of process.argv) {
-        if (arg.indexOf("--baseCurrencyNetwork") === 0) {
-          return arg.substring(arg.indexOf("=") + 1);
-        }
+  const str = getBaseCurrencyNetworkStr();
+  if (str === "XMR_MAINNET") return BaseCurrencyNetwork.XMR_MAINNET;
+  else if (str === "XMR_STAGENET") return BaseCurrencyNetwork.XMR_STAGENET;
+  else if (str === "XMR_LOCAL") return BaseCurrencyNetwork.XMR_LOCAL;
+  else throw new Error("Unhandled base currency network: " + str);
+  function getBaseCurrencyNetworkStr() {
+    for (const arg of process.argv) {
+      if (arg.indexOf("--baseCurrencyNetwork") === 0) {
+        return arg.substring(arg.indexOf("=") + 1);
       }
-      throw new Error("Must provide base currency network, e.g.: `npm run test -- --baseCurrencyNetwork=XMR_LOCAL -t \"my test\"`");
     }
+    throw new Error("Must provide base currency network, e.g.: `npm run test -- --baseCurrencyNetwork=XMR_LOCAL -t \"my test\"`");
+  }
 }
 
 function getNetworkStartPort() {
-    switch (getBaseCurrencyNetwork()) {
-        case BaseCurrencyNetwork.XMR_MAINNET: return 1;
-        case BaseCurrencyNetwork.XMR_LOCAL: return 2;
-        case BaseCurrencyNetwork.XMR_STAGENET: return 3;
-        default: throw new Error("Unhandled base currency network: " + getBaseCurrencyNetwork());
-    }
+  switch (getBaseCurrencyNetwork()) {
+      case BaseCurrencyNetwork.XMR_MAINNET: return 1;
+      case BaseCurrencyNetwork.XMR_LOCAL: return 2;
+      case BaseCurrencyNetwork.XMR_STAGENET: return 3;
+      default: throw new Error("Unhandled base currency network: " + getBaseCurrencyNetwork());
+  }
 }
 
-function getArbitratorPrivKey() {
-    switch (getBaseCurrencyNetwork()) {
-        case BaseCurrencyNetwork.XMR_MAINNET:
-          throw new Error("Cannot get private key for MAINNET");
-        case BaseCurrencyNetwork.XMR_STAGENET:
-          return "1aa111f817b7fdaaec1c8d5281a1837cc71c336db09b87cf23344a0a4e3bb2cb";
-        case BaseCurrencyNetwork.XMR_LOCAL:
-          return "6ac43ea1df2a290c1c8391736aa42e4339c5cb4f110ff0257a13b63211977b7a"; // from DEV_PRIVILEGE_PRIV_KEY
-        default:
-          throw new Error("Unhandled base currency network: " + getBaseCurrencyNetwork());
-    }
+function getArbitratorPrivKey(index: number) {
+  const privKey = TestConfig.arbitratorPrivKeys[getBaseCurrencyNetwork()][index];
+  if (!privKey) throw new Error("No arbitrator private key at index " + index);
+  return privKey;
 }
 
 async function initHavenos(numDaemons: number, config?: any) {
-  const traderPromises: Promise<HavenoClient>[] = [];
-  for (let i = 0; i < numDaemons; i++) traderPromises.push(initHaveno(config));
-  return Promise.all(traderPromises);
+  const havenodPromises: Promise<HavenoClient>[] = [];
+  for (let i = 0; i < numDaemons; i++) havenodPromises.push(initHaveno(config));
+  return Promise.all(havenodPromises);
 }
 
 async function initHaveno(config?: any): Promise<HavenoClient> {
@@ -1895,7 +1921,7 @@ async function initHaveno(config?: any): Promise<HavenoClient> {
     
     // get port for haveno process
     let proxyPort = "";
-    if (config.url) proxyPort = new URL(config.url).port
+    if (config.url) proxyPort = getPort(config.url);
     else {
       for (const port of Array.from(TestConfig.proxyPorts.keys())) {
         if (port === "8079" || port === "8080" || port === "8081") continue; // reserved for arbitrator, user1, and user2
@@ -1918,7 +1944,7 @@ async function initHaveno(config?: any): Promise<HavenoClient> {
       "--appName", config.appName,
       "--apiPassword", "apitest",
       "--apiPort", TestConfig.proxyPorts.get(proxyPort)![0],
-      "--walletRpcBindPort", config.walletUrl ? new URL(config.walletUrl).port : "" + await getAvailablePort(), // use configured port if given
+      "--walletRpcBindPort", config.walletUrl ? getPort(config.walletUrl) : "" + await getAvailablePort(), // use configured port if given
       "--passwordRequired", (config.accountPasswordRequired ? "true" : "false")
     ];
     havenod = await HavenoClient.startProcess(TestConfig.haveno.path, cmd, "http://localhost:" + proxyPort, config.logProcessOutput);
@@ -1947,7 +1973,7 @@ async function initHaveno(config?: any): Promise<HavenoClient> {
  */
 async function releaseHavenoProcess(havenod: HavenoClient, deleteAppDir?: boolean) {
   GenUtils.remove(HAVENO_PROCESSES, havenod);
-  GenUtils.remove(HAVENO_PROCESS_PORTS, new URL(havenod.getUrl()).port);
+  GenUtils.remove(HAVENO_PROCESS_PORTS, getPort(havenod.getUrl()));
   try {
     await havenod.shutdownServer();
   } catch (err: any) {
@@ -2017,6 +2043,31 @@ async function initFundingWallet() {
       }
     }
   }
+}
+
+async function prepareForTrading(numTrades: number, ...havenods: HavenoClient[]) {
+  
+  // create payment accounts
+  for (const havenod of havenods) {
+    for (const assetCode of TestConfig.assetCodes) {
+      if (!await hasPaymentAccount(havenod, assetCode)) await createPaymentAccount(havenod, assetCode);
+    }
+  }
+  
+  // fund wallets
+  const tradeAmount = BigInt("250000000000");
+  const wallets = [];
+  for (const havenod of havenods) wallets.push(await getWallet(havenod));
+  await fundOutputs(wallets, tradeAmount * BigInt("2"), numTrades);
+  
+  // wait to observe funds
+  await wait(TestConfig.walletSyncPeriodMs);
+}
+
+async function getWallet(havenod: HavenoClient) {
+  if (havenod === user1) return user1Wallet;
+  if (havenod === user2) return user2Wallet;
+  return await monerojs.connectToWalletRpc("http://127.0.0.1:" + havenod.getWalletRpcPort(), TestConfig.defaultHavenod.walletUsername, TestConfig.defaultHavenod.accountPassword);
 }
 
 async function startMining() {
@@ -2178,7 +2229,8 @@ async function fundOutputs(wallets: any[], amt: bigint, numOutputs?: number, wai
     sendAmt = sendAmt.add(destinations[i].getAmount());
     if (i === destinations.length - 1 || (i > 0 && i % 15 === 0)) {
         await waitForUnlockedBalance(toBigInt(sendAmt), fundingWallet);
-        txHashes.push((await fundingWallet.createTx(txConfig)).getHash());
+        const txs = await fundingWallet.createTxs(txConfig);
+        for (const tx of txs) txHashes.push(tx.getHash());
         txConfig = new MoneroTxConfig().setAccountIndex(0).setRelay(true);
         sendAmt = BigInteger("0");
     }
@@ -2411,6 +2463,80 @@ function testOffer(offer: OfferInfo, config?: any) {
     expect(offer.getSellerSecurityDeposit() / offer.getAmount()).toEqual(config.buyerSecurityDeposit); // TODO: use same config.securityDeposit for buyer and seller? 
   }
   // TODO: test rest of offer
+}
+
+async function completeTrades(maker: HavenoClient, taker: HavenoClient, numTrades: number) {
+  
+  // wait for maker and taker to have unlocked balance for trade
+  const makerWallet = await getWallet(maker);
+  const takerWallet = await getWallet(taker);
+  const tradeAmount = BigInt("250000000000");
+  await fundOutputs([makerWallet, takerWallet], tradeAmount * BigInt("2"), numTrades);
+  await wait(TestConfig.walletSyncPeriodMs);
+  
+  // maker posts offers to buy xmr
+  HavenoUtils.log(1, "Maker posting offers");
+  const direction = "buy";
+  let offers = [];
+  for (let i = 0; i < numTrades; i++) offers.push(postOffer(maker, {direction: direction, amount: tradeAmount, awaitUnlockedBalance: true}));
+  offers = await Promise.all(offers);
+  HavenoUtils.log(1, "Maker done posting offers");
+  for (let i = 0; i < offers.length; i++) HavenoUtils.log(2, "Offer " + i +  ": " + (await maker.getMyOffer(offers[i].getId())).getId());
+  
+  // wait for offers to post
+  await wait(TestConfig.walletSyncPeriodMs * 2);
+  
+  // complete trades by offer id
+  await completeTradesById(maker, taker, ...offers.map(offer => offer.getId()));
+}
+
+async function completeTradesById(maker: HavenoClient, taker: HavenoClient, ...offerIds: string[]) {
+  
+  // take offers
+  const paymentAccount = await createPaymentAccount(taker, "eth");
+  HavenoUtils.log(1, "Taking offers");
+  let trades = [];
+  for (let i = 0; i < offerIds.length; i++) trades.push(taker.takeOffer(offerIds[i], paymentAccount.getId()));
+  trades = await Promise.all(trades);
+  HavenoUtils.log(1, "Done taking offers");
+  
+  // test trades
+  const depositTxIds: string[] = [];
+  for (const trade of trades) {
+    if (trade.getPhase() !== "DEPOSITS_PUBLISHED") throw new Error("Trade phase expected to be DEPOSITS_PUBLISHED but was " + trade.getPhase() + " for trade " + trade.getTradeId());
+    expect(trade.getPhase()).toEqual("DEPOSITS_PUBLISHED");
+    const fetchedTrade: TradeInfo = await taker.getTrade(trade.getTradeId());
+    if (fetchedTrade.getPhase() !== "DEPOSITS_PUBLISHED") throw new Error("Fetched phase expected to be DEPOSITS_PUBLISHED but was " + fetchedTrade.getPhase() + " for trade " + fetchedTrade.getTradeId());
+    expect(fetchedTrade.getPhase()).toEqual("DEPOSITS_PUBLISHED");
+    depositTxIds.push(fetchedTrade.getMakerDepositTxId());
+    depositTxIds.push(fetchedTrade.getTakerDepositTxId());
+  }
+  
+  // mine until deposit txs unlock
+  await waitForUnlockedTxs(...depositTxIds);
+  
+  // wait for notifications
+  await wait(TestConfig.walletSyncPeriodMs * 2);
+  
+  // confirm payment sent
+  HavenoUtils.log(1, "Confirming payment sent");
+  const paymentSentReqs = [];
+  for (let i = 0; i < offerIds.length; i++) paymentSentReqs.push(maker.confirmPaymentStarted(offerIds[i]));
+  await Promise.all(paymentSentReqs);
+  
+  // wait for notifications
+  await wait(TestConfig.walletSyncPeriodMs * 2);
+  
+  // confirm payment received
+  HavenoUtils.log(1, "Confirming payment received");
+  const paymentReceivedReqs = [];
+  for (let i = 0; i < offerIds.length; i++) paymentReceivedReqs.push(taker.confirmPaymentReceived(offerIds[i]));
+  await Promise.all(paymentReceivedReqs);
+  
+  // wait for notifications
+  await wait(TestConfig.walletSyncPeriodMs * 2);
+  
+  // TODO: test state
 }
 
 /**
