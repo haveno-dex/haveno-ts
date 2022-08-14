@@ -1288,6 +1288,94 @@ test("Can complete a trade", async () => {
   expect(user2Fee).toBeGreaterThan(BigInt("0"));
 });
 
+// TODO: refactor to common trade completion test methods
+test("Can go offline while completing a trade", async () => {
+  let traders: HavenoClient[] = [];
+  let err: any;
+  try {
+    
+    // start and fund 2 trader processes
+    HavenoUtils.log(1, "Starting trader processes");
+    traders = await initHavenos(2);
+    HavenoUtils.log(1, "Funding traders");
+    const tradeAmount = BigInt("250000000000");
+    await waitForUnlockedBalance(tradeAmount * BigInt("2"), ...traders);
+    
+    // trader 0 posts offer
+    HavenoUtils.log(1, "Posting offer");
+    let offer = await postOffer(traders[0], {amount: tradeAmount});
+    offer = await traders[0].getMyOffer(offer.getId());
+    assert.equal(offer.getState(), "AVAILABLE");
+    
+    // wait for offer to be seen
+    await wait(TestConfig.walletSyncPeriodMs * 2);
+    
+    // take offer
+    const paymentAccount = await createPaymentAccount(traders[1], "eth");
+    HavenoUtils.log(1, "Taking offer");
+    const trade = await traders[1].takeOffer(offer.getId(), paymentAccount.getId());
+    HavenoUtils.log(1, "Done taking offer");
+    
+    // buyer and seller go offline
+    const buyerAppName = traders[0].getAppName();
+    const sellerAppName = traders[1].getAppName();
+    const promises = [];
+    traders.forEach(trader => promises.push(releaseHavenoProcess(trader)));
+    await Promise.all(promises);
+    traders[0] = undefined;
+    traders[1] = undefined;
+    
+    // mine until deposit txs unlock
+    await waitForUnlockedTxs(...[trade.getMakerDepositTxId(), trade.getTakerDepositTxId()]);
+    
+    // wait for notifications
+    await wait(TestConfig.walletSyncPeriodMs * 2);
+    
+    // buyer comes online
+    traders[0] = await initHaveno({appName: buyerAppName});
+    
+    // confirm payment sent
+    HavenoUtils.log(1, "Confirming payment sent");
+    expect((await traders[0].getTrade(offer.getId())).getPhase()).toEqual("DEPOSITS_UNLOCKED");
+    await traders[0].confirmPaymentStarted(offer.getId());
+    expect((await traders[0].getTrade(offer.getId())).getPhase()).toEqual("PAYMENT_SENT");
+    
+    // wait for notifications
+    await wait(TestConfig.walletSyncPeriodMs * 2);
+    
+    // buyer goes offline and seller comes online
+    await releaseHavenoProcess(traders[0]);
+    traders[0] = undefined;
+    traders[1] = await initHaveno({appName: sellerAppName});
+    
+    // wait for seller to process mailbox message // TODO: process mailbox messages before app initialized notification?
+    await wait(TestConfig.walletSyncPeriodMs * 2);
+    
+    // confirm payment received
+    HavenoUtils.log(1, "Confirming payment received");
+    expect((await traders[1].getTrade(offer.getId())).getPhase()).toEqual("PAYMENT_SENT");
+    await traders[1].confirmPaymentReceived(offer.getId());
+    expect((await traders[1].getTrade(offer.getId())).getPhase()).toEqual("PAYMENT_RECEIVED");
+    HavenoUtils.log(1, "Done confirming payment received");
+    
+    // buyer comes online
+    traders[0] = await initHaveno({appName: buyerAppName});
+    HavenoUtils.log(1, "Done starting buyer");
+    
+    // wait for notifications
+    await wait(TestConfig.walletSyncPeriodMs * 2);
+    HavenoUtils.log(1, "Done waiting for buyer to sync");
+    expect((await traders[0].getTrade(offer.getId())).getPhase()).toEqual("PAYOUT_PUBLISHED");
+    expect((await traders[1].getTrade(offer.getId())).getPhase()).toEqual("PAYMENT_RECEIVED"); // TODO: this should be PAYOUT PUBLISHED
+  } catch (e) {
+    err = e;
+  }
+  
+  // stop traders
+  for (const trader of traders) if (trader) await releaseHavenoProcess(trader, true);
+  if (err) throw err;
+});
+
 test("Can complete trades at the same time", async () => {
   await completeTrades(user1, user2, 6);
 });
