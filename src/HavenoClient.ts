@@ -44,6 +44,11 @@ export default class HavenoClient {
   // constants
   static readonly _fullyInitializedMessage = "Application fully initialized";
   static readonly _loginRequiredMessage = "Interactive login required";
+  onData = (data: any) => {  // callback for grpc notifications
+    if (data instanceof NotificationMessage) {
+      for (const listener of this._notificationListeners) listener(data);
+    }
+  }
 
   /**
    * Construct a client connected to a Haveno daemon.
@@ -1588,11 +1593,7 @@ export default class HavenoClient {
           
           // send request to register client listener
           this._notificationStream = this._notificationsClient.registerNotificationListener(new RegisterNotificationListenerRequest(), {password: this._password})
-            .on('data', (data) => {
-              if (data instanceof NotificationMessage) {
-                for (const listener of this._notificationListeners) listener(data);
-              }
-            });
+                    .on('data', this.onData);
           
           // periodically send keep alive requests // TODO (woodser): better way to keep notification stream alive?
           let firstRequest = true;
@@ -1610,6 +1611,7 @@ export default class HavenoClient {
           setTimeout(resolve, 1000); // TODO: call returns before listener registered
         });
       } else {
+        this._notificationStream!.removeListener('data', this.onData);
         this._keepAliveLooper.stop();
         this._notificationStream!.cancel();
         this._notificationStream = undefined;
