@@ -150,7 +150,7 @@ const TestConfig = {
         priceMargin: 0.0,
         minAmount: undefined,
         buyerSecurityDeposit: 0.15,
-        awaitUnlockedBalance: false,
+        awaitAvailableBalance: false,
         triggerPrice: undefined
     }
 };
@@ -169,7 +169,7 @@ interface PostOfferConfig {
     priceMargin?: number,
     triggerPrice?: number,
     minAmount?: bigint,
-    awaitUnlockedBalance?: boolean
+    awaitAvailableBalance?: boolean
 }
 
 // clients
@@ -628,12 +628,12 @@ test("Has a Monero wallet", async () => {
   
   // wait for user1 to have unlocked balance
   const tradeAmount = BigInt("250000000000");
-  await waitForUnlockedBalance(tradeAmount * BigInt("2"), user1);
+  await waitForAvailableBalance(tradeAmount * BigInt("2"), user1);
   
   // test balances
   const balancesBefore: XmrBalanceInfo = await user1.getBalances(); // TODO: rename to getXmrBalances() for consistency?
-  expect(BigInt(balancesBefore.getUnlockedBalance())).toBeGreaterThan(BigInt("0"));
-  expect(BigInt(balancesBefore.getBalance())).toBeGreaterThanOrEqual(BigInt(balancesBefore.getUnlockedBalance()));
+  expect(BigInt(balancesBefore.getAvailableBalance())).toBeGreaterThan(BigInt("0"));
+  expect(BigInt(balancesBefore.getBalance())).toBeGreaterThanOrEqual(BigInt(balancesBefore.getAvailableBalance()));
   
   // get transactions
   const txs: XmrTx[]= await user1.getXmrTxs();
@@ -660,7 +660,7 @@ test("Has a Monero wallet", async () => {
   // balances decreased
   const balancesAfter = await user1.getBalances();
   expect(BigInt(balancesAfter.getBalance())).toBeLessThan(BigInt(balancesBefore.getBalance()));
-  expect(BigInt(balancesAfter.getUnlockedBalance())).toBeLessThan(BigInt(balancesBefore.getUnlockedBalance()));
+  expect(BigInt(balancesAfter.getAvailableBalance())).toBeLessThan(BigInt(balancesBefore.getAvailableBalance()));
   
   // get relayed tx
   tx = await user1.getXmrTx(txHash);
@@ -677,8 +677,8 @@ test("Has a Monero wallet", async () => {
 
 test("Can get balances", async () => {
   const balances: XmrBalanceInfo = await user1.getBalances();
-  expect(BigInt(balances.getUnlockedBalance())).toBeGreaterThanOrEqual(0);
-  expect(BigInt(balances.getLockedBalance())).toBeGreaterThanOrEqual(0);
+  expect(BigInt(balances.getAvailableBalance())).toBeGreaterThanOrEqual(0);
+  expect(BigInt(balances.getPendingBalance())).toBeGreaterThanOrEqual(0);
   expect(BigInt(balances.getReservedOfferBalance())).toBeGreaterThanOrEqual(0);
   expect(BigInt(balances.getReservedTradeBalance())).toBeGreaterThanOrEqual(0);
 });
@@ -773,13 +773,13 @@ test("Can get market depth", async () => {
     expect(marketDepth.getSellDepthList().length).toEqual(0);
     
     // post offers to buy and sell
-    await postOffer(user1, {direction: "buy", amount: BigInt("150000000000"), assetCode: assetCode, priceMargin: 0.00, awaitUnlockedBalance: true, price: 17.0}); // TODO: offer price is reversed. fix everywhere
-    await postOffer(user1, {direction: "buy", amount: BigInt("150000000000"), assetCode: assetCode, priceMargin: 0.02, awaitUnlockedBalance: true, price: 17.2});
-    await postOffer(user1, {direction: "buy", amount: BigInt("200000000000"), assetCode: assetCode, priceMargin: 0.05, awaitUnlockedBalance: true, price: 17.3});
-    await postOffer(user1, {direction: "buy", amount: BigInt("150000000000"), assetCode: assetCode, priceMargin: 0.02, awaitUnlockedBalance: true, price: 17.3});
-    await postOffer(user1, {direction: "sell", amount: BigInt("300000000000"), assetCode: assetCode, priceMargin: 0.00, awaitUnlockedBalance: true});
-    await postOffer(user1, {direction: "sell", amount: BigInt("300000000000"), assetCode: assetCode, priceMargin: 0.02, awaitUnlockedBalance: true});
-    await postOffer(user1, {direction: "sell", amount: BigInt("400000000000"), assetCode: assetCode, priceMargin: 0.05, awaitUnlockedBalance: true});
+    await postOffer(user1, {direction: "buy", amount: BigInt("150000000000"), assetCode: assetCode, priceMargin: 0.00, awaitAvailableBalance: true, price: 17.0}); // TODO: offer price is reversed. fix everywhere
+    await postOffer(user1, {direction: "buy", amount: BigInt("150000000000"), assetCode: assetCode, priceMargin: 0.02, awaitAvailableBalance: true, price: 17.2});
+    await postOffer(user1, {direction: "buy", amount: BigInt("200000000000"), assetCode: assetCode, priceMargin: 0.05, awaitAvailableBalance: true, price: 17.3});
+    await postOffer(user1, {direction: "buy", amount: BigInt("150000000000"), assetCode: assetCode, priceMargin: 0.02, awaitAvailableBalance: true, price: 17.3});
+    await postOffer(user1, {direction: "sell", amount: BigInt("300000000000"), assetCode: assetCode, priceMargin: 0.00, awaitAvailableBalance: true});
+    await postOffer(user1, {direction: "sell", amount: BigInt("300000000000"), assetCode: assetCode, priceMargin: 0.02, awaitAvailableBalance: true});
+    await postOffer(user1, {direction: "sell", amount: BigInt("400000000000"), assetCode: assetCode, priceMargin: 0.05, awaitAvailableBalance: true});
     
     // get user2's market depth
     await wait(TestConfig.maxTimePeerNoticeMs);
@@ -1016,10 +1016,10 @@ test("Can prepare for trading", async () => {
 test("Can post offers", async () => {
   
   // wait for user1 to have unlocked balance to post offer
-  await waitForUnlockedBalance(BigInt("250000000000") * BigInt("2"), user1);
+  await waitForAvailableBalance(BigInt("250000000000") * BigInt("2"), user1);
   
   // get unlocked balance before reserving funds for offer
-  const unlockedBalanceBefore = BigInt((await user1.getBalances()).getUnlockedBalance());
+  const availableBalanceBefore = BigInt((await user1.getBalances()).getAvailableBalance());
   
   // post crypto offer
   let assetCode = "BCH";
@@ -1046,7 +1046,7 @@ test("Can post offers", async () => {
   if (getOffer(await user1.getMyOffers(assetCode, "buy"), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in my offers after removal");
   
   // reserved balance released
-  expect(BigInt((await user1.getBalances()).getUnlockedBalance())).toEqual(unlockedBalanceBefore);
+  expect(BigInt((await user1.getBalances()).getAvailableBalance())).toEqual(availableBalanceBefore);
   
   // post fiat offer 
   assetCode = "USD";
@@ -1068,7 +1068,7 @@ test("Can post offers", async () => {
   if (getOffer(await user1.getMyOffers(assetCode, "buy"), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in my offers after removal");
   
   // reserved balance released
-  expect(BigInt((await user1.getBalances()).getUnlockedBalance())).toEqual(unlockedBalanceBefore);
+  expect(BigInt((await user1.getBalances()).getAvailableBalance())).toEqual(availableBalanceBefore);
 });
 
 // TODO: support splitting outputs
@@ -1089,7 +1089,7 @@ test("Can schedule offers with locked funds", async () => {
     // schedule offer
     const assetCode = "BCH";
     const direction = "BUY";
-    let offer: OfferInfo = await postOffer(user3, {assetCode: assetCode, direction: direction, awaitUnlockedBalance: false}); 
+    let offer: OfferInfo = await postOffer(user3, {assetCode: assetCode, direction: direction, awaitAvailableBalance: false}); 
     assert.equal(offer.getState(), "SCHEDULED");
     
     // has offer
@@ -1097,7 +1097,7 @@ test("Can schedule offers with locked funds", async () => {
     assert.equal(offer.getState(), "SCHEDULED");
     
     // balances unchanged
-    expect(BigInt((await user3.getBalances()).getLockedBalance())).toEqual(outputAmt * BigInt(2));
+    expect(BigInt((await user3.getBalances()).getPendingBalance())).toEqual(outputAmt * BigInt(2));
     expect(BigInt((await user3.getBalances()).getReservedOfferBalance())).toEqual(BigInt(0));
     
     // peer does not see offer because it's scheduled
@@ -1109,11 +1109,11 @@ test("Can schedule offers with locked funds", async () => {
     if (getOffer(await user3.getOffers(assetCode, direction), offer.getId())) throw new Error("Offer " + offer.getId() + " was found after canceling offer");
     
     // balances unchanged
-    expect(BigInt((await user3.getBalances()).getLockedBalance())).toEqual(outputAmt * BigInt(2));
+    expect(BigInt((await user3.getBalances()).getPendingBalance())).toEqual(outputAmt * BigInt(2));
     expect(BigInt((await user3.getBalances()).getReservedOfferBalance())).toEqual(BigInt(0));
     
     // schedule offer
-    offer = await postOffer(user3, {assetCode: assetCode, direction: direction, awaitUnlockedBalance: false}); 
+    offer = await postOffer(user3, {assetCode: assetCode, direction: direction, awaitAvailableBalance: false}); 
     assert.equal(offer.getState(), "SCHEDULED");
     
     // restart user3
@@ -1130,11 +1130,11 @@ test("Can schedule offers with locked funds", async () => {
     if (getOffer(await user1.getOffers(assetCode, direction), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in peer's offers before posted");
     
     // wait for deposit txs to unlock
-    await waitForUnlockedBalance(outputAmt, user3);
+    await waitForAvailableBalance(outputAmt, user3);
     
     // one output is reserved, one is unlocked
-    expect(BigInt((await user3.getBalances()).getUnlockedBalance())).toEqual(outputAmt);
-    expect(BigInt((await user3.getBalances()).getLockedBalance())).toEqual(BigInt(0));
+    expect(BigInt((await user3.getBalances()).getAvailableBalance())).toEqual(outputAmt);
+    expect(BigInt((await user3.getBalances()).getPendingBalance())).toEqual(BigInt(0));
     expect(BigInt((await user3.getBalances()).getReservedOfferBalance())).toEqual(outputAmt);
     
     // peer sees offer
@@ -1148,8 +1148,8 @@ test("Can schedule offers with locked funds", async () => {
     if (getOffer(await user3.getMyOffers(assetCode), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in my offers after removal");
     
     // reserved balance becomes unlocked
-    expect(BigInt((await user3.getBalances()).getUnlockedBalance())).toEqual(outputAmt * BigInt(2));
-    expect(BigInt((await user3.getBalances()).getLockedBalance())).toEqual(BigInt(0));
+    expect(BigInt((await user3.getBalances()).getAvailableBalance())).toEqual(outputAmt * BigInt(2));
+    expect(BigInt((await user3.getBalances()).getPendingBalance())).toEqual(BigInt(0));
     expect(BigInt((await user3.getBalances()).getReservedOfferBalance())).toEqual(BigInt(0));
   } catch (err2) {
     err = err2;
@@ -1165,7 +1165,7 @@ test("Can complete a trade", async () => {
   
   // wait for user1 and user2 to have unlocked balance for trade
   const tradeAmount = BigInt("250000000000");
-  await waitForUnlockedBalance(tradeAmount * BigInt("2"), user1, user2);
+  await waitForAvailableBalance(tradeAmount * BigInt("2"), user1, user2);
   const user1BalancesBefore = await user1.getBalances();
   const user2BalancesBefore: XmrBalanceInfo = await user2.getBalances();
   
@@ -1231,7 +1231,7 @@ test("Can complete a trade", async () => {
   
   // test user2's balances after taking trade
   let user2BalancesAfter: XmrBalanceInfo = await user2.getBalances();
-  expect(BigInt(user2BalancesAfter.getUnlockedBalance())).toBeLessThan(BigInt(user2BalancesBefore.getUnlockedBalance()));
+  expect(BigInt(user2BalancesAfter.getAvailableBalance())).toBeLessThan(BigInt(user2BalancesBefore.getAvailableBalance()));
   expect(BigInt(user2BalancesAfter.getReservedOfferBalance()) + BigInt(user2BalancesAfter.getReservedTradeBalance())).toBeGreaterThan(BigInt(user2BalancesBefore.getReservedOfferBalance()) + BigInt(user2BalancesBefore.getReservedTradeBalance()));
   
   // user2 is notified of balance change
@@ -1299,7 +1299,7 @@ test("Can go offline while completing a trade", async () => {
     traders = await initHavenos(2);
     HavenoUtils.log(1, "Funding traders");
     const tradeAmount = BigInt("250000000000");
-    await waitForUnlockedBalance(tradeAmount * BigInt("2"), ...traders);
+    await waitForAvailableBalance(tradeAmount * BigInt("2"), ...traders);
     
     // trader 0 posts offer
     HavenoUtils.log(1, "Posting offer");
@@ -1402,7 +1402,7 @@ test("Can resolve disputes", async () => {
   HavenoUtils.log(1, "user1 posting offers");
   const direction = "buy";
   let offers = [];
-  for (let i = 0; i < numOffers; i++) offers.push(postOffer(user1, {direction: direction, amount: tradeAmount, awaitUnlockedBalance: true}));
+  for (let i = 0; i < numOffers; i++) offers.push(postOffer(user1, {direction: direction, amount: tradeAmount, awaitAvailableBalance: true}));
   offers = await Promise.all(offers);
   HavenoUtils.log(1, "user1 done posting offers");
   for (let i = 0; i < offers.length; i++) HavenoUtils.log(2, "Offer " + i +  ": " + (await user1.getMyOffer(offers[i].getId())).getId());
@@ -1663,7 +1663,7 @@ test("Cannot make or take offer with insufficient unlocked funds", async () => {
     if (offers.length) offer = offers[0];
     else {
       const tradeAmount = BigInt("250000000000");
-      await waitForUnlockedBalance(tradeAmount * BigInt("2"), user1);
+      await waitForAvailableBalance(tradeAmount * BigInt("2"), user1);
       offer = await postOffer(user1, {amount: tradeAmount});
       assert.equal(offer.getState(), "AVAILABLE");
       await wait(TestConfig.walletSyncPeriodMs * 2);
@@ -1702,7 +1702,7 @@ test("Invalidates offers when reserved funds are spent", async () => {
   try {
     // wait for user1 to have unlocked balance for trade
     const tradeAmount = BigInt("250000000000");
-    await waitForUnlockedBalance(tradeAmount * BigInt("2"), user1);
+    await waitForAvailableBalance(tradeAmount * BigInt("2"), user1);
     
     // get frozen key images before posting offer
     const frozenKeyImagesBefore = [];
@@ -1768,7 +1768,7 @@ test("Handles unexpected errors during trade initialization", async () => {
     traders = await initHavenos(3);
     HavenoUtils.log(1, "Funding traders");
     const tradeAmount = BigInt("250000000000");
-    await waitForUnlockedBalance(tradeAmount * BigInt("2"), traders[0], traders[1], traders[2]);
+    await waitForAvailableBalance(tradeAmount * BigInt("2"), traders[0], traders[1], traders[2]);
     
     // trader 0 posts offer
     HavenoUtils.log(1, "Posting offer");
@@ -1840,7 +1840,7 @@ test("Handles unexpected errors during trade initialization", async () => {
     // trader 2's balance is unreserved
     const trader2Balances = await traders[2].getBalances();
     expect(BigInt(trader2Balances.getReservedTradeBalance())).toEqual(BigInt("0"));
-    expect(BigInt(trader2Balances.getUnlockedBalance())).toBeGreaterThan(BigInt("0"));
+    expect(BigInt(trader2Balances.getAvailableBalance())).toBeGreaterThan(BigInt("0"));
   } catch (err2) {
     err = err2;
   }
@@ -2169,7 +2169,7 @@ async function startMining() {
 /**
  * Wait for unlocked balance in wallet or Haveno daemon.
  */
-async function waitForUnlockedBalance(amount: bigint, ...wallets: any[]) {
+async function waitForAvailableBalance(amount: bigint, ...wallets: any[]) {
   
   // wrap common wallet functionality for tests
   class WalletWrapper {
@@ -2180,14 +2180,14 @@ async function waitForUnlockedBalance(amount: bigint, ...wallets: any[]) {
       this._wallet = wallet;
     }
     
-    async getUnlockedBalance(): Promise<bigint> {
-      if (this._wallet instanceof HavenoClient) return BigInt((await this._wallet.getBalances()).getUnlockedBalance());
+    async getAvailableBalance(): Promise<bigint> {
+      if (this._wallet instanceof HavenoClient) return BigInt((await this._wallet.getBalances()).getAvailableBalance());
       else return BigInt((await this._wallet.getUnlockedBalance()).toString());
     }
     
-    async getLockedBalance(): Promise<bigint> {
-      if (this._wallet instanceof HavenoClient) return BigInt((await this._wallet.getBalances()).getLockedBalance());
-      else return BigInt((await this._wallet.getBalance()).toString()) - await this.getUnlockedBalance();
+    async getPendingBalance(): Promise<bigint> {
+      if (this._wallet instanceof HavenoClient) return BigInt((await this._wallet.getBalances()).getPendingBalance());
+      else return BigInt((await this._wallet.getBalance()).toString()) - await this.getAvailableBalance();
     }
     
     async getDepositAddress(): Promise<string> {
@@ -2203,9 +2203,9 @@ async function waitForUnlockedBalance(amount: bigint, ...wallets: any[]) {
   let miningNeeded = false;
   const fundConfig = new MoneroTxConfig().setAccountIndex(0).setRelay(true);
   for (const wallet of wallets) {
-    const unlockedBalance = await wallet.getUnlockedBalance();
-    if (unlockedBalance < amount) miningNeeded = true;
-    const depositNeeded: bigint = amount - unlockedBalance - await wallet.getLockedBalance();
+    const availableBalance = await wallet.getAvailableBalance();
+    if (availableBalance < amount) miningNeeded = true;
+    const depositNeeded: bigint = amount - availableBalance - await wallet.getPendingBalance();
     if (depositNeeded > BigInt("0") && wallet._wallet !== fundingWallet) {
       for (let i = 0; i < 5; i++) {
         fundConfig.addDestination(await wallet.getDepositAddress(), depositNeeded * BigInt("2")); // make several deposits
@@ -2213,7 +2213,7 @@ async function waitForUnlockedBalance(amount: bigint, ...wallets: any[]) {
     }
   }
   if (fundConfig.getDestinations()) {
-    await waitForUnlockedBalance(TestConfig.fundingWallet.minimumFunding, fundingWallet); // TODO (woodser): wait for enough to cover tx amount + fee
+    await waitForAvailableBalance(TestConfig.fundingWallet.minimumFunding, fundingWallet); // TODO (woodser): wait for enough to cover tx amount + fee
     try { await fundingWallet.createTx(fundConfig); }
     catch (err: any) { throw new Error("Error funding wallets: " + err.message); }
   }
@@ -2316,7 +2316,7 @@ async function fundOutputs(wallets: any[], amt: bigint, numOutputs?: number, wai
     txConfig.addDestination(destinations[i]);
     sendAmt = sendAmt.add(destinations[i].getAmount());
     if (i === destinations.length - 1 || (i > 0 && i % 15 === 0)) {
-        await waitForUnlockedBalance(toBigInt(sendAmt), fundingWallet);
+        await waitForAvailableBalance(toBigInt(sendAmt), fundingWallet);
         const txs = await fundingWallet.createTxs(txConfig);
         for (const tx of txs) txHashes.push(tx.getHash());
         txConfig = new MoneroTxConfig().setAccountIndex(0).setRelay(true);
@@ -2480,13 +2480,13 @@ async function postOffer(maker: HavenoClient, config?: PostOfferConfig) {
   config = Object.assign({}, TestConfig.postOffer, config);
   
   // wait for unlocked balance
-  if (config.awaitUnlockedBalance) await waitForUnlockedBalance(config.amount! * BigInt("2"), maker);
+  if (config.awaitAvailableBalance) await waitForAvailableBalance(config.amount! * BigInt("2"), maker);
   
   // create payment account if not given
   if (!config.paymentAccountId) config.paymentAccountId = (await createPaymentAccount(maker, config.assetCode!)).getId();
   
   // get unlocked balance before reserving offer
-  const unlockedBalanceBefore = BigInt((await maker.getBalances()).getUnlockedBalance());
+  const availableBalanceBefore = BigInt((await maker.getBalances()).getAvailableBalance());
   
   // post offer
   const offer: OfferInfo = await maker.postOffer(
@@ -2509,11 +2509,11 @@ async function postOffer(maker: HavenoClient, config?: PostOfferConfig) {
   if (getOffer(await maker.getOffers(config.assetCode!, config.direction), offer.getId())) throw new Error("My offer " + offer.getId() + " should not appear in available offers");
   
   // unlocked balance has decreased
-  const unlockedBalanceAfter = BigInt((await maker.getBalances()).getUnlockedBalance());
+  const availableBalanceAfter = BigInt((await maker.getBalances()).getAvailableBalance());
   if (offer.getState() === "SCHEDULED") {
-    if (unlockedBalanceAfter !== unlockedBalanceBefore) throw new Error("Unlocked balance should not change for scheduled offer");
+    if (availableBalanceAfter !== availableBalanceBefore) throw new Error("Unlocked balance should not change for scheduled offer");
   } else if (offer.getState() === "AVAILABLE") {
-    if (unlockedBalanceAfter === unlockedBalanceBefore) throw new Error("Unlocked balance did not change after posting offer");
+    if (availableBalanceAfter === availableBalanceBefore) throw new Error("Unlocked balance did not change after posting offer");
   } else {
     throw new Error("Unexpected offer state after posting: " + offer.getState());
   }
@@ -2566,7 +2566,7 @@ async function completeTrades(maker: HavenoClient, taker: HavenoClient, numTrade
   HavenoUtils.log(1, "Maker posting offers");
   const direction = "buy";
   let offers = [];
-  for (let i = 0; i < numTrades; i++) offers.push(postOffer(maker, {direction: direction, amount: tradeAmount, awaitUnlockedBalance: true}));
+  for (let i = 0; i < numTrades; i++) offers.push(postOffer(maker, {direction: direction, amount: tradeAmount, awaitAvailableBalance: true}));
   offers = await Promise.all(offers);
   HavenoUtils.log(1, "Maker done posting offers");
   for (let i = 0; i < offers.length; i++) HavenoUtils.log(2, "Offer " + i +  ": " + (await maker.getMyOffer(offers[i].getId())).getId());
