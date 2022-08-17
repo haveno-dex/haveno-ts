@@ -106,7 +106,7 @@ const TestConfig = {
     maxWalletStartupMs: 10000, // TODO (woodser): make shorter by switching to jni
     maxTimePeerNoticeMs: 3000,
     maxCpuPct: 0.25,
-    assetCodes: ["USD", "GBP", "EUR", "ETH", "BTC", "BCH", "LTC", "ZEC"], // primary asset codes
+    assetCodes: ["USD", "GBP", "EUR", "ETH", "BTC", "BCH", "LTC"], // primary asset codes
     cryptoAddresses: [{
             currencyCode: "ETH",
             address: "0xdBdAb835Acd6fC84cF5F9aDD3c0B5a1E25fbd99f"
@@ -119,9 +119,6 @@ const TestConfig = {
         }, {
             currencyCode: "LTC",
             address: "LXUTUN5mTPc2LsS7cEjkyjTRcfYyJGoUuQ"
-        }, {
-            currencyCode: "ZEC",
-            address: "t1SnUTh75DSZ1AvbjiTvvHkmPoph7DeHTGG" // TODO: support z-addresses only
         }
     ],
     proxyPorts: new Map<string, string[]>([ // map proxied ports to havenod api and p2p ports
