@@ -2230,7 +2230,7 @@ async function waitForAvailableBalance(amount: bigint, ...wallets: any[]) {
     // eslint-disable-next-line no-async-promise-executor
     promises.push(new Promise(async (resolve) => {
       const taskLooper: any = new TaskLooper(async function() {
-        if (await wallet.getUnlockedBalance() >= amount) {
+        if (await wallet.getAvailableBalance() >= amount) {
           taskLooper.stop();
           resolve();
         }
