@@ -1267,7 +1267,7 @@ test("Can complete a trade", async () => {
   HavenoUtils.log(1, "user2 confirming payment received");
   await user2.confirmPaymentReceived(trade.getTradeId());
   fetchedTrade = await user2.getTrade(trade.getTradeId());
-  expect(fetchedTrade.getPhase()).toEqual("PAYMENT_RECEIVED"); // TODO (woodser): may be PAYOUT_PUBLISHED if seller sends multisig info after confirmation
+  expect(fetchedTrade.getPhase()).toEqual("PAYOUT_PUBLISHED");
   
   // user1 notified trade is complete and of balance changes
   await wait(TestConfig.maxWalletStartupMs + TestConfig.walletSyncPeriodMs * 2);
@@ -1325,15 +1325,15 @@ test("Can go offline while completing a trade", async () => {
     // mine until deposit txs unlock
     await waitForUnlockedTxs(...[trade.getMakerDepositTxId(), trade.getTakerDepositTxId()]);
     
-    // wait for notifications
-    await wait(TestConfig.walletSyncPeriodMs * 2);
-    
     // buyer comes online
     traders[0] = await initHaveno({appName: buyerAppName});
+    expect((await traders[0].getTrade(offer.getId())).getPhase()).toEqual("DEPOSITS_UNLOCKED");
+    
+    // wait for processing
+    await wait(TestConfig.walletSyncPeriodMs * 2);
     
     // confirm payment sent
     HavenoUtils.log(1, "Confirming payment sent");
-    expect((await traders[0].getTrade(offer.getId())).getPhase()).toEqual("DEPOSITS_UNLOCKED");
     await traders[0].confirmPaymentStarted(offer.getId());
     expect((await traders[0].getTrade(offer.getId())).getPhase()).toEqual("PAYMENT_SENT");
     
@@ -1429,6 +1429,7 @@ test("Can resolve disputes", async () => {
   
   // mine until deposit txs unlock
   await waitForUnlockedTxs(...depositTxIds);
+  await GenUtils.waitFor(TestConfig.walletSyncPeriodMs); // might need more time if unlocked very soon after confirmed
   
   // open disputes
   HavenoUtils.log(1, "Opening disputes");
