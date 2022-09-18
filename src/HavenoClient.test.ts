@@ -1283,6 +1283,10 @@ test("Can complete a trade", async () => {
   expect(user1Fee).toBeGreaterThan(BigInt("0"));
   expect(user2Fee).toBeLessThanOrEqual(TestConfig.maxFee);
   expect(user2Fee).toBeGreaterThan(BigInt("0"));
+  
+  // arbitrator trade is closed
+  const arbitratorTrade = await arbitrator.getTrade(trade.getTradeId());
+  expect(arbitratorTrade.getState()).toEqual("WITHDRAW_COMPLETED");
 });
 
 // TODO: refactor to common trade completion test methods
