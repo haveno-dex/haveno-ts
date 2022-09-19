@@ -1224,6 +1224,8 @@ test("Can complete a trade", async () => {
   // user2 can get trade
   let fetchedTrade: TradeInfo = await user2.getTrade(trade.getTradeId());
   expect(fetchedTrade.getPhase()).toEqual("DEPOSITS_PUBLISHED");
+  expect(fetchedTrade.getContract().getMakerPaymentAccountPayload()).toBeUndefined();
+  expect(fetchedTrade.getContract().getTakerPaymentAccountPayload()).toBeDefined();
   // TODO: test fetched trade
   
   // test user2's balances after taking trade
@@ -1236,6 +1238,8 @@ test("Can complete a trade", async () => {
   // user1 can get trade
   fetchedTrade = await user1.getTrade(trade.getTradeId());
   expect(fetchedTrade.getPhase()).toEqual("DEPOSITS_PUBLISHED");
+  expect(fetchedTrade.getContract().getMakerPaymentAccountPayload()).toBeDefined();
+  expect(fetchedTrade.getContract().getTakerPaymentAccountPayload()).toBeUndefined();
 
   // test trader chat
   await testTradeChat(trade.getTradeId(), user1, user2);
@@ -1248,9 +1252,14 @@ test("Can complete a trade", async () => {
   fetchedTrade = await user1.getTrade(trade.getTradeId());
   expect(fetchedTrade.getIsDepositUnlocked()).toBe(true);
   expect(fetchedTrade.getPhase()).toEqual("DEPOSITS_UNLOCKED");
+  expect(fetchedTrade.getContract().getMakerPaymentAccountPayload()).toBeDefined();
+  expect(fetchedTrade.getContract().getTakerPaymentAccountPayload()).toBeDefined(); // decrypted after first confirmation
   fetchedTrade = await user2.getTrade(trade.getTradeId());
   expect(fetchedTrade.getIsDepositUnlocked()).toBe(true);
   expect(fetchedTrade.getPhase()).toEqual("DEPOSITS_UNLOCKED");
+  expect(fetchedTrade.getContract().getMakerPaymentAccountPayload()).toBeUndefined(); // decrypted when payment sent
+  expect(fetchedTrade.getContract().getTakerPaymentAccountPayload()).toBeDefined();
+  console.log(fetchedTrade.getContract().getTakerPaymentAccountPayload().getPaymentDetails());
   
   // user1 indicates payment is sent
   HavenoUtils.log(1, "user1 confirming payment sent");
@@ -1262,6 +1271,8 @@ test("Can complete a trade", async () => {
   await wait(TestConfig.maxTimePeerNoticeMs + TestConfig.maxWalletStartupMs);
   fetchedTrade = await user2.getTrade(trade.getTradeId());
   expect(fetchedTrade.getPhase()).toEqual("PAYMENT_SENT");
+  expect(fetchedTrade.getContract().getMakerPaymentAccountPayload()).toBeDefined();
+  console.log(fetchedTrade.getContract().getMakerPaymentAccountPayload().getPaymentDetails());
   
   // user2 confirms payment is received
   HavenoUtils.log(1, "user2 confirming payment received");
