@@ -43,7 +43,7 @@ const TestConfig = {
     testDataDir: "./testdata",
     haveno: {
         path: "../haveno",
-        version: "0.0.1"
+        version: "0.0.2"
     },
     monerod: {
         url: "http://localhost:" + getNetworkStartPort() + "8081", // 18081, 28081, 38081 for mainnet, testnet, stagenet respectively
