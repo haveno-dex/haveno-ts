@@ -629,6 +629,38 @@ export namespace RegisterDisputeAgentReply {
   }
 }
 
+export class UnregisterDisputeAgentRequest extends jspb.Message {
+  getDisputeAgentType(): string;
+  setDisputeAgentType(value: string): UnregisterDisputeAgentRequest;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UnregisterDisputeAgentRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: UnregisterDisputeAgentRequest): UnregisterDisputeAgentRequest.AsObject;
+  static serializeBinaryToWriter(message: UnregisterDisputeAgentRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UnregisterDisputeAgentRequest;
+  static deserializeBinaryFromReader(message: UnregisterDisputeAgentRequest, reader: jspb.BinaryReader): UnregisterDisputeAgentRequest;
+}
+
+export namespace UnregisterDisputeAgentRequest {
+  export type AsObject = {
+    disputeAgentType: string,
+  }
+}
+
+export class UnregisterDisputeAgentReply extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UnregisterDisputeAgentReply.AsObject;
+  static toObject(includeInstance: boolean, msg: UnregisterDisputeAgentReply): UnregisterDisputeAgentReply.AsObject;
+  static serializeBinaryToWriter(message: UnregisterDisputeAgentReply, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UnregisterDisputeAgentReply;
+  static deserializeBinaryFromReader(message: UnregisterDisputeAgentReply, reader: jspb.BinaryReader): UnregisterDisputeAgentReply;
+}
+
+export namespace UnregisterDisputeAgentReply {
+  export type AsObject = {
+  }
+}
+
 export class RegisterNotificationListenerRequest extends jspb.Message {
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): RegisterNotificationListenerRequest.AsObject;
@@ -1146,33 +1178,33 @@ export namespace SetAutoSwitchReply {
   }
 }
 
-export class IsMoneroNodeRunningRequest extends jspb.Message {
+export class IsMoneroNodeOnlineRequest extends jspb.Message {
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): IsMoneroNodeRunningRequest.AsObject;
-  static toObject(includeInstance: boolean, msg: IsMoneroNodeRunningRequest): IsMoneroNodeRunningRequest.AsObject;
-  static serializeBinaryToWriter(message: IsMoneroNodeRunningRequest, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): IsMoneroNodeRunningRequest;
-  static deserializeBinaryFromReader(message: IsMoneroNodeRunningRequest, reader: jspb.BinaryReader): IsMoneroNodeRunningRequest;
+  toObject(includeInstance?: boolean): IsMoneroNodeOnlineRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: IsMoneroNodeOnlineRequest): IsMoneroNodeOnlineRequest.AsObject;
+  static serializeBinaryToWriter(message: IsMoneroNodeOnlineRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): IsMoneroNodeOnlineRequest;
+  static deserializeBinaryFromReader(message: IsMoneroNodeOnlineRequest, reader: jspb.BinaryReader): IsMoneroNodeOnlineRequest;
 }
 
-export namespace IsMoneroNodeRunningRequest {
+export namespace IsMoneroNodeOnlineRequest {
   export type AsObject = {
   }
 }
 
-export class IsMoneroNodeRunningReply extends jspb.Message {
+export class IsMoneroNodeOnlineReply extends jspb.Message {
   getIsRunning(): boolean;
-  setIsRunning(value: boolean): IsMoneroNodeRunningReply;
+  setIsRunning(value: boolean): IsMoneroNodeOnlineReply;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): IsMoneroNodeRunningReply.AsObject;
-  static toObject(includeInstance: boolean, msg: IsMoneroNodeRunningReply): IsMoneroNodeRunningReply.AsObject;
-  static serializeBinaryToWriter(message: IsMoneroNodeRunningReply, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): IsMoneroNodeRunningReply;
-  static deserializeBinaryFromReader(message: IsMoneroNodeRunningReply, reader: jspb.BinaryReader): IsMoneroNodeRunningReply;
+  toObject(includeInstance?: boolean): IsMoneroNodeOnlineReply.AsObject;
+  static toObject(includeInstance: boolean, msg: IsMoneroNodeOnlineReply): IsMoneroNodeOnlineReply.AsObject;
+  static serializeBinaryToWriter(message: IsMoneroNodeOnlineReply, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): IsMoneroNodeOnlineReply;
+  static deserializeBinaryFromReader(message: IsMoneroNodeOnlineReply, reader: jspb.BinaryReader): IsMoneroNodeOnlineReply;
 }
 
-export namespace IsMoneroNodeRunningReply {
+export namespace IsMoneroNodeOnlineReply {
   export type AsObject = {
     isRunning: boolean,
   }
@@ -1625,6 +1657,9 @@ export class OfferInfo extends jspb.Message {
   getProtocolVersion(): number;
   setProtocolVersion(value: number): OfferInfo;
 
+  getArbitratorSigner(): string;
+  setArbitratorSigner(value: string): OfferInfo;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): OfferInfo.AsObject;
   static toObject(includeInstance: boolean, msg: OfferInfo): OfferInfo.AsObject;
@@ -1663,6 +1698,7 @@ export namespace OfferInfo {
     pubKeyRing: string,
     versionNr: string,
     protocolVersion: number,
+    arbitratorSigner: string,
   }
 }
 
@@ -1689,8 +1725,13 @@ export namespace AvailabilityResultWithDescription {
 }
 
 export class CreatePaymentAccountRequest extends jspb.Message {
-  getPaymentAccountForm(): string;
-  setPaymentAccountForm(value: string): CreatePaymentAccountRequest;
+  getPaymentAccountForm(): pb_pb.PaymentAccountForm | undefined;
+  setPaymentAccountForm(value?: pb_pb.PaymentAccountForm): CreatePaymentAccountRequest;
+  hasPaymentAccountForm(): boolean;
+  clearPaymentAccountForm(): CreatePaymentAccountRequest;
+
+  getPaymentAccountFormAsJson(): string;
+  setPaymentAccountFormAsJson(value: string): CreatePaymentAccountRequest;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): CreatePaymentAccountRequest.AsObject;
@@ -1702,7 +1743,8 @@ export class CreatePaymentAccountRequest extends jspb.Message {
 
 export namespace CreatePaymentAccountRequest {
   export type AsObject = {
-    paymentAccountForm: string,
+    paymentAccountForm?: pb_pb.PaymentAccountForm.AsObject,
+    paymentAccountFormAsJson: string,
   }
 }
 
@@ -1813,8 +1855,10 @@ export namespace GetPaymentAccountFormRequest {
 }
 
 export class GetPaymentAccountFormReply extends jspb.Message {
-  getPaymentAccountFormJson(): string;
-  setPaymentAccountFormJson(value: string): GetPaymentAccountFormReply;
+  getPaymentAccountForm(): pb_pb.PaymentAccountForm | undefined;
+  setPaymentAccountForm(value?: pb_pb.PaymentAccountForm): GetPaymentAccountFormReply;
+  hasPaymentAccountForm(): boolean;
+  clearPaymentAccountForm(): GetPaymentAccountFormReply;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GetPaymentAccountFormReply.AsObject;
@@ -1826,7 +1870,43 @@ export class GetPaymentAccountFormReply extends jspb.Message {
 
 export namespace GetPaymentAccountFormReply {
   export type AsObject = {
-    paymentAccountFormJson: string,
+    paymentAccountForm?: pb_pb.PaymentAccountForm.AsObject,
+  }
+}
+
+export class GetPaymentAccountFormAsJsonRequest extends jspb.Message {
+  getPaymentMethodId(): string;
+  setPaymentMethodId(value: string): GetPaymentAccountFormAsJsonRequest;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GetPaymentAccountFormAsJsonRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: GetPaymentAccountFormAsJsonRequest): GetPaymentAccountFormAsJsonRequest.AsObject;
+  static serializeBinaryToWriter(message: GetPaymentAccountFormAsJsonRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GetPaymentAccountFormAsJsonRequest;
+  static deserializeBinaryFromReader(message: GetPaymentAccountFormAsJsonRequest, reader: jspb.BinaryReader): GetPaymentAccountFormAsJsonRequest;
+}
+
+export namespace GetPaymentAccountFormAsJsonRequest {
+  export type AsObject = {
+    paymentMethodId: string,
+  }
+}
+
+export class GetPaymentAccountFormAsJsonReply extends jspb.Message {
+  getPaymentAccountFormAsJson(): string;
+  setPaymentAccountFormAsJson(value: string): GetPaymentAccountFormAsJsonReply;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GetPaymentAccountFormAsJsonReply.AsObject;
+  static toObject(includeInstance: boolean, msg: GetPaymentAccountFormAsJsonReply): GetPaymentAccountFormAsJsonReply.AsObject;
+  static serializeBinaryToWriter(message: GetPaymentAccountFormAsJsonReply, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GetPaymentAccountFormAsJsonReply;
+  static deserializeBinaryFromReader(message: GetPaymentAccountFormAsJsonReply, reader: jspb.BinaryReader): GetPaymentAccountFormAsJsonReply;
+}
+
+export namespace GetPaymentAccountFormAsJsonReply {
+  export type AsObject = {
+    paymentAccountFormAsJson: string,
   }
 }
 
@@ -1911,6 +1991,48 @@ export class GetCryptoCurrencyPaymentMethodsReply extends jspb.Message {
 export namespace GetCryptoCurrencyPaymentMethodsReply {
   export type AsObject = {
     paymentMethodsList: Array<pb_pb.PaymentMethod.AsObject>,
+  }
+}
+
+export class ValidateFormFieldRequest extends jspb.Message {
+  getForm(): pb_pb.PaymentAccountForm | undefined;
+  setForm(value?: pb_pb.PaymentAccountForm): ValidateFormFieldRequest;
+  hasForm(): boolean;
+  clearForm(): ValidateFormFieldRequest;
+
+  getFieldId(): pb_pb.PaymentAccountFormField.FieldId;
+  setFieldId(value: pb_pb.PaymentAccountFormField.FieldId): ValidateFormFieldRequest;
+
+  getValue(): string;
+  setValue(value: string): ValidateFormFieldRequest;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ValidateFormFieldRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: ValidateFormFieldRequest): ValidateFormFieldRequest.AsObject;
+  static serializeBinaryToWriter(message: ValidateFormFieldRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ValidateFormFieldRequest;
+  static deserializeBinaryFromReader(message: ValidateFormFieldRequest, reader: jspb.BinaryReader): ValidateFormFieldRequest;
+}
+
+export namespace ValidateFormFieldRequest {
+  export type AsObject = {
+    form?: pb_pb.PaymentAccountForm.AsObject,
+    fieldId: pb_pb.PaymentAccountFormField.FieldId,
+    value: string,
+  }
+}
+
+export class ValidateFormFieldReply extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ValidateFormFieldReply.AsObject;
+  static toObject(includeInstance: boolean, msg: ValidateFormFieldReply): ValidateFormFieldReply.AsObject;
+  static serializeBinaryToWriter(message: ValidateFormFieldReply, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ValidateFormFieldReply;
+  static deserializeBinaryFromReader(message: ValidateFormFieldReply, reader: jspb.BinaryReader): ValidateFormFieldReply;
+}
+
+export namespace ValidateFormFieldReply {
+  export type AsObject = {
   }
 }
 
@@ -2524,6 +2646,9 @@ export class TradeInfo extends jspb.Message {
   getPrice(): string;
   setPrice(value: string): TradeInfo;
 
+  getArbitratorNodeAddress(): string;
+  setArbitratorNodeAddress(value: string): TradeInfo;
+
   getTradingPeerNodeAddress(): string;
   setTradingPeerNodeAddress(value: string): TradeInfo;
 
@@ -2592,6 +2717,7 @@ export namespace TradeInfo {
     payoutTxId: string,
     amountAsLong: number,
     price: string,
+    arbitratorNodeAddress: string,
     tradingPeerNodeAddress: string,
     state: string,
     phase: string,
@@ -3624,11 +3750,11 @@ export class XmrBalanceInfo extends jspb.Message {
   getBalance(): string;
   setBalance(value: string): XmrBalanceInfo;
 
-  getUnlockedBalance(): string;
-  setUnlockedBalance(value: string): XmrBalanceInfo;
+  getAvailableBalance(): string;
+  setAvailableBalance(value: string): XmrBalanceInfo;
 
-  getLockedBalance(): string;
-  setLockedBalance(value: string): XmrBalanceInfo;
+  getPendingBalance(): string;
+  setPendingBalance(value: string): XmrBalanceInfo;
 
   getReservedOfferBalance(): string;
   setReservedOfferBalance(value: string): XmrBalanceInfo;
@@ -3647,8 +3773,8 @@ export class XmrBalanceInfo extends jspb.Message {
 export namespace XmrBalanceInfo {
   export type AsObject = {
     balance: string,
-    unlockedBalance: string,
-    lockedBalance: string,
+    availableBalance: string,
+    pendingBalance: string,
     reservedOfferBalance: string,
     reservedTradeBalance: string,
   }

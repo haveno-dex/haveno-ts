@@ -1,3 +1,4 @@
+import { PaymentAccountForm, PaymentAccountFormField } from "../protobuf/pb_pb";
 /**
  * Collection of utilities for working with Haveno.
  */
@@ -49,4 +50,21 @@ export default class HavenoUtils {
      * @return {BigInt} the amount denominated in atomic units
      */
     static centinerosToAtomicUnits(centineros: number): bigint;
+    /**
+     * Get a form field value.
+     *
+     * @param {PaymentAccountFormField.FieldId} fieldId - id of the field to get the value from
+     * @param {PaymentAccountForm} form - form to get the field value from
+     * @return {string} the form field value
+     */
+    static getFormValue(fieldId: PaymentAccountFormField.FieldId, form: PaymentAccountForm): string;
+    /**
+     * Set a form field value.
+     *
+     * @param {PaymentAccountFormField.FieldId} fieldId - id of the field to set the value of
+     * @param {string} value - field value to set
+     * @param {PaymentAccountForm} form - form to get the field from
+     * @return {string} the form field value
+     */
+    static setFormValue(fieldId: PaymentAccountFormField.FieldId, value: string, form: PaymentAccountForm): void;
 }

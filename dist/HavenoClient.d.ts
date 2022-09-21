@@ -1,7 +1,7 @@
 import type * as grpcWeb from "grpc-web";
 import { GetVersionClient, AccountClient, MoneroConnectionsClient, DisputesClient, DisputeAgentsClient, NotificationsClient, WalletsClient, PriceClient, OffersClient, PaymentAccountsClient, TradesClient, ShutdownServerClient, MoneroNodeClient } from './protobuf/GrpcServiceClientPb';
 import { MarketPriceInfo, MarketDepthInfo, XmrBalanceInfo, OfferInfo, TradeInfo, XmrTx, XmrDestination, NotificationMessage, UrlConnection } from "./protobuf/grpc_pb";
-import { PaymentMethod, PaymentAccount, Attachment, DisputeResult, Dispute, ChatMessage, MoneroNodeSettings } from "./protobuf/pb_pb";
+import { PaymentMethod, PaymentAccountForm, PaymentAccountFormField, PaymentAccount, Attachment, DisputeResult, Dispute, ChatMessage, MoneroNodeSettings } from "./protobuf/pb_pb";
 /**
  * Haveno daemon client.
  */
@@ -33,6 +33,7 @@ export default class HavenoClient {
     _paymentMethods: PaymentMethod[] | undefined;
     static readonly _fullyInitializedMessage = "Application fully initialized";
     static readonly _loginRequiredMessage = "Interactive login required";
+    onData: (data: any) => void;
     /**
      * Construct a client connected to a Haveno daemon.
      *
@@ -232,7 +233,7 @@ export default class HavenoClient {
     /**
      * Returns whether daemon is running a local monero node.
      */
-    isMoneroNodeRunning(): Promise<boolean>;
+    isMoneroNodeOnline(): Promise<boolean>;
     /**
      * Gets the current local monero node settings.
      */
@@ -254,6 +255,12 @@ export default class HavenoClient {
      * @param {string} registrationKey - registration key
      */
     registerDisputeAgent(disputeAgentType: string, registrationKey: string): Promise<void>;
+    /**
+     * Unregister as a dispute agent.
+     *
+     * @param {string} disputeAgentType - type of dispute agent to register, e.g. mediator, refundagent
+     */
+    unregisterDisputeAgent(disputeAgentType: string): Promise<void>;
     /**
      * Get the user's balances.
      *
@@ -354,16 +361,18 @@ export default class HavenoClient {
     /**
      * Get a form for the given payment method to complete and create a new payment account.
      *
-     * @return {object} the payment account form as JSON
+     * @param {string} paymentMethodId - the id of the payment method
+     * @return {PaymentAccountForm} the payment account form
      */
-    getPaymentAccountForm(paymentMethodId: string): Promise<any>;
+    getPaymentAccountForm(paymentMethodId: string): Promise<PaymentAccountForm>;
+    validateFormField(form: PaymentAccountForm, fieldId: PaymentAccountFormField.FieldId, value: string): Promise<void>;
     /**
      * Create a payment account.
      *
-     * @param {object} paymentAccountForm - the completed form as JSON to create the payment account
+     * @param {PaymentAccountForm} paymentAccountForm - the completed form to create the payment account
      * @return {PaymentAccount} the created payment account
      */
-    createPaymentAccount(paymentAccountForm: any): Promise<PaymentAccount>;
+    createPaymentAccount(paymentAccountForm: PaymentAccountForm): Promise<PaymentAccount>;
     /**
      * Create a crypto payment account.
      *

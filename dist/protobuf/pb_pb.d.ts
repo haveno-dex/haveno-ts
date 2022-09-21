@@ -231,10 +231,15 @@ export class NetworkEnvelope extends jspb.Message {
   hasDepositResponse(): boolean;
   clearDepositResponse(): NetworkEnvelope;
 
-  getPaymentAccountPayloadRequest(): PaymentAccountPayloadRequest | undefined;
-  setPaymentAccountPayloadRequest(value?: PaymentAccountPayloadRequest): NetworkEnvelope;
-  hasPaymentAccountPayloadRequest(): boolean;
-  clearPaymentAccountPayloadRequest(): NetworkEnvelope;
+  getPaymentAccountKeyRequest(): PaymentAccountKeyRequest | undefined;
+  setPaymentAccountKeyRequest(value?: PaymentAccountKeyRequest): NetworkEnvelope;
+  hasPaymentAccountKeyRequest(): boolean;
+  clearPaymentAccountKeyRequest(): NetworkEnvelope;
+
+  getPaymentAccountKeyResponse(): PaymentAccountKeyResponse | undefined;
+  setPaymentAccountKeyResponse(value?: PaymentAccountKeyResponse): NetworkEnvelope;
+  hasPaymentAccountKeyResponse(): boolean;
+  clearPaymentAccountKeyResponse(): NetworkEnvelope;
 
   getPaymentSentMessage(): PaymentSentMessage | undefined;
   setPaymentSentMessage(value?: PaymentSentMessage): NetworkEnvelope;
@@ -251,16 +256,6 @@ export class NetworkEnvelope extends jspb.Message {
   hasPayoutTxPublishedMessage(): boolean;
   clearPayoutTxPublishedMessage(): NetworkEnvelope;
 
-  getUpdateMultisigRequest(): UpdateMultisigRequest | undefined;
-  setUpdateMultisigRequest(value?: UpdateMultisigRequest): NetworkEnvelope;
-  hasUpdateMultisigRequest(): boolean;
-  clearUpdateMultisigRequest(): NetworkEnvelope;
-
-  getUpdateMultisigResponse(): UpdateMultisigResponse | undefined;
-  setUpdateMultisigResponse(value?: UpdateMultisigResponse): NetworkEnvelope;
-  hasUpdateMultisigResponse(): boolean;
-  clearUpdateMultisigResponse(): NetworkEnvelope;
-
   getArbitratorPayoutTxRequest(): ArbitratorPayoutTxRequest | undefined;
   setArbitratorPayoutTxRequest(value?: ArbitratorPayoutTxRequest): NetworkEnvelope;
   hasArbitratorPayoutTxRequest(): boolean;
@@ -270,6 +265,16 @@ export class NetworkEnvelope extends jspb.Message {
   setArbitratorPayoutTxResponse(value?: ArbitratorPayoutTxResponse): NetworkEnvelope;
   hasArbitratorPayoutTxResponse(): boolean;
   clearArbitratorPayoutTxResponse(): NetworkEnvelope;
+
+  getUpdateMultisigRequest(): UpdateMultisigRequest | undefined;
+  setUpdateMultisigRequest(value?: UpdateMultisigRequest): NetworkEnvelope;
+  hasUpdateMultisigRequest(): boolean;
+  clearUpdateMultisigRequest(): NetworkEnvelope;
+
+  getUpdateMultisigResponse(): UpdateMultisigResponse | undefined;
+  setUpdateMultisigResponse(value?: UpdateMultisigResponse): NetworkEnvelope;
+  hasUpdateMultisigResponse(): boolean;
+  clearUpdateMultisigResponse(): NetworkEnvelope;
 
   getMessageCase(): NetworkEnvelope.MessageCase;
 
@@ -329,14 +334,15 @@ export namespace NetworkEnvelope {
     signContractResponse?: SignContractResponse.AsObject,
     depositRequest?: DepositRequest.AsObject,
     depositResponse?: DepositResponse.AsObject,
-    paymentAccountPayloadRequest?: PaymentAccountPayloadRequest.AsObject,
+    paymentAccountKeyRequest?: PaymentAccountKeyRequest.AsObject,
+    paymentAccountKeyResponse?: PaymentAccountKeyResponse.AsObject,
     paymentSentMessage?: PaymentSentMessage.AsObject,
     paymentReceivedMessage?: PaymentReceivedMessage.AsObject,
     payoutTxPublishedMessage?: PayoutTxPublishedMessage.AsObject,
-    updateMultisigRequest?: UpdateMultisigRequest.AsObject,
-    updateMultisigResponse?: UpdateMultisigResponse.AsObject,
     arbitratorPayoutTxRequest?: ArbitratorPayoutTxRequest.AsObject,
     arbitratorPayoutTxResponse?: ArbitratorPayoutTxResponse.AsObject,
+    updateMultisigRequest?: UpdateMultisigRequest.AsObject,
+    updateMultisigResponse?: UpdateMultisigResponse.AsObject,
   }
 
   export enum MessageCase { 
@@ -386,14 +392,15 @@ export namespace NetworkEnvelope {
     SIGN_CONTRACT_RESPONSE = 1006,
     DEPOSIT_REQUEST = 1007,
     DEPOSIT_RESPONSE = 1008,
-    PAYMENT_ACCOUNT_PAYLOAD_REQUEST = 1009,
-    PAYMENT_SENT_MESSAGE = 1010,
-    PAYMENT_RECEIVED_MESSAGE = 1011,
-    PAYOUT_TX_PUBLISHED_MESSAGE = 1012,
-    UPDATE_MULTISIG_REQUEST = 1013,
-    UPDATE_MULTISIG_RESPONSE = 1014,
-    ARBITRATOR_PAYOUT_TX_REQUEST = 1015,
-    ARBITRATOR_PAYOUT_TX_RESPONSE = 1016,
+    PAYMENT_ACCOUNT_KEY_REQUEST = 1009,
+    PAYMENT_ACCOUNT_KEY_RESPONSE = 1010,
+    PAYMENT_SENT_MESSAGE = 1011,
+    PAYMENT_RECEIVED_MESSAGE = 1012,
+    PAYOUT_TX_PUBLISHED_MESSAGE = 1013,
+    ARBITRATOR_PAYOUT_TX_REQUEST = 1016,
+    ARBITRATOR_PAYOUT_TX_RESPONSE = 1017,
+    UPDATE_MULTISIG_REQUEST = 1018,
+    UPDATE_MULTISIG_RESPONSE = 1019,
   }
 }
 
@@ -831,11 +838,6 @@ export class OfferAvailabilityResponse extends jspb.Message {
   getMakerSignature(): string;
   setMakerSignature(value: string): OfferAvailabilityResponse;
 
-  getBackupArbitrator(): NodeAddress | undefined;
-  setBackupArbitrator(value?: NodeAddress): OfferAvailabilityResponse;
-  hasBackupArbitrator(): boolean;
-  clearBackupArbitrator(): OfferAvailabilityResponse;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): OfferAvailabilityResponse.AsObject;
   static toObject(includeInstance: boolean, msg: OfferAvailabilityResponse): OfferAvailabilityResponse.AsObject;
@@ -851,7 +853,6 @@ export namespace OfferAvailabilityResponse {
     supportedCapabilitiesList: Array<number>,
     uid: string,
     makerSignature: string,
-    backupArbitrator?: NodeAddress.AsObject,
   }
 }
 
@@ -1421,6 +1422,9 @@ export class InitMultisigRequest extends jspb.Message {
   getMadeMultisigHex(): string;
   setMadeMultisigHex(value: string): InitMultisigRequest;
 
+  getExchangedMultisigHex(): string;
+  setExchangedMultisigHex(value: string): InitMultisigRequest;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): InitMultisigRequest.AsObject;
   static toObject(includeInstance: boolean, msg: InitMultisigRequest): InitMultisigRequest.AsObject;
@@ -1438,6 +1442,7 @@ export namespace InitMultisigRequest {
     currentDate: number,
     preparedMultisigHex: string,
     madeMultisigHex: string,
+    exchangedMultisigHex: string,
   }
 }
 
@@ -1517,8 +1522,16 @@ export class SignContractResponse extends jspb.Message {
   getCurrentDate(): number;
   setCurrentDate(value: number): SignContractResponse;
 
+  getContractAsJson(): string;
+  setContractAsJson(value: string): SignContractResponse;
+
   getContractSignature(): string;
   setContractSignature(value: string): SignContractResponse;
+
+  getEncryptedPaymentAccountPayload(): Uint8Array | string;
+  getEncryptedPaymentAccountPayload_asU8(): Uint8Array;
+  getEncryptedPaymentAccountPayload_asB64(): string;
+  setEncryptedPaymentAccountPayload(value: Uint8Array | string): SignContractResponse;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): SignContractResponse.AsObject;
@@ -1535,7 +1548,9 @@ export namespace SignContractResponse {
     pubKeyRing?: PubKeyRing.AsObject,
     uid: string,
     currentDate: number,
+    contractAsJson: string,
     contractSignature: string,
+    encryptedPaymentAccountPayload: Uint8Array | string,
   }
 }
 
@@ -1568,6 +1583,11 @@ export class DepositRequest extends jspb.Message {
   getDepositTxKey(): string;
   setDepositTxKey(value: string): DepositRequest;
 
+  getPaymentAccountKey(): Uint8Array | string;
+  getPaymentAccountKey_asU8(): Uint8Array;
+  getPaymentAccountKey_asB64(): string;
+  setPaymentAccountKey(value: Uint8Array | string): DepositRequest;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): DepositRequest.AsObject;
   static toObject(includeInstance: boolean, msg: DepositRequest): DepositRequest.AsObject;
@@ -1586,6 +1606,7 @@ export namespace DepositRequest {
     contractSignature: string,
     depositTxHex: string,
     depositTxKey: string,
+    paymentAccountKey: Uint8Array | string,
   }
 }
 
@@ -1627,47 +1648,81 @@ export namespace DepositResponse {
   }
 }
 
-export class PaymentAccountPayloadRequest extends jspb.Message {
+export class PaymentAccountKeyRequest extends jspb.Message {
   getTradeId(): string;
-  setTradeId(value: string): PaymentAccountPayloadRequest;
+  setTradeId(value: string): PaymentAccountKeyRequest;
 
   getSenderNodeAddress(): NodeAddress | undefined;
-  setSenderNodeAddress(value?: NodeAddress): PaymentAccountPayloadRequest;
+  setSenderNodeAddress(value?: NodeAddress): PaymentAccountKeyRequest;
   hasSenderNodeAddress(): boolean;
-  clearSenderNodeAddress(): PaymentAccountPayloadRequest;
+  clearSenderNodeAddress(): PaymentAccountKeyRequest;
 
   getPubKeyRing(): PubKeyRing | undefined;
-  setPubKeyRing(value?: PubKeyRing): PaymentAccountPayloadRequest;
+  setPubKeyRing(value?: PubKeyRing): PaymentAccountKeyRequest;
   hasPubKeyRing(): boolean;
-  clearPubKeyRing(): PaymentAccountPayloadRequest;
+  clearPubKeyRing(): PaymentAccountKeyRequest;
 
   getUid(): string;
-  setUid(value: string): PaymentAccountPayloadRequest;
-
-  getCurrentDate(): number;
-  setCurrentDate(value: number): PaymentAccountPayloadRequest;
-
-  getPaymentAccountPayload(): PaymentAccountPayload | undefined;
-  setPaymentAccountPayload(value?: PaymentAccountPayload): PaymentAccountPayloadRequest;
-  hasPaymentAccountPayload(): boolean;
-  clearPaymentAccountPayload(): PaymentAccountPayloadRequest;
+  setUid(value: string): PaymentAccountKeyRequest;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): PaymentAccountPayloadRequest.AsObject;
-  static toObject(includeInstance: boolean, msg: PaymentAccountPayloadRequest): PaymentAccountPayloadRequest.AsObject;
-  static serializeBinaryToWriter(message: PaymentAccountPayloadRequest, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): PaymentAccountPayloadRequest;
-  static deserializeBinaryFromReader(message: PaymentAccountPayloadRequest, reader: jspb.BinaryReader): PaymentAccountPayloadRequest;
+  toObject(includeInstance?: boolean): PaymentAccountKeyRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: PaymentAccountKeyRequest): PaymentAccountKeyRequest.AsObject;
+  static serializeBinaryToWriter(message: PaymentAccountKeyRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PaymentAccountKeyRequest;
+  static deserializeBinaryFromReader(message: PaymentAccountKeyRequest, reader: jspb.BinaryReader): PaymentAccountKeyRequest;
 }
 
-export namespace PaymentAccountPayloadRequest {
+export namespace PaymentAccountKeyRequest {
   export type AsObject = {
     tradeId: string,
     senderNodeAddress?: NodeAddress.AsObject,
     pubKeyRing?: PubKeyRing.AsObject,
     uid: string,
-    currentDate: number,
-    paymentAccountPayload?: PaymentAccountPayload.AsObject,
+  }
+}
+
+export class PaymentAccountKeyResponse extends jspb.Message {
+  getTradeId(): string;
+  setTradeId(value: string): PaymentAccountKeyResponse;
+
+  getSenderNodeAddress(): NodeAddress | undefined;
+  setSenderNodeAddress(value?: NodeAddress): PaymentAccountKeyResponse;
+  hasSenderNodeAddress(): boolean;
+  clearSenderNodeAddress(): PaymentAccountKeyResponse;
+
+  getPubKeyRing(): PubKeyRing | undefined;
+  setPubKeyRing(value?: PubKeyRing): PaymentAccountKeyResponse;
+  hasPubKeyRing(): boolean;
+  clearPubKeyRing(): PaymentAccountKeyResponse;
+
+  getUid(): string;
+  setUid(value: string): PaymentAccountKeyResponse;
+
+  getPaymentAccountKey(): Uint8Array | string;
+  getPaymentAccountKey_asU8(): Uint8Array;
+  getPaymentAccountKey_asB64(): string;
+  setPaymentAccountKey(value: Uint8Array | string): PaymentAccountKeyResponse;
+
+  getUpdatedMultisigHex(): string;
+  setUpdatedMultisigHex(value: string): PaymentAccountKeyResponse;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PaymentAccountKeyResponse.AsObject;
+  static toObject(includeInstance: boolean, msg: PaymentAccountKeyResponse): PaymentAccountKeyResponse.AsObject;
+  static serializeBinaryToWriter(message: PaymentAccountKeyResponse, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PaymentAccountKeyResponse;
+  static deserializeBinaryFromReader(message: PaymentAccountKeyResponse, reader: jspb.BinaryReader): PaymentAccountKeyResponse;
+}
+
+export namespace PaymentAccountKeyResponse {
+  export type AsObject = {
+    tradeId: string,
+    senderNodeAddress?: NodeAddress.AsObject,
+    pubKeyRing?: PubKeyRing.AsObject,
+    uid: string,
+    paymentAccountKey: Uint8Array | string,
+    updatedMultisigHex: string,
   }
 }
 
@@ -2016,6 +2071,11 @@ export class PaymentSentMessage extends jspb.Message {
   getUpdatedMultisigHex(): string;
   setUpdatedMultisigHex(value: string): PaymentSentMessage;
 
+  getPaymentAccountKey(): Uint8Array | string;
+  getPaymentAccountKey_asU8(): Uint8Array;
+  getPaymentAccountKey_asB64(): string;
+  setPaymentAccountKey(value: Uint8Array | string): PaymentSentMessage;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PaymentSentMessage.AsObject;
   static toObject(includeInstance: boolean, msg: PaymentSentMessage): PaymentSentMessage.AsObject;
@@ -2034,6 +2094,7 @@ export namespace PaymentSentMessage {
     counterCurrencyExtraData: string,
     payoutTxHex: string,
     updatedMultisigHex: string,
+    paymentAccountKey: Uint8Array | string,
   }
 }
 
@@ -2084,6 +2145,9 @@ export class PayoutTxPublishedMessage extends jspb.Message {
   hasSenderNodeAddress(): boolean;
   clearSenderNodeAddress(): PayoutTxPublishedMessage;
 
+  getIsMaker(): boolean;
+  setIsMaker(value: boolean): PayoutTxPublishedMessage;
+
   getUid(): string;
   setUid(value: string): PayoutTxPublishedMessage;
 
@@ -2092,8 +2156,8 @@ export class PayoutTxPublishedMessage extends jspb.Message {
   hasSignedWitness(): boolean;
   clearSignedWitness(): PayoutTxPublishedMessage;
 
-  getPayoutTxHex(): string;
-  setPayoutTxHex(value: string): PayoutTxPublishedMessage;
+  getSignedPayoutTxHex(): string;
+  setSignedPayoutTxHex(value: string): PayoutTxPublishedMessage;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PayoutTxPublishedMessage.AsObject;
@@ -2107,9 +2171,10 @@ export namespace PayoutTxPublishedMessage {
   export type AsObject = {
     tradeId: string,
     senderNodeAddress?: NodeAddress.AsObject,
+    isMaker: boolean,
     uid: string,
     signedWitness?: SignedWitness.AsObject,
-    payoutTxHex: string,
+    signedPayoutTxHex: string,
   }
 }
 
@@ -3165,13 +3230,8 @@ export class Arbitrator extends jspb.Message {
   hasPubKeyRing(): boolean;
   clearPubKeyRing(): Arbitrator;
 
-  getBtcPubKey(): Uint8Array | string;
-  getBtcPubKey_asU8(): Uint8Array;
-  getBtcPubKey_asB64(): string;
-  setBtcPubKey(value: Uint8Array | string): Arbitrator;
-
-  getBtcAddress(): string;
-  setBtcAddress(value: string): Arbitrator;
+  getXmrAddress(): string;
+  setXmrAddress(value: string): Arbitrator;
 
   getEmailAddress(): string;
   setEmailAddress(value: string): Arbitrator;
@@ -3198,8 +3258,7 @@ export namespace Arbitrator {
     registrationSignature: string,
     registrationPubKey: Uint8Array | string,
     pubKeyRing?: PubKeyRing.AsObject,
-    btcPubKey: Uint8Array | string,
-    btcAddress: string,
+    xmrAddress: string,
     emailAddress: string,
     info: string,
     extraDataMap: Array<[string, string]>,
@@ -4720,8 +4779,13 @@ export namespace ClearXchangeAccountPayload {
 }
 
 export class CountryBasedPaymentAccountPayload extends jspb.Message {
-  getCountrycode(): string;
-  setCountrycode(value: string): CountryBasedPaymentAccountPayload;
+  getCountryCode(): string;
+  setCountryCode(value: string): CountryBasedPaymentAccountPayload;
+
+  getAcceptedCountryCodesList(): Array<string>;
+  setAcceptedCountryCodesList(value: Array<string>): CountryBasedPaymentAccountPayload;
+  clearAcceptedCountryCodesList(): CountryBasedPaymentAccountPayload;
+  addAcceptedCountryCodes(value: string, index?: number): CountryBasedPaymentAccountPayload;
 
   getBankAccountPayload(): BankAccountPayload | undefined;
   setBankAccountPayload(value?: BankAccountPayload): CountryBasedPaymentAccountPayload;
@@ -4803,6 +4867,11 @@ export class CountryBasedPaymentAccountPayload extends jspb.Message {
   hasTransferwiseUsdAccountPayload(): boolean;
   clearTransferwiseUsdAccountPayload(): CountryBasedPaymentAccountPayload;
 
+  getSwiftAccountPayload(): SwiftAccountPayload | undefined;
+  setSwiftAccountPayload(value?: SwiftAccountPayload): CountryBasedPaymentAccountPayload;
+  hasSwiftAccountPayload(): boolean;
+  clearSwiftAccountPayload(): CountryBasedPaymentAccountPayload;
+
   getMessageCase(): CountryBasedPaymentAccountPayload.MessageCase;
 
   serializeBinary(): Uint8Array;
@@ -4815,7 +4884,8 @@ export class CountryBasedPaymentAccountPayload extends jspb.Message {
 
 export namespace CountryBasedPaymentAccountPayload {
   export type AsObject = {
-    countrycode: string,
+    countryCode: string,
+    acceptedCountryCodesList: Array<string>,
     bankAccountPayload?: BankAccountPayload.AsObject,
     cashDepositAccountPayload?: CashDepositAccountPayload.AsObject,
     sepaAccountPayload?: SepaAccountPayload.AsObject,
@@ -4832,16 +4902,17 @@ export namespace CountryBasedPaymentAccountPayload {
     strikeAccountPayload?: StrikeAccountPayload.AsObject,
     tikkieAccountPayload?: TikkieAccountPayload.AsObject,
     transferwiseUsdAccountPayload?: TransferwiseUsdAccountPayload.AsObject,
+    swiftAccountPayload?: SwiftAccountPayload.AsObject,
   }
 
   export enum MessageCase { 
     MESSAGE_NOT_SET = 0,
-    BANK_ACCOUNT_PAYLOAD = 2,
-    CASH_DEPOSIT_ACCOUNT_PAYLOAD = 3,
-    SEPA_ACCOUNT_PAYLOAD = 4,
-    WESTERN_UNION_ACCOUNT_PAYLOAD = 5,
-    SEPA_INSTANT_ACCOUNT_PAYLOAD = 6,
-    F2F_ACCOUNT_PAYLOAD = 7,
+    BANK_ACCOUNT_PAYLOAD = 3,
+    CASH_DEPOSIT_ACCOUNT_PAYLOAD = 4,
+    SEPA_ACCOUNT_PAYLOAD = 5,
+    WESTERN_UNION_ACCOUNT_PAYLOAD = 6,
+    SEPA_INSTANT_ACCOUNT_PAYLOAD = 7,
+    F2F_ACCOUNT_PAYLOAD = 8,
     UPI_ACCOUNT_PAYLOAD = 9,
     PAYTM_ACCOUNT_PAYLOAD = 10,
     IFSC_BASED_ACCOUNT_PAYLOAD = 11,
@@ -4852,6 +4923,7 @@ export namespace CountryBasedPaymentAccountPayload {
     STRIKE_ACCOUNT_PAYLOAD = 16,
     TIKKIE_ACCOUNT_PAYLOAD = 17,
     TRANSFERWISE_USD_ACCOUNT_PAYLOAD = 18,
+    SWIFT_ACCOUNT_PAYLOAD = 19,
   }
 }
 
@@ -5261,11 +5333,6 @@ export class SepaAccountPayload extends jspb.Message {
   getEmail(): string;
   setEmail(value: string): SepaAccountPayload;
 
-  getAcceptedCountryCodesList(): Array<string>;
-  setAcceptedCountryCodesList(value: Array<string>): SepaAccountPayload;
-  clearAcceptedCountryCodesList(): SepaAccountPayload;
-  addAcceptedCountryCodes(value: string, index?: number): SepaAccountPayload;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): SepaAccountPayload.AsObject;
   static toObject(includeInstance: boolean, msg: SepaAccountPayload): SepaAccountPayload.AsObject;
@@ -5280,7 +5347,6 @@ export namespace SepaAccountPayload {
     iban: string,
     bic: string,
     email: string,
-    acceptedCountryCodesList: Array<string>,
   }
 }
 
@@ -5293,11 +5359,6 @@ export class SepaInstantAccountPayload extends jspb.Message {
 
   getBic(): string;
   setBic(value: string): SepaInstantAccountPayload;
-
-  getAcceptedCountryCodesList(): Array<string>;
-  setAcceptedCountryCodesList(value: Array<string>): SepaInstantAccountPayload;
-  clearAcceptedCountryCodesList(): SepaInstantAccountPayload;
-  addAcceptedCountryCodes(value: string, index?: number): SepaInstantAccountPayload;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): SepaInstantAccountPayload.AsObject;
@@ -5312,7 +5373,6 @@ export namespace SepaInstantAccountPayload {
     holderName: string,
     iban: string,
     bic: string,
-    acceptedCountryCodesList: Array<string>,
   }
 }
 
@@ -5353,14 +5413,14 @@ export namespace InstantCryptoCurrencyAccountPayload {
 }
 
 export class FasterPaymentsAccountPayload extends jspb.Message {
+  getHolderName(): string;
+  setHolderName(value: string): FasterPaymentsAccountPayload;
+
   getSortCode(): string;
   setSortCode(value: string): FasterPaymentsAccountPayload;
 
   getAccountNr(): string;
   setAccountNr(value: string): FasterPaymentsAccountPayload;
-
-  getEmail(): string;
-  setEmail(value: string): FasterPaymentsAccountPayload;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): FasterPaymentsAccountPayload.AsObject;
@@ -5372,9 +5432,9 @@ export class FasterPaymentsAccountPayload extends jspb.Message {
 
 export namespace FasterPaymentsAccountPayload {
   export type AsObject = {
+    holderName: string,
     sortCode: string,
     accountNr: string,
-    email: string,
   }
 }
 
@@ -6842,11 +6902,6 @@ export class OpenOffer extends jspb.Message {
   getState(): OpenOffer.State;
   setState(value: OpenOffer.State): OpenOffer;
 
-  getBackupArbitrator(): NodeAddress | undefined;
-  setBackupArbitrator(value?: NodeAddress): OpenOffer;
-  hasBackupArbitrator(): boolean;
-  clearBackupArbitrator(): OpenOffer;
-
   getTriggerPrice(): number;
   setTriggerPrice(value: number): OpenOffer;
 
@@ -6882,7 +6937,6 @@ export namespace OpenOffer {
   export type AsObject = {
     offer?: Offer.AsObject,
     state: OpenOffer.State,
-    backupArbitrator?: NodeAddress.AsObject,
     triggerPrice: number,
     autoSplit: boolean,
     scheduledTxHashesList: Array<string>,
@@ -7174,55 +7228,53 @@ export namespace Trade {
   export enum State { 
     PB_ERROR_STATE = 0,
     PREPARATION = 1,
-    CONTRACT_SIGNATURE_REQUESTED = 2,
-    CONTRACT_SIGNED = 3,
-    TAKER_PUBLISHED_TAKER_FEE_TX = 4,
-    MAKER_SENT_PUBLISH_DEPOSIT_TX_REQUEST = 5,
-    MAKER_SAW_ARRIVED_PUBLISH_DEPOSIT_TX_REQUEST = 6,
-    MAKER_STORED_IN_MAILBOX_PUBLISH_DEPOSIT_TX_REQUEST = 7,
-    MAKER_SEND_FAILED_PUBLISH_DEPOSIT_TX_REQUEST = 8,
-    TAKER_RECEIVED_PUBLISH_DEPOSIT_TX_REQUEST = 9,
-    TAKER_PUBLISHED_DEPOSIT_TX = 10,
-    TAKER_SAW_DEPOSIT_TX_IN_NETWORK = 11,
-    TAKER_SENT_DEPOSIT_TX_PUBLISHED_MSG = 12,
-    TAKER_SAW_ARRIVED_DEPOSIT_TX_PUBLISHED_MSG = 13,
-    TAKER_STORED_IN_MAILBOX_DEPOSIT_TX_PUBLISHED_MSG = 14,
-    TAKER_SEND_FAILED_DEPOSIT_TX_PUBLISHED_MSG = 15,
-    MAKER_RECEIVED_DEPOSIT_TX_PUBLISHED_MSG = 16,
-    MAKER_SAW_DEPOSIT_TX_IN_NETWORK = 17,
-    DEPOSIT_UNLOCKED_IN_BLOCK_CHAIN = 18,
-    BUYER_CONFIRMED_IN_UI_PAYMENT_SENT = 19,
-    BUYER_SENT_PAYMENT_SENT_MSG = 20,
-    BUYER_SAW_ARRIVED_PAYMENT_SENT_MSG = 21,
-    BUYER_STORED_IN_MAILBOX_PAYMENT_SENT_MSG = 22,
-    BUYER_SEND_FAILED_PAYMENT_SENT_MSG = 23,
-    SELLER_RECEIVED_PAYMENT_SENT_MSG = 24,
-    SELLER_CONFIRMED_IN_UI_PAYMENT_RECEIPT = 25,
-    SELLER_SENT_PAYMENT_RECEIVED_MSG = 26,
-    SELLER_SAW_ARRIVED_PAYMENT_RECEIVED_MSG = 27,
-    SELLER_STORED_IN_MAILBOX_PAYMENT_RECEIVED_MSG = 28,
-    SELLER_SEND_FAILED_PAYMENT_RECEIVED_MSG = 29,
-    SELLER_PUBLISHED_PAYOUT_TX = 30,
-    SELLER_SENT_PAYOUT_TX_PUBLISHED_MSG = 31,
-    SELLER_SAW_ARRIVED_PAYOUT_TX_PUBLISHED_MSG = 32,
-    SELLER_STORED_IN_MAILBOX_PAYOUT_TX_PUBLISHED_MSG = 33,
-    SELLER_SEND_FAILED_PAYOUT_TX_PUBLISHED_MSG = 34,
-    BUYER_RECEIVED_PAYOUT_TX_PUBLISHED_MSG = 35,
-    BUYER_SAW_PAYOUT_TX_IN_NETWORK = 36,
-    BUYER_PUBLISHED_PAYOUT_TX = 37,
-    WITHDRAW_COMPLETED = 38,
+    MULTISIG_PREPARED = 2,
+    MULTISIG_MADE = 3,
+    MULTISIG_EXCHANGED = 4,
+    MULTISIG_COMPLETED = 5,
+    CONTRACT_SIGNATURE_REQUESTED = 6,
+    CONTRACT_SIGNED = 7,
+    SENT_PUBLISH_DEPOSIT_TX_REQUEST = 8,
+    SAW_ARRIVED_PUBLISH_DEPOSIT_TX_REQUEST = 9,
+    STORED_IN_MAILBOX_PUBLISH_DEPOSIT_TX_REQUEST = 10,
+    SEND_FAILED_PUBLISH_DEPOSIT_TX_REQUEST = 11,
+    ARBITRATOR_PUBLISHED_DEPOSIT_TXS = 12,
+    DEPOSIT_TXS_SEEN_IN_BLOCKCHAIN = 13,
+    DEPOSIT_TXS_CONFIRMED_IN_BLOCKCHAIN = 14,
+    DEPOSIT_TXS_UNLOCKED_IN_BLOCKCHAIN = 15,
+    BUYER_CONFIRMED_IN_UI_PAYMENT_SENT = 16,
+    BUYER_SENT_PAYMENT_SENT_MSG = 17,
+    BUYER_SAW_ARRIVED_PAYMENT_SENT_MSG = 18,
+    BUYER_STORED_IN_MAILBOX_PAYMENT_SENT_MSG = 19,
+    BUYER_SEND_FAILED_PAYMENT_SENT_MSG = 20,
+    SELLER_RECEIVED_PAYMENT_SENT_MSG = 21,
+    SELLER_CONFIRMED_IN_UI_PAYMENT_RECEIPT = 22,
+    SELLER_SENT_PAYMENT_RECEIVED_MSG = 23,
+    SELLER_SAW_ARRIVED_PAYMENT_RECEIVED_MSG = 24,
+    SELLER_STORED_IN_MAILBOX_PAYMENT_RECEIVED_MSG = 25,
+    SELLER_SEND_FAILED_PAYMENT_RECEIVED_MSG = 26,
+    SELLER_PUBLISHED_PAYOUT_TX = 27,
+    SELLER_SENT_PAYOUT_TX_PUBLISHED_MSG = 28,
+    SELLER_SAW_ARRIVED_PAYOUT_TX_PUBLISHED_MSG = 29,
+    SELLER_STORED_IN_MAILBOX_PAYOUT_TX_PUBLISHED_MSG = 30,
+    SELLER_SEND_FAILED_PAYOUT_TX_PUBLISHED_MSG = 31,
+    BUYER_RECEIVED_PAYOUT_TX_PUBLISHED_MSG = 32,
+    BUYER_SAW_PAYOUT_TX_IN_NETWORK = 33,
+    BUYER_PUBLISHED_PAYOUT_TX = 34,
+    WITHDRAW_COMPLETED = 35,
   }
 
   export enum Phase { 
     PB_ERROR_PHASE = 0,
     INIT = 1,
-    TAKER_FEE_PUBLISHED = 2,
-    DEPOSIT_PUBLISHED = 3,
-    DEPOSIT_CONFIRMED = 4,
-    PAYMENT_SENT = 5,
-    PAYMENT_RECEIVED = 6,
-    PAYOUT_PUBLISHED = 7,
-    WITHDRAWN = 8,
+    DEPOSIT_REQUESTED = 2,
+    DEPOSITS_PUBLISHED = 3,
+    DEPOSITS_CONFIRMED = 4,
+    DEPOSITS_UNLOCKED = 5,
+    PAYMENT_SENT = 6,
+    PAYMENT_RECEIVED = 7,
+    PAYOUT_PUBLISHED = 8,
+    WITHDRAWN = 9,
   }
 
   export enum DisputeState { 
@@ -7406,11 +7458,6 @@ export class ProcessModel extends jspb.Message {
   getMakerSignature(): string;
   setMakerSignature(value: string): ProcessModel;
 
-  getBackupArbitrator(): NodeAddress | undefined;
-  setBackupArbitrator(value?: NodeAddress): ProcessModel;
-  hasBackupArbitrator(): boolean;
-  clearBackupArbitrator(): ProcessModel;
-
   getMaker(): TradingPeer | undefined;
   setMaker(value?: TradingPeer): ProcessModel;
   hasMaker(): boolean;
@@ -7431,17 +7478,8 @@ export class ProcessModel extends jspb.Message {
   hasTempTradingPeerNodeAddress(): boolean;
   clearTempTradingPeerNodeAddress(): ProcessModel;
 
-  getPreparedMultisigHex(): string;
-  setPreparedMultisigHex(value: string): ProcessModel;
-
-  getMadeMultisigHex(): string;
-  setMadeMultisigHex(value: string): ProcessModel;
-
   getMultisigAddress(): string;
   setMultisigAddress(value: string): ProcessModel;
-
-  getMultisigSetupComplete(): boolean;
-  setMultisigSetupComplete(value: boolean): ProcessModel;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ProcessModel.AsObject;
@@ -7469,15 +7507,11 @@ export namespace ProcessModel {
     buyerPayoutAmountFromMediation: number,
     sellerPayoutAmountFromMediation: number,
     makerSignature: string,
-    backupArbitrator?: NodeAddress.AsObject,
     maker?: TradingPeer.AsObject,
     taker?: TradingPeer.AsObject,
     arbitrator?: TradingPeer.AsObject,
     tempTradingPeerNodeAddress?: NodeAddress.AsObject,
-    preparedMultisigHex: string,
-    madeMultisigHex: string,
     multisigAddress: string,
-    multisigSetupComplete: boolean,
   }
 }
 
@@ -7495,6 +7529,16 @@ export class TradingPeer extends jspb.Message {
   getPaymentAccountPayloadHash_asU8(): Uint8Array;
   getPaymentAccountPayloadHash_asB64(): string;
   setPaymentAccountPayloadHash(value: Uint8Array | string): TradingPeer;
+
+  getEncryptedPaymentAccountPayload(): Uint8Array | string;
+  getEncryptedPaymentAccountPayload_asU8(): Uint8Array;
+  getEncryptedPaymentAccountPayload_asB64(): string;
+  setEncryptedPaymentAccountPayload(value: Uint8Array | string): TradingPeer;
+
+  getPaymentAccountKey(): Uint8Array | string;
+  getPaymentAccountKey_asU8(): Uint8Array;
+  getPaymentAccountKey_asB64(): string;
+  setPaymentAccountKey(value: Uint8Array | string): TradingPeer;
 
   getPaymentAccountPayload(): PaymentAccountPayload | undefined;
   setPaymentAccountPayload(value?: PaymentAccountPayload): TradingPeer;
@@ -7574,6 +7618,9 @@ export class TradingPeer extends jspb.Message {
   getMadeMultisigHex(): string;
   setMadeMultisigHex(value: string): TradingPeer;
 
+  getExchangedMultisigHex(): string;
+  setExchangedMultisigHex(value: string): TradingPeer;
+
   getPayoutTxHex(): string;
   setPayoutTxHex(value: string): TradingPeer;
 
@@ -7603,6 +7650,8 @@ export namespace TradingPeer {
     paymentAccountId: string,
     paymentMethodId: string,
     paymentAccountPayloadHash: Uint8Array | string,
+    encryptedPaymentAccountPayload: Uint8Array | string,
+    paymentAccountKey: Uint8Array | string,
     paymentAccountPayload?: PaymentAccountPayload.AsObject,
     payoutAddressString: string,
     contractAsJson: string,
@@ -7623,6 +7672,7 @@ export namespace TradingPeer {
     reserveTxKeyImagesList: Array<string>,
     preparedMultisigHex: string,
     madeMultisigHex: string,
+    exchangedMultisigHex: string,
     payoutTxHex: string,
     depositTxHash: string,
     depositTxHex: string,
@@ -8584,6 +8634,185 @@ export namespace MockPayload {
   export type AsObject = {
     messageVersion: string,
     message: string,
+  }
+}
+
+export class PaymentAccountForm extends jspb.Message {
+  getId(): PaymentAccountForm.FormId;
+  setId(value: PaymentAccountForm.FormId): PaymentAccountForm;
+
+  getFieldsList(): Array<PaymentAccountFormField>;
+  setFieldsList(value: Array<PaymentAccountFormField>): PaymentAccountForm;
+  clearFieldsList(): PaymentAccountForm;
+  addFields(value?: PaymentAccountFormField, index?: number): PaymentAccountFormField;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PaymentAccountForm.AsObject;
+  static toObject(includeInstance: boolean, msg: PaymentAccountForm): PaymentAccountForm.AsObject;
+  static serializeBinaryToWriter(message: PaymentAccountForm, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PaymentAccountForm;
+  static deserializeBinaryFromReader(message: PaymentAccountForm, reader: jspb.BinaryReader): PaymentAccountForm;
+}
+
+export namespace PaymentAccountForm {
+  export type AsObject = {
+    id: PaymentAccountForm.FormId,
+    fieldsList: Array<PaymentAccountFormField.AsObject>,
+  }
+
+  export enum FormId { 
+    REVOLUT = 0,
+    SEPA = 1,
+    SEPA_INSTANT = 2,
+    TRANSFERWISE = 3,
+    CLEAR_X_CHANGE = 4,
+    SWIFT = 5,
+    F2F = 6,
+    STRIKE = 7,
+    MONEY_GRAM = 8,
+    FASTER_PAYMENTS = 9,
+    UPHOLD = 10,
+    PAXUM = 11,
+  }
+}
+
+export class PaymentAccountFormField extends jspb.Message {
+  getId(): PaymentAccountFormField.FieldId;
+  setId(value: PaymentAccountFormField.FieldId): PaymentAccountFormField;
+
+  getComponent(): PaymentAccountFormField.Component;
+  setComponent(value: PaymentAccountFormField.Component): PaymentAccountFormField;
+
+  getType(): string;
+  setType(value: string): PaymentAccountFormField;
+
+  getLabel(): string;
+  setLabel(value: string): PaymentAccountFormField;
+
+  getValue(): string;
+  setValue(value: string): PaymentAccountFormField;
+
+  getMinlength(): number;
+  setMinlength(value: number): PaymentAccountFormField;
+
+  getMaxlength(): number;
+  setMaxlength(value: number): PaymentAccountFormField;
+
+  getSupportedCurrenciesList(): Array<TradeCurrency>;
+  setSupportedCurrenciesList(value: Array<TradeCurrency>): PaymentAccountFormField;
+  clearSupportedCurrenciesList(): PaymentAccountFormField;
+  addSupportedCurrencies(value?: TradeCurrency, index?: number): TradeCurrency;
+
+  getSupportedCountriesList(): Array<Country>;
+  setSupportedCountriesList(value: Array<Country>): PaymentAccountFormField;
+  clearSupportedCountriesList(): PaymentAccountFormField;
+  addSupportedCountries(value?: Country, index?: number): Country;
+
+  getSupportedSepaEuroCountriesList(): Array<Country>;
+  setSupportedSepaEuroCountriesList(value: Array<Country>): PaymentAccountFormField;
+  clearSupportedSepaEuroCountriesList(): PaymentAccountFormField;
+  addSupportedSepaEuroCountries(value?: Country, index?: number): Country;
+
+  getSupportedSepaNonEuroCountriesList(): Array<Country>;
+  setSupportedSepaNonEuroCountriesList(value: Array<Country>): PaymentAccountFormField;
+  clearSupportedSepaNonEuroCountriesList(): PaymentAccountFormField;
+  addSupportedSepaNonEuroCountries(value?: Country, index?: number): Country;
+
+  getRequiredForCountriesList(): Array<string>;
+  setRequiredForCountriesList(value: Array<string>): PaymentAccountFormField;
+  clearRequiredForCountriesList(): PaymentAccountFormField;
+  addRequiredForCountries(value: string, index?: number): PaymentAccountFormField;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PaymentAccountFormField.AsObject;
+  static toObject(includeInstance: boolean, msg: PaymentAccountFormField): PaymentAccountFormField.AsObject;
+  static serializeBinaryToWriter(message: PaymentAccountFormField, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PaymentAccountFormField;
+  static deserializeBinaryFromReader(message: PaymentAccountFormField, reader: jspb.BinaryReader): PaymentAccountFormField;
+}
+
+export namespace PaymentAccountFormField {
+  export type AsObject = {
+    id: PaymentAccountFormField.FieldId,
+    component: PaymentAccountFormField.Component,
+    type: string,
+    label: string,
+    value: string,
+    minlength: number,
+    maxlength: number,
+    supportedCurrenciesList: Array<TradeCurrency.AsObject>,
+    supportedCountriesList: Array<Country.AsObject>,
+    supportedSepaEuroCountriesList: Array<Country.AsObject>,
+    supportedSepaNonEuroCountriesList: Array<Country.AsObject>,
+    requiredForCountriesList: Array<string>,
+  }
+
+  export enum FieldId { 
+    ACCEPTED_COUNTRY_CODES = 0,
+    ACCOUNT_ID = 1,
+    ACCOUNT_NAME = 2,
+    ACCOUNT_NR = 3,
+    ACCOUNT_OWNER = 4,
+    ACCOUNT_TYPE = 5,
+    ANSWER = 6,
+    BANK_ACCOUNT_NAME = 7,
+    BANK_ACCOUNT_NUMBER = 8,
+    BANK_ACCOUNT_TYPE = 9,
+    BANK_ADDRESS = 10,
+    BANK_BRANCH = 11,
+    BANK_BRANCH_CODE = 12,
+    BANK_BRANCH_NAME = 13,
+    BANK_CODE = 14,
+    BANK_COUNTRY_CODE = 15,
+    BANK_ID = 16,
+    BANK_NAME = 17,
+    BANK_SWIFT_CODE = 18,
+    BENEFICIARY_ACCOUNT_NR = 19,
+    BENEFICIARY_ADDRESS = 20,
+    BENEFICIARY_CITY = 21,
+    BENEFICIARY_NAME = 22,
+    BENEFICIARY_PHONE = 23,
+    BIC = 24,
+    BRANCH_ID = 25,
+    CITY = 26,
+    CONTACT = 27,
+    COUNTRY = 28,
+    EMAIL = 29,
+    EMAIL_OR_MOBILE_NR = 30,
+    EXTRA_INFO = 31,
+    HOLDER_ADDRESS = 32,
+    HOLDER_EMAIL = 33,
+    HOLDER_NAME = 34,
+    HOLDER_TAX_ID = 35,
+    IBAN = 36,
+    IFSC = 37,
+    INTERMEDIARY_ADDRESS = 38,
+    INTERMEDIARY_BRANCH = 39,
+    INTERMEDIARY_COUNTRY_CODE = 40,
+    INTERMEDIARY_NAME = 41,
+    INTERMEDIARY_SWIFT_CODE = 42,
+    MOBILE_NR = 43,
+    NATIONAL_ACCOUNT_ID = 44,
+    PAYID = 45,
+    PIX_KEY = 46,
+    POSTAL_ADDRESS = 47,
+    PROMPT_PAY_ID = 48,
+    QUESTION = 49,
+    REQUIREMENTS = 50,
+    SALT = 51,
+    SORT_CODE = 52,
+    SPECIAL_INSTRUCTIONS = 53,
+    STATE = 54,
+    TRADE_CURRENCIES = 55,
+    USER_NAME = 56,
+    VIRTUAL_PAYMENT_ADDRESS = 57,
+  }
+
+  export enum Component { 
+    TEXT = 0,
+    TEXTAREA = 1,
+    SELECT_ONE = 2,
+    SELECT_MULTIPLE = 3,
   }
 }
 
