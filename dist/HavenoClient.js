@@ -25,6 +25,12 @@ class HavenoClient {
         this._notificationListeners = [];
         this._registerNotificationListenerCalled = false;
         this._keepAlivePeriodMs = 60000;
+        this.onData = (data) => {
+            if (data instanceof grpc_pb_1.NotificationMessage) {
+                for (const listener of this._notificationListeners)
+                    listener(data);
+            }
+        };
         if (!url)
             throw new HavenoError_1.default("Must provide URL of Haveno daemon");
         if (!password)
@@ -668,10 +674,10 @@ class HavenoClient {
     /**
      * Returns whether daemon is running a local monero node.
      */
-    async isMoneroNodeRunning() {
+    async isMoneroNodeOnline() {
         try {
             return await new Promise((resolve, reject) => {
-                this._moneroNodeClient.isMoneroNodeRunning(new grpc_pb_1.IsMoneroNodeRunningRequest(), { password: this._password }, function (err, response) {
+                this._moneroNodeClient.isMoneroNodeOnline(new grpc_pb_1.IsMoneroNodeOnlineRequest(), { password: this._password }, function (err, response) {
                     if (err)
                         reject(err);
                     else
@@ -754,6 +760,26 @@ class HavenoClient {
                 .setRegistrationKey(registrationKey);
             return await new Promise((resolve, reject) => {
                 this._disputeAgentsClient.registerDisputeAgent(request, { password: this._password }, function (err) {
+                    if (err)
+                        reject(err);
+                    else
+                        resolve();
+                });
+            });
+        }
+        catch (e) {
+            throw new HavenoError_1.default(e.message, e.code);
+        }
+    }
+    /**
+     * Unregister as a dispute agent.
+     *
+     * @param {string} disputeAgentType - type of dispute agent to register, e.g. mediator, refundagent
+     */
+    async unregisterDisputeAgent(disputeAgentType) {
+        try {
+            return await new Promise((resolve, reject) => {
+                this._disputeAgentsClient.unregisterDisputeAgent(new grpc_pb_1.UnregisterDisputeAgentRequest().setDisputeAgentType(disputeAgentType), { password: this._password }, function (err) {
                     if (err)
                         reject(err);
                     else
@@ -1063,7 +1089,8 @@ class HavenoClient {
     /**
      * Get a form for the given payment method to complete and create a new payment account.
      *
-     * @return {object} the payment account form as JSON
+     * @param {string} paymentMethodId - the id of the payment method
+     * @return {PaymentAccountForm} the payment account form
      */
     async getPaymentAccountForm(paymentMethodId) {
         try {
@@ -1072,7 +1099,33 @@ class HavenoClient {
                     if (err)
                         reject(err);
                     else
-                        resolve(JSON.parse(response.getPaymentAccountFormJson()));
+                        resolve(response.getPaymentAccountForm());
+                });
+            });
+        }
+        catch (e) {
+            throw new HavenoError_1.default(e.message, e.code);
+        }
+    }
+    /*
+     * Validate a form field.
+     *
+     * @param {object} form - form context to validate the given value
+     * @param {PaymentAccountFormField.FieldId} fieldId - id of the field to validate
+     * @param {string} value - input value to validate
+     */
+    async validateFormField(form, fieldId, value) {
+        const request = new grpc_pb_1.ValidateFormFieldRequest()
+            .setForm(form)
+            .setFieldId(fieldId)
+            .setValue(value);
+        try {
+            await new Promise((resolve, reject) => {
+                this._paymentAccountsClient.validateFormField(request, { password: this._password }, function (err) {
+                    if (err)
+                        reject(err);
+                    else
+                        resolve();
                 });
             });
         }
@@ -1083,13 +1136,13 @@ class HavenoClient {
     /**
      * Create a payment account.
      *
-     * @param {object} paymentAccountForm - the completed form as JSON to create the payment account
+     * @param {PaymentAccountForm} paymentAccountForm - the completed form to create the payment account
      * @return {PaymentAccount} the created payment account
      */
     async createPaymentAccount(paymentAccountForm) {
         try {
             return await new Promise((resolve, reject) => {
-                this._paymentAccountsClient.createPaymentAccount(new grpc_pb_1.CreatePaymentAccountRequest().setPaymentAccountForm(JSON.stringify(paymentAccountForm)), { password: this._password }, function (err, response) {
+                this._paymentAccountsClient.createPaymentAccount(new grpc_pb_1.CreatePaymentAccountRequest().setPaymentAccountForm(paymentAccountForm), { password: this._password }, function (err, response) {
                     if (err)
                         reject(err);
                     else
@@ -1628,12 +1681,7 @@ class HavenoClient {
                 await new Promise((resolve) => {
                     // send request to register client listener
                     this._notificationStream = this._notificationsClient.registerNotificationListener(new grpc_pb_1.RegisterNotificationListenerRequest(), { password: this._password })
-                        .on('data', (data) => {
-                        if (data instanceof grpc_pb_1.NotificationMessage) {
-                            for (const listener of this._notificationListeners)
-                                listener(data);
-                        }
-                    });
+                        .on('data', this.onData);
                     // periodically send keep alive requests // TODO (woodser): better way to keep notification stream alive?
                     let firstRequest = true;
                     this._keepAliveLooper = new TaskLooper_1.default(async () => {
@@ -1650,6 +1698,7 @@ class HavenoClient {
                 });
             }
             else {
+                this._notificationStream.removeListener('data', this.onData);
                 this._keepAliveLooper.stop();
                 this._notificationStream.cancel();
                 this._notificationStream = undefined;

@@ -76,6 +76,38 @@ class HavenoUtils {
     static centinerosToAtomicUnits(centineros) {
         return BigInt(centineros) * BigInt(HavenoUtils.centinerosToAUMultiplier);
     }
+    /**
+     * Get a form field value.
+     *
+     * @param {PaymentAccountFormField.FieldId} fieldId - id of the field to get the value from
+     * @param {PaymentAccountForm} form - form to get the field value from
+     * @return {string} the form field value
+     */
+    // TODO: attach getter and setter to PaymentAccountForm prototype in typescript?
+    static getFormValue(fieldId, form) {
+        for (const field of form.getFieldsList()) {
+            if (field.getId() === fieldId)
+                return field.getValue();
+        }
+        throw new Error("PaymentAccountForm does not have field " + fieldId);
+    }
+    /**
+     * Set a form field value.
+     *
+     * @param {PaymentAccountFormField.FieldId} fieldId - id of the field to set the value of
+     * @param {string} value - field value to set
+     * @param {PaymentAccountForm} form - form to get the field from
+     * @return {string} the form field value
+     */
+    static setFormValue(fieldId, value, form) {
+        for (const field of form.getFieldsList()) {
+            if (field.getId() === fieldId) {
+                field.setValue(value);
+                return;
+            }
+        }
+        throw new Error("PaymentAccountForm does not have field " + fieldId);
+    }
 }
 exports.default = HavenoUtils;
 HavenoUtils.logLevel = 0;
