@@ -1130,6 +1130,7 @@ test("Can schedule offers with locked funds", async () => {
     await waitForAvailableBalance(outputAmt, user3);
     
     // one output is reserved, one is unlocked
+    await wait(TestConfig.walletSyncPeriodMs);
     expect(BigInt((await user3.getBalances()).getAvailableBalance())).toEqual(outputAmt);
     expect(BigInt((await user3.getBalances()).getPendingBalance())).toEqual(BigInt(0));
     expect(BigInt((await user3.getBalances()).getReservedOfferBalance())).toEqual(outputAmt);
