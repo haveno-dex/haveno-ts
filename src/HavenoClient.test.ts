@@ -2558,11 +2558,11 @@ async function fundOutputs(wallets: any[], amt: bigint, numOutputs?: number, wai
     txConfig.addDestination(destinations[i]);
     sendAmt = sendAmt.add(destinations[i].getAmount());
     if (i === destinations.length - 1 || (i > 0 && i % 15 === 0)) {
-        await waitForAvailableBalance(toBigInt(sendAmt), fundingWallet);
-        const txs = await fundingWallet.createTxs(txConfig);
-        for (const tx of txs) txHashes.push(tx.getHash());
-        txConfig = new MoneroTxConfig().setAccountIndex(0).setRelay(true);
-        sendAmt = BigInteger("0");
+      await waitForAvailableBalance(toBigInt(sendAmt), fundingWallet);
+      const txs = await fundingWallet.createTxs(txConfig);
+      for (const tx of txs) txHashes.push(tx.getHash());
+      txConfig = new MoneroTxConfig().setAccountIndex(0).setRelay(true);
+      sendAmt = BigInteger("0");
     }
   }
   
