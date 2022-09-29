@@ -1140,7 +1140,7 @@ test("Can schedule offers with locked funds", async () => {
     // schedule offer
     const assetCode = "BCH";
     const direction = "BUY";
-    let offer: OfferInfo = await makeOffer({maker: user3, assetCode: assetCode, direction: direction}); 
+    let offer: OfferInfo = await makeOffer({maker: user3, assetCode: assetCode, direction: direction, awaitFundsToMakeOffer: false}); 
     assert.equal(offer.getState(), "SCHEDULED");
     
     // has offer
@@ -1164,7 +1164,7 @@ test("Can schedule offers with locked funds", async () => {
     expect(BigInt((await user3.getBalances()).getReservedOfferBalance())).toEqual(BigInt(0));
     
     // schedule offer
-    offer = await makeOffer({maker: user3, assetCode: assetCode, direction: direction}); 
+    offer = await makeOffer({maker: user3, assetCode: assetCode, direction: direction, awaitFundsToMakeOffer: false}); 
     assert.equal(offer.getState(), "SCHEDULED");
     
     // restart user3
