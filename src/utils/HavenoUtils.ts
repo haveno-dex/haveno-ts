@@ -36,7 +36,6 @@ export default class HavenoUtils {
    *
    * @param {int} level - log level of the message
    * @param {string} msg - message to log
-   * @param {boolean?} warn - log the message as a warning if true
    */
   static log(level: number, msg: string) {
     assert(level === parseInt(level + "", 10) && level >= 0, "Log level must be an integer >= 0");
