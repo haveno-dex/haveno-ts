@@ -1622,7 +1622,575 @@ test("Selects arbitrators which are online, registered, and least used", async (
   }
 });
 
-// ------------------------------- HELPERS ------------------------------------
+// ---------------------------- TRADE HELPERS ---------------------------------
+
+function getTradeConfigs(numConfigs: number): TradeConfig[] {
+    const configs = [];
+    for (let i = 0; i < numConfigs; i++) configs.push({});
+    return configs;
+}
+
+async function executeTrades(configs: TradeConfig[], concurrentTrades?: boolean): Promise<string[]> {
+  
+  // start mining if executing trades concurrently
+  if (concurrentTrades === undefined) concurrentTrades = configs.length > 1;
+  if (concurrentTrades) await startMining();
+  
+  // complete trades
+  let offerIds: string[] = [];
+  let err = undefined
+  try {
+    
+    // assign default configs
+    for (let i = 0; i < configs.length; i++) Object.assign(configs[i], TestConfig.trade, Object.assign({}, configs[i]));
+    
+    // wait for traders to have unlocked balance for trades
+    const wallets = [];
+    for (const config of configs) {
+      if (config.awaitFundsToMakeOffer && config.makeOffer && !config.offerId) wallets.push(await getWallet(config.maker)); // TODO: this can add duplicate wallets and over-fund
+      if (config.awaitFundsToTakeOffer && config.takeOffer) wallets.push(await getWallet(config.taker));
+    }
+    let tradeAmount: bigint = undefined;
+    for (const config of configs) if (!tradeAmount || tradeAmount < config.amount) tradeAmount = config.amount; // use max amount
+    await fundOutputs(wallets, tradeAmount * BigInt("2"), configs.length);
+    await wait(TestConfig.walletSyncPeriodMs);
+    
+    // execute trades
+    if (concurrentTrades) {
+      const tradePromises: Promise<string>[] = [];
+      for (const config of configs) tradePromises.push(executeTrade(Object.assign(config, {concurrentTrades: concurrentTrades})));
+      try {
+        offerIds = await Promise.all(tradePromises);
+      } catch (e2) {
+        await Promise.allSettled(tradePromises); // wait for other trades to complete before throwing error
+        throw e2;
+      }
+    } else {
+      for (const config of configs) {
+        offerIds.push(await executeTrade(Object.assign(config, {concurrentTrades: concurrentTrades})));
+      }
+    }
+  } catch (e) {
+    err = e;
+  }
+  
+  // stop mining
+  if (!concurrentTrades) await monerod.stopMining();
+  if (err) throw err;
+  return offerIds;
+}
+
+// TODO (woodser): test grpc notifications
+async function executeTrade(config?: TradeConfig): Promise<string> {
+  
+  // assign default config
+  if (!config) config = {};
+  Object.assign(config, TestConfig.trade, Object.assign({}, config));
+  
+  // fund maker and taker
+  const clientsToFund = [];
+  const makingOffer = config.makeOffer && !config.offerId;
+  if (config.awaitFundsToMakeOffer && makingOffer) clientsToFund.push(config.maker);
+  if (config.awaitFundsToTakeOffer && config.takeOffer) clientsToFund.push(config.taker);
+  await waitForAvailableBalance(config.amount * BigInt("2"), ...clientsToFund);
+  
+  // determine buyer and seller
+  let offer: OfferInfo = undefined;
+  let isBuyerMaker = undefined;
+  if (makingOffer) {
+    isBuyerMaker = "buy" === config.direction.toLowerCase() ? config.maker : config.taker;
+  } else {
+    offer = getOffer(await config.maker.getMyOffers(config.offerId), config.offerId);
+    if (!offer) {
+      const trade = await config.maker.getTrade(config.offerId);
+      offer = trade.getOffer();
+    }
+    isBuyerMaker = "buy" === offer.getDirection().toLowerCase() ? config.maker : config.taker;
+  }
+  config.buyer = isBuyerMaker ? config.maker : config.taker;
+  config.seller = isBuyerMaker ? config.taker : config.maker;
+  
+  // get info before trade
+  const buyerBalancesBefore = await config.buyer.getBalances();
+  const sellerBalancesBefore = await config.seller.getBalances();
+  
+  // make offer if configured
+  if (makingOffer) {
+    offer = await makeOffer(config);
+    expect(offer.getState()).toEqual("AVAILABLE");
+    config.offerId = offer.getId();
+    await wait(TestConfig.walletSyncPeriodMs * 2);
+  }
+  
+  // TODO (woodser): test error message taking offer before posted
+  
+  // take offer or get existing trade
+  let trade = undefined;
+  if (config.takeOffer) trade = await takeOffer(config);
+  else trade = await config.taker.getTrade(config.offerId);
+  
+  // test trader chat
+  if (config.testTraderChat) await testTradeChat(trade.getTradeId(), config.maker, config.taker);
+  
+  // shut down buyer and seller if configured
+  const promises = [];
+  const buyerAppName = config.buyer.getAppName();
+  if (config.buyerOfflineAfterTake) {
+    promises.push(releaseHavenoProcess(config.buyer));
+    config.buyer = undefined; // TODO: don't track them separately?
+    if (isBuyerMaker) config.maker = undefined;
+    else config.taker = undefined;
+  }
+  const sellerAppName = config.seller.getAppName();
+  if (config.sellerOfflineAfterTake) {
+    promises.push(releaseHavenoProcess(config.seller));
+    config.seller = undefined;
+    if (isBuyerMaker) config.taker = undefined;
+    else config.maker = undefined;
+  }
+  await Promise.all(promises);
+  
+  // wait for deposit txs to unlock
+  await waitForUnlockedTxs(trade.getMakerDepositTxId(), trade.getTakerDepositTxId());
+  
+  // buyer comes online if offline
+  if (config.buyerOfflineAfterPaymentSent) {
+    config.buyer = await initHaveno({appName: buyerAppName});
+    if (isBuyerMaker) config.maker = config.buyer;
+    else config.taker = config.buyer;
+    expect((await config.buyer.getTrade(offer.getId())).getPhase()).toEqual("DEPOSITS_UNLOCKED");
+  }
+  
+  // test trade states
+  await wait(TestConfig.maxWalletStartupMs + TestConfig.walletSyncPeriodMs * 2); // TODO: only wait here if buyer comes online?
+  let fetchedTrade = await config.buyer.getTrade(config.offerId);
+  expect(fetchedTrade.getIsDepositUnlocked()).toBe(true);
+  expect(fetchedTrade.getPhase()).toEqual("DEPOSITS_UNLOCKED");
+  if (!config.sellerOfflineAfterTake) {
+    fetchedTrade = await config.seller.getTrade(trade.getTradeId());
+    expect(fetchedTrade.getIsDepositUnlocked()).toBe(true);
+    expect(fetchedTrade.getPhase()).toEqual("DEPOSITS_UNLOCKED");
+  }
+  
+  // buyer notified to send payment TODO
+  
+  // open dispute(s) if configured
+  if (!config.disputeOpener) {
+    if (config.buyerOpensDisputeAfterDepositsUnlock) {
+      await config.buyer.openDispute(config.offerId);
+      config.disputeOpener = config.buyer;
+    }
+    if (config.sellerOpensDisputeAfterDepositsUnlock) {
+      await config.seller.openDispute(config.offerId);
+      if (!config.disputeOpener) config.disputeOpener = config.seller;
+    }
+    config.disputePeer = config.disputeOpener === config.buyer ? config.seller : config.buyer;
+    if (config.disputeOpener) await testOpenDispute(config);
+  }
+  
+  // if dispute opened, resolve dispute if configured and return
+  if (config.disputeOpener) {
+    if (config.resolveDispute) await resolveDispute(config);
+    return config.offerId;
+  }
+  
+  // buyer confirms payment is sent
+  if (!config.buyerSendsPayment) return offer.getId();
+  HavenoUtils.log(1, "Buyer confirming payment sent");
+  await config.buyer.confirmPaymentStarted(trade.getTradeId());
+  fetchedTrade = await config.buyer.getTrade(trade.getTradeId());
+  expect(fetchedTrade.getPhase()).toEqual("PAYMENT_SENT");
+  
+  // buyer goes offline if configured
+  if (config.buyerOfflineAfterPaymentSent) {
+  await releaseHavenoProcess(config.buyer);
+    config.buyer = undefined;
+    if (isBuyerMaker) config.maker = undefined;
+    else config.taker = undefined;
+  }
+  
+  // seller comes online if offline
+  if (!config.seller) {
+    config.seller = await initHaveno({appName: sellerAppName});
+    if (isBuyerMaker) config.taker = config.seller;
+    else config.maker = config.seller;
+  }
+  
+  // seller notified payment is sent
+  await wait(TestConfig.maxTimePeerNoticeMs + TestConfig.maxWalletStartupMs); // TODO: test notification
+  if (config.sellerOfflineAfterTake) await wait(TestConfig.walletSyncPeriodMs); // wait to process mailbox messages
+  fetchedTrade = await config.seller.getTrade(trade.getTradeId());
+  expect(fetchedTrade.getPhase()).toEqual("PAYMENT_SENT");
+  
+  // seller confirms payment is received
+  if (!config.sellerReceivesPayment) return offer.getId();
+  HavenoUtils.log(1, "Seller confirming payment received");
+  await config.seller.confirmPaymentReceived(trade.getTradeId());
+  fetchedTrade = await config.seller.getTrade(trade.getTradeId());
+  if (config.buyerOfflineAfterTake) expect(fetchedTrade.getPhase()).toEqual("PAYMENT_RECEIVED"); // TODO (woodser): test buyer offline so doesn't send multisig info after first confirmation
+  else expect(fetchedTrade.getPhase()).toEqual("PAYOUT_PUBLISHED");
+  
+  // buyer comes online if offline
+  if (config.buyerOfflineAfterPaymentSent) {
+    config.buyer = await initHaveno({appName: buyerAppName});
+    if (isBuyerMaker) config.maker = config.buyer;
+    else config.taker = config.buyer;
+    HavenoUtils.log(1, "Done starting buyer");
+  }
+  
+  // test notifications
+  await wait(TestConfig.maxWalletStartupMs + TestConfig.walletSyncPeriodMs * 2);
+  fetchedTrade = await config.buyer.getTrade(trade.getTradeId());
+  expect(fetchedTrade.getPhase()).toEqual("PAYOUT_PUBLISHED"); // TODO: this should be WITHDRAW_COMPLETED?
+  fetchedTrade = await config.seller.getTrade(trade.getTradeId());
+  expect(fetchedTrade.getPhase()).toEqual(config.sellerOfflineAfterTake ? "PAYMENT_RECEIVED" : "PAYOUT_PUBLISHED"); // payout can only be published if seller remained online after first confirmation to share updated multisig info
+  const arbitratorTrade = await config.arbitrator.getTrade(trade.getTradeId());
+  expect(arbitratorTrade.getState()).toEqual("WITHDRAW_COMPLETED");
+  
+  // test balances after payout tx unless other trades can interfere
+  if (!config.concurrentTrades) {
+    const buyerBalancesAfter = await config.buyer.getBalances();
+    const sellerBalancesAfter = await config.seller.getBalances();
+    // TODO: getBalance() = available + pending + reserved offers? would simplify this equation
+    const buyerFee = BigInt(buyerBalancesBefore.getBalance()) + BigInt(buyerBalancesBefore.getReservedOfferBalance()) + HavenoUtils.centinerosToAtomicUnits(offer.getAmount()) - (BigInt(buyerBalancesAfter.getBalance()) + BigInt(buyerBalancesAfter.getReservedOfferBalance())); // buyer fee = total balance before + offer amount - total balance after
+    const sellerFee = BigInt(sellerBalancesBefore.getBalance()) + BigInt(sellerBalancesBefore.getReservedOfferBalance()) - HavenoUtils.centinerosToAtomicUnits(offer.getAmount()) - (BigInt(sellerBalancesAfter.getBalance()) + BigInt(sellerBalancesAfter.getReservedOfferBalance())); // seller fee = total balance before - offer amount - total balance after
+    expect(buyerFee).toBeLessThanOrEqual(TestConfig.maxFee);
+    expect(buyerFee).toBeGreaterThan(BigInt("0"));
+    expect(sellerFee).toBeLessThanOrEqual(TestConfig.maxFee);
+    expect(sellerFee).toBeGreaterThan(BigInt("0"));
+  }
+  
+  return offer.getId();
+}
+
+async function makeOffer(config?: TradeConfig): Promise<OfferInfo> {
+  
+  // assign default config
+  if (!config) config = {};
+  Object.assign(config, TestConfig.trade, Object.assign({}, config));
+
+  // wait for unlocked balance
+  if (config.awaitFundsToMakeOffer) await waitForAvailableBalance(config.amount! * BigInt("2"), config.maker);
+  
+  // create payment account if not given // TODO: re-use existing payment account
+  if (!config.makerPaymentAccountId) config.makerPaymentAccountId = (await createPaymentAccount(config.maker, config.assetCode!)).getId();
+  
+  // get unlocked balance before reserving offer
+  const unlockedBalanceBefore = BigInt((await config.maker.getBalances()).getAvailableBalance());
+  
+  // post offer
+  const offer: OfferInfo = await config.maker.postOffer(
+        config.direction!,
+        config.amount!,
+        config.assetCode!,
+        config.makerPaymentAccountId!,
+        config.buyerSecurityDeposit!,
+        config.price,
+        config.priceMargin,
+        config.triggerPrice,
+        config.minAmount);
+  testOffer(offer, config);
+  
+  // offer is included in my offers only
+  if (!getOffer(await config.maker.getMyOffers(config.assetCode!, config.direction), offer.getId())) {
+    console.warn("Offer is not included in my offers after posting, waiting up to 10 seconds");
+    await wait(10000); // TODO: remove this wait time
+    if (!getOffer(await config.maker.getMyOffers(config.assetCode!, config.direction), offer.getId())) throw new Error("Offer " + offer.getId() + " was not found in my offers");
+  }
+  if (getOffer(await config.maker.getOffers(config.assetCode!, config.direction), offer.getId())) throw new Error("My offer " + offer.getId() + " should not appear in available offers");
+  
+  // unlocked balance has decreased
+  const unlockedBalanceAfter = BigInt((await config.maker.getBalances()).getAvailableBalance());
+  if (offer.getState() === "SCHEDULED") {
+    if (unlockedBalanceAfter !== unlockedBalanceBefore) throw new Error("Unlocked balance should not change for scheduled offer");
+  } else if (offer.getState() === "AVAILABLE") {
+    if (unlockedBalanceAfter === unlockedBalanceBefore) throw new Error("Unlocked balance did not change after posting offer");
+  } else {
+    throw new Error("Unexpected offer state after posting: " + offer.getState());
+  }
+  
+  return offer;
+}
+
+async function takeOffer(config: TradeConfig): Promise<TradeInfo> {
+  
+  // assign default config
+  if (!config) config = {};
+  Object.assign(config, TestConfig.trade, Object.assign({}, config));
+  
+  // taker sees offer
+  if (!config.offerId) throw new Error("Must provide offer id");
+  const takerOffer = getOffer(await config.taker.getOffers(config.assetCode, config.direction), config.offerId);
+  if (!takerOffer) throw new Error("Offer " + config.offerId + " was not found in taker's offers after posting");
+  expect(takerOffer.getState()).toEqual("UNKNOWN"); // TODO: offer state should be known
+  
+  // wait for unlocked balance
+  if (config.awaitFundsToTakeOffer) await waitForAvailableBalance(config.amount! * BigInt("2"), config.taker);
+  
+  // create payment account if not given // TODO: re-use existing payment account
+  if (!config.takerPaymentAccountId) config.takerPaymentAccountId = (await createPaymentAccount(config.taker, config.assetCode!)).getId();
+  
+  // register to receive notifications
+  const makerNotifications: NotificationMessage[] = [];
+  const takerNotifications: NotificationMessage[] = [];
+  await config.maker.addNotificationListener(notification => { makerNotifications.push(notification); });
+  await config.taker.addNotificationListener(notification => { takerNotifications.push(notification); });
+  
+  // take offer
+  const takerBalancesBefore: XmrBalanceInfo = await config.taker.getBalances();
+  const startTime = Date.now();
+  HavenoUtils.log(1, "Taking offer " + config.offerId);
+  const trade = await config.taker.takeOffer(config.offerId, config.takerPaymentAccountId!);
+  HavenoUtils.log(1, "Done taking offer in " + (Date.now() - startTime) + " ms");
+  
+  // test taker's balances after taking trade
+  const takerBalancesAfter: XmrBalanceInfo = await config.taker.getBalances();
+  expect(BigInt(takerBalancesAfter.getAvailableBalance())).toBeLessThan(BigInt(takerBalancesBefore.getAvailableBalance()));
+  expect(BigInt(takerBalancesAfter.getReservedOfferBalance()) + BigInt(takerBalancesAfter.getReservedTradeBalance())).toBeGreaterThan(BigInt(takerBalancesBefore.getReservedOfferBalance()) + BigInt(takerBalancesBefore.getReservedTradeBalance()));
+  
+  // maker is notified that offer is taken
+  await wait(TestConfig.maxTimePeerNoticeMs);
+  const tradeNotifications = getNotifications(makerNotifications, NotificationMessage.NotificationType.TRADE_UPDATE, trade.getTradeId());
+  expect(tradeNotifications.length).toBe(1);
+  assert(GenUtils.arrayContains(["DEPOSITS_PUBLISHED", "DEPOSITS_CONFIRMED"], tradeNotifications[0].getTrade()!.getPhase()));
+  expect(tradeNotifications[0].getTitle()).toEqual("Offer Taken");
+  expect(tradeNotifications[0].getMessage()).toEqual("Your offer " + config.offerId + " has been accepted");
+  
+  // maker is notified of balance change
+  
+  // taker can get trade
+  let fetchedTrade: TradeInfo = await config.taker.getTrade(trade.getTradeId());
+  assert(GenUtils.arrayContains(["DEPOSITS_PUBLISHED", "DEPOSITS_CONFIRMED"], fetchedTrade.getPhase()));
+  // TODO: test fetched trade
+  
+  // taker is notified of balance change
+
+  // maker can get trade
+  fetchedTrade = await config.maker.getTrade(trade.getTradeId());
+  assert(GenUtils.arrayContains(["DEPOSITS_PUBLISHED", "DEPOSITS_CONFIRMED"], fetchedTrade.getPhase()));
+  return trade;
+}
+
+async function testOpenDispute(config: TradeConfig) {
+  
+  // test dispute state
+  const openerDispute = await config.disputeOpener.getDispute(config.offerId);
+  expect(openerDispute.getTradeId()).toEqual(config.offerId);
+  expect(openerDispute.getIsOpener()).toBe(true);
+  expect(openerDispute.getDisputeOpenerIsBuyer()).toBe(config.disputeOpener === config.buyer);
+  
+  // get non-existing dispute should fail
+  try {
+    await config.disputeOpener.getDispute("invalid");
+    throw new Error("get dispute with invalid id should fail");
+  } catch (err: any) {
+    assert.equal(err.message, "dispute for trade id 'invalid' not found");
+  }
+  
+  // peer sees the dispute
+  await wait(TestConfig.maxTimePeerNoticeMs + TestConfig.maxWalletStartupMs);
+  const peerDispute = await config.disputePeer.getDispute(config.offerId);
+  expect(peerDispute.getTradeId()).toEqual(config.offerId);
+  expect(peerDispute.getIsOpener()).toBe(false);
+  
+  // arbitrator sees both disputes
+  const disputes = await config.arbitrator.getDisputes();
+  expect(disputes.length).toBeGreaterThanOrEqual(2);
+  const arbDisputePeer = disputes.find(d => d.getId() === peerDispute.getId());
+  assert(arbDisputePeer);
+  const arbDisputeOpener = disputes.find(d => d.getId() === openerDispute.getId());
+  assert(arbDisputeOpener);
+  
+  // register to receive notifications
+  const disputeOpenerNotifications: NotificationMessage[] = [];
+  const disputePeerNotifications: NotificationMessage[] = [];
+  const arbitratorNotifications: NotificationMessage[] = [];
+  await config.disputeOpener.addNotificationListener(notification => { HavenoUtils.log(3, "Dispute opener received notification " + notification.getType() + " " + (notification.getChatMessage() ? notification.getChatMessage()?.getMessage() : "")); disputeOpenerNotifications.push(notification); });
+  await config.disputePeer.addNotificationListener(notification => { HavenoUtils.log(3, "Dispute peer received notification " + notification.getType() + " " + (notification.getChatMessage() ? notification.getChatMessage()?.getMessage() : "")); disputePeerNotifications.push(notification); });
+  await arbitrator.addNotificationListener(notification => { HavenoUtils.log(3, "Arbitrator received notification " + notification.getType() + " " + (notification.getChatMessage() ? notification.getChatMessage()?.getMessage() : "")); arbitratorNotifications.push(notification); });
+  
+  // arbitrator sends chat messages to traders
+  HavenoUtils.log(1, "Testing chat messages");
+  await config.arbitrator.sendDisputeChatMessage(arbDisputeOpener!.getId(), "Arbitrator chat message to dispute opener", []);
+  await config.arbitrator.sendDisputeChatMessage(arbDisputePeer!.getId(), "Arbitrator chat message to dispute peer", []);
+  
+  // traders reply to arbitrator chat messages
+  await wait(TestConfig.maxTimePeerNoticeMs); // wait for arbitrator's message to arrive
+  const attachment = new Attachment();
+  const bytes = new Uint8Array(Buffer.from("Proof dispute opener was scammed", "utf8"));
+  attachment.setBytes(bytes);
+  attachment.setFileName("proof.txt");
+  const attachment2 = new Attachment();
+  const bytes2 = new Uint8Array(Buffer.from("picture bytes", "utf8"));
+  attachment2.setBytes(bytes2);
+  attachment2.setFileName("proof.png");
+  HavenoUtils.log(2, "Dispute opener sending chat message to arbitrator. tradeId=" + config.offerId + ", disputeId=" + openerDispute.getId());
+  await config.disputeOpener.sendDisputeChatMessage(openerDispute.getId(), "Dispute opener chat message", [attachment, attachment2]);
+  await wait(TestConfig.maxTimePeerNoticeMs); // wait for user2's message to arrive
+  HavenoUtils.log(2, "Dispute peer sending chat message to arbitrator. tradeId=" + config.offerId + ", disputeId=" + peerDispute.getId());
+  await config.disputePeer.sendDisputeChatMessage(peerDispute.getId(), "Dispute peer chat message", []); 
+  
+  // test trader chat messages
+  await wait(TestConfig.maxTimePeerNoticeMs);
+  let dispute = await config.disputeOpener.getDispute(config.offerId);
+  let messages = dispute.getChatMessageList();
+  expect(messages.length).toEqual(3); // 1st message is the system message
+  expect(messages[1].getMessage()).toEqual("Arbitrator chat message to dispute opener");
+  expect(messages[2].getMessage()).toEqual("Dispute opener chat message");
+  let attachments = messages[2].getAttachmentsList();
+  expect(attachments.length).toEqual(2);
+  expect(attachments[0].getFileName()).toEqual("proof.txt");
+  expect(attachments[0].getBytes()).toEqual(bytes);
+  expect(attachments[1].getFileName()).toEqual("proof.png");
+  expect(attachments[1].getBytes()).toEqual(bytes2);
+  dispute = await config.disputePeer.getDispute(config.offerId);
+  messages = dispute.getChatMessageList();
+  expect(messages.length).toEqual(3);
+  expect(messages[1].getMessage()).toEqual("Arbitrator chat message to dispute peer");
+  expect(messages[2].getMessage()).toEqual("Dispute peer chat message");
+    
+  // test notifications of chat messages
+  let chatNotifications = getNotifications(disputeOpenerNotifications, NotificationMessage.NotificationType.CHAT_MESSAGE, config.offerId);
+  expect(chatNotifications.length).toBe(1);
+  expect(chatNotifications[0].getChatMessage()?.getMessage()).toEqual("Arbitrator chat message to dispute opener");
+  chatNotifications = getNotifications(disputePeerNotifications, NotificationMessage.NotificationType.CHAT_MESSAGE, config.offerId);
+  expect(chatNotifications.length).toBe(1);
+  expect(chatNotifications[0].getChatMessage()?.getMessage()).toEqual("Arbitrator chat message to dispute peer");
+  
+  // arbitrator has 2 chat messages, one with attachments
+  chatNotifications = getNotifications(arbitratorNotifications, NotificationMessage.NotificationType.CHAT_MESSAGE, config.offerId);
+  expect(chatNotifications.length).toBe(2);
+  expect(chatNotifications[0].getChatMessage()?.getMessage()).toEqual("Dispute opener chat message");
+  assert(chatNotifications[0].getChatMessage()?.getAttachmentsList());
+  attachments = chatNotifications[0].getChatMessage()?.getAttachmentsList()!;
+  expect(attachments[0].getFileName()).toEqual("proof.txt");
+  expect(attachments[0].getBytes()).toEqual(bytes);
+  expect(attachments[1].getFileName()).toEqual("proof.png");
+  expect(attachments[1].getBytes()).toEqual(bytes2);
+  expect(chatNotifications[1].getChatMessage()?.getMessage()).toEqual("Dispute peer chat message");
+}
+
+async function resolveDispute(config: TradeConfig) {
+
+  // award too little to loser
+  const offer = (await config.maker.getTrade(config.offerId)).getOffer();
+  const tradeAmount: bigint = HavenoUtils.centinerosToAtomicUnits(offer.getAmount());
+  const customWinnerAmount = tradeAmount + HavenoUtils.centinerosToAtomicUnits(offer.getBuyerSecurityDeposit() +  offer.getSellerSecurityDeposit()) - BigInt("10000");
+  try {
+    await arbitrator.resolveDispute(config.offerId, config.disputeWinner, config.disputeReason, "Loser gets too little", customWinnerAmount);
+    throw new Error("Should have failed resolving dispute with insufficient loser payout");
+  } catch (err: any) {
+    assert.equal(err.message, "Loser payout is too small to cover the mining fee");
+  }
+  
+  // resolve dispute according to configuration
+  const winner = config.disputeWinner === DisputeResult.Winner.BUYER ? config.buyer : config.seller;
+  const loser = config.disputeWinner === DisputeResult.Winner.BUYER ? config.seller : config.buyer;
+  const winnerBalancesBefore = await winner.getBalances();
+  const loserBalancesBefore = await loser.getBalances();
+  HavenoUtils.log(1, "Resolving dispute for trade " + config.offerId);
+  const startTime = Date.now();
+  await arbitrator.resolveDispute(config.offerId, config.disputeWinner, config.disputeReason, config.disputeSummary, config.disputeWinnerAmount);
+  HavenoUtils.log(1, "Done resolving dispute (" + (Date.now() - startTime) + ")");
+  
+  // test resolved dispute
+  await wait(TestConfig.maxWalletStartupMs);
+  let dispute = await config.disputeOpener.getDispute(config.offerId);
+  expect(dispute.getIsClosed()).toBe(true);
+  dispute = await config.disputePeer.getDispute(config.offerId);
+  expect(dispute.getIsClosed()).toBe(true);
+  
+  // check balances after payout tx unless concurrent trades
+  if (config.concurrentTrades) return;
+  await wait(TestConfig.walletSyncPeriodMs * 2);
+  const winnerBalancesAfter = await winner.getBalances();
+  const loserBalancesAfter = await loser.getBalances();
+  const winnerDifference = BigInt(winnerBalancesAfter.getBalance()) - BigInt(winnerBalancesBefore.getBalance());
+  const loserDifference = BigInt(loserBalancesAfter.getBalance()) - BigInt(loserBalancesBefore.getBalance());
+  const winnerSecurityDeposit = HavenoUtils.centinerosToAtomicUnits(config.disputeWinner === DisputeResult.Winner.BUYER ? offer.getBuyerSecurityDeposit() : offer.getSellerSecurityDeposit())
+  const loserSecurityDeposit = HavenoUtils.centinerosToAtomicUnits(config.disputeWinner === DisputeResult.Winner.BUYER ? offer.getSellerSecurityDeposit() : offer.getBuyerSecurityDeposit());
+  const winnerPayout = config.disputeWinnerAmount ? config.disputeWinnerAmount : tradeAmount + winnerSecurityDeposit; // TODO: this assumes security deposit is returned to winner, but won't be the case if payment sent
+  const loserPayout = loserSecurityDeposit;
+  expect(winnerDifference).toEqual(winnerPayout);
+  expect(loserPayout - loserDifference).toBeLessThan(TestConfig.maxFee);
+}
+
+async function testTradeChat(tradeId: string, user1: HavenoClient, user2: HavenoClient) {
+  HavenoUtils.log(1, "Testing trade chat");
+
+  // invalid trade should throw error
+  try {
+    await user1.getChatMessages("invalid");
+    throw new Error("get chat messages with invalid id should fail");
+  } catch (err: any) {
+    assert.equal(err.message, "trade with id 'invalid' not found");
+  }
+
+  // trade chat should be in initial state
+  let messages = await user1.getChatMessages(tradeId);
+  assert(messages.length === 0);
+  messages = await user2.getChatMessages(tradeId);
+  assert(messages.length === 0);
+
+  // add notification handlers and send some messages
+  const user1Notifications: NotificationMessage[] = [];
+  const user2Notifications: NotificationMessage[] = [];
+  await user1.addNotificationListener(notification => { user1Notifications.push(notification); });
+  await user2.addNotificationListener(notification => { user2Notifications.push(notification); });
+
+  // send simple conversation and verify the list of messages
+  const user1Msg = "Hi I'm user1";
+  await user1.sendChatMessage(tradeId, user1Msg);
+  await wait(TestConfig.maxTimePeerNoticeMs);
+  messages = await user2.getChatMessages(tradeId);
+  expect(messages.length).toEqual(2);
+  expect(messages[0].getIsSystemMessage()).toEqual(true); // first message is system
+  expect(messages[1].getMessage()).toEqual(user1Msg);
+
+  const user2Msg = "Hello I'm user2";
+  await user2.sendChatMessage(tradeId, user2Msg);
+  await wait(TestConfig.maxTimePeerNoticeMs);
+  messages = await user1.getChatMessages(tradeId);
+  expect(messages.length).toEqual(3);
+  expect(messages[0].getIsSystemMessage()).toEqual(true);
+  expect(messages[1].getMessage()).toEqual(user1Msg);
+  expect(messages[2].getMessage()).toEqual(user2Msg);
+
+  // verify notifications
+  let chatNotifications = getNotifications(user1Notifications, NotificationMessage.NotificationType.CHAT_MESSAGE);
+  expect(chatNotifications.length).toBe(1);
+  expect(chatNotifications[0].getChatMessage()?.getMessage()).toEqual(user2Msg);
+  chatNotifications = getNotifications(user2Notifications, NotificationMessage.NotificationType.CHAT_MESSAGE);
+  expect(chatNotifications.length).toBe(1);
+  expect(chatNotifications[0].getChatMessage()?.getMessage()).toEqual(user1Msg);
+
+  // additional msgs
+  const msgs = ["", "  ", "<script>alert('test');</script>", "さようなら"];
+  for(const msg of msgs) {
+    await user1.sendChatMessage(tradeId, msg);
+    await wait(1000); // the async operation can result in out of order messages
+  }
+  await wait(TestConfig.maxTimePeerNoticeMs);
+  messages = await user2.getChatMessages(tradeId);
+  let offset = 3; // 3 existing messages
+  expect(messages.length).toEqual(offset + msgs.length);
+  expect(messages[0].getIsSystemMessage()).toEqual(true);
+  expect(messages[1].getMessage()).toEqual(user1Msg);
+  expect(messages[2].getMessage()).toEqual(user2Msg);
+  for (let i = 0; i < msgs.length; i++) {
+    expect(messages[i + offset].getMessage()).toEqual(msgs[i]);
+  }
+
+  chatNotifications = getNotifications(user2Notifications, NotificationMessage.NotificationType.CHAT_MESSAGE);
+  offset = 1; // 1 existing notification
+  expect(chatNotifications.length).toBe(offset + msgs.length);
+  expect(chatNotifications[0].getChatMessage()?.getMessage()).toEqual(user1Msg);
+  for (let i = 0; i < msgs.length; i++) {
+    expect(chatNotifications[i + offset].getChatMessage()?.getMessage()).toEqual(msgs[i]);
+  }
+}
+
+// ---------------------------- OTHER HELPERS ---------------------------------
 
 function getPort(url: string): string {
   return new URL(url).port;
@@ -2191,575 +2759,6 @@ function testOffer(offer: OfferInfo, config?: any) {
     expect(offer.getSellerSecurityDeposit() / offer.getAmount()).toEqual(config.buyerSecurityDeposit); // TODO: use same config.securityDeposit for buyer and seller? 
   }
   // TODO: test rest of offer
-}
-
-function getTradeConfigs(numConfigs: number): TradeConfig[] {
-    const configs = [];
-    for (let i = 0; i < numConfigs; i++) configs.push({});
-    return configs;
-}
-
-async function executeTrades(configs: TradeConfig[], concurrentTrades?: boolean): Promise<string[]> {
-  
-  // start mining if executing trades concurrently
-  if (concurrentTrades === undefined) concurrentTrades = configs.length > 1;
-  if (concurrentTrades) await startMining();
-  
-  // complete trades
-  let offerIds: string[] = [];
-  let err = undefined
-  try {
-    
-    // assign default configs
-    for (let i = 0; i < configs.length; i++) Object.assign(configs[i], TestConfig.trade, Object.assign({}, configs[i]));
-    
-    // wait for traders to have unlocked balance for trades
-    const wallets = [];
-    for (const config of configs) {
-      if (config.awaitFundsToMakeOffer && config.makeOffer && !config.offerId) wallets.push(await getWallet(config.maker)); // TODO: this can add duplicate wallets and over-fund
-      if (config.awaitFundsToTakeOffer && config.takeOffer) wallets.push(await getWallet(config.taker));
-    }
-    let tradeAmount: bigint = undefined;
-    for (const config of configs) if (!tradeAmount || tradeAmount < config.amount) tradeAmount = config.amount; // use max amount
-    await fundOutputs(wallets, tradeAmount * BigInt("2"), configs.length);
-    await wait(TestConfig.walletSyncPeriodMs);
-    
-    // execute trades
-    if (concurrentTrades) {
-      const tradePromises: Promise<string>[] = [];
-      for (const config of configs) tradePromises.push(executeTrade(Object.assign(config, {concurrentTrades: concurrentTrades})));
-      try {
-        offerIds = await Promise.all(tradePromises);
-      } catch (e2) {
-        await Promise.allSettled(tradePromises); // wait for other trades to complete before throwing error
-        throw e2;
-      }
-    } else {
-      for (const config of configs) {
-        offerIds.push(await executeTrade(Object.assign(config, {concurrentTrades: concurrentTrades})));
-      }
-    }
-  } catch (e) {
-    err = e;
-  }
-  
-  // stop mining
-  if (!concurrentTrades) await monerod.stopMining();
-  if (err) throw err;
-  return offerIds;
-}
-
-// TODO (woodser): test grpc notifications
-async function executeTrade(config?: TradeConfig): Promise<string> {
-  
-  // assign default config
-  if (!config) config = {};
-  Object.assign(config, TestConfig.trade, Object.assign({}, config));
-  
-  // fund maker and taker
-  const clientsToFund = [];
-  const makingOffer = config.makeOffer && !config.offerId;
-  if (config.awaitFundsToMakeOffer && makingOffer) clientsToFund.push(config.maker);
-  if (config.awaitFundsToTakeOffer && config.takeOffer) clientsToFund.push(config.taker);
-  await waitForAvailableBalance(config.amount * BigInt("2"), ...clientsToFund);
-  
-  // determine buyer and seller
-  let offer: OfferInfo = undefined;
-  let isBuyerMaker = undefined;
-  if (makingOffer) {
-    isBuyerMaker = "buy" === config.direction.toLowerCase() ? config.maker : config.taker;
-  } else {
-    offer = getOffer(await config.maker.getMyOffers(config.offerId), config.offerId);
-    if (!offer) {
-      const trade = await config.maker.getTrade(config.offerId);
-      offer = trade.getOffer();
-    }
-    isBuyerMaker = "buy" === offer.getDirection().toLowerCase() ? config.maker : config.taker;
-  }
-  config.buyer = isBuyerMaker ? config.maker : config.taker;
-  config.seller = isBuyerMaker ? config.taker : config.maker;
-  
-  // get info before trade
-  const buyerBalancesBefore = await config.buyer.getBalances();
-  const sellerBalancesBefore = await config.seller.getBalances();
-  
-  // make offer if configured
-  if (makingOffer) {
-    offer = await makeOffer(config);
-    expect(offer.getState()).toEqual("AVAILABLE");
-    config.offerId = offer.getId();
-    await wait(TestConfig.walletSyncPeriodMs * 2);
-  }
-  
-  // TODO (woodser): test error message taking offer before posted
-  
-  // take offer or get existing trade
-  let trade = undefined;
-  if (config.takeOffer) trade = await takeOffer(config);
-  else trade = await config.taker.getTrade(config.offerId);
-  
-  // test trader chat
-  if (config.testTraderChat) await testTradeChat(trade.getTradeId(), config.maker, config.taker);
-  
-  // shut down buyer and seller if configured
-  const promises = [];
-  const buyerAppName = config.buyer.getAppName();
-  if (config.buyerOfflineAfterTake) {
-    promises.push(releaseHavenoProcess(config.buyer));
-    config.buyer = undefined; // TODO: don't track them separately?
-    if (isBuyerMaker) config.maker = undefined;
-    else config.taker = undefined;
-  }
-  const sellerAppName = config.seller.getAppName();
-  if (config.sellerOfflineAfterTake) {
-    promises.push(releaseHavenoProcess(config.seller));
-    config.seller = undefined;
-    if (isBuyerMaker) config.taker = undefined;
-    else config.maker = undefined;
-  }
-  await Promise.all(promises);
-  
-  // wait for deposit txs to unlock
-  await waitForUnlockedTxs(trade.getMakerDepositTxId(), trade.getTakerDepositTxId());
-  
-  // buyer comes online if offline
-  if (config.buyerOfflineAfterPaymentSent) {
-    config.buyer = await initHaveno({appName: buyerAppName});
-    if (isBuyerMaker) config.maker = config.buyer;
-    else config.taker = config.buyer;
-    expect((await config.buyer.getTrade(offer.getId())).getPhase()).toEqual("DEPOSITS_UNLOCKED");
-  }
-  
-  // test trade states
-  await wait(TestConfig.maxWalletStartupMs + TestConfig.walletSyncPeriodMs * 2); // TODO: only wait here if buyer comes online?
-  let fetchedTrade = await config.buyer.getTrade(config.offerId);
-  expect(fetchedTrade.getIsDepositUnlocked()).toBe(true);
-  expect(fetchedTrade.getPhase()).toEqual("DEPOSITS_UNLOCKED");
-  if (!config.sellerOfflineAfterTake) {
-    fetchedTrade = await config.seller.getTrade(trade.getTradeId());
-    expect(fetchedTrade.getIsDepositUnlocked()).toBe(true);
-    expect(fetchedTrade.getPhase()).toEqual("DEPOSITS_UNLOCKED");
-  }
-  
-  // buyer notified to send payment TODO
-  
-  // open dispute(s) if configured
-  if (!config.disputeOpener) {
-    if (config.buyerOpensDisputeAfterDepositsUnlock) {
-      await config.buyer.openDispute(config.offerId);
-      config.disputeOpener = config.buyer;
-    }
-    if (config.sellerOpensDisputeAfterDepositsUnlock) {
-      await config.seller.openDispute(config.offerId);
-      if (!config.disputeOpener) config.disputeOpener = config.seller;
-    }
-    config.disputePeer = config.disputeOpener === config.buyer ? config.seller : config.buyer;
-    if (config.disputeOpener) await testOpenDispute(config);
-  }
-  
-  // if dispute opened, resolve dispute if configured and return
-  if (config.disputeOpener) {
-    if (config.resolveDispute) await resolveDispute(config);
-    return config.offerId;
-  }
-  
-  // buyer confirms payment is sent
-  if (!config.buyerSendsPayment) return offer.getId();
-  HavenoUtils.log(1, "Buyer confirming payment sent");
-  await config.buyer.confirmPaymentStarted(trade.getTradeId());
-  fetchedTrade = await config.buyer.getTrade(trade.getTradeId());
-  expect(fetchedTrade.getPhase()).toEqual("PAYMENT_SENT");
-  
-  // buyer goes offline if configured
-  if (config.buyerOfflineAfterPaymentSent) {
-  await releaseHavenoProcess(config.buyer);
-    config.buyer = undefined;
-    if (isBuyerMaker) config.maker = undefined;
-    else config.taker = undefined;
-  }
-  
-  // seller comes online if offline
-  if (!config.seller) {
-    config.seller = await initHaveno({appName: sellerAppName});
-    if (isBuyerMaker) config.taker = config.seller;
-    else config.maker = config.seller;
-  }
-  
-  // seller notified payment is sent
-  await wait(TestConfig.maxTimePeerNoticeMs + TestConfig.maxWalletStartupMs); // TODO: test notification
-  if (config.sellerOfflineAfterTake) await wait(TestConfig.walletSyncPeriodMs); // wait to process mailbox messages
-  fetchedTrade = await config.seller.getTrade(trade.getTradeId());
-  expect(fetchedTrade.getPhase()).toEqual("PAYMENT_SENT");
-  
-  // seller confirms payment is received
-  if (!config.sellerReceivesPayment) return offer.getId();
-  HavenoUtils.log(1, "Seller confirming payment received");
-  await config.seller.confirmPaymentReceived(trade.getTradeId());
-  fetchedTrade = await config.seller.getTrade(trade.getTradeId());
-  if (config.buyerOfflineAfterTake) expect(fetchedTrade.getPhase()).toEqual("PAYMENT_RECEIVED"); // TODO (woodser): test buyer offline so doesn't send multisig info after first confirmation
-  else expect(fetchedTrade.getPhase()).toEqual("PAYOUT_PUBLISHED");
-  
-  // buyer comes online if offline
-  if (config.buyerOfflineAfterPaymentSent) {
-    config.buyer = await initHaveno({appName: buyerAppName});
-    if (isBuyerMaker) config.maker = config.buyer;
-    else config.taker = config.buyer;
-    HavenoUtils.log(1, "Done starting buyer");
-  }
-  
-  // test notifications
-  await wait(TestConfig.maxWalletStartupMs + TestConfig.walletSyncPeriodMs * 2);
-  fetchedTrade = await config.buyer.getTrade(trade.getTradeId());
-  expect(fetchedTrade.getPhase()).toEqual("PAYOUT_PUBLISHED"); // TODO: this should be WITHDRAW_COMPLETED?
-  fetchedTrade = await config.seller.getTrade(trade.getTradeId());
-  expect(fetchedTrade.getPhase()).toEqual(config.sellerOfflineAfterTake ? "PAYMENT_RECEIVED" : "PAYOUT_PUBLISHED"); // payout can only be published if seller remained online after first confirmation to share updated multisig info
-  const arbitratorTrade = await config.arbitrator.getTrade(trade.getTradeId());
-  expect(arbitratorTrade.getState()).toEqual("WITHDRAW_COMPLETED");
-  
-  // test balances after payout tx unless other trades can interfere
-  if (!config.concurrentTrades) {
-    const buyerBalancesAfter = await config.buyer.getBalances();
-    const sellerBalancesAfter = await config.seller.getBalances();
-    // TODO: getBalance() = available + pending + reserved offers? would simplify this equation
-    const buyerFee = BigInt(buyerBalancesBefore.getBalance()) + BigInt(buyerBalancesBefore.getReservedOfferBalance()) + HavenoUtils.centinerosToAtomicUnits(offer.getAmount()) - (BigInt(buyerBalancesAfter.getBalance()) + BigInt(buyerBalancesAfter.getReservedOfferBalance())); // buyer fee = total balance before + offer amount - total balance after
-    const sellerFee = BigInt(sellerBalancesBefore.getBalance()) + BigInt(sellerBalancesBefore.getReservedOfferBalance()) - HavenoUtils.centinerosToAtomicUnits(offer.getAmount()) - (BigInt(sellerBalancesAfter.getBalance()) + BigInt(sellerBalancesAfter.getReservedOfferBalance())); // seller fee = total balance before - offer amount - total balance after
-    expect(buyerFee).toBeLessThanOrEqual(TestConfig.maxFee);
-    expect(buyerFee).toBeGreaterThan(BigInt("0"));
-    expect(sellerFee).toBeLessThanOrEqual(TestConfig.maxFee);
-    expect(sellerFee).toBeGreaterThan(BigInt("0"));
-  }
-  
-  return offer.getId();
-}
-
-async function makeOffer(config?: TradeConfig): Promise<OfferInfo> {
-  
-  // assign default config
-  if (!config) config = {};
-  Object.assign(config, TestConfig.trade, Object.assign({}, config));
-
-  // wait for unlocked balance
-  if (config.awaitFundsToMakeOffer) await waitForAvailableBalance(config.amount! * BigInt("2"), config.maker);
-  
-  // create payment account if not given // TODO: re-use existing payment account
-  if (!config.makerPaymentAccountId) config.makerPaymentAccountId = (await createPaymentAccount(config.maker, config.assetCode!)).getId();
-  
-  // get unlocked balance before reserving offer
-  const unlockedBalanceBefore = BigInt((await config.maker.getBalances()).getAvailableBalance());
-  
-  // post offer
-  const offer: OfferInfo = await config.maker.postOffer(
-        config.direction!,
-        config.amount!,
-        config.assetCode!,
-        config.makerPaymentAccountId!,
-        config.buyerSecurityDeposit!,
-        config.price,
-        config.priceMargin,
-        config.triggerPrice,
-        config.minAmount);
-  testOffer(offer, config);
-  
-  // offer is included in my offers only
-  if (!getOffer(await config.maker.getMyOffers(config.assetCode!, config.direction), offer.getId())) {
-    console.warn("Offer is not included in my offers after posting, waiting up to 10 seconds");
-    await wait(10000); // TODO: remove this wait time
-    if (!getOffer(await config.maker.getMyOffers(config.assetCode!, config.direction), offer.getId())) throw new Error("Offer " + offer.getId() + " was not found in my offers");
-  }
-  if (getOffer(await config.maker.getOffers(config.assetCode!, config.direction), offer.getId())) throw new Error("My offer " + offer.getId() + " should not appear in available offers");
-  
-  // unlocked balance has decreased
-  const unlockedBalanceAfter = BigInt((await config.maker.getBalances()).getAvailableBalance());
-  if (offer.getState() === "SCHEDULED") {
-    if (unlockedBalanceAfter !== unlockedBalanceBefore) throw new Error("Unlocked balance should not change for scheduled offer");
-  } else if (offer.getState() === "AVAILABLE") {
-    if (unlockedBalanceAfter === unlockedBalanceBefore) throw new Error("Unlocked balance did not change after posting offer");
-  } else {
-    throw new Error("Unexpected offer state after posting: " + offer.getState());
-  }
-  
-  return offer;
-}
-
-async function takeOffer(config: TradeConfig): Promise<TradeInfo> {
-  
-  // assign default config
-  if (!config) config = {};
-  Object.assign(config, TestConfig.trade, Object.assign({}, config));
-  
-  // taker sees offer
-  if (!config.offerId) throw new Error("Must provide offer id");
-  const takerOffer = getOffer(await config.taker.getOffers(config.assetCode, config.direction), config.offerId);
-  if (!takerOffer) throw new Error("Offer " + config.offerId + " was not found in taker's offers after posting");
-  expect(takerOffer.getState()).toEqual("UNKNOWN"); // TODO: offer state should be known
-  
-  // wait for unlocked balance
-  if (config.awaitFundsToTakeOffer) await waitForAvailableBalance(config.amount! * BigInt("2"), config.taker);
-  
-  // create payment account if not given // TODO: re-use existing payment account
-  if (!config.takerPaymentAccountId) config.takerPaymentAccountId = (await createPaymentAccount(config.taker, config.assetCode!)).getId();
-  
-  // register to receive notifications
-  const makerNotifications: NotificationMessage[] = [];
-  const takerNotifications: NotificationMessage[] = [];
-  await config.maker.addNotificationListener(notification => { makerNotifications.push(notification); });
-  await config.taker.addNotificationListener(notification => { takerNotifications.push(notification); });
-  
-  // take offer
-  const takerBalancesBefore: XmrBalanceInfo = await config.taker.getBalances();
-  const startTime = Date.now();
-  HavenoUtils.log(1, "Taking offer " + config.offerId);
-  const trade = await config.taker.takeOffer(config.offerId, config.takerPaymentAccountId!);
-  HavenoUtils.log(1, "Done taking offer in " + (Date.now() - startTime) + " ms");
-  
-  // test taker's balances after taking trade
-  const takerBalancesAfter: XmrBalanceInfo = await config.taker.getBalances();
-  expect(BigInt(takerBalancesAfter.getAvailableBalance())).toBeLessThan(BigInt(takerBalancesBefore.getAvailableBalance()));
-  expect(BigInt(takerBalancesAfter.getReservedOfferBalance()) + BigInt(takerBalancesAfter.getReservedTradeBalance())).toBeGreaterThan(BigInt(takerBalancesBefore.getReservedOfferBalance()) + BigInt(takerBalancesBefore.getReservedTradeBalance()));
-  
-  // maker is notified that offer is taken
-  await wait(TestConfig.maxTimePeerNoticeMs);
-  const tradeNotifications = getNotifications(makerNotifications, NotificationMessage.NotificationType.TRADE_UPDATE, trade.getTradeId());
-  expect(tradeNotifications.length).toBe(1);
-  assert(GenUtils.arrayContains(["DEPOSITS_PUBLISHED", "DEPOSITS_CONFIRMED"], tradeNotifications[0].getTrade()!.getPhase()));
-  expect(tradeNotifications[0].getTitle()).toEqual("Offer Taken");
-  expect(tradeNotifications[0].getMessage()).toEqual("Your offer " + config.offerId + " has been accepted");
-  
-  // maker is notified of balance change
-  
-  // taker can get trade
-  let fetchedTrade: TradeInfo = await config.taker.getTrade(trade.getTradeId());
-  assert(GenUtils.arrayContains(["DEPOSITS_PUBLISHED", "DEPOSITS_CONFIRMED"], fetchedTrade.getPhase()));
-  // TODO: test fetched trade
-  
-  // taker is notified of balance change
-
-  // maker can get trade
-  fetchedTrade = await config.maker.getTrade(trade.getTradeId());
-  assert(GenUtils.arrayContains(["DEPOSITS_PUBLISHED", "DEPOSITS_CONFIRMED"], fetchedTrade.getPhase()));
-  return trade;
-}
-
-async function testOpenDispute(config: TradeConfig) {
-  
-  // test dispute state
-  const openerDispute = await config.disputeOpener.getDispute(config.offerId);
-  expect(openerDispute.getTradeId()).toEqual(config.offerId);
-  expect(openerDispute.getIsOpener()).toBe(true);
-  expect(openerDispute.getDisputeOpenerIsBuyer()).toBe(config.disputeOpener === config.buyer);
-  
-  // get non-existing dispute should fail
-  try {
-    await config.disputeOpener.getDispute("invalid");
-    throw new Error("get dispute with invalid id should fail");
-  } catch (err: any) {
-    assert.equal(err.message, "dispute for trade id 'invalid' not found");
-  }
-  
-  // peer sees the dispute
-  await wait(TestConfig.maxTimePeerNoticeMs + TestConfig.maxWalletStartupMs);
-  const peerDispute = await config.disputePeer.getDispute(config.offerId);
-  expect(peerDispute.getTradeId()).toEqual(config.offerId);
-  expect(peerDispute.getIsOpener()).toBe(false);
-  
-  // arbitrator sees both disputes
-  const disputes = await config.arbitrator.getDisputes();
-  expect(disputes.length).toBeGreaterThanOrEqual(2);
-  const arbDisputePeer = disputes.find(d => d.getId() === peerDispute.getId());
-  assert(arbDisputePeer);
-  const arbDisputeOpener = disputes.find(d => d.getId() === openerDispute.getId());
-  assert(arbDisputeOpener);
-  
-  // register to receive notifications
-  const disputeOpenerNotifications: NotificationMessage[] = [];
-  const disputePeerNotifications: NotificationMessage[] = [];
-  const arbitratorNotifications: NotificationMessage[] = [];
-  await config.disputeOpener.addNotificationListener(notification => { HavenoUtils.log(3, "Dispute opener received notification " + notification.getType() + " " + (notification.getChatMessage() ? notification.getChatMessage()?.getMessage() : "")); disputeOpenerNotifications.push(notification); });
-  await config.disputePeer.addNotificationListener(notification => { HavenoUtils.log(3, "Dispute peer received notification " + notification.getType() + " " + (notification.getChatMessage() ? notification.getChatMessage()?.getMessage() : "")); disputePeerNotifications.push(notification); });
-  await arbitrator.addNotificationListener(notification => { HavenoUtils.log(3, "Arbitrator received notification " + notification.getType() + " " + (notification.getChatMessage() ? notification.getChatMessage()?.getMessage() : "")); arbitratorNotifications.push(notification); });
-  
-  // arbitrator sends chat messages to traders
-  HavenoUtils.log(1, "Testing chat messages");
-  await config.arbitrator.sendDisputeChatMessage(arbDisputeOpener!.getId(), "Arbitrator chat message to dispute opener", []);
-  await config.arbitrator.sendDisputeChatMessage(arbDisputePeer!.getId(), "Arbitrator chat message to dispute peer", []);
-  
-  // traders reply to arbitrator chat messages
-  await wait(TestConfig.maxTimePeerNoticeMs); // wait for arbitrator's message to arrive
-  const attachment = new Attachment();
-  const bytes = new Uint8Array(Buffer.from("Proof dispute opener was scammed", "utf8"));
-  attachment.setBytes(bytes);
-  attachment.setFileName("proof.txt");
-  const attachment2 = new Attachment();
-  const bytes2 = new Uint8Array(Buffer.from("picture bytes", "utf8"));
-  attachment2.setBytes(bytes2);
-  attachment2.setFileName("proof.png");
-  HavenoUtils.log(2, "Dispute opener sending chat message to arbitrator. tradeId=" + config.offerId + ", disputeId=" + openerDispute.getId());
-  await config.disputeOpener.sendDisputeChatMessage(openerDispute.getId(), "Dispute opener chat message", [attachment, attachment2]);
-  await wait(TestConfig.maxTimePeerNoticeMs); // wait for user2's message to arrive
-  HavenoUtils.log(2, "Dispute peer sending chat message to arbitrator. tradeId=" + config.offerId + ", disputeId=" + peerDispute.getId());
-  await config.disputePeer.sendDisputeChatMessage(peerDispute.getId(), "Dispute peer chat message", []); 
-  
-  // test trader chat messages
-  await wait(TestConfig.maxTimePeerNoticeMs);
-  let dispute = await config.disputeOpener.getDispute(config.offerId);
-  let messages = dispute.getChatMessageList();
-  expect(messages.length).toEqual(3); // 1st message is the system message
-  expect(messages[1].getMessage()).toEqual("Arbitrator chat message to dispute opener");
-  expect(messages[2].getMessage()).toEqual("Dispute opener chat message");
-  let attachments = messages[2].getAttachmentsList();
-  expect(attachments.length).toEqual(2);
-  expect(attachments[0].getFileName()).toEqual("proof.txt");
-  expect(attachments[0].getBytes()).toEqual(bytes);
-  expect(attachments[1].getFileName()).toEqual("proof.png");
-  expect(attachments[1].getBytes()).toEqual(bytes2);
-  dispute = await config.disputePeer.getDispute(config.offerId);
-  messages = dispute.getChatMessageList();
-  expect(messages.length).toEqual(3);
-  expect(messages[1].getMessage()).toEqual("Arbitrator chat message to dispute peer");
-  expect(messages[2].getMessage()).toEqual("Dispute peer chat message");
-    
-  // test notifications of chat messages
-  let chatNotifications = getNotifications(disputeOpenerNotifications, NotificationMessage.NotificationType.CHAT_MESSAGE, config.offerId);
-  expect(chatNotifications.length).toBe(1);
-  expect(chatNotifications[0].getChatMessage()?.getMessage()).toEqual("Arbitrator chat message to dispute opener");
-  chatNotifications = getNotifications(disputePeerNotifications, NotificationMessage.NotificationType.CHAT_MESSAGE, config.offerId);
-  expect(chatNotifications.length).toBe(1);
-  expect(chatNotifications[0].getChatMessage()?.getMessage()).toEqual("Arbitrator chat message to dispute peer");
-  
-  // arbitrator has 2 chat messages, one with attachments
-  chatNotifications = getNotifications(arbitratorNotifications, NotificationMessage.NotificationType.CHAT_MESSAGE, config.offerId);
-  expect(chatNotifications.length).toBe(2);
-  expect(chatNotifications[0].getChatMessage()?.getMessage()).toEqual("Dispute opener chat message");
-  assert(chatNotifications[0].getChatMessage()?.getAttachmentsList());
-  attachments = chatNotifications[0].getChatMessage()?.getAttachmentsList()!;
-  expect(attachments[0].getFileName()).toEqual("proof.txt");
-  expect(attachments[0].getBytes()).toEqual(bytes);
-  expect(attachments[1].getFileName()).toEqual("proof.png");
-  expect(attachments[1].getBytes()).toEqual(bytes2);
-  expect(chatNotifications[1].getChatMessage()?.getMessage()).toEqual("Dispute peer chat message");
-}
-
-async function resolveDispute(config: TradeConfig) {
-
-  // award too little to loser
-  const offer = (await config.maker.getTrade(config.offerId)).getOffer();
-  const tradeAmount: bigint = HavenoUtils.centinerosToAtomicUnits(offer.getAmount());
-  const customWinnerAmount = tradeAmount + HavenoUtils.centinerosToAtomicUnits(offer.getBuyerSecurityDeposit() +  offer.getSellerSecurityDeposit()) - BigInt("10000");
-  try {
-    await arbitrator.resolveDispute(config.offerId, config.disputeWinner, config.disputeReason, "Loser gets too little", customWinnerAmount);
-    throw new Error("Should have failed resolving dispute with insufficient loser payout");
-  } catch (err: any) {
-    assert.equal(err.message, "Loser payout is too small to cover the mining fee");
-  }
-  
-  // resolve dispute according to configuration
-  const winner = config.disputeWinner === DisputeResult.Winner.BUYER ? config.buyer : config.seller;
-  const loser = config.disputeWinner === DisputeResult.Winner.BUYER ? config.seller : config.buyer;
-  const winnerBalancesBefore = await winner.getBalances();
-  const loserBalancesBefore = await loser.getBalances();
-  HavenoUtils.log(1, "Resolving dispute for trade " + config.offerId);
-  const startTime = Date.now();
-  await arbitrator.resolveDispute(config.offerId, config.disputeWinner, config.disputeReason, config.disputeSummary, config.disputeWinnerAmount);
-  HavenoUtils.log(1, "Done resolving dispute (" + (Date.now() - startTime) + ")");
-  
-  // test resolved dispute
-  await wait(TestConfig.maxWalletStartupMs);
-  let dispute = await config.disputeOpener.getDispute(config.offerId);
-  expect(dispute.getIsClosed()).toBe(true);
-  dispute = await config.disputePeer.getDispute(config.offerId);
-  expect(dispute.getIsClosed()).toBe(true);
-  
-  // check balances after payout tx unless concurrent trades
-  if (config.concurrentTrades) return;
-  await wait(TestConfig.walletSyncPeriodMs * 2);
-  const winnerBalancesAfter = await winner.getBalances();
-  const loserBalancesAfter = await loser.getBalances();
-  const winnerDifference = BigInt(winnerBalancesAfter.getBalance()) - BigInt(winnerBalancesBefore.getBalance());
-  const loserDifference = BigInt(loserBalancesAfter.getBalance()) - BigInt(loserBalancesBefore.getBalance());
-  const winnerSecurityDeposit = HavenoUtils.centinerosToAtomicUnits(config.disputeWinner === DisputeResult.Winner.BUYER ? offer.getBuyerSecurityDeposit() : offer.getSellerSecurityDeposit())
-  const loserSecurityDeposit = HavenoUtils.centinerosToAtomicUnits(config.disputeWinner === DisputeResult.Winner.BUYER ? offer.getSellerSecurityDeposit() : offer.getBuyerSecurityDeposit());
-  const winnerPayout = config.disputeWinnerAmount ? config.disputeWinnerAmount : tradeAmount + winnerSecurityDeposit; // TODO: this assumes security deposit is returned to winner, but won't be the case if payment sent
-  const loserPayout = loserSecurityDeposit;
-  expect(winnerDifference).toEqual(winnerPayout);
-  expect(loserPayout - loserDifference).toBeLessThan(TestConfig.maxFee);
-}
-
-/**
- * Tests trade chat functionality. Must be called during an open trade.
- */
-async function testTradeChat(tradeId: string, user1: HavenoClient, user2: HavenoClient) {
-  HavenoUtils.log(1, "Testing trade chat");
-
-  // invalid trade should throw error
-  try {
-    await user1.getChatMessages("invalid");
-    throw new Error("get chat messages with invalid id should fail");
-  } catch (err: any) {
-    assert.equal(err.message, "trade with id 'invalid' not found");
-  }
-
-  // trade chat should be in initial state
-  let messages = await user1.getChatMessages(tradeId);
-  assert(messages.length === 0);
-  messages = await user2.getChatMessages(tradeId);
-  assert(messages.length === 0);
-
-  // add notification handlers and send some messages
-  const user1Notifications: NotificationMessage[] = [];
-  const user2Notifications: NotificationMessage[] = [];
-  await user1.addNotificationListener(notification => { user1Notifications.push(notification); });
-  await user2.addNotificationListener(notification => { user2Notifications.push(notification); });
-
-  // send simple conversation and verify the list of messages
-  const user1Msg = "Hi I'm user1";
-  await user1.sendChatMessage(tradeId, user1Msg);
-  await wait(TestConfig.maxTimePeerNoticeMs);
-  messages = await user2.getChatMessages(tradeId);
-  expect(messages.length).toEqual(2);
-  expect(messages[0].getIsSystemMessage()).toEqual(true); // first message is system
-  expect(messages[1].getMessage()).toEqual(user1Msg);
-
-  const user2Msg = "Hello I'm user2";
-  await user2.sendChatMessage(tradeId, user2Msg);
-  await wait(TestConfig.maxTimePeerNoticeMs);
-  messages = await user1.getChatMessages(tradeId);
-  expect(messages.length).toEqual(3);
-  expect(messages[0].getIsSystemMessage()).toEqual(true);
-  expect(messages[1].getMessage()).toEqual(user1Msg);
-  expect(messages[2].getMessage()).toEqual(user2Msg);
-
-  // verify notifications
-  let chatNotifications = getNotifications(user1Notifications, NotificationMessage.NotificationType.CHAT_MESSAGE);
-  expect(chatNotifications.length).toBe(1);
-  expect(chatNotifications[0].getChatMessage()?.getMessage()).toEqual(user2Msg);
-  chatNotifications = getNotifications(user2Notifications, NotificationMessage.NotificationType.CHAT_MESSAGE);
-  expect(chatNotifications.length).toBe(1);
-  expect(chatNotifications[0].getChatMessage()?.getMessage()).toEqual(user1Msg);
-
-  // additional msgs
-  const msgs = ["", "  ", "<script>alert('test');</script>", "さようなら"];
-  for(const msg of msgs) {
-    await user1.sendChatMessage(tradeId, msg);
-    await wait(1000); // the async operation can result in out of order messages
-  }
-  await wait(TestConfig.maxTimePeerNoticeMs);
-  messages = await user2.getChatMessages(tradeId);
-  let offset = 3; // 3 existing messages
-  expect(messages.length).toEqual(offset + msgs.length);
-  expect(messages[0].getIsSystemMessage()).toEqual(true);
-  expect(messages[1].getMessage()).toEqual(user1Msg);
-  expect(messages[2].getMessage()).toEqual(user2Msg);
-  for (let i = 0; i < msgs.length; i++) {
-    expect(messages[i + offset].getMessage()).toEqual(msgs[i]);
-  }
-
-  chatNotifications = getNotifications(user2Notifications, NotificationMessage.NotificationType.CHAT_MESSAGE);
-  offset = 1; // 1 existing notification
-  expect(chatNotifications.length).toBe(offset + msgs.length);
-  expect(chatNotifications[0].getChatMessage()?.getMessage()).toEqual(user1Msg);
-  for (let i = 0; i < msgs.length; i++) {
-    expect(chatNotifications[i + offset].getChatMessage()?.getMessage()).toEqual(msgs[i]);
-  }
 }
 
 function testMoneroNodeSettingsEqual(settingsBefore: MoneroNodeSettings, settingsAfter: MoneroNodeSettings) {
