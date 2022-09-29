@@ -1633,8 +1633,9 @@ function getTradeConfigs(numConfigs: number): TradeConfig[] {
 async function executeTrades(configs: TradeConfig[], concurrentTrades?: boolean): Promise<string[]> {
   
   // start mining if executing trades concurrently
+  let miningStarted = false;
   if (concurrentTrades === undefined) concurrentTrades = configs.length > 1;
-  if (concurrentTrades) await startMining();
+  if (concurrentTrades) miningStarted = await startMining();
   
   // complete trades
   let offerIds: string[] = [];
@@ -1674,8 +1675,8 @@ async function executeTrades(configs: TradeConfig[], concurrentTrades?: boolean)
     err = e;
   }
   
-  // stop mining
-  if (!concurrentTrades) await monerod.stopMining();
+  // stop mining if started, throw error or return offer ids
+  if (miningStarted) await stopMining();
   if (err) throw err;
   return offerIds;
 }
@@ -2401,11 +2402,18 @@ async function startMining(): Promise<boolean> {
   try {
     const numThreads = getBaseCurrencyNetwork() === BaseCurrencyNetwork.XMR_LOCAL ? 1 : Math.max(1, Math.floor(os.cpus().length * TestConfig.maxCpuPct));
     await monerod.startMining(await fundingWallet.getPrimaryAddress(), numThreads);
+    HavenoUtils.log(2, "Mining started successfully");
     return true;
   } catch (err: any) {
     if (err.message !== "Already mining") throw err;
+    HavenoUtils.log(2, ("Already mining"));
     return false;
   }
+}
+
+async function stopMining() {
+  await monerod.stopMining();
+  HavenoUtils.log(2, "Mining stopped");
 }
 
 /**
@@ -2484,7 +2492,7 @@ async function waitForAvailableBalance(amount: bigint, ...wallets: any[]) {
     }));
   }
   await Promise.all(promises);
-  if (miningStarted) await monerod.stopMining();
+  if (miningStarted) await stopMining();
   HavenoUtils.log(0, "Funds unlocked, done mining");
 }
 
@@ -2507,8 +2515,8 @@ async function waitForUnlockedTxs(...txHashes: string[]) {
     }));
   }
   await Promise.all(promises);
-  HavenoUtils.log(1, "Done mining to unlock txs");
-  if (miningStarted) await monerod.stopMining();
+  HavenoUtils.log(1, "Done waiting for txs to unlock");
+  if (miningStarted) await stopMining();
 }
 
 /**
@@ -2579,7 +2587,7 @@ async function fundOutputs(wallets: any[], amt: bigint, numOutputs?: number, wai
     }
     await wait(5000);
   }
-  if (miningStarted) await monerod.stopMining();
+  if (miningStarted) await stopMining();
 }
 
 // convert monero-javascript BigInteger to typescript BigInt
