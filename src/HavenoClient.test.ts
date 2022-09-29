@@ -1546,7 +1546,7 @@ test("Selects arbitrators which are online, registered, and least used", async (
     
     // post 2 offers which use arbitrator2 since it's least used
     HavenoUtils.log(1, "Posting offers signed by arbitrator2");
-    const offers = [];
+    const offers: OfferInfo[] = [];
     for (let i = 0; i < 2; i++) {
       const offer = await makeOffer({maker: user1});
       assert.equal(offer.getArbitratorSigner(), arbitrator2ApiUrl);
@@ -1700,7 +1700,7 @@ async function executeTrade(config?: TradeConfig): Promise<string> {
   if (makingOffer) {
     isBuyerMaker = "buy" === config.direction.toLowerCase() ? config.maker : config.taker;
   } else {
-    offer = getOffer(await config.maker.getMyOffers(config.offerId), config.offerId);
+    offer = getOffer(await config.maker.getMyOffers(config.assetCode, config.direction), config.offerId);
     if (!offer) {
       const trade = await config.maker.getTrade(config.offerId);
       offer = trade.getOffer();
