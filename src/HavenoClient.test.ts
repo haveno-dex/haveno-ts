@@ -150,7 +150,6 @@ const TestConfig = {
     tradeInitTimeout: 60000,
     testTimeout: getBaseCurrencyNetwork() === BaseCurrencyNetwork.XMR_LOCAL ? 900000 : 3000000, // timeout in ms for each test to complete (15 minutes for private network, 50 minutes for public network)
     trade: { // default trade config
-        concurrentTrades: false,
         makeOffer: true,
         takeOffer: true,
         awaitFundsToMakeOffer: true,
