@@ -1828,8 +1828,7 @@ async function executeTrade(config?: TradeConfig): Promise<string> {
   HavenoUtils.log(1, "Seller confirming payment received");
   await config.seller.confirmPaymentReceived(trade.getTradeId());
   fetchedTrade = await config.seller.getTrade(trade.getTradeId());
-  if (config.buyerOfflineAfterTake) expect(fetchedTrade.getPhase()).toEqual("PAYMENT_RECEIVED"); // TODO (woodser): test buyer offline so doesn't send multisig info after first confirmation
-  else expect(fetchedTrade.getPhase()).toEqual("PAYOUT_PUBLISHED");
+  expect(fetchedTrade.getPhase()).toEqual(config.sellerOfflineAfterTake ? "PAYMENT_RECEIVED" : "PAYOUT_PUBLISHED"); // payout can only be published if seller remained online after first confirmation to share updated multisig info
   
   // buyer comes online if offline
   if (config.buyerOfflineAfterPaymentSent) {
@@ -1844,9 +1843,11 @@ async function executeTrade(config?: TradeConfig): Promise<string> {
   fetchedTrade = await config.buyer.getTrade(trade.getTradeId());
   expect(fetchedTrade.getPhase()).toEqual("PAYOUT_PUBLISHED"); // TODO: this should be WITHDRAW_COMPLETED?
   fetchedTrade = await config.seller.getTrade(trade.getTradeId());
-  expect(fetchedTrade.getPhase()).toEqual(config.sellerOfflineAfterTake ? "PAYMENT_RECEIVED" : "PAYOUT_PUBLISHED"); // payout can only be published if seller remained online after first confirmation to share updated multisig info
+  expect(fetchedTrade.getPhase()).toEqual("PAYOUT_PUBLISHED");
   const arbitratorTrade = await config.arbitrator.getTrade(trade.getTradeId());
   expect(arbitratorTrade.getState()).toEqual("WITHDRAW_COMPLETED");
+  
+  // TODO: traders mark trades as complete
   
   // test balances after payout tx unless other trades can interfere
   if (!config.concurrentTrades) {
