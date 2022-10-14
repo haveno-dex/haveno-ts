@@ -1844,13 +1844,13 @@ async function executeTrade(config?: TradeConfig): Promise<string> {
   await wait(TestConfig.maxWalletStartupMs + TestConfig.walletSyncPeriodMs * 2);
   expect((await config.buyer!.getTrade(config.offerId!)).getPhase()).toEqual("PAYOUT_PUBLISHED");
   expect((await config.seller!.getTrade(config.offerId!)).getPhase()).toEqual("PAYOUT_PUBLISHED");
-  expect((await config.arbitrator!.getTrade(config.offerId!)).getPhase()).toEqual("WITHDRAWN");
+  expect((await config.arbitrator!.getTrade(config.offerId!)).getPhase()).toEqual("COMPLETED");
   
   // traders acknowledge completed trades
   await config.buyer!.completeTrade(trade.getTradeId());
-  expect((await config.buyer!.getTrade(trade.getTradeId())).getPhase()).toEqual("WITHDRAWN");
+  expect((await config.buyer!.getTrade(trade.getTradeId())).getPhase()).toEqual("COMPLETED");
   await config.seller!.completeTrade(trade.getTradeId());
-  expect((await config.seller!.getTrade(trade.getTradeId())).getPhase()).toEqual("WITHDRAWN");
+  expect((await config.seller!.getTrade(trade.getTradeId())).getPhase()).toEqual("COMPLETED");
   
   // test balances after payout tx unless other trades can interfere
   if (!config.concurrentTrades) {
@@ -2107,9 +2107,9 @@ async function resolveDispute(config: TradeConfig) {
 
   // test trade state
   await wait(TestConfig.maxWalletStartupMs + TestConfig.walletSyncPeriodMs * 2);
-  expect((await config.buyer!.getTrade(config.offerId!)).getPhase()).toEqual("WITHDRAWN");
-  expect((await config.seller!.getTrade(config.offerId!)).getPhase()).toEqual("WITHDRAWN");
-  expect((await config.arbitrator!.getTrade(config.offerId!)).getPhase()).toEqual("WITHDRAWN");
+  expect((await config.buyer!.getTrade(config.offerId!)).getPhase()).toEqual("COMPLETED");
+  expect((await config.seller!.getTrade(config.offerId!)).getPhase()).toEqual("COMPLETED");
+  expect((await config.arbitrator!.getTrade(config.offerId!)).getPhase()).toEqual("COMPLETED");
   
   // check balances after payout tx unless concurrent trades
   if (config.concurrentTrades) return;
