@@ -1840,16 +1840,17 @@ async function executeTrade(config?: TradeConfig): Promise<string> {
     HavenoUtils.log(1, "Done starting buyer");
   }
   
-  // test notifications
+  // test trade state
   await wait(TestConfig.maxWalletStartupMs + TestConfig.walletSyncPeriodMs * 2);
-  fetchedTrade = await config.buyer!.getTrade(trade.getTradeId());
-  expect(fetchedTrade.getPhase()).toEqual("PAYOUT_PUBLISHED"); // TODO: this should be WITHDRAW_COMPLETED?
-  fetchedTrade = await config.seller.getTrade(trade.getTradeId());
-  expect(fetchedTrade.getPhase()).toEqual("PAYOUT_PUBLISHED");
-  const arbitratorTrade = await config.arbitrator!.getTrade(trade.getTradeId());
-  expect(arbitratorTrade.getState()).toEqual("WITHDRAW_COMPLETED");
+  expect((await config.buyer!.getTrade(config.offerId!)).getPhase()).toEqual("PAYOUT_PUBLISHED");
+  expect((await config.seller!.getTrade(config.offerId!)).getPhase()).toEqual("PAYOUT_PUBLISHED");
+  expect((await config.arbitrator!.getTrade(config.offerId!)).getPhase()).toEqual("WITHDRAWN");
   
-  // TODO: traders mark trades as complete
+  // traders acknowledge completed trades
+  await config.buyer!.completeTrade(trade.getTradeId());
+  expect((await config.buyer!.getTrade(trade.getTradeId())).getPhase()).toEqual("WITHDRAWN");
+  await config.seller!.completeTrade(trade.getTradeId());
+  expect((await config.seller!.getTrade(trade.getTradeId())).getPhase()).toEqual("WITHDRAWN");
   
   // test balances after payout tx unless other trades can interfere
   if (!config.concurrentTrades) {
@@ -2103,6 +2104,12 @@ async function resolveDispute(config: TradeConfig) {
   expect(dispute.getIsClosed()).toBe(true);
   dispute = await config.disputePeer!.getDispute(config.offerId!);
   expect(dispute.getIsClosed()).toBe(true);
+
+  // test trade state
+  await wait(TestConfig.maxWalletStartupMs + TestConfig.walletSyncPeriodMs * 2);
+  expect((await config.buyer!.getTrade(config.offerId!)).getPhase()).toEqual("WITHDRAWN");
+  expect((await config.seller!.getTrade(config.offerId!)).getPhase()).toEqual("WITHDRAWN");
+  expect((await config.arbitrator!.getTrade(config.offerId!)).getPhase()).toEqual("WITHDRAWN");
   
   // check balances after payout tx unless concurrent trades
   if (config.concurrentTrades) return;
