@@ -1467,7 +1467,7 @@ export default class HavenoClient {
   
   /**
    * Resolve a dispute. By default, the winner receives the trade amount and the security deposits are returned,
-   * but the arbitrator may award a custom amount to the winner.
+   * but the arbitrator may award a custom amount to the winner and the loser will get the rest.
    *
    * @param {string} tradeId - the id of the trade
    * @param {DisputeResult.Winner} winner - the winner of the dispute
