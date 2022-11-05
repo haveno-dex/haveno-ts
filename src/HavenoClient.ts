@@ -13,42 +13,37 @@ import { PaymentMethod, PaymentAccountForm, PaymentAccountFormField, PaymentAcco
 export default class HavenoClient {
 
   // grpc clients
-  _appName: string | undefined;
-  _getVersionClient: GetVersionClient;
-  _disputeAgentsClient: DisputeAgentsClient;
-  _disputesClient: DisputesClient;
-  _notificationsClient: NotificationsClient;
-  _notificationStream: grpcWeb.ClientReadableStream<NotificationMessage> | undefined;
-  _moneroConnectionsClient: MoneroConnectionsClient;
-  _moneroNodeClient: MoneroNodeClient;
-  _walletsClient: WalletsClient;
-  _priceClient: PriceClient;
-  _paymentAccountsClient: PaymentAccountsClient;
-  _offersClient: OffersClient;
-  _tradesClient: TradesClient;
-  _accountClient: AccountClient;
-  _shutdownServerClient: ShutdownServerClient;
+  /** @private */ _appName: string | undefined;
+  /** @private */ _getVersionClient: GetVersionClient;
+  /** @private */ _disputeAgentsClient: DisputeAgentsClient;
+  /** @private */ _disputesClient: DisputesClient;
+  /** @private */ _notificationsClient: NotificationsClient;
+  /** @private */ _notificationStream: grpcWeb.ClientReadableStream<NotificationMessage> | undefined;
+  /** @private */ _moneroConnectionsClient: MoneroConnectionsClient;
+  /** @private */ _moneroNodeClient: MoneroNodeClient;
+  /** @private */ _walletsClient: WalletsClient;
+  /** @private */ _priceClient: PriceClient;
+  /** @private */ _paymentAccountsClient: PaymentAccountsClient;
+  /** @private */ _offersClient: OffersClient;
+  /** @private */ _tradesClient: TradesClient;
+  /** @private */ _accountClient: AccountClient;
+  /** @private */ _shutdownServerClient: ShutdownServerClient;
 
   // state variables
-  _url: string;
-  _password: string;
-  _process: any;
-  _processLogging = false;
-  _walletRpcPort: number | undefined;
-  _notificationListeners: ((_notification: NotificationMessage) => void)[] = [];
-  _registerNotificationListenerCalled = false;
-  _keepAliveLooper: any;
-  _keepAlivePeriodMs = 60000;
-  _paymentMethods: PaymentMethod[] | undefined; // cached for performance
+  /** @private */ _url: string;
+  /** @private */ _password: string;
+  /** @private */ _process: any;
+  /** @private */ _processLogging = false;
+  /** @private */ _walletRpcPort: number | undefined;
+  /** @private */ _notificationListeners: ((_notification: NotificationMessage) => void)[] = [];
+  /** @private */ _registerNotificationListenerCalled = false;
+  /** @private */ _keepAliveLooper: any;
+  /** @private */ _keepAlivePeriodMs = 60000;
+  /** @private */ _paymentMethods: PaymentMethod[] | undefined; // cached for performance
 
   // constants
-  static readonly _fullyInitializedMessage = "Application fully initialized";
-  static readonly _loginRequiredMessage = "Interactive login required";
-  onData = (data: any) => {  // callback for grpc notifications
-    if (data instanceof NotificationMessage) {
-      for (const listener of this._notificationListeners) listener(data);
-    }
-  }
+  /** @private */ static readonly _fullyInitializedMessage = "Application fully initialized";
+  /** @private */ static readonly _loginRequiredMessage = "Interactive login required";
 
   /**
    * Construct a client connected to a Haveno daemon.
@@ -1559,7 +1554,7 @@ export default class HavenoClient {
    * havenod.isHavenoConnectionInitialized() and havenod.awaitHavenoConnectionInitialized().
    * Independently, gRPC createAccount() and openAccount() return after all account setup and reading from disk.
    * 
-   * @hidden
+   * @private
    */
   async _awaitAppInitialized(): Promise<void> {
     try {
@@ -1583,7 +1578,7 @@ export default class HavenoClient {
     }
   }
   
-  // @hidden
+  /** @private */
   async _isAppInitialized(): Promise<boolean> {
     try {
       return await new Promise((resolve, reject) => {
@@ -1598,9 +1593,22 @@ export default class HavenoClient {
   }
   
   /**
+   * Callback for grpc notifications.
+   * 
+   * @private
+   */
+  _onNotification = (data: any) => {
+    if (data instanceof NotificationMessage) {
+      for (const listener of this._notificationListeners) listener(data);
+    }
+   }
+  
+  /**
    * Update notification listener registration.
    * Due to the nature of grpc streaming, this method returns a promise
    * which may be resolved before the listener is actually registered.
+   * 
+   * @private
    */
   async _updateNotificationListenerRegistration(): Promise<void> {
     try {
@@ -1611,7 +1619,7 @@ export default class HavenoClient {
           
           // send request to register client listener
           this._notificationStream = this._notificationsClient.registerNotificationListener(new RegisterNotificationListenerRequest(), {password: this._password})
-                    .on('data', this.onData);
+                    .on('data', this._onNotification);
           
           // periodically send keep alive requests // TODO (woodser): better way to keep notification stream alive?
           let firstRequest = true;
@@ -1629,7 +1637,7 @@ export default class HavenoClient {
           setTimeout(resolve, 1000); // TODO: call returns before listener registered
         });
       } else {
-        this._notificationStream!.removeListener('data', this.onData);
+        this._notificationStream!.removeListener('data', this._onNotification);
         this._keepAliveLooper.stop();
         this._notificationStream!.cancel();
         this._notificationStream = undefined;
@@ -1642,7 +1650,7 @@ export default class HavenoClient {
   /**
    * Send a notification.
    * 
-   * @hidden
+   * @private
    * @param {NotificationMessage} notification - notification to send
    */
   async _sendNotification(notification: NotificationMessage): Promise<void> {
@@ -1661,7 +1669,7 @@ export default class HavenoClient {
   /**
    * Restore an account chunk from zip bytes.
    * 
-   * @hidden
+   * @private
    */
   async _restoreAccountChunk(zipBytes: Uint8Array, offset: number, totalLength: number, hasMore: boolean): Promise<void> {
     try {

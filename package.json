@@ -12,7 +12,7 @@
     "test": "jest",
     "eslint": "eslint .",
     "eslintfix": "eslint src/* --fix",
-    "typedoc": "typedoc ./src/index.ts --entryPointStrategy expand src/ --exclude **/*.test.ts"
+    "typedoc": "typedoc ./src/index.ts --entryPointStrategy expand src/ --exclude **/*.test.ts --excludePrivate"
   },
   "jest": {
     "testPathIgnorePatterns": ["<rootDir>/dist/", "/node_modules/"]

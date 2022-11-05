@@ -1249,7 +1249,7 @@ test("Can complete trades at the same time", async () => {
 test("Can complete all trade combinations", async () => {
 
   // generate trade context for each combination (buyer/seller, maker/taker, dispute(s), dispute winner)
-  let ctxs: TradeContext[] = [];
+  const ctxs: TradeContext[] = [];
   const MAKER_OPTS = [TradeRole.MAKER, TradeRole.TAKER];
   const DIRECTION_OPTS = ["BUY", "SELL"];
   const BUYER_DISPUTE_OPTS = [DisputeContext.NONE, DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK, DisputeContext.OPEN_AFTER_PAYMENT_SENT];
@@ -2056,7 +2056,7 @@ async function makeOffer(ctx?: TradeContext): Promise<OfferInfo> {
   if (!ctx.makerPaymentAccountId) ctx.makerPaymentAccountId = (await createPaymentAccount(ctx.maker!, ctx.assetCode!)).getId();
   
   // get unlocked balance before reserving offer
-  let unlockedBalanceBefore = BigInt((await ctx.maker!.getBalances()).getAvailableBalance());
+  const unlockedBalanceBefore = BigInt((await ctx.maker!.getBalances()).getAvailableBalance());
   
   // post offer
   const offer: OfferInfo = await ctx.maker!.postOffer(
@@ -2121,7 +2121,7 @@ async function takeOffer(ctx: TradeContext): Promise<TradeInfo> {
   const startTime = Date.now();
   HavenoUtils.log(1, "Taking offer " + ctx.offerId);
   const trade = await ctx.taker!.takeOffer(ctx.offerId, ctx.takerPaymentAccountId!);
-  HavenoUtils.log(1, "Done taking offer in " + (Date.now() - startTime) + " ms");
+  HavenoUtils.log(1, "Done taking offer " + ctx.offerId + " in " + (Date.now() - startTime) + " ms");
   
   // test taker's balances after taking trade
   if (!ctx.concurrentTrades) {
