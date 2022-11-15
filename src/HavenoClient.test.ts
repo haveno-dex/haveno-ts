@@ -123,7 +123,7 @@ const TestConfig = {
             address: "0xdBdAb835Acd6fC84cF5F9aDD3c0B5a1E25fbd99f"
         }, {
             currencyCode: "BTC",
-            address: "bcrt1q6j90vywv8x7eyevcnn2tn2wrlg3vsjlsvt46qz"
+            address: "1G457efxTyci67msm2dSqyhFzxPYFWaghe"
         }, {
             currencyCode: "BCH",
             address: "1JRjBNKi4ZgJpKPeoL4149Q7ZZD3VvVgk9" // TODO: support CashAddr format only
@@ -1065,17 +1065,15 @@ test("Can create crypto payment accounts", async () => {
     testCryptoPaymentAccountEquals(fetchedAccount, testAccount, name);
   }
   
-  // TODO (woodser): update from latest Bisq CorePaymentAccountService.java for currency and address validation
-  
-/*  // test invalid currency code
+  // test invalid currency code
   await expect(async () => { await user1.createCryptoPaymentAccount("My account", "ABC", "123"); })
       .rejects
-      .toThrow('Unsupported cryptocurrency code: ABC');
+      .toThrow("crypto currency with code 'abc' not found");
   
   // test invalid address
   await expect(async () => { await user1.createCryptoPaymentAccount("My account", "ETH", "123"); })
       .rejects
-      .toThrow('Invalid address');*/
+      .toThrow('123 is not a valid eth address');
   
   // TODO (woodser): test rejecting account with duplicate name
   
