@@ -1,0 +1,173 @@
+version: '3.9'
+
+services:
+  envoy:
+    image: envoyproxy/envoy-dev:latest
+    container_name: envoy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "8079:8079"
+      - "8080:8080"
+      - "8081:8081"
+      - "8082:8082"
+      - "8083:8083"
+      - "8084:8084"
+      - "8085:8085"
+      - "8086:8086"
+    volumes:
+      - ./../config/envoy.test.yaml:/config/envoy.test.yaml
+    command:
+      - -c
+      - ../config/envoy.test.yaml
+
+  node1:
+    build: haveno/
+    container_name: node1
+    entrypoint: [ "./.localnet/monerod" ]
+    command: [
+      "--testnet",
+      "--no-igd",
+      "--hide-my-port",
+      "--data-dir=./.localnet/xmr_local/node1",
+      "--p2p-bind-ip=127.0.0.1",
+      "--p2p-bind-port=48080",
+      "--rpc-bind-port=48081",
+      "--no-zmq",
+      "--add-exclusive-node=127.0.0.1:28080",
+      "--rpc-access-control-origins=http://localhost:8080",
+      "--fixed-difficulty=10",
+      "--non-interactive",
+    ]
+    network_mode: "host"
+
+  node2:
+    build: haveno/
+    container_name: node2
+    entrypoint: [ "./.localnet/monerod" ]
+    command: [
+      "--testnet",
+      "--no-igd",
+      "--hide-my-port",
+      "--data-dir=./.localnet/xmr_local/node2",
+      "--p2p-bind-ip=127.0.0.1",
+      "--rpc-bind-ip=0.0.0.0",
+      "--no-zmq",
+      "--confirm-external-bind",
+      "--add-exclusive-node=127.0.0.1:48080",
+      "--rpc-access-control-origins=http://localhost:8080",
+      "--fixed-difficulty=10",
+      "--non-interactive",
+    ]
+    network_mode: "host"
+    depends_on:
+      - node1
+
+  seed1:
+    build: haveno/
+    container_name: seed1
+    entrypoint: [ "./haveno-seednode" ]
+    command: [
+      "--baseCurrencyNetwork=XMR_LOCAL",
+      "--useLocalhostForP2P=true",
+      "--useDevPrivilegeKeys=true",
+      "--nodePort=2002",
+      "--appName=haveno-XMR_LOCAL_Seed1_2002",
+    ]
+    network_mode: "host"
+    depends_on:
+      - node2
+
+  seed2:
+    build: haveno/
+    container_name: seed2
+    entrypoint: [ "./haveno-seednode" ]
+    command: [
+      "--baseCurrencyNetwork=XMR_LOCAL",
+      "--useLocalhostForP2P=true",
+      "--useDevPrivilegeKeys=true",
+      "--nodePort=3002",
+      "--appName=haveno-XMR_LOCAL_Seed2_3002",
+    ]
+    network_mode: "host"
+    depends_on:
+      - node2
+
+  arbitrator:
+    build: haveno/
+    container_name: arbitrator
+    entrypoint: [ "./haveno-daemon" ]
+    command: [
+      "--baseCurrencyNetwork=XMR_LOCAL",
+      "--useLocalhostForP2P=true",
+      "--useDevPrivilegeKeys=true",
+      "--nodePort=4444",
+      "--appName=haveno-XMR_LOCAL_arbitrator",
+      "--apiPassword=apitest",
+      "--apiPort=9998",
+      "--walletRpcBindPort=38090",
+      "--passwordRequired=false",
+    ]
+    network_mode: "host"
+    depends_on:
+      - seed1
+
+  user1:
+    build: haveno/
+    container_name: user1
+    entrypoint: [ "./haveno-daemon" ]
+    command: [
+      "--baseCurrencyNetwork=XMR_LOCAL",
+      "--useLocalhostForP2P=true",
+      "--useDevPrivilegeKeys=true",
+      "--nodePort=5555",
+      "--appName=haveno_user1",
+      "--apiPassword=apitest",
+      "--apiPort=9999",
+      "--walletRpcBindPort=38091",
+      "--passwordRequired=false",
+    ]
+    network_mode: "host"
+    depends_on:
+      - seed1
+
+  user2:
+    build: haveno/
+    container_name: user2
+    entrypoint: [ "./haveno-daemon" ]
+    command: [
+      "--baseCurrencyNetwork=XMR_LOCAL",
+      "--useLocalhostForP2P=true",
+      "--useDevPrivilegeKeys=true",
+      "--nodePort=6666",
+      "--appName=haveno_user2",
+      "--apiPassword=apitest",
+      "--apiPort=10000",
+      "--walletRpcBindPort=38092",
+      "--passwordRequired=false",
+    ]
+    network_mode: "host"
+    depends_on:
+      - seed1
+
+  pricenode:
+    build: pricenode/
+    container_name: pricenode
+    entrypoint: [ "./haveno-pricenode" ]
+    network_mode: "host"
+
+  funding:
+    build: haveno/
+    container_name: funding_wallet
+    entrypoint: [ "./.localnet/monero-wallet-rpc" ]
+    command: [
+      "--testnet",
+      "--daemon-address=http://localhost:28081",
+      "--rpc-bind-port=28084",
+      "--rpc-login=rpc_user:abc123",
+      "--rpc-access-control-origins=http://localhost:8080",
+      "--wallet-dir=./.localnet",
+    ]
+    network_mode: "host"
+    depends_on:
+      - arbitrator
