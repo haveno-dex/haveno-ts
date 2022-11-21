@@ -7,8 +7,6 @@
   "files": ["dist/**/*"],
   "scripts": {
     "prepare": "scripts/build_protobuf.sh",
-    "pretest": "scripts/build_protobuf.sh",
-    "build": "./scripts/build_dist.sh",
     "test": "jest",
     "eslint": "eslint .",
     "eslintfix": "eslint src/* --fix",
