@@ -1290,6 +1290,7 @@ test("Can go offline while completing a trade", async () => {
   let traders: HavenoClient[] = [];
   let ctx: TradeContext = {};
   let err: any;
+  let miningStarted = false;
   try {
     
     // start and fund 2 trader processes
@@ -1308,12 +1309,14 @@ test("Can go offline while completing a trade", async () => {
     ctx.buyerOfflineAfterPaymentSent = true;
     
     // execute trade
+    miningStarted = await startMining();
     await executeTrade(ctx);
   } catch (e) {
     err = e;
   }
   
   // stop traders
+  if (miningStarted) await stopMining();
   if (ctx.maker) await releaseHavenoProcess(ctx.maker, true);
   if (ctx.taker) await releaseHavenoProcess(ctx.taker, true);
   if (err) throw err;
@@ -1988,7 +1991,8 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
       ctx.isPaymentReceived = true;
       fetchedTrade = await ctx.seller.getTrade(trade.getTradeId());
       expect(fetchedTrade.getPhase()).toEqual("PAYMENT_RECEIVED");
-      expect(fetchedTrade.getPayoutState()).toEqual(ctx.sellerOfflineAfterTake ? "PAYOUT_UNPUBLISHED" : "PAYOUT_PUBLISHED"); //  payout published iff seller remained online after first confirmation to share updated multisig info
+      await wait(TestConfig.walletSyncPeriodMs); // buyer or arbitrator will sign and publish payout tx
+      await testTradeState(await ctx.seller!.getTrade(trade.getTradeId()), {phase: "PAYMENT_RECEIVED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"], isCompleted: false, isPayoutPublished: true});
     }
 
     // payout tx is published by buyer (priority) or arbitrator
@@ -2036,18 +2040,24 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
 }
 
 async function testTradePayoutUnlock(ctx: TradeContext) {
-
-  // mine at least one block
+  const payoutTxId = (await ctx.buyer!.getTrade(ctx.offerId!)).getPayoutTxId();
+  const payoutTx = await ctx.buyer?.getXmrTx(payoutTxId);
   const height = await monerod.getHeight();
-  await mineToHeight(height + 1);
-  await wait(TestConfig.maxWalletStartupMs + TestConfig.walletSyncPeriodMs * 2);
+
+  // test after payout confirmed
+  if (!payoutTx?.getIsConfirmed()) {
+    await mineToHeight(height + 1);
+    await wait(TestConfig.maxWalletStartupMs + TestConfig.walletSyncPeriodMs * 2);
+  }
   await testTradeState(await ctx.buyer!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"]});
   await testTradeState(await ctx.seller!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"]});
   await testTradeState(await ctx.arbitrator!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"]}); // arbitrator idles wallet
   
-  // mine until unlock
-  await mineToHeight(height + 10);
-  await wait(TestConfig.maxWalletStartupMs + TestConfig.walletSyncPeriodMs);
+  // test after payout unlocked
+  if (payoutTx?.getIsLocked()) {
+    await mineToHeight(height + 10);
+    await wait(TestConfig.maxWalletStartupMs + TestConfig.walletSyncPeriodMs);
+  }
   await testTradeState(await ctx.buyer!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_UNLOCKED"]});
   await testTradeState(await ctx.seller!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_UNLOCKED"]});
   await testTradeState(await ctx.arbitrator!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"]}); // arbitrator idles wallet
