@@ -5,7 +5,7 @@ import TaskLooper from "./utils/TaskLooper";
 import type * as grpcWeb from "grpc-web";
 import { GetVersionClient, AccountClient, MoneroConnectionsClient, DisputesClient, DisputeAgentsClient, NotificationsClient, WalletsClient, PriceClient, OffersClient, PaymentAccountsClient, TradesClient, ShutdownServerClient, MoneroNodeClient } from './protobuf/GrpcServiceClientPb';
 import { GetVersionRequest, GetVersionReply, IsAppInitializedRequest, IsAppInitializedReply, RegisterDisputeAgentRequest, UnregisterDisputeAgentRequest, MarketPriceRequest, MarketPriceReply, MarketPricesRequest, MarketPricesReply, MarketPriceInfo, MarketDepthRequest, MarketDepthReply, MarketDepthInfo, GetBalancesRequest, GetBalancesReply, XmrBalanceInfo, GetMyOfferRequest, GetMyOfferReply, GetOffersRequest, GetOffersReply, OfferInfo, GetPaymentMethodsRequest, GetPaymentMethodsReply, GetPaymentAccountFormRequest, CreatePaymentAccountRequest, ValidateFormFieldRequest, CreatePaymentAccountReply, GetPaymentAccountFormReply, GetPaymentAccountsRequest, GetPaymentAccountsReply, CreateCryptoCurrencyPaymentAccountRequest, CreateCryptoCurrencyPaymentAccountReply, CreateOfferRequest, CreateOfferReply, CancelOfferRequest, TakeOfferRequest, TakeOfferReply, TradeInfo, GetTradeRequest, GetTradeReply, GetTradesRequest, GetTradesReply, GetXmrSeedRequest, GetXmrSeedReply, GetXmrPrimaryAddressRequest, GetXmrPrimaryAddressReply, GetXmrNewSubaddressRequest, GetXmrNewSubaddressReply, ConfirmPaymentStartedRequest, ConfirmPaymentReceivedRequest, CompleteTradeRequest, XmrTx, GetXmrTxsRequest, GetXmrTxsReply, XmrDestination, CreateXmrTxRequest, CreateXmrTxReply, RelayXmrTxRequest, RelayXmrTxReply, CreateAccountRequest, AccountExistsRequest, AccountExistsReply, DeleteAccountRequest, OpenAccountRequest, IsAccountOpenRequest, IsAccountOpenReply, CloseAccountRequest, ChangePasswordRequest, BackupAccountRequest, BackupAccountReply, RestoreAccountRequest, StopRequest, NotificationMessage, RegisterNotificationListenerRequest, SendNotificationRequest, UrlConnection, AddConnectionRequest, RemoveConnectionRequest, GetConnectionRequest, GetConnectionsRequest, SetConnectionRequest, CheckConnectionRequest, CheckConnectionsReply, CheckConnectionsRequest, StartCheckingConnectionsRequest, StopCheckingConnectionsRequest, GetBestAvailableConnectionRequest, SetAutoSwitchRequest, CheckConnectionReply, GetConnectionsReply, GetConnectionReply, GetBestAvailableConnectionReply, GetDisputeRequest, GetDisputeReply, GetDisputesRequest, GetDisputesReply, OpenDisputeRequest, ResolveDisputeRequest, SendDisputeChatMessageRequest, SendChatMessageRequest, GetChatMessagesRequest, GetChatMessagesReply, StartMoneroNodeRequest, StopMoneroNodeRequest, IsMoneroNodeOnlineRequest, IsMoneroNodeOnlineReply, GetMoneroNodeSettingsRequest, GetMoneroNodeSettingsReply } from "./protobuf/grpc_pb";
-import { PaymentMethod, PaymentAccountForm, PaymentAccountFormField, PaymentAccount, AvailabilityResult, Attachment, DisputeResult, Dispute, ChatMessage, MoneroNodeSettings } from "./protobuf/pb_pb";
+import { PaymentMethod, PaymentAccountForm, PaymentAccountFormField, PaymentAccount, PaymentAccountPayload, AvailabilityResult, Attachment, DisputeResult, Dispute, ChatMessage, MoneroNodeSettings } from "./protobuf/pb_pb";
 
 /**
  * Haveno daemon client.
@@ -1049,6 +1049,25 @@ export default class HavenoClient {
     try {
       return await new Promise((resolve, reject) => {
         this._paymentAccountsClient.getPaymentAccountForm(new GetPaymentAccountFormRequest().setPaymentMethodId(paymentMethodId), {password: this._password}, function(err: grpcWeb.RpcError, response: GetPaymentAccountFormReply) {
+          if (err) reject(err);
+          else resolve(response.getPaymentAccountForm()!);
+        });
+      });
+    } catch (e: any) {
+      throw new HavenoError(e.message, e.code);
+    }
+  }
+
+  /**
+   * Get a form from the given payment account payload.
+   * 
+   * @param {PaymentAccountPayload} paymentAccountPayload - payload to get as a form
+   * @return {PaymentAccountForm} the payment account form
+   */
+  async getPaymentAccountPayloadForm(paymentAccountPayload: PaymentAccountPayload): Promise<PaymentAccountForm> {
+    try {
+      return await new Promise((resolve, reject) => {
+        this._paymentAccountsClient.getPaymentAccountForm(new GetPaymentAccountFormRequest().setPaymentAccountPayload(paymentAccountPayload), {password: this._password}, function(err: grpcWeb.RpcError, response: GetPaymentAccountFormReply) {
           if (err) reject(err);
           else resolve(response.getPaymentAccountForm()!);
         });

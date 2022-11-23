@@ -957,7 +957,7 @@ test("Can get payment accounts", async () => {
 test("Can validate payment account forms", async () => {
   
   // supported payment methods  
-  const expectedPaymentMethods = ["REVOLUT", "SEPA", "SEPA_INSTANT", "TRANSFERWISE", "CLEAR_X_CHANGE", "SWIFT", "F2F", "STRIKE", "MONEY_GRAM", "FASTER_PAYMENTS", "UPHOLD", "PAXUM"];
+  const expectedPaymentMethods = ["BLOCK_CHAINS", "REVOLUT", "SEPA", "SEPA_INSTANT", "TRANSFERWISE", "CLEAR_X_CHANGE", "SWIFT", "F2F", "STRIKE", "MONEY_GRAM", "FASTER_PAYMENTS", "UPHOLD", "PAXUM"];
   
   // get payment methods
   const paymentMethods = await user1.getPaymentMethods();
@@ -992,12 +992,12 @@ test("Can validate payment account forms", async () => {
     }
     
     // create payment account
-    const fiatAccount = await user1.createPaymentAccount(accountForm);
+    const paymentAccount = await user1.createPaymentAccount(accountForm);
     
     // payment account added
     let found = false;
-    for (const paymentAccount of await user1.getPaymentAccounts()) {
-      if (paymentAccount.getId() === fiatAccount.getId()) {
+    for (const userAccount of await user1.getPaymentAccounts()) {
+      if (paymentAccount.getId() === userAccount.getId()) {
         found = true;
         break;
       }
@@ -1005,8 +1005,8 @@ test("Can validate payment account forms", async () => {
     assert(found, "Payment account not found after adding");
     
     // test payment account
-    expect(fiatAccount.getPaymentMethod()!.getId()).toEqual(paymentMethod.getId());
-    testFiatAccount(fiatAccount, accountForm);
+    expect(paymentAccount.getPaymentMethod()!.getId()).toEqual(paymentMethod.getId());
+    testPaymentAccount(paymentAccount, accountForm);
   }
 });
 
@@ -1023,12 +1023,12 @@ test("Can create fiat payment accounts", async () => {
   
   // create payment account
   const fiatAccount = await user1.createPaymentAccount(accountForm);
-  expect(fiatAccount.getAccountName()).toEqual(HavenoUtils.getFormValue(PaymentAccountFormField.FieldId.ACCOUNT_NAME, accountForm));
+  expect(fiatAccount.getAccountName()).toEqual(HavenoUtils.getFormValue(accountForm, PaymentAccountFormField.FieldId.ACCOUNT_NAME));
   expect(fiatAccount.getSelectedTradeCurrency()!.getCode()).toEqual("USD");
   expect(fiatAccount.getTradeCurrenciesList().length).toBeGreaterThan(0);
   expect(fiatAccount.getPaymentAccountPayload()!.getPaymentMethodId()).toEqual(paymentMethodId);
-  expect(fiatAccount.getPaymentAccountPayload()!.getRevolutAccountPayload()!.getAccountId()).toEqual(HavenoUtils.getFormValue(PaymentAccountFormField.FieldId.USER_NAME, accountForm)); // TODO: payment payload account id is username?
-  expect(fiatAccount.getPaymentAccountPayload()!.getRevolutAccountPayload()!.getUserName()).toEqual(HavenoUtils.getFormValue(PaymentAccountFormField.FieldId.USER_NAME, accountForm));
+  expect(fiatAccount.getPaymentAccountPayload()!.getRevolutAccountPayload()!.getAccountId()).toEqual(HavenoUtils.getFormValue(accountForm, PaymentAccountFormField.FieldId.USER_NAME)); // TODO: payment payload account id is username?
+  expect(fiatAccount.getPaymentAccountPayload()!.getRevolutAccountPayload()!.getUserName()).toEqual(HavenoUtils.getFormValue(accountForm, PaymentAccountFormField.FieldId.USER_NAME));
   
   // payment account added
   let found = false;
@@ -1324,13 +1324,13 @@ test("Can go offline while completing a trade", async () => {
 test("Can resolve disputes", async () => {
   
   // take trades but stop before sending payment
-  const ctxs = getTradeContexts(5);
+  const ctxs = getTradeContexts(4);
   for (const config of ctxs) config.buyerSendsPayment = false;
   const tradeIds = await executeTrades(ctxs);
   
   // open disputes at same time but do not resolve
+  const trade1 = await user1.getTrade(tradeIds[1]);
   const trade2 = await user1.getTrade(tradeIds[2]);
-  const trade3 = await user1.getTrade(tradeIds[3]);
   Object.assign(ctxs[0], {
     resolveDispute: false,
     sellerDisputeContext: DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK,
@@ -1343,25 +1343,18 @@ test("Can resolve disputes", async () => {
     buyerDisputeContext: DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK,
     disputeWinner: DisputeResult.Winner.BUYER,
     disputeReason: DisputeResult.Reason.SELLER_NOT_RESPONDING,
-    disputeSummary: "Buyer is winner"
+    disputeSummary: "Split trade amount",
+    disputeWinnerAmount: BigInt(trade1.getAmountAsLong()) / BigInt(2) + HavenoUtils.centinerosToAtomicUnits(trade1.getOffer()!.getBuyerSecurityDeposit())
   });
   Object.assign(ctxs[2], {
-    resolveDispute: false,
-    sellerDisputeContext: DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK,
-    disputeWinner: DisputeResult.Winner.BUYER,
-    disputeReason: DisputeResult.Reason.WRONG_SENDER_ACCOUNT,
-    disputeSummary: "Split trade amount",
-    disputeWinnerAmount: BigInt(trade2.getAmountAsLong()) / BigInt(2) + HavenoUtils.centinerosToAtomicUnits(trade2.getOffer()!.getBuyerSecurityDeposit())
-  });
-  Object.assign(ctxs[3], {
     resolveDispute: false,
     buyerDisputeContext: DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK,
     disputeWinner: DisputeResult.Winner.SELLER,
     disputeReason: DisputeResult.Reason.TRADE_ALREADY_SETTLED,
     disputeSummary: "Seller gets everything",
-    disputeWinnerAmount: BigInt(trade3.getAmountAsLong()) + HavenoUtils.centinerosToAtomicUnits(trade3.getOffer()!.getBuyerSecurityDeposit() + trade3.getOffer()!.getSellerSecurityDeposit())
+    disputeWinnerAmount: BigInt(trade2.getAmountAsLong()) + HavenoUtils.centinerosToAtomicUnits(trade2.getOffer()!.getBuyerSecurityDeposit() + trade2.getOffer()!.getSellerSecurityDeposit())
   });
-  Object.assign(ctxs[4], {
+  Object.assign(ctxs[3], {
     resolveDispute: false,
     buyerSendsPayment: true,
     sellerDisputeContext: DisputeContext.OPEN_AFTER_PAYMENT_SENT,
@@ -1628,7 +1621,7 @@ test("Selects arbitrators which are online, registered, and least used", async (
     
     // complete a trade which uses arbitrator2 since it's least used
     HavenoUtils.log(1, "Completing trade using arbitrator2");
-    await executeTrade({maker: user1, taker: user2, offerId: offers[0].getId(), arbitrator: arbitrator2});
+    await executeTrade({maker: user1, taker: user2, arbitrator: arbitrator2, offerId: offers[0].getId(), makerPaymentAccountId: offers[0].getPaymentAccountId()});
     let trade = await user1.getTrade(offers[0].getId());
     assert.equal(trade.getArbitratorNodeAddress(), arbitrator2ApiUrl);
     
@@ -1644,7 +1637,7 @@ test("Selects arbitrators which are online, registered, and least used", async (
     
     // complete a trade which uses main arbitrator since signer/least used is offline
     HavenoUtils.log(1, "Completing trade using main arbitrator since signer/least used is offline");
-    await executeTrade({maker: user1, taker: user2, offerId: offers[1].getId()});
+    await executeTrade({maker: user1, taker: user2, offerId: offers[1].getId(), makerPaymentAccountId: offers[1].getPaymentAccountId()});
     trade = await user1.getTrade(offers[1].getId());
     assert.equal(trade.getArbitratorNodeAddress(), arbitratorApiUrl);
     
@@ -1672,7 +1665,7 @@ test("Selects arbitrators which are online, registered, and least used", async (
     
     // complete a trade which uses main arbitrator since least used is unregistered
     HavenoUtils.log(1, "Completing trade with main arbitrator since least used is unregistered");
-    await executeTrade({maker: user1, taker: user2, offerId: offer.getId()});
+    await executeTrade({maker: user1, taker: user2, offerId: offer.getId(), makerPaymentAccountId: offer.getPaymentAccountId()});
     HavenoUtils.log(1, "Done completing trade with main arbitrator since least used is unregistered");
     trade = await user2.getTrade(offer.getId());
     HavenoUtils.log(1, "Done getting trade");
@@ -1824,7 +1817,7 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
       offer = await makeOffer(ctx);
       expect(offer.getState()).toEqual("AVAILABLE");
       ctx.offerId = offer.getId();
-      await wait(TestConfig.walletSyncPeriodMs * 2);
+      await wait(TestConfig.maxTimePeerNoticeMs + TestConfig.walletSyncPeriodMs * 2);
     }
     
     // TODO (woodser): test error message taking offer before posted
@@ -1840,6 +1833,17 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
     
     // test trader chat
     if (ctx.testTraderChat) await testTradeChat(trade.getTradeId(), ctx.maker!, ctx.taker!);
+
+    // get expected payment account payloads
+    let expectedBuyerPaymentAccountPayload = (await ctx.buyer?.getPaymentAccount(ctx.maker == ctx.buyer ? ctx.makerPaymentAccountId! : ctx.takerPaymentAccountId!))?.getPaymentAccountPayload();
+    let expectedSellerPaymentAccountPayload = (await ctx.seller?.getPaymentAccount(ctx.maker == ctx.buyer ? ctx.takerPaymentAccountId! : ctx.makerPaymentAccountId!))?.getPaymentAccountPayload();
+
+    // seller does not have buyer's payment account payload until payment sent
+    let fetchedTrade = await ctx.seller!.getTrade(ctx.offerId!);
+    let contract = fetchedTrade.getContract()!;
+    let buyerPaymentAccountPayload = contract.getIsBuyerMakerAndSellerTaker() ? contract.getMakerPaymentAccountPayload() : contract.getTakerPaymentAccountPayload();
+    if (ctx.isPaymentSent) expect(buyerPaymentAccountPayload).toEqual(expectedBuyerPaymentAccountPayload);
+    else expect(buyerPaymentAccountPayload).toBeUndefined();
     
     // shut down buyer and seller if configured
     const promises: Promise<void>[] = [];
@@ -1873,7 +1877,7 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
     await wait(TestConfig.maxWalletStartupMs + TestConfig.walletSyncPeriodMs * 2);
     const expectedState = ctx.isPaymentSent ? "PAYMENT_SENT" : "DEPOSITS_UNLOCKED" // TODO: test COMPLETED, PAYMENT_RECEIVED states?
     expect((await ctx.buyer!.getTrade(offer!.getId())).getPhase()).toEqual(expectedState);
-    let fetchedTrade = await ctx.buyer!.getTrade(ctx.offerId!);
+    fetchedTrade = await ctx.buyer!.getTrade(ctx.offerId!);
     expect(fetchedTrade.getIsDepositUnlocked()).toBe(true);
     expect(fetchedTrade.getPhase()).toEqual(expectedState);
     if (!ctx.sellerOfflineAfterTake) {
@@ -1881,7 +1885,16 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
       expect(fetchedTrade.getIsDepositUnlocked()).toBe(true);
       expect(fetchedTrade.getPhase()).toEqual(expectedState);
     }
-    
+
+    // buyer has seller's payment account payload after first confirmation
+    fetchedTrade = await ctx.buyer!.getTrade(ctx.offerId!);
+    contract = fetchedTrade.getContract()!;
+    let sellerPaymentAccountPayload = contract.getIsBuyerMakerAndSellerTaker() ? contract.getTakerPaymentAccountPayload() : contract.getMakerPaymentAccountPayload();
+    expect(sellerPaymentAccountPayload).toEqual(expectedSellerPaymentAccountPayload);
+    let form = await ctx.buyer!.getPaymentAccountPayloadForm(sellerPaymentAccountPayload!);
+    let expectedForm = await ctx.buyer!.getPaymentAccountPayloadForm(expectedSellerPaymentAccountPayload!);
+    expect(HavenoUtils.formToString(form)).toEqual(HavenoUtils.formToString(expectedForm));
+
     // buyer notified to send payment TODO
     
     // open dispute(s) if configured
@@ -1937,6 +1950,15 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
     fetchedTrade = await ctx.seller.getTrade(trade.getTradeId());
     expect(fetchedTrade.getPhase()).toEqual("PAYMENT_SENT");
     expect(fetchedTrade.getPayoutState()).toEqual("PAYOUT_UNPUBLISHED");
+
+    // seller has buyer's payment account payload after payment sent
+    fetchedTrade = await ctx.seller!.getTrade(ctx.offerId!);
+    contract = fetchedTrade.getContract()!;
+    buyerPaymentAccountPayload = contract.getIsBuyerMakerAndSellerTaker() ? contract.getMakerPaymentAccountPayload() : contract.getTakerPaymentAccountPayload();
+    expect(buyerPaymentAccountPayload).toEqual(expectedBuyerPaymentAccountPayload);
+    form = await ctx.seller!.getPaymentAccountPayloadForm(sellerPaymentAccountPayload!);
+    expectedForm = await ctx.seller!.getPaymentAccountPayloadForm(expectedSellerPaymentAccountPayload!);
+    expect(HavenoUtils.formToString(form)).toEqual(HavenoUtils.formToString(expectedForm));
 
     // open dispute(s) if configured
     if (ctx.buyerDisputeContext === DisputeContext.OPEN_AFTER_PAYMENT_SENT && !ctx.buyerOpenedDispute) {
@@ -2054,9 +2076,15 @@ async function makeOffer(ctx?: TradeContext): Promise<OfferInfo> {
   
   // create payment account if not given // TODO: re-use existing payment account
   if (!ctx.makerPaymentAccountId) ctx.makerPaymentAccountId = (await createPaymentAccount(ctx.maker!, ctx.assetCode!)).getId();
-  
+
   // get unlocked balance before reserving offer
-  const unlockedBalanceBefore = BigInt((await ctx.maker!.getBalances()).getAvailableBalance());
+  let unlockedBalanceBefore = BigInt((await ctx.maker!.getBalances()).getAvailableBalance());
+  if (ctx.awaitFundsToMakeOffer && unlockedBalanceBefore === BigInt(0)) {
+    HavenoUtils.log(0, "WARNING: unlocked balance before posting offer is 0, waiting...");
+    await wait(5000);
+    unlockedBalanceBefore = BigInt((await ctx.maker!.getBalances()).getAvailableBalance());
+    if (unlockedBalanceBefore === BigInt(0)) throw new Error("Unlocked balance before posting offer was 0, even after waiting");
+  }
   
   // post offer
   const offer: OfferInfo = await ctx.maker!.postOffer(
@@ -2101,7 +2129,7 @@ async function takeOffer(ctx: TradeContext): Promise<TradeInfo> {
   // taker sees offer
   if (!ctx.offerId) throw new Error("Must provide offer id");
   const takerOffer = getOffer(await ctx.taker!.getOffers(ctx.assetCode!, ctx.direction), ctx.offerId);
-  if (!takerOffer) throw new Error("Offer " + ctx.offerId + " was not found in taker's offers after posting");
+  if (!takerOffer) throw new Error("Offer " + ctx.offerId + " was not found in taker's offers");
   expect(takerOffer.getState()).toEqual("UNKNOWN"); // TODO: offer state should be known
   
   // wait for unlocked balance
@@ -2182,6 +2210,31 @@ async function testOpenDispute(ctx: TradeContext) {
   assert(arbDisputePeer);
   const arbDisputeOpener = disputes.find(d => d.getId() === openerDispute.getId());
   assert(arbDisputeOpener);
+
+  // arbitrator has seller's payment account info
+  let sellerPaymentAccountPayload = arbDisputeOpener.getContract()!.getIsBuyerMakerAndSellerTaker() ? arbDisputeOpener.getTakerPaymentAccountPayload() : arbDisputeOpener.getMakerPaymentAccountPayload();
+  let expectedSellerPaymentAccountPayload = (await ctx.seller?.getPaymentAccount(sellerPaymentAccountPayload?.getId()!))?.getPaymentAccountPayload();
+  expect(sellerPaymentAccountPayload).toEqual(expectedSellerPaymentAccountPayload);
+  expect(await ctx.arbitrator?.getPaymentAccountPayloadForm(sellerPaymentAccountPayload!)).toEqual(await ctx.arbitrator?.getPaymentAccountPayloadForm(expectedSellerPaymentAccountPayload!));
+  sellerPaymentAccountPayload = arbDisputePeer.getContract()!.getIsBuyerMakerAndSellerTaker() ? arbDisputePeer.getTakerPaymentAccountPayload() : arbDisputeOpener.getMakerPaymentAccountPayload();
+  expect(sellerPaymentAccountPayload).toEqual(expectedSellerPaymentAccountPayload);
+  expect(await ctx.arbitrator?.getPaymentAccountPayloadForm(sellerPaymentAccountPayload!)).toEqual(await ctx.arbitrator?.getPaymentAccountPayloadForm(expectedSellerPaymentAccountPayload!));
+
+  // arbitrator has buyer's payment account info unless opener is seller and payment not sent
+  let buyerPaymentAccountPayload = arbDisputeOpener.getContract()!.getIsBuyerMakerAndSellerTaker() ? arbDisputeOpener.getMakerPaymentAccountPayload() : arbDisputeOpener.getTakerPaymentAccountPayload();
+  if (ctx.disputeOpener === ctx.seller && !ctx.isPaymentSent) expect(buyerPaymentAccountPayload).toBeUndefined();
+  else {
+    let expectedBuyerPaymentAccountPayload = (await ctx.buyer?.getPaymentAccount(buyerPaymentAccountPayload?.getId()!))?.getPaymentAccountPayload();
+    expect(buyerPaymentAccountPayload).toEqual(expectedBuyerPaymentAccountPayload);
+    expect(await ctx.arbitrator?.getPaymentAccountPayloadForm(buyerPaymentAccountPayload!)).toEqual(await ctx.arbitrator?.getPaymentAccountPayloadForm(expectedBuyerPaymentAccountPayload!));
+  }
+  buyerPaymentAccountPayload = arbDisputePeer.getContract()!.getIsBuyerMakerAndSellerTaker() ? arbDisputePeer.getMakerPaymentAccountPayload() : arbDisputePeer.getTakerPaymentAccountPayload();
+  if (ctx.disputeOpener === ctx.seller && !ctx.isPaymentSent) expect(buyerPaymentAccountPayload).toBeUndefined();
+  else {
+    let expectedBuyerPaymentAccountPayload = (await ctx.buyer?.getPaymentAccount(buyerPaymentAccountPayload?.getId()!))?.getPaymentAccountPayload();
+    expect(buyerPaymentAccountPayload).toEqual(expectedBuyerPaymentAccountPayload);
+    expect(await ctx.arbitrator?.getPaymentAccountPayloadForm(buyerPaymentAccountPayload!)).toEqual(await ctx.arbitrator?.getPaymentAccountPayloadForm(expectedBuyerPaymentAccountPayload!));
+  }
   
   // register to receive notifications
   const disputeOpenerNotifications: NotificationMessage[] = [];
@@ -3101,16 +3154,20 @@ function getValidFormInput(fieldId: PaymentAccountFormField.FieldId, form: Payme
       return "123456";
     case PaymentAccountFormField.FieldId.SPECIAL_INSTRUCTIONS:
       return "asap plz";
-    case PaymentAccountFormField.FieldId.STATE: {
-      const country = HavenoUtils.getFormValue(PaymentAccountFormField.FieldId.COUNTRY, form);
+    case PaymentAccountFormField.FieldId.STATE:
+      const country = HavenoUtils.getFormValue(form, PaymentAccountFormField.FieldId.COUNTRY);
       return GenUtils.arrayContains(field.getRequiredForCountriesList(), country) ? "My state" : "";
-    }
     case PaymentAccountFormField.FieldId.TRADE_CURRENCIES:
-      return field.getSupportedCurrenciesList().map(currency => currency.getCode()).join(',');
+      if (field.getComponent() === PaymentAccountFormField.Component.SELECT_ONE) return field.getSupportedCurrenciesList().at(0)!.getCode(); // TODO: randomly select?
+      else return field.getSupportedCurrenciesList().map(currency => currency.getCode()).join(',');
     case PaymentAccountFormField.FieldId.USER_NAME:
       return "user123";
-    case PaymentAccountFormField.FieldId.VIRTUAL_PAYMENT_ADDRESS:
-      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.ADDRESS:
+      const currencyCode = HavenoUtils.getFormValue(form, PaymentAccountFormField.FieldId.TRADE_CURRENCIES);
+      for (let cryptoAddress of TestConfig.cryptoAddresses) {
+        if (cryptoAddress.currencyCode.toLowerCase() === currencyCode.toLowerCase()) return cryptoAddress.address;
+      }
+      throw new Error("Unsupported blockchain currency code: " + currencyCode);
     default:
       throw new Error("Unhandled form field: " + fieldId);
   }
@@ -3229,26 +3286,31 @@ function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFo
     case PaymentAccountFormField.FieldId.SPECIAL_INSTRUCTIONS:
       throw new Error("Special instructions have no invalid input");
     case PaymentAccountFormField.FieldId.STATE: {
-      const country = HavenoUtils.getFormValue(PaymentAccountFormField.FieldId.COUNTRY, form);
+      const country = HavenoUtils.getFormValue(form, PaymentAccountFormField.FieldId.COUNTRY);
       return GenUtils.arrayContains(field.getRequiredForCountriesList(), country) ? "" : "My state";
     }
     case PaymentAccountFormField.FieldId.TRADE_CURRENCIES:
       return "abc,def";
     case PaymentAccountFormField.FieldId.USER_NAME:
       return "A";
-    case PaymentAccountFormField.FieldId.VIRTUAL_PAYMENT_ADDRESS:
-      throw new Error("Not implemented");
+    case PaymentAccountFormField.FieldId.ADDRESS:
+      return "A123";
     default:
       throw new Error("Unhandled form field: " + fieldId);
   }
 }
 
-function testFiatAccount(account: PaymentAccount, form: PaymentAccountForm) {
+function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
+    if (account.getPaymentAccountPayload()?.getCryptoCurrencyAccountPayload()) testCryptoPaymentAccount(account); // TODO: test non-crypto
     expect(account.getAccountName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.ACCOUNT_NAME).getValue()); // TODO: using number as payment method, account payload's account name = user name
     const isCountryBased = account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload() !== undefined;
     if (isCountryBased) expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getCountryCode()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.COUNTRY).getValue());
     switch (form.getId()) {
-      case PaymentAccountForm.FormId.REVOLUT: 
+      case PaymentAccountForm.FormId.BLOCK_CHAINS:
+        expect(account.getPaymentAccountPayload()!.getCryptoCurrencyAccountPayload()!.getAddress()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.ADDRESS).getValue());
+        expect(account.getTradeCurrenciesList().map(currency => currency.getCode()).join(",")).toEqual(getFormField(form, PaymentAccountFormField.FieldId.TRADE_CURRENCIES).getValue());
+        break;
+      case PaymentAccountForm.FormId.REVOLUT:
         expect(account.getPaymentAccountPayload()!.getRevolutAccountPayload()!.getUserName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.USER_NAME).getValue());
         expect(account.getTradeCurrenciesList().map(currency => currency.getCode()).join(",")).toEqual(getFormField(form, PaymentAccountFormField.FieldId.TRADE_CURRENCIES).getValue());
         break;
