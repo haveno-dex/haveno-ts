@@ -126,7 +126,7 @@ const TestConfig = {
             address: "1G457efxTyci67msm2dSqyhFzxPYFWaghe"
         }, {
             currencyCode: "BCH",
-            address: "1JRjBNKi4ZgJpKPeoL4149Q7ZZD3VvVgk9" // TODO: support CashAddr format only
+            address: "qz54ydhwzn25wzf8pge5s26udvtx33yhyq3lnv6vq6"
         }, {
             currencyCode: "LTC",
             address: "LXUTUN5mTPc2LsS7cEjkyjTRcfYyJGoUuQ"
