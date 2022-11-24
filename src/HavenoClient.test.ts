@@ -1088,7 +1088,7 @@ test("Can prepare for trading", async () => {
   await prepareForTrading(4, user1, user2);
 });
 
-test("Can make and remove an offer", async () => {
+test("Can post and remove an offer", async () => {
   
   // wait for user1 to have unlocked balance to post offer
   await waitForAvailableBalance(BigInt("250000000000") * BigInt("2"), user1);
@@ -1495,7 +1495,7 @@ test("Invalidates offers when reserved funds are spent", async () => {
 
 // TODO (woodser): test arbitrator state too
 // TODO (woodser): test breaking protocol after depositing to multisig (e.g. don't send payment account payload by deleting it)
-test("Handles unexpected errors during trade initialization", async () => {
+test("Can handle unexpected errors during trade initialization", async () => {
   let traders: HavenoClient[] = [];
   let err: any;
   try {
@@ -2056,7 +2056,7 @@ async function testTradePayoutUnlock(ctx: TradeContext) {
   // test after payout unlocked
   if (payoutTx?.getIsLocked()) {
     await mineToHeight(height + 10);
-    await wait(TestConfig.maxWalletStartupMs + TestConfig.walletSyncPeriodMs);
+    await wait(TestConfig.maxWalletStartupMs + TestConfig.walletSyncPeriodMs * 2);
   }
   await testTradeState(await ctx.buyer!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_UNLOCKED"]});
   await testTradeState(await ctx.seller!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_UNLOCKED"]});
