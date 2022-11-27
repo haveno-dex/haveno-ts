@@ -726,7 +726,7 @@ test("Has a Monero wallet", async () => {
   
   // create withdraw tx
   const destination = new XmrDestination().setAddress(await user1.getXmrNewSubaddress()).setAmount("100000000000");
-  let tx = await user1.createXmrTx([destination]);
+  let tx: XmrTx|undefined = await user1.createXmrTx([destination]);
   testTx(tx, {isCreatedTx: true});
   
   // relay withdraw tx
@@ -741,7 +741,7 @@ test("Has a Monero wallet", async () => {
   
   // get relayed tx
   tx = await user1.getXmrTx(txHash);
-  testTx(tx, {isCreatedTx: false});
+  testTx(tx!, {isCreatedTx: false});
   
   // relay invalid tx
   try {
@@ -2040,27 +2040,28 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
 }
 
 async function testTradePayoutUnlock(ctx: TradeContext) {
-  const payoutTxId = (await ctx.buyer!.getTrade(ctx.offerId!)).getPayoutTxId();
-  const payoutTx = await ctx.buyer?.getXmrTx(payoutTxId);
   const height = await monerod.getHeight();
 
   // test after payout confirmed
-  if (!payoutTx?.getIsConfirmed()) {
-    await mineToHeight(height + 1);
-    await wait(TestConfig.maxWalletStartupMs + TestConfig.walletSyncPeriodMs * 2);
-  }
+  const payoutTxId = (await ctx.buyer!.getTrade(ctx.offerId!)).getPayoutTxId();
+  let trade = await ctx.buyer!.getTrade(ctx.offerId!);
+  if (trade.getPayoutState() !== "PAYOUT_CONFIRMED") await mineToHeight(height + 1);
+  await wait(TestConfig.maxWalletStartupMs + TestConfig.walletSyncPeriodMs * 2);
   await testTradeState(await ctx.buyer!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"]});
   await testTradeState(await ctx.seller!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"]});
   await testTradeState(await ctx.arbitrator!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"]}); // arbitrator idles wallet
+  let payoutTx = await ctx.buyer?.getXmrTx(payoutTxId);
+  expect(payoutTx?.getIsConfirmed());
   
   // test after payout unlocked
-  if (payoutTx?.getIsLocked()) {
-    await mineToHeight(height + 10);
-    await wait(TestConfig.maxWalletStartupMs + TestConfig.walletSyncPeriodMs * 2);
-  }
+  trade = await ctx.buyer!.getTrade(ctx.offerId!);
+  if (trade.getPayoutState() !== "PAYOUT_UNLOCKED") await mineToHeight(height + 10);
+  await wait(TestConfig.maxWalletStartupMs + TestConfig.walletSyncPeriodMs * 2);
   await testTradeState(await ctx.buyer!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_UNLOCKED"]});
   await testTradeState(await ctx.seller!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_UNLOCKED"]});
   await testTradeState(await ctx.arbitrator!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"]}); // arbitrator idles wallet
+  payoutTx = await ctx.buyer?.getXmrTx(payoutTxId);
+  expect(!payoutTx?.getIsLocked());
 }
 
 async function testTradeState(trade: TradeInfo, ctx: TradeContext) {
