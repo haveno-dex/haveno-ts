@@ -866,12 +866,12 @@ export default class HavenoClient {
    * @param {String} txHash - hash of the transaction to get
    * @return {XmrTx} the transaction with the hash
    */
-  async getXmrTx(txHash: string): Promise<XmrTx> {
+  async getXmrTx(txHash: string): Promise<XmrTx|undefined> {
     const txs = await this.getXmrTxs(); // TODO (woodser): implement getXmrTx(hash) grpc call
     for (const tx of txs) {
       if (tx.getHash() === txHash) return tx;
     }
-    throw new HavenoError("No transaction with hash " + txHash);
+    return undefined;
   }
   
   /**
