@@ -173,7 +173,8 @@ const TestConfig = {
         resolveDispute: true, // resolve dispute after opening
         disputeWinner: DisputeResult.Winner.SELLER,
         disputeReason: DisputeResult.Reason.PEER_WAS_LATE,
-        disputeSummary: "Seller is winner"
+        disputeSummary: "Seller is winner",
+        maxConcurrency: 8
     }
 };
 
@@ -236,7 +237,8 @@ interface TradeContext {
     isPayoutConfirmed?: boolean,
     isPayoutUnlocked?: boolean
     buyerOpenedDispute?: boolean,
-    sellerOpenedDispute?: boolean
+    sellerOpenedDispute?: boolean,
+    maxConcurrency?: number
 }
 
 enum TradeRole {
@@ -1277,13 +1279,7 @@ test("Can complete all trade combinations", async () => {
   
   // execute trades
   HavenoUtils.log(0, "Executing " + ctxs.length + " trade configurations");
-  const MAX_CONCURRENCY = 8; // TODO: executing in batches because system cannot handle so many trades at one time (tested with 20)
-  let batchNum = 0;
-  while (batchNum * MAX_CONCURRENCY < ctxs.length) {
-    HavenoUtils.log(0, "Executing trade batch " + (batchNum + 1));
-    await executeTrades(ctxs.slice(batchNum * MAX_CONCURRENCY, batchNum * MAX_CONCURRENCY + MAX_CONCURRENCY));
-    batchNum++;
-  }
+  await executeTrades(ctxs);
 });
 
 test("Can go offline while completing a trade", async () => {
@@ -1369,7 +1365,7 @@ test("Can resolve disputes", async () => {
   // resolve disputes
   for (const config of ctxs) config.resolveDispute = true;
   HavenoUtils.log(1, "Resolving disputes");
-  await executeTrades(ctxs, true); // TODO: running in parallel doesn't test balances before and after, but this test takes ~10 minutes in sequence. use test weight config
+  await executeTrades(ctxs, {concurrentTrades: true}); // TODO: running in parallel doesn't test balances before and after, but this test takes ~10 minutes in sequence. use test weight config
 });
 
 test("Cannot make or take offer with insufficient unlocked funds", async () => {
@@ -1712,14 +1708,16 @@ function tradeContextToString(ctx: TradeContext) {
   }));
 }
 
-async function executeTrades(ctxs: TradeContext[], concurrentTrades?: boolean): Promise<string[]> {
+async function executeTrades(ctxs: TradeContext[], executionCtx?: TradeContext): Promise<string[]> {
+
+  // assign default execution context
+  if (!executionCtx) executionCtx = Object.assign({}, TestConfig.trade);
+  if (executionCtx.concurrentTrades === undefined) executionCtx.concurrentTrades = ctxs.length > 1;
   
   // start mining if executing trades concurrently
-  let miningStarted = false;
-  if (concurrentTrades === undefined) concurrentTrades = ctxs.length > 1;
-  if (concurrentTrades) miningStarted = await startMining();
+  let miningStarted = executionCtx.concurrentTrades && await startMining();
   
-  // complete trades
+  // execute trades
   let offerIds: string[] = [];
   let err = undefined
   try {
@@ -1751,19 +1749,26 @@ async function executeTrades(ctxs: TradeContext[], concurrentTrades?: boolean): 
     }
     await Promise.all(fundWalletPromises);
 
-    // execute trades
-    if (concurrentTrades) {
-      const tradePromises: Promise<string>[] = [];
-      for (const config of ctxs) tradePromises.push(executeTrade(Object.assign(config, {concurrentTrades: concurrentTrades})));
-      try {
-        offerIds = await Promise.all(tradePromises);
-      } catch (e2) {
-        await Promise.allSettled(tradePromises); // wait for other trades to complete before throwing error
-        throw e2;
+    // execute trades in batches unless serial
+    if (executionCtx.concurrentTrades) {
+      let batchNum = 0;
+      while (batchNum * executionCtx.maxConcurrency! < ctxs.length) {
+        if (ctxs.length > executionCtx.maxConcurrency!) HavenoUtils.log(0, "Executing trade batch " + (batchNum + 1));
+        const tradePromises: Promise<string>[] = [];
+        const ctxBatch = ctxs.slice(batchNum * executionCtx.maxConcurrency!, batchNum * executionCtx.maxConcurrency! + executionCtx.maxConcurrency!);
+        for (const ctx of ctxBatch) tradePromises.push(executeTrade(Object.assign(ctx, {concurrentTrades: executionCtx.concurrentTrades})));
+        try {
+          const offerIdBatch = await Promise.all(tradePromises);
+          for (const offerId of offerIdBatch) offerIds.push(offerId);
+        } catch (e2) {
+          await Promise.allSettled(tradePromises); // wait for other trades to complete before throwing error
+          throw e2;
+        }
+        batchNum++;
       }
     } else {
-      for (const config of ctxs) {
-        offerIds.push(await executeTrade(Object.assign(config, {concurrentTrades: concurrentTrades})));
+      for (const ctx of ctxs) {
+        offerIds.push(await executeTrade(Object.assign(ctx, {concurrentTrades: executionCtx.concurrentTrades})));
       }
     }
   } catch (e) {
