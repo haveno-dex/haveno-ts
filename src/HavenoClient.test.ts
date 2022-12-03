@@ -92,20 +92,20 @@ const TestConfig = {
     startupHavenods: [{
             appName: "haveno-" + getBaseCurrencyNetwork() + "_arbitrator", // arbritrator
             logProcessOutput: true,
-            url: "http://localhost:8079",
+            port: "8079",
             accountPasswordRequired: false,
             accountPassword: "abctesting123",
         }, {
             appName: "haveno-" + getBaseCurrencyNetwork() + "_user1", // user1
             logProcessOutput: true,
-            url: "http://localhost:8080",
+            port: "8080",
             accountPasswordRequired: false,
             accountPassword: "abctesting456",
             walletUrl: "http://127.0.0.1:38091",
         }, {
             appName: "haveno-" + getBaseCurrencyNetwork() + "_user2", // user2
             logProcessOutput: true,
-            url: "http://localhost:8081",
+            port: "8081",
             accountPasswordRequired: false,
             accountPassword: "abctesting789",
             walletUrl: "http://127.0.0.1:38092",
@@ -132,10 +132,10 @@ const TestConfig = {
             address: "LXUTUN5mTPc2LsS7cEjkyjTRcfYyJGoUuQ"
         }
     ],
-    proxyPorts: new Map<string, string[]>([ // map proxied ports to havenod api and p2p ports
-        ["8079", ["9998", "4444"]],         // arbitrator
-        ["8080", ["9999", "5555"]],         // user1
-        ["8081", ["10000", "6666"]],        // user2
+    ports: new Map<string, string[]>([ // map http ports to havenod api and p2p ports
+        ["8079", ["9998", "4444"]],    // arbitrator
+        ["8080", ["9999", "5555"]],    // user1
+        ["8081", ["10000", "6666"]],   // user2
         ["8082", ["10001", "7777"]],
         ["8083", ["10002", "7778"]],
         ["8084", ["10003", "7779"]],
@@ -174,12 +174,26 @@ const TestConfig = {
         disputeWinner: DisputeResult.Winner.SELLER,
         disputeReason: DisputeResult.Reason.PEER_WAS_LATE,
         disputeSummary: "Seller is winner",
-        maxConcurrency: 8
+        maxConcurrency: 10
     }
 };
 
+interface HavenodContext {
+    logProcessOutput?: boolean,
+    apiPassword?: string,
+    walletUsername?: string,
+    walletDefaultPassword?: string,
+    accountPasswordRequired?: boolean,
+    accountPassword?: string,
+    autoLogin?: boolean,
+    appName?: string,
+    port?: string,
+    excludePorts?: string[],
+    walletUrl?: string
+}
+
 interface TradeContext {
-    
+
     // trade flow
     concurrentTrades?: boolean, // testing trades at same time
     makeOffer?: boolean,
@@ -242,14 +256,14 @@ interface TradeContext {
 }
 
 enum TradeRole {
-  MAKER = "MAKER",
-  TAKER = "TAKER",
+    MAKER = "MAKER",
+    TAKER = "TAKER",
 }
 
 enum DisputeContext {
-  NONE = "NONE",
-  OPEN_AFTER_DEPOSITS_UNLOCK = "OPEN_AFTER_DEPOSITS_UNLOCK",
-  OPEN_AFTER_PAYMENT_SENT = "OPEN_AFTER_PAYMENT_SENT"
+    NONE = "NONE",
+    OPEN_AFTER_DEPOSITS_UNLOCK = "OPEN_AFTER_DEPOSITS_UNLOCK",
+    OPEN_AFTER_PAYMENT_SENT = "OPEN_AFTER_PAYMENT_SENT"
 }
 
 interface TxContext {
@@ -1600,8 +1614,8 @@ test("Selects arbitrators which are online, registered, and least used", async (
   await wait(TestConfig.walletSyncPeriodMs * 2);
   
   // get internal api addresses
-  const arbitratorApiUrl = "localhost:" + TestConfig.proxyPorts.get(getPort(arbitrator.getUrl()))![1]; // TODO: havenod.getApiUrl()?
-  const arbitrator2ApiUrl = "localhost:" + TestConfig.proxyPorts.get(getPort(arbitrator2.getUrl()))![1];
+  const arbitratorApiUrl = "localhost:" + TestConfig.ports.get(getPort(arbitrator.getUrl()))![1]; // TODO: havenod.getApiUrl()?
+  const arbitrator2ApiUrl = "localhost:" + TestConfig.ports.get(getPort(arbitrator2.getUrl()))![1];
   
   let err = undefined;
   try {
@@ -1850,8 +1864,9 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
     let buyerPaymentAccountPayload = contract.getIsBuyerMakerAndSellerTaker() ? contract.getMakerPaymentAccountPayload() : contract.getTakerPaymentAccountPayload();
     if (ctx.isPaymentSent) expect(buyerPaymentAccountPayload).toEqual(expectedBuyerPaymentAccountPayload);
     else expect(buyerPaymentAccountPayload).toBeUndefined();
-    
+
     // shut down buyer and seller if configured
+    const usedPorts = [getPort(ctx.buyer!.getUrl()), getPort(ctx.seller!.getUrl())];
     const promises: Promise<void>[] = [];
     const buyerAppName = ctx.buyer!.getAppName();
     if (ctx.buyerOfflineAfterTake) {
@@ -1874,9 +1889,10 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
     
     // buyer comes online if offline
     if (ctx.buyerOfflineAfterTake) {
-      ctx.buyer = await initHaveno({appName: buyerAppName});
+      ctx.buyer = await initHaveno({appName: buyerAppName, excludePorts: usedPorts});
       if (isBuyerMaker) ctx.maker = ctx.buyer;
       else ctx.taker = ctx.buyer;
+      usedPorts.push(getPort(ctx.buyer!.getUrl()));
     }
     
     // test trade states
@@ -1945,9 +1961,10 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
     
     // seller comes online if offline
     if (!ctx.seller) {
-      ctx.seller = await initHaveno({appName: sellerAppName});
+      ctx.seller = await initHaveno({appName: sellerAppName, excludePorts: usedPorts});
       if (isBuyerMaker) ctx.taker = ctx.seller;
       else ctx.maker = ctx.seller;
+      usedPorts.push(getPort(ctx.seller!.getUrl()))
     }
     
     // seller notified payment is sent
@@ -2007,9 +2024,10 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
     
     // buyer comes online if offline
     if (ctx.buyerOfflineAfterPaymentSent) {
-      ctx.buyer = await initHaveno({appName: buyerAppName});
+      ctx.buyer = await initHaveno({appName: buyerAppName, excludePorts: usedPorts});
       if (isBuyerMaker) ctx.maker = ctx.buyer;
       else ctx.taker = ctx.buyer;
+      usedPorts.push(getPort(ctx.buyer!.getUrl()));
       HavenoUtils.log(1, "Done starting buyer");
       await wait(TestConfig.maxWalletStartupMs + TestConfig.walletSyncPeriodMs);
     }
@@ -2492,33 +2510,33 @@ async function initHavenos(numDaemons: number, config?: any) {
   return Promise.all(havenodPromises);
 }
 
-async function initHaveno(config?: any): Promise<HavenoClient> {
-  config = Object.assign({}, TestConfig.defaultHavenod, config);
-  if (!config.appName) config.appName = "haveno-" + TestConfig.baseCurrencyNetwork + "_instance_" + GenUtils.getUUID();
-  
+async function initHaveno(ctx?: HavenodContext): Promise<HavenoClient> {
+  if (!ctx) ctx = {};
+  Object.assign(ctx, TestConfig.defaultHavenod, Object.assign({}, ctx));
+  if (!ctx.appName) ctx.appName = "haveno-" + TestConfig.baseCurrencyNetwork + "_instance_" + GenUtils.getUUID();
+
   // connect to existing server or start new process
   let havenod: HavenoClient;
   try {
     
     // try to connect to existing server
-    havenod = new HavenoClient(config.url, config.apiPassword);
+    if (!ctx.port) throw new Error("Cannot connect without port");
+    havenod = new HavenoClient("http://localhost:" + ctx.port, ctx.apiPassword!);
     await havenod.getVersion();
   } catch (err: any) {
     
     // get port for haveno process
-    let proxyPort = "";
-    if (config.url) proxyPort = getPort(config.url);
-    else {
-      for (const port of Array.from(TestConfig.proxyPorts.keys())) {
-        if (port === "8079" || port === "8080" || port === "8081") continue; // reserved for arbitrator, user1, and user2
-        if (!GenUtils.arrayContains(HAVENO_PROCESS_PORTS, port)) {
-          HAVENO_PROCESS_PORTS.push(port);
-          proxyPort = port;
+    if (!ctx.port) {
+      for (const httpPort of Array.from(TestConfig.ports.keys())) {
+        if (httpPort === "8079" || httpPort === "8080" || httpPort === "8081") continue; // reserved for arbitrator, user1, and user2
+        if (!GenUtils.arrayContains(HAVENO_PROCESS_PORTS, httpPort) && (!ctx.excludePorts || !GenUtils.arrayContains(ctx.excludePorts, httpPort))) {
+          HAVENO_PROCESS_PORTS.push(httpPort);
+          ctx.port = httpPort;
           break;
         }
       }
     }
-    if (!proxyPort) throw new Error("No unused test ports available");
+    if (!ctx.port) throw new Error("No unused test ports available");
     
     // start haveno process using configured ports if available
     const cmd: string[] = [
@@ -2526,19 +2544,19 @@ async function initHaveno(config?: any): Promise<HavenoClient> {
       "--baseCurrencyNetwork", TestConfig.baseCurrencyNetwork,
       "--useLocalhostForP2P", TestConfig.baseCurrencyNetwork === BaseCurrencyNetwork.XMR_MAINNET ? "false" : "true", // TODO: disable for stagenet too
       "--useDevPrivilegeKeys", TestConfig.baseCurrencyNetwork === BaseCurrencyNetwork.XMR_LOCAL ? "true" : "false",
-      "--nodePort", TestConfig.proxyPorts.get(proxyPort)![1],
-      "--appName", config.appName,
+      "--nodePort", TestConfig.ports.get(ctx.port)![1],
+      "--appName", ctx.appName,
       "--apiPassword", "apitest",
-      "--apiPort", TestConfig.proxyPorts.get(proxyPort)![0],
-      "--walletRpcBindPort", config.walletUrl ? getPort(config.walletUrl) : "" + await getAvailablePort(), // use configured port if given
-      "--passwordRequired", (config.accountPasswordRequired ? "true" : "false")
+      "--apiPort", TestConfig.ports.get(ctx.port)![0],
+      "--walletRpcBindPort", ctx.walletUrl ? getPort(ctx.walletUrl) : "" + await getAvailablePort(), // use configured port if given
+      "--passwordRequired", (ctx.accountPasswordRequired ? "true" : "false")
     ];
-    havenod = await HavenoClient.startProcess(TestConfig.haveno.path, cmd, "http://localhost:" + proxyPort, config.logProcessOutput);
+    havenod = await HavenoClient.startProcess(TestConfig.haveno.path, cmd, "http://localhost:" + ctx.port, ctx.logProcessOutput!);
     HAVENO_PROCESSES.push(havenod);
   }
   
   // open account if configured
-  if (config.autoLogin) await initHavenoAccount(havenod, config.accountPassword);
+  if (ctx.autoLogin) await initHavenoAccount(havenod, ctx.accountPassword!);
   return havenod;
   
   async function getAvailablePort(): Promise<number> {
