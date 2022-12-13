@@ -112,7 +112,7 @@ const TestConfig = {
         }
     ],
     maxFee: BigInt("75000000000"),
-    walletSyncPeriodMs: 5000, // TODO (woodser): auto adjust higher if using remote connection
+    walletSyncPeriodMs: 7000, // TODO (woodser): auto adjust higher if using remote connection
     daemonPollPeriodMs: 15000,
     maxWalletStartupMs: 10000, // TODO (woodser): make shorter by switching to jni
     maxTimePeerNoticeMs: 5000,
@@ -218,11 +218,11 @@ interface TradeContext {
     price?: number,
     priceMargin?: number,
     triggerPrice?: number,
-    
+
     // take offer
     taker?: HavenoClient,
     awaitFundsToTakeOffer?: boolean,
-    offerId?: string, 
+    offerId?: string,
     takerPaymentAccountId?: string,
     testTraderChat?: boolean,
 
@@ -283,10 +283,10 @@ const OFFLINE_ERR_MSG = "Http response at 400 or 500 level";
 jest.setTimeout(TestConfig.testTimeout);
 
 beforeAll(async () => {
-  
+
   // set log level for tests
   HavenoUtils.setLogLevel(TestConfig.logLevel);
-  
+
   // initialize funding wallet
   await initFundingWallet();
   HavenoUtils.log(0, "Funding wallet balance: " + await fundingWallet.getBalance());
@@ -296,7 +296,11 @@ beforeAll(async () => {
   HavenoUtils.log(0, "Funding wallet mnemonic: " + await fundingWallet.getMnemonic());
   HavenoUtils.log(0, "Funding wallet primary address: " + await fundingWallet.getPrimaryAddress());
   HavenoUtils.log(0, "Funding wallet new subaddress: " + subaddress.getAddress());
-  
+
+  // initialize monerod
+  monerod = await monerojs.connectToDaemonRpc(TestConfig.monerod.url, TestConfig.monerod.username, TestConfig.monerod.password);
+  await mineToHeight(160); // initialize blockchain to latest block type
+
   // start configured haveno daemons
   const promises: Promise<HavenoClient>[] = [];
   for (const config of TestConfig.startupHavenods) promises.push(initHaveno(config));
@@ -304,7 +308,7 @@ beforeAll(async () => {
     if (settledPromise.status !== "fulfilled") throw new Error((settledPromise as PromiseRejectedResult).reason);
     startupHavenods.push((settledPromise as PromiseFulfilledResult<HavenoClient>).value);
   }
-  
+
   // assign arbitrator, user1, user2
   arbitrator = startupHavenods[0];
   user1 = startupHavenods[1];
@@ -312,15 +316,14 @@ beforeAll(async () => {
   TestConfig.trade.arbitrator = arbitrator;
   TestConfig.trade.maker = user1;
   TestConfig.trade.taker = user2;
-  
+
+  // connect client wallets
+  user1Wallet = await monerojs.connectToWalletRpc(TestConfig.startupHavenods[1].walletUrl, TestConfig.defaultHavenod.walletUsername, TestConfig.startupHavenods[1].accountPasswordRequired ? TestConfig.startupHavenods[1].accountPassword : TestConfig.defaultHavenod.walletDefaultPassword);
+  user2Wallet = await monerojs.connectToWalletRpc(TestConfig.startupHavenods[2].walletUrl, TestConfig.defaultHavenod.walletUsername, TestConfig.startupHavenods[2].accountPasswordRequired ? TestConfig.startupHavenods[2].accountPassword : TestConfig.defaultHavenod.walletDefaultPassword);
+
   // register arbitrator dispute agent
   await arbitrator.registerDisputeAgent("arbitrator", getArbitratorPrivKey(0));
 
-  // connect monero clients
-  monerod = await monerojs.connectToDaemonRpc(TestConfig.monerod.url, TestConfig.monerod.username, TestConfig.monerod.password);
-  user1Wallet = await monerojs.connectToWalletRpc(TestConfig.startupHavenods[1].walletUrl, TestConfig.defaultHavenod.walletUsername, TestConfig.startupHavenods[1].accountPasswordRequired ? TestConfig.startupHavenods[1].accountPassword : TestConfig.defaultHavenod.walletDefaultPassword);
-  user2Wallet = await monerojs.connectToWalletRpc(TestConfig.startupHavenods[2].walletUrl, TestConfig.defaultHavenod.walletUsername, TestConfig.startupHavenods[2].accountPasswordRequired ? TestConfig.startupHavenods[2].accountPassword : TestConfig.defaultHavenod.walletDefaultPassword);
-  
   // create test data directory if it doesn't exist
   if (!fs.existsSync(TestConfig.testDataDir)) fs.mkdirSync(TestConfig.testDataDir);
 });
@@ -330,53 +333,53 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
-  
+
   // release haveno processes
   const promises: Promise<void>[] = [];
   for (const havenod of startupHavenods) {
     promises.push(havenod.getProcess() ? releaseHavenoProcess(havenod) : havenod.disconnect());
   }
   await Promise.all(promises);
-  
+
   // terminate monero-javascript worker
   (await monerojs.LibraryUtils.getWorker()).terminate();
 });
 
 // ----------------------------------- TESTS ----------------------------------
 
-test("Can get the version", async () => {
+test("Can get the version (CI)", async () => {
   const version = await arbitrator.getVersion();
   expect(version).toEqual(TestConfig.haveno.version);
 });
 
-test("Can manage an account", async () => {
+test("Can manage an account (CI)", async () => {
   let user3: HavenoClient|undefined;
   let err: any;
   try {
-    
+
     // start user3 without opening account
     user3 = await initHaveno({autoLogin: false});
     assert(!await user3.accountExists());
-    
+
     // test errors when account not open
     await testAccountNotOpen(user3);
-    
+
     // create account
     let password = "testPassword";
     await user3.createAccount(password);
     if (await user3.isConnectedToMonero()) await user3.getBalances(); // only connected if local node running
     assert(await user3.accountExists());
     assert(await user3.isAccountOpen());
-    
+
     // create payment account
     const paymentAccount = await user3.createCryptoPaymentAccount("My ETH account", TestConfig.cryptoAddresses[0].currencyCode, TestConfig.cryptoAddresses[0].address);
-    
+
     // close account
     await user3.closeAccount();
     assert(await user3.accountExists());
     assert(!await user3.isAccountOpen());
     await testAccountNotOpen(user3);
-    
+
     // open account with wrong password
     try {
         await user3.openAccount("wrongPassword");
@@ -384,65 +387,65 @@ test("Can manage an account", async () => {
     } catch (err: any) {
         assert.equal(err.message, "Incorrect password");
     }
-    
+
     // open account
     await user3.openAccount(password);
     assert(await user3.accountExists());
     assert(await user3.isAccountOpen());
-    
+
     // restart user3
     const user3Config = {appName: user3.getAppName(), autoLogin: false}
     await releaseHavenoProcess(user3);
     user3 = await initHaveno(user3Config);
     assert(await user3.accountExists());
     assert(!await user3.isAccountOpen());
-    
+
     // open account
     await user3.openAccount(password);
     assert(await user3.accountExists());
     assert(await user3.isAccountOpen());
-    
+
     // change password
     password = "newPassword";
     await user3.changePassword(password);
     assert(await user3.accountExists());
     assert(await user3.isAccountOpen());
-    
+
     // restart user3
     await releaseHavenoProcess(user3);
     user3 = await initHaveno(user3Config);
     await testAccountNotOpen(user3);
-    
+
     // open account
     await user3.openAccount(password);
     assert(await user3.accountExists());
     assert(await user3.isAccountOpen());
-    
+
     // backup account to zip file
     const zipFile = TestConfig.testDataDir + "/backup.zip";
     const stream = fs.createWriteStream(zipFile);
     const size = await user3.backupAccount(stream);
     stream.end();
     assert(size > 0);
-    
+
     // delete account which shuts down server
     await user3.deleteAccount(); // TODO: support deleting and restoring account without shutting down server, #310
     assert(!await user3.isConnectedToDaemon());
     await releaseHavenoProcess(user3);
-    
+
     // restore account which shuts down server
     user3 = await initHaveno(user3Config);
     const zipBytes: Uint8Array = new Uint8Array(fs.readFileSync(zipFile));
     await user3.restoreAccount(zipBytes);
     assert(!await user3.isConnectedToDaemon());
     await releaseHavenoProcess(user3);
-    
+
     // open restored account
     user3 = await initHaveno(user3Config);
     assert(await user3.accountExists());
     await user3.openAccount(password);
     assert(await user3.isAccountOpen());
-    
+
     // check the persisted payment account
     const paymentAccount2 = await user3.getPaymentAccount(paymentAccount.getId());
     testCryptoPaymentAccountsEqual(paymentAccount, paymentAccount2);
@@ -453,7 +456,7 @@ test("Can manage an account", async () => {
   // stop and delete instances
   if (user3) await releaseHavenoProcess(user3, true);
   if (err) throw err;
-  
+
   async function testAccountNotOpen(havenod: HavenoClient): Promise<void> { // TODO: generalize this?
     try { await havenod.getMoneroConnections(); throw new Error("Should have thrown"); }
     catch (err: any) { assert.equal(err.message, "Account not open"); }
@@ -466,7 +469,7 @@ test("Can manage an account", async () => {
   }
 });
 
-test("Can manage Monero daemon connections", async () => {
+test("Can manage Monero daemon connections (CI)", async () => {
   let monerod2: any;
   let user3: HavenoClient|undefined;
   let err: any;
@@ -536,7 +539,7 @@ test("Can manage Monero daemon connections", async () => {
     connection = await user3.checkMoneroConnection();
     assert(await user3.isConnectedToMonero());
     testConnection(connection!, TestConfig.monerod2.url, OnlineStatus.ONLINE, AuthenticationStatus.AUTHENTICATED, 1);
-    
+
     // change account password
     const password = "newPassword";
     await user3.changePassword("newPassword");
@@ -617,10 +620,10 @@ test("Can manage Monero daemon connections", async () => {
   if (err) throw err;
 });
 
-test("Can start and stop a local Monero node", async() => {
+test("Can start and stop a local Monero node (CI)", async() => {
 
   // expect error stopping local node
-  try {    
+  try {
     await user1.stopMoneroNode();
     HavenoUtils.log(1, "Running local Monero node stopped");
     await user1.stopMoneroNode(); // stop 2nd time to force error
@@ -669,7 +672,7 @@ test("Can start and stop a local Monero node", async() => {
     await user1.startMoneroNode(settings);
     isMoneroNodeOnline = await user1.isMoneroNodeOnline();
     assert(isMoneroNodeOnline);
-    
+
     // expect settings are updated
     const settingsAfter = await user1.getMoneroNodeSettings();
     testMoneroNodeSettingsEqual(settings, settingsAfter!);
@@ -708,57 +711,57 @@ test("Can start and stop a local Monero node", async() => {
 });
 
 // test wallet balances, transactions, deposit addresses, create and relay txs
-test("Has a Monero wallet", async () => {
-  
+test("Has a Monero wallet (CI)", async () => {
+
   // get seed phrase
   const seed = await user1.getXmrSeed();
   await MoneroUtils.validateMnemonic(seed);
-  
+
   // get primary address
   const primaryAddress = await user1.getXmrPrimaryAddress();
   await MoneroUtils.validateAddress(primaryAddress, TestConfig.networkType);
-  
+
   // wait for user1 to have unlocked balance
   const tradeAmount = BigInt("250000000000");
   await waitForAvailableBalance(tradeAmount * BigInt("2"), user1);
-  
+
   // test balances
   const balancesBefore: XmrBalanceInfo = await user1.getBalances(); // TODO: rename to getXmrBalances() for consistency?
   expect(BigInt(balancesBefore.getAvailableBalance())).toBeGreaterThan(BigInt("0"));
   expect(BigInt(balancesBefore.getBalance())).toBeGreaterThanOrEqual(BigInt(balancesBefore.getAvailableBalance()));
-  
+
   // get transactions
   const txs: XmrTx[]= await user1.getXmrTxs();
   assert(txs.length > 0);
   for (const tx of txs) {
     testTx(tx, {isCreatedTx: false});
   }
-  
+
   // get new subaddresses
   for (let i = 0; i < 0; i++) {
     const address = await user1.getXmrNewSubaddress();
     await MoneroUtils.validateAddress(address, TestConfig.networkType);
   }
-  
+
   // create withdraw tx
   const destination = new XmrDestination().setAddress(await user1.getXmrNewSubaddress()).setAmount("100000000000");
   let tx: XmrTx|undefined = await user1.createXmrTx([destination]);
   testTx(tx, {isCreatedTx: true});
-  
+
   // relay withdraw tx
   const txHash = await user1.relayXmrTx(tx.getMetadata());
   expect(txHash.length).toEqual(64);
   await wait(TestConfig.maxTimePeerNoticeMs); // TODO: this is necessary for wallets with many subaddresses so something is async
-  
+
   // balances decreased
   const balancesAfter = await user1.getBalances();
   expect(BigInt(balancesAfter.getBalance())).toBeLessThan(BigInt(balancesBefore.getBalance()));
   expect(BigInt(balancesAfter.getAvailableBalance())).toBeLessThan(BigInt(balancesBefore.getAvailableBalance()));
-  
+
   // get relayed tx
   tx = await user1.getXmrTx(txHash);
   testTx(tx!, {isCreatedTx: false});
-  
+
   // relay invalid tx
   try {
     await user1.relayXmrTx("invalid tx metadata");
@@ -768,7 +771,7 @@ test("Has a Monero wallet", async () => {
   }
 });
 
-test("Can get balances", async () => {
+test("Can get balances (CI)", async () => {
   const balances: XmrBalanceInfo = await user1.getBalances();
   expect(BigInt(balances.getAvailableBalance())).toBeGreaterThanOrEqual(0);
   expect(BigInt(balances.getPendingBalance())).toBeGreaterThanOrEqual(0);
@@ -776,7 +779,7 @@ test("Can get balances", async () => {
   expect(BigInt(balances.getReservedTradeBalance())).toBeGreaterThanOrEqual(0);
 });
 
-test("Can receive push notifications", async () => {
+test("Can receive push notifications (CI)", async () => {
 
   // add notification listener
   const notifications: NotificationMessage[] = [];
@@ -802,7 +805,7 @@ test("Can receive push notifications", async () => {
   }
 });
 
-test("Can get supported assets and their payment methods", async() => {
+test("Can get supported assets and their payment methods (CI)", async() => {
   const assetCodes = await user1.getSupportedAssetCodes(); // TODO: replace with getSupportedAssets(): TradeCurrency[]
   for (const assetCode of assetCodes) {
     const paymentMethods = await user1.getPaymentMethods(assetCode);
@@ -810,7 +813,7 @@ test("Can get supported assets and their payment methods", async() => {
   }
 });
 
-test("Can get market prices", async () => {
+test("Can get market prices (CI)", async () => {
 
   // get all market prices
   const prices: MarketPriceInfo[] = await user1.getPrices();
@@ -819,33 +822,33 @@ test("Can get market prices", async () => {
     expect(price.getCurrencyCode().length).toBeGreaterThan(0);
     expect(price.getPrice()).toBeGreaterThanOrEqual(0);
   }
-  
+
   // get market prices of primary assets
   for (const assetCode of TestConfig.assetCodes) {
     const price = await user1.getPrice(assetCode);
     expect(price).toBeGreaterThan(0);
   }
-  
+
   // test that prices are reasonable
   const usd = await user1.getPrice("USD");
   expect(usd).toBeGreaterThan(50);
   expect(usd).toBeLessThan(5000);
-  const doge = await user1.getPrice("DOGE");
-  expect(doge).toBeGreaterThan(200)
-  expect(doge).toBeLessThan(20000);
+  const ltc = await user1.getPrice("LTC");
+  expect(ltc).toBeGreaterThan(0.0004);
+  expect(ltc).toBeLessThan(40);
   const btc = await user1.getPrice("BTC");
-  expect(btc).toBeGreaterThan(0.0004)
+  expect(btc).toBeGreaterThan(0.0004);
   expect(btc).toBeLessThan(0.4);
-  
+
   // test invalid currency
   await expect(async () => { await user1.getPrice("INVALID_CURRENCY") })
     .rejects
     .toThrow('Currency not found: INVALID_CURRENCY');
 });
 
-test("Can get market depth", async () => {
+test("Can get market depth (CI)", async () => {
     const assetCode = "eth";
-    
+
     // clear offers
     await clearOffers(user1, assetCode);
     await clearOffers(user2, assetCode);
@@ -856,7 +859,7 @@ test("Can get market depth", async () => {
         }
       }
     }
-    
+
     // market depth has no data
     await wait(TestConfig.maxTimePeerNoticeMs);
     let marketDepth = await user1.getMarketDepth(assetCode);
@@ -864,7 +867,7 @@ test("Can get market depth", async () => {
     expect(marketDepth.getBuyDepthList().length).toEqual(0);
     expect(marketDepth.getSellPricesList().length).toEqual(0);
     expect(marketDepth.getSellDepthList().length).toEqual(0);
-    
+
     // post offers to buy and sell
     await makeOffer({maker: user1, direction: "buy", amount: BigInt("150000000000"), assetCode: assetCode, priceMargin: 0.00, price: 17.0}); // TODO: offer price is reversed. fix everywhere
     await makeOffer({maker: user1, direction: "buy", amount: BigInt("150000000000"), assetCode: assetCode, priceMargin: 0.02, price: 17.2});
@@ -873,17 +876,17 @@ test("Can get market depth", async () => {
     await makeOffer({maker: user1, direction: "sell", amount: BigInt("300000000000"), assetCode: assetCode, priceMargin: 0.00});
     await makeOffer({maker: user1, direction: "sell", amount: BigInt("300000000000"), assetCode: assetCode, priceMargin: 0.02});
     await makeOffer({maker: user1, direction: "sell", amount: BigInt("400000000000"), assetCode: assetCode, priceMargin: 0.05});
-    
+
     // get user2's market depth
     await wait(TestConfig.maxTimePeerNoticeMs);
     marketDepth = await user1.getMarketDepth(assetCode);
-    
+
     // each unique price has a depth
     expect(marketDepth.getBuyPricesList().length).toEqual(3);
     expect(marketDepth.getSellPricesList().length).toEqual(3);
     expect(marketDepth.getBuyPricesList().length).toEqual(marketDepth.getBuyDepthList().length);
     expect(marketDepth.getSellPricesList().length).toEqual(marketDepth.getSellDepthList().length);
-    
+
     // test buy prices and depths
     const buyOffers = (await user1.getOffers(assetCode, "buy")).concat(await user1.getMyOffers(assetCode, "buy")).sort(function(a, b) { return parseFloat(a.getPrice()) - parseFloat(b.getPrice()) });
     expect(marketDepth.getBuyPricesList()[0]).toEqual(1 / parseFloat(buyOffers[0].getPrice())); // TODO: price when posting offer is reversed. this assumes crypto counter currency
@@ -892,7 +895,7 @@ test("Can get market depth", async () => {
     expect(marketDepth.getBuyDepthList()[0]).toEqual(0.15);
     expect(marketDepth.getBuyDepthList()[1]).toEqual(0.30);
     expect(marketDepth.getBuyDepthList()[2]).toEqual(0.65);
-    
+
     // test sell prices and depths
     const sellOffers = (await user1.getOffers(assetCode, "sell")).concat(await user1.getMyOffers(assetCode, "sell")).sort(function(a, b) { return parseFloat(b.getPrice()) - parseFloat(a.getPrice()) });
     expect(marketDepth.getSellPricesList()[0]).toEqual(1 / parseFloat(sellOffers[0].getPrice()));
@@ -901,19 +904,19 @@ test("Can get market depth", async () => {
     expect(marketDepth.getSellDepthList()[0]).toEqual(0.3);
     expect(marketDepth.getSellDepthList()[1]).toEqual(0.6);
     expect(marketDepth.getSellDepthList()[2]).toEqual(1);
-    
+
     // clear offers
     await clearOffers(user1, assetCode);
     await clearOffers(user2, assetCode);
-    
+
     // test invalid currency
     await expect(async () => {await user1.getMarketDepth("INVALID_CURRENCY")})
         .rejects
         .toThrow('Currency not found: INVALID_CURRENCY');
 });
 
-test("Can register as an arbitrator", async () => {
-  
+test("Can register as an arbitrator (CI)", async () => {
+
   // test bad dispute agent type
   try {
     await arbitrator.registerDisputeAgent("unsupported type", getArbitratorPrivKey(0));
@@ -921,7 +924,7 @@ test("Can register as an arbitrator", async () => {
   } catch (err: any) {
     if (err.message !== "unknown dispute agent type 'unsupported type'") throw new Error("Unexpected error: " + err.message);
   }
-  
+
   // test bad key
   try {
     await arbitrator.registerDisputeAgent("mediator", "bad key");
@@ -929,26 +932,26 @@ test("Can register as an arbitrator", async () => {
   } catch (err: any) {
     if (err.message !== "invalid registration key") throw new Error("Unexpected error: " + err.message);
   }
-  
+
   // register arbitrator with good key
   await arbitrator.registerDisputeAgent("arbitrator", getArbitratorPrivKey(0));
 });
 
-test("Can get offers", async () => {
+test("Can get offers (CI)", async () => {
   for (const assetCode of TestConfig.assetCodes) {
     const offers: OfferInfo[] = await user1.getOffers(assetCode);
     for (const offer of offers)  testOffer(offer);
   }
 });
 
-test("Can get my offers", async () => {
+test("Can get my offers (CI)", async () => {
   for (const assetCode of TestConfig.assetCodes) {
     const offers: OfferInfo[] = await user1.getMyOffers(assetCode);
     for (const offer of offers)  testOffer(offer);
   }
 });
 
-test("Can get payment methods", async () => {
+test("Can get payment methods (CI)", async () => {
   const paymentMethods: PaymentMethod[] = await user1.getPaymentMethods();
   expect(paymentMethods.length).toBeGreaterThan(0);
   for (const paymentMethod of paymentMethods) {
@@ -959,7 +962,7 @@ test("Can get payment methods", async () => {
   }
 });
 
-test("Can get payment accounts", async () => {
+test("Can get payment accounts (CI)", async () => {
   const paymentAccounts: PaymentAccount[] = await user1.getPaymentAccounts();
   for (const paymentAccount of paymentAccounts) {
     if (paymentAccount.getPaymentAccountPayload()!.getCryptoCurrencyAccountPayload()) { // TODO (woodser): test non-crypto
@@ -970,27 +973,27 @@ test("Can get payment accounts", async () => {
 
 // TODO: rename ClearXChange to Zelle
 // TODO: FieldId represented as number
-test("Can validate payment account forms", async () => {
-  
-  // supported payment methods  
+test("Can validate payment account forms (CI)", async () => {
+
+  // supported payment methods
   const expectedPaymentMethods = ["BLOCK_CHAINS", "REVOLUT", "SEPA", "SEPA_INSTANT", "TRANSFERWISE", "CLEAR_X_CHANGE", "SWIFT", "F2F", "STRIKE", "MONEY_GRAM", "FASTER_PAYMENTS", "UPHOLD", "PAXUM"];
-  
+
   // get payment methods
   const paymentMethods = await user1.getPaymentMethods();
   expect(paymentMethods.length).toEqual(expectedPaymentMethods.length);
   for (const paymentMethod of paymentMethods) {
     assert(GenUtils.arrayContains(expectedPaymentMethods, paymentMethod.getId()), "Payment method is not expected: " + paymentMethod.getId());
   }
-  
+
   // test form for each payment method
   for (const paymentMethod of paymentMethods) {
-    
+
     // generate form
     const accountForm = await user1.getPaymentAccountForm(paymentMethod.getId());
-    
+
     // complete form, validating each field
     for (const field of accountForm.getFieldsList()) {
-      
+
       // validate invalid form field
       try {
         const invalidInput = getInvalidFormInput(accountForm, field.getId());
@@ -1000,16 +1003,16 @@ test("Can validate payment account forms", async () => {
         if (err.message.indexOf("Not implemented") >= 0) throw err;
         if (err.message.indexOf("Should have thrown") >= 0) throw err;
       }
-      
+
       // validate valid form field
       const validInput = getValidFormInput(field.getId(), accountForm);
       await user1.validateFormField(accountForm, field.getId(), validInput);
       field.setValue(validInput);
     }
-    
+
     // create payment account
     const paymentAccount = await user1.createPaymentAccount(accountForm);
-    
+
     // payment account added
     let found = false;
     for (const userAccount of await user1.getPaymentAccounts()) {
@@ -1019,24 +1022,24 @@ test("Can validate payment account forms", async () => {
       }
     }
     assert(found, "Payment account not found after adding");
-    
+
     // test payment account
     expect(paymentAccount.getPaymentMethod()!.getId()).toEqual(paymentMethod.getId());
     testPaymentAccount(paymentAccount, accountForm);
   }
 });
 
-test("Can create fiat payment accounts", async () => {
-  
+test("Can create fiat payment accounts (CI)", async () => {
+
   // get payment account form
   const paymentMethodId = 'REVOLUT';
   const accountForm = await user1.getPaymentAccountForm(paymentMethodId);
-  
+
   // edit form
   HavenoUtils.setFormValue(PaymentAccountFormField.FieldId.ACCOUNT_NAME, "Revolut account " + GenUtils.getUUID(), accountForm);
   HavenoUtils.setFormValue(PaymentAccountFormField.FieldId.USER_NAME, "user123", accountForm);
   HavenoUtils.setFormValue(PaymentAccountFormField.FieldId.TRADE_CURRENCIES, "gbp,eur,usd", accountForm);
-  
+
   // create payment account
   const fiatAccount = await user1.createPaymentAccount(accountForm);
   expect(fiatAccount.getAccountName()).toEqual(HavenoUtils.getFormValue(accountForm, PaymentAccountFormField.FieldId.ACCOUNT_NAME));
@@ -1045,7 +1048,7 @@ test("Can create fiat payment accounts", async () => {
   expect(fiatAccount.getPaymentAccountPayload()!.getPaymentMethodId()).toEqual(paymentMethodId);
   expect(fiatAccount.getPaymentAccountPayload()!.getRevolutAccountPayload()!.getAccountId()).toEqual(HavenoUtils.getFormValue(accountForm, PaymentAccountFormField.FieldId.USER_NAME)); // TODO: payment payload account id is username?
   expect(fiatAccount.getPaymentAccountPayload()!.getRevolutAccountPayload()!.getUserName()).toEqual(HavenoUtils.getFormValue(accountForm, PaymentAccountFormField.FieldId.USER_NAME));
-  
+
   // payment account added
   let found = false;
   for (const paymentAccount of await user1.getPaymentAccounts()) {
@@ -1057,17 +1060,17 @@ test("Can create fiat payment accounts", async () => {
   assert(found, "Payment account not found after adding");
 });
 
-test("Can create crypto payment accounts", async () => {
-  
+test("Can create crypto payment accounts (CI)", async () => {
+
   // test each crypto
   for (const testAccount of TestConfig.cryptoAddresses) {
-    
+
     // create payment account
     const name = testAccount.currencyCode + " " + testAccount.address.substr(0, 8) + "... " + GenUtils.getUUID();
     const paymentAccount: PaymentAccount = await user1.createCryptoPaymentAccount(name, testAccount.currencyCode, testAccount.address);
     testCryptoPaymentAccount(paymentAccount);
     testCryptoPaymentAccountEquals(paymentAccount, testAccount, name);
-    
+
     // fetch and test payment account
     let fetchedAccount: PaymentAccount|undefined;
     for (const account of await user1.getPaymentAccounts()) {
@@ -1080,19 +1083,19 @@ test("Can create crypto payment accounts", async () => {
     testCryptoPaymentAccount(paymentAccount);
     testCryptoPaymentAccountEquals(fetchedAccount, testAccount, name);
   }
-  
+
   // test invalid currency code
   await expect(async () => { await user1.createCryptoPaymentAccount("My account", "ABC", "123"); })
       .rejects
       .toThrow("crypto currency with code 'abc' not found");
-  
+
   // test invalid address
   await expect(async () => { await user1.createCryptoPaymentAccount("My account", "ETH", "123"); })
       .rejects
       .toThrow('123 is not a valid eth address');
-  
+
   // TODO (woodser): test rejecting account with duplicate name
-  
+
   function testCryptoPaymentAccountEquals(paymentAccount: PaymentAccount, testAccount: any, name: string) {
     expect(paymentAccount.getAccountName()).toEqual(name);
     expect(paymentAccount.getPaymentAccountPayload()!.getCryptoCurrencyAccountPayload()!.getAddress()).toEqual(testAccount.address);
@@ -1100,46 +1103,46 @@ test("Can create crypto payment accounts", async () => {
   }
 });
 
-test("Can prepare for trading", async () => {
+test("Can prepare for trading (CI)", async () => {
   await prepareForTrading(4, user1, user2);
 });
 
-test("Can post and remove an offer", async () => {
-  
+test("Can post and remove an offer (CI)", async () => {
+
   // wait for user1 to have unlocked balance to post offer
   await waitForAvailableBalance(BigInt("250000000000") * BigInt("2"), user1);
-  
+
   // get unlocked balance before reserving funds for offer
   const availableBalanceBefore = BigInt((await user1.getBalances()).getAvailableBalance());
-  
+
   // post crypto offer
   let assetCode = "BCH";
   let price = 1 / 17;
   price = 1 / price; // TODO: price in crypto offer is inverted
-  let offer: OfferInfo = await makeOffer({maker: user1, assetCode: assetCode, price: price}); 
+  let offer: OfferInfo = await makeOffer({maker: user1, assetCode: assetCode, price: price});
   assert.equal(offer.getState(), "AVAILABLE");
   assert.equal(offer.getBaseCurrencyCode(), assetCode); // TODO: base and counter currencies inverted in crypto offer
   assert.equal(offer.getCounterCurrencyCode(), "XMR");
   assert.equal(parseFloat(offer.getPrice()), price);
-  
+
   // has offer
   offer = await user1.getMyOffer(offer.getId());
   assert.equal(offer.getState(), "AVAILABLE");
-  
+
   // peer sees offer
   await wait(TestConfig.maxTimePeerNoticeMs);
   if (!getOffer(await user2.getOffers(assetCode, TestConfig.trade.direction), offer.getId())) throw new Error("Offer " + offer.getId() + " was not found in peer's offers after posted");
-  
+
   // cancel offer
   await user1.removeOffer(offer.getId());
-  
+
   // offer is removed from my offers
   if (getOffer(await user1.getMyOffers(assetCode, "buy"), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in my offers after removal");
-  
+
   // reserved balance released
   expect(BigInt((await user1.getBalances()).getAvailableBalance())).toEqual(availableBalanceBefore);
-  
-  // post fiat offer 
+
+  // post fiat offer
   assetCode = "USD";
   price = 180.0;
   offer = await makeOffer({maker: user1, assetCode: assetCode, price: price});
@@ -1147,98 +1150,98 @@ test("Can post and remove an offer", async () => {
   assert.equal(offer.getBaseCurrencyCode(), "XMR");
   assert.equal(offer.getCounterCurrencyCode(), "USD");
   assert.equal(parseFloat(offer.getPrice()), price);
-  
+
   // has offer
   offer = await user1.getMyOffer(offer.getId());
   assert.equal(offer.getState(), "AVAILABLE");
-  
+
   // cancel offer
   await user1.removeOffer(offer.getId());
-  
+
   // offer is removed from my offers
   if (getOffer(await user1.getMyOffers(assetCode, "buy"), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in my offers after removal");
-  
+
   // reserved balance released
   expect(BigInt((await user1.getBalances()).getAvailableBalance())).toEqual(availableBalanceBefore);
 });
 
 // TODO: support splitting outputs
 // TODO: provide number of confirmations in offer status
-test("Can schedule offers with locked funds", async () => {
+test("Can schedule offers with locked funds (CI)", async () => {
   let user3: HavenoClient|undefined;
   let err: any;
   try {
-    
+
     // start user3
     user3 = await initHaveno();
     const user3Wallet = await monerojs.connectToWalletRpc("http://127.0.0.1:" + user3.getWalletRpcPort(), TestConfig.defaultHavenod.walletUsername, TestConfig.defaultHavenod.accountPassword);
-    
+
     // fund user3 with 2 outputs of 0.5 XMR
     const outputAmt = BigInt("500000000000");
     await fundOutputs([user3Wallet], outputAmt, 2, false);
-  
+
     // schedule offer
     const assetCode = "BCH";
     const direction = "BUY";
-    let offer: OfferInfo = await makeOffer({maker: user3, assetCode: assetCode, direction: direction, awaitFundsToMakeOffer: false}); 
+    let offer: OfferInfo = await makeOffer({maker: user3, assetCode: assetCode, direction: direction, awaitFundsToMakeOffer: false});
     assert.equal(offer.getState(), "SCHEDULED");
-    
+
     // has offer
     offer = await user3.getMyOffer(offer.getId());
     assert.equal(offer.getState(), "SCHEDULED");
-    
+
     // balances unchanged
     expect(BigInt((await user3.getBalances()).getPendingBalance())).toEqual(outputAmt * BigInt(2));
     expect(BigInt((await user3.getBalances()).getReservedOfferBalance())).toEqual(BigInt(0));
-    
+
     // peer does not see offer because it's scheduled
     await wait(TestConfig.maxTimePeerNoticeMs);
     if (getOffer(await user1.getOffers(assetCode, direction), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in peer's offers before posted");
-    
+
     // cancel offer
     await user3.removeOffer(offer.getId());
     if (getOffer(await user3.getOffers(assetCode, direction), offer.getId())) throw new Error("Offer " + offer.getId() + " was found after canceling offer");
-    
+
     // balances unchanged
     expect(BigInt((await user3.getBalances()).getPendingBalance())).toEqual(outputAmt * BigInt(2));
     expect(BigInt((await user3.getBalances()).getReservedOfferBalance())).toEqual(BigInt(0));
-    
+
     // schedule offer
-    offer = await makeOffer({maker: user3, assetCode: assetCode, direction: direction, awaitFundsToMakeOffer: false}); 
+    offer = await makeOffer({maker: user3, assetCode: assetCode, direction: direction, awaitFundsToMakeOffer: false});
     assert.equal(offer.getState(), "SCHEDULED");
-    
+
     // restart user3
     const user3Config = {appName: user3.getAppName()};
     await releaseHavenoProcess(user3);
     user3 = await initHaveno(user3Config);
-    
+
     // has offer
     offer = await user3.getMyOffer(offer.getId());
     assert.equal(offer.getState(), "SCHEDULED");
-    
+
     // peer does not see offer because it's scheduled
     await wait(TestConfig.maxTimePeerNoticeMs);
     if (getOffer(await user1.getOffers(assetCode, direction), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in peer's offers before posted");
-    
+
     // wait for deposit txs to unlock
     await waitForAvailableBalance(outputAmt, user3);
-    
+
     // one output is reserved, one is unlocked
     await wait(TestConfig.maxTimePeerNoticeMs);
     expect(BigInt((await user3.getBalances()).getAvailableBalance())).toEqual(outputAmt);
     expect(BigInt((await user3.getBalances()).getPendingBalance())).toEqual(BigInt(0));
     expect(BigInt((await user3.getBalances()).getReservedOfferBalance())).toEqual(outputAmt);
-    
+
     // peer sees offer
     await wait(TestConfig.maxTimePeerNoticeMs);
     if (!getOffer(await user1.getOffers(assetCode, direction), offer.getId())) throw new Error("Offer " + offer.getId() + " was not found in peer's offers after posted");
-    
+
     // cancel offer
     await user3.removeOffer(offer.getId());
-    
+
     // offer is removed from my offers
     if (getOffer(await user3.getMyOffers(assetCode), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in my offers after removal");
-    
+
     // reserved balance becomes unlocked
     expect(BigInt((await user3.getBalances()).getAvailableBalance())).toEqual(outputAmt * BigInt(2));
     expect(BigInt((await user3.getBalances()).getPendingBalance())).toEqual(BigInt(0));
@@ -1256,11 +1259,11 @@ test("Can complete a trade", async () => {
   await executeTrade();
 });
 
-test("Can complete trades at the same time", async () => {
+test("Can complete trades at the same time (CI)", async () => {
   await executeTrades(getTradeContexts(6));
 });
 
-test("Can complete all trade combinations", async () => {
+test("Can complete all trade combinations (stress)", async () => {
 
   // generate trade context for each combination (buyer/seller, maker/taker, dispute(s), dispute winner)
   const ctxs: TradeContext[] = [];
@@ -1290,26 +1293,26 @@ test("Can complete all trade combinations", async () => {
       }
     }
   }
-  
+
   // execute trades
   HavenoUtils.log(0, "Executing " + ctxs.length + " trade configurations");
   await executeTrades(ctxs);
 });
 
-test("Can go offline while completing a trade", async () => {
+test("Can go offline while completing a trade (CI)", async () => {
   let traders: HavenoClient[] = [];
   let ctx: TradeContext = {};
   let err: any;
   let miningStarted = false;
   try {
-    
+
     // start and fund 2 trader processes
     HavenoUtils.log(1, "Starting trader processes");
     traders = await initHavenos(2);
     HavenoUtils.log(1, "Funding traders");
     const tradeAmount = BigInt("250000000000");
     await waitForAvailableBalance(tradeAmount * BigInt("2"), ...traders);
-    
+
     // create trade config
     ctx = Object.assign({}, TestConfig.trade);
     ctx.maker = traders[0];
@@ -1317,14 +1320,14 @@ test("Can go offline while completing a trade", async () => {
     ctx.buyerOfflineAfterTake = true;
     ctx.sellerOfflineAfterTake = true;
     ctx.buyerOfflineAfterPaymentSent = true;
-    
+
     // execute trade
     miningStarted = await startMining();
     await executeTrade(ctx);
   } catch (e) {
     err = e;
   }
-  
+
   // stop traders
   if (miningStarted) await stopMining();
   if (ctx.maker) await releaseHavenoProcess(ctx.maker, true);
@@ -1332,13 +1335,13 @@ test("Can go offline while completing a trade", async () => {
   if (err) throw err;
 });
 
-test("Can resolve disputes", async () => {
-  
+test("Can resolve disputes (CI)", async () => {
+
   // take trades but stop before sending payment
   const ctxs = getTradeContexts(4);
   for (const config of ctxs) config.buyerSendsPayment = false;
   const tradeIds = await executeTrades(ctxs);
-  
+
   // open disputes at same time but do not resolve
   const trade1 = await user1.getTrade(tradeIds[1]);
   const trade2 = await user1.getTrade(tradeIds[2]);
@@ -1375,24 +1378,24 @@ test("Can resolve disputes", async () => {
   });
   HavenoUtils.log(1, "Opening disputes");
   await executeTrades(ctxs);
-  
+
   // resolve disputes
   for (const config of ctxs) config.resolveDispute = true;
   HavenoUtils.log(1, "Resolving disputes");
   await executeTrades(ctxs, {concurrentTrades: true}); // TODO: running in parallel doesn't test balances before and after, but this test takes ~10 minutes in sequence. use test weight config
 });
 
-test("Cannot make or take offer with insufficient unlocked funds", async () => {
+test("Cannot make or take offer with insufficient unlocked funds (CI)", async () => {
   let user3: HavenoClient|undefined;
   let err: any;
   try {
-    
+
     // start user3
     user3 = await initHaveno();
-    
+
     // user3 creates ethereum payment account
     const paymentAccount = await createCryptoPaymentAccount(user3);
-    
+
     // user3 cannot make offer with insufficient funds
     try {
       await makeOffer({maker: user3, makerPaymentAccountId: paymentAccount.getId(), awaitFundsToMakeOffer: false});
@@ -1402,7 +1405,7 @@ test("Cannot make or take offer with insufficient unlocked funds", async () => {
       const errTyped = err as HavenoError;
       assert.equal(errTyped.code, 2);
     }
-    
+
     // user1 posts offer
     const offers: OfferInfo[] = await user1.getMyOffers("ETH");
     let offer: OfferInfo;
@@ -1414,7 +1417,7 @@ test("Cannot make or take offer with insufficient unlocked funds", async () => {
       assert.equal(offer.getState(), "AVAILABLE");
       await wait(TestConfig.walletSyncPeriodMs * 2);
     }
-    
+
     // user3 cannot take offer with insufficient funds
     try {
       await user3.takeOffer(offer.getId(), paymentAccount.getId());
@@ -1424,7 +1427,7 @@ test("Cannot make or take offer with insufficient unlocked funds", async () => {
       assert(errTyped.message.includes("not enough money"), "Unexpected error: " + errTyped.message);
       assert.equal(errTyped.code, 2);
     }
-    
+
     // user3 does not have trade
     try {
       await user3.getTrade(offer.getId());
@@ -1436,7 +1439,7 @@ test("Cannot make or take offer with insufficient unlocked funds", async () => {
   } catch (err2) {
     err = err2;
   }
-  
+
   // stop user3
   if (user3) await releaseHavenoProcess(user3, true);
   if (err) throw err;
@@ -1449,16 +1452,16 @@ test("Invalidates offers when reserved funds are spent", async () => {
     // wait for user1 to have unlocked balance for trade
     const tradeAmount = BigInt("250000000000");
     await waitForAvailableBalance(tradeAmount * BigInt("2"), user1);
-    
+
     // get frozen key images before posting offer
     const frozenKeyImagesBefore: any[] = [];
     for (const frozenOutput of await user1Wallet.getOutputs({isFrozen: true})) frozenKeyImagesBefore.push(frozenOutput.getKeyImage().getHex());
-    
+
     // post offer
     await wait(1000);
     const assetCode = getRandomAssetCode();
     const offer: OfferInfo = await makeOffer({maker: user1, assetCode: assetCode, amount: tradeAmount});
-    
+
     // get key images reserved by offer
     const reservedKeyImages: any[] = [];
     const frozenKeyImagesAfter: any[] = [];
@@ -1466,27 +1469,27 @@ test("Invalidates offers when reserved funds are spent", async () => {
     for (const frozenKeyImageAfter of frozenKeyImagesAfter) {
       if (!frozenKeyImagesBefore.includes(frozenKeyImageAfter)) reservedKeyImages.push(frozenKeyImageAfter);
     }
-    
+
     // offer is available to peers
     await wait(TestConfig.walletSyncPeriodMs * 2);
     if (!getOffer(await user2.getOffers(assetCode, "buy"), offer.getId())) throw new Error("Offer " + offer.getId() + " was not found in peer's offers after posting");
-    
+
     // spend one of offer's reserved outputs
     if (!reservedKeyImages.length) throw new Error("No reserved key images detected");
     await user1Wallet.thawOutput(reservedKeyImages[0]);
     tx = await user1Wallet.sweepOutput({keyImage: reservedKeyImages[0], address: await user1Wallet.getPrimaryAddress(), relay: false});
     await monerod.submitTxHex(tx.getFullHex(), true);
-    
+
     // mine block so spend is confirmed
     await mineBlocks(1);
     await wait(TestConfig.walletSyncPeriodMs * 2);
-    
+
     // offer is removed from peer offers
     if (getOffer(await user2.getOffers(assetCode, "buy"), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in peer's offers after reserved funds spent");
-    
+
     // offer is removed from my offers
     if (getOffer(await user1.getMyOffers(assetCode, "buy"), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in my offers after reserved funds spent");
-    
+
     // offer is automatically cancelled
     try {
       await user1.removeOffer(offer.getId());
@@ -1497,7 +1500,7 @@ test("Invalidates offers when reserved funds are spent", async () => {
   } catch (err2) {
     err = err2;
   }
-  
+
   // flush tx from pool
   if (tx) await monerod.flushTxPool(tx.getHash());
   if (err) throw err;
@@ -1509,23 +1512,23 @@ test("Can handle unexpected errors during trade initialization", async () => {
   let traders: HavenoClient[] = [];
   let err: any;
   try {
-    
+
     // start and fund 3 trader processes
     HavenoUtils.log(1, "Starting trader processes");
     traders = await initHavenos(3);
     HavenoUtils.log(1, "Funding traders");
     const tradeAmount = BigInt("250000000000");
     await waitForAvailableBalance(tradeAmount * BigInt("2"), traders[0], traders[1], traders[2]);
-    
+
     // trader 0 posts offer
     HavenoUtils.log(1, "Posting offer");
     let offer = await makeOffer({maker: traders[0], amount: tradeAmount});
     offer = await traders[0].getMyOffer(offer.getId());
     assert.equal(offer.getState(), "AVAILABLE");
-    
+
     // wait for offer to be seen
     await wait(TestConfig.walletSyncPeriodMs * 2);
-    
+
     // trader 1 spends trade funds after initializing trade
     let paymentAccount = await createCryptoPaymentAccount(traders[1]);
     wait(3000).then(async function() {
@@ -1539,7 +1542,7 @@ test("Can handle unexpected errors during trade initialization", async () => {
         console.log(err);
       }
     });
-    
+
     // trader 1 tries to take offer
     try {
       HavenoUtils.log(1, "Trader 1 taking offer " + offer.getId());
@@ -1548,19 +1551,19 @@ test("Can handle unexpected errors during trade initialization", async () => {
     } catch (err: any) {
       assert(err.message.includes("not enough unlocked money"), "Unexpected error: " + err.message);
     }
-    
+
     // TODO: test it's unavailable right after taking (taker will know before maker)
-    
+
     // trader 0's offer remains available
     await wait(10000); // give time for trade initialization to fail and offer to become available
     offer = await traders[0].getMyOffer(offer.getId());
     if (offer.getState() !== "AVAILABLE") {
         HavenoUtils.log(1, "Offer is not yet available, waiting to become available after timeout..."); // TODO (woodser): fail trade on nack during initialization to save a bunch of time
-        await wait(TestConfig.tradeInitTimeout - 10000); // wait remaining time for offer to become available after timeout 
+        await wait(TestConfig.tradeInitTimeout - 10000); // wait remaining time for offer to become available after timeout
         offer = await traders[0].getMyOffer(offer.getId());
         assert.equal(offer.getState(), "AVAILABLE");
     }
-    
+
     // trader 0 spends trade funds after trader 2 takes offer
     wait(3000).then(async function() {
       try {
@@ -1573,7 +1576,7 @@ test("Can handle unexpected errors during trade initialization", async () => {
         console.log(err);
       }
     });
-    
+
     // trader 2 tries to take offer
     paymentAccount = await createCryptoPaymentAccount(traders[2]);
     try {
@@ -1583,7 +1586,7 @@ test("Can handle unexpected errors during trade initialization", async () => {
     } catch (err: any) {
       assert(err.message.includes("not enough unlocked money") || err.message.includes("timeout reached. protocol did not complete"), "Unexpected error: " + err.message);
     }
-    
+
     // trader 2's balance is unreserved
     const trader2Balances = await traders[2].getBalances();
     expect(BigInt(trader2Balances.getReservedTradeBalance())).toEqual(BigInt("0"));
@@ -1591,7 +1594,7 @@ test("Can handle unexpected errors during trade initialization", async () => {
   } catch (err2) {
     err = err2;
   }
-  
+
   // stop traders
   for (const trader of traders) await releaseHavenoProcess(trader, true);
   if (err) throw err;
@@ -1599,27 +1602,27 @@ test("Can handle unexpected errors during trade initialization", async () => {
 
 // TODO: test opening and resolving dispute as arbitrator and traders go offline
 test("Selects arbitrators which are online, registered, and least used", async () => {
-  
+
   // complete 2 trades using main arbitrator so it's most used
   // TODO: these trades are not registered with seednode until it's restarted
   HavenoUtils.log(1, "Preparing for trades");
   await prepareForTrading(4, user1, user2);
   HavenoUtils.log(1, "Completing trades with main arbitrator");
   await executeTrades(getTradeContexts(2));
-  
+
   // start and register arbitrator2
   let arbitrator2 = await initHaveno();
   HavenoUtils.log(1, "Registering arbitrator2");
   await arbitrator2.registerDisputeAgent("arbitrator", getArbitratorPrivKey(1)); // TODO: re-registering with same address corrupts messages (Cannot decrypt) because existing pub key; overwrite? or throw when registration fails because dispute map can't be updated
   await wait(TestConfig.walletSyncPeriodMs * 2);
-  
+
   // get internal api addresses
   const arbitratorApiUrl = "localhost:" + TestConfig.ports.get(getPort(arbitrator.getUrl()))![1]; // TODO: havenod.getApiUrl()?
   const arbitrator2ApiUrl = "localhost:" + TestConfig.ports.get(getPort(arbitrator2.getUrl()))![1];
-  
+
   let err = undefined;
   try {
-    
+
     // post 2 offers which use arbitrator2 since it's least used
     HavenoUtils.log(1, "Posting offers signed by arbitrator2");
     const offers: OfferInfo[] = [];
@@ -1629,35 +1632,35 @@ test("Selects arbitrators which are online, registered, and least used", async (
       offers.push(offer);
     }
     await wait(TestConfig.walletSyncPeriodMs * 2);
-    
+
     // complete a trade which uses arbitrator2 since it's least used
     HavenoUtils.log(1, "Completing trade using arbitrator2");
     await executeTrade({maker: user1, taker: user2, arbitrator: arbitrator2, offerId: offers[0].getId(), makerPaymentAccountId: offers[0].getPaymentAccountId()});
     let trade = await user1.getTrade(offers[0].getId());
     assert.equal(trade.getArbitratorNodeAddress(), arbitrator2ApiUrl);
-    
+
     // arbitrator2 goes offline without unregistering
     HavenoUtils.log(1, "Arbitrator2 going offline");
     const arbitrator2AppName = arbitrator2.getAppName()
     await releaseHavenoProcess(arbitrator2);
-    
+
     // post offer which uses main arbitrator since least used is offline
     HavenoUtils.log(1, "Posting offer which uses main arbitrator since least used is offline");
     let offer = await makeOffer({maker: user1});
     assert.equal(offer.getArbitratorSigner(), arbitratorApiUrl);
-    
+
     // complete a trade which uses main arbitrator since signer/least used is offline
     HavenoUtils.log(1, "Completing trade using main arbitrator since signer/least used is offline");
     await executeTrade({maker: user1, taker: user2, offerId: offers[1].getId(), makerPaymentAccountId: offers[1].getPaymentAccountId()});
     trade = await user1.getTrade(offers[1].getId());
     assert.equal(trade.getArbitratorNodeAddress(), arbitratorApiUrl);
-    
+
     // start and unregister arbitrator2
     HavenoUtils.log(1, "Starting and unregistering arbitrator2");
     arbitrator2 = await initHaveno({appName: arbitrator2AppName});
     await arbitrator2.unregisterDisputeAgent("arbitrator");
     await wait(TestConfig.walletSyncPeriodMs * 2); // TODO: test these with network wait times
-    
+
     // cannot take offers signed by unregistered arbitrator
     HavenoUtils.log(1, "Taking offer signed by unregistered arbitrator");
     try {
@@ -1666,14 +1669,14 @@ test("Selects arbitrators which are online, registered, and least used", async (
     } catch (e2) {
       assert (e2.message.indexOf("not found") > 0);
     }
-    
+
     // TODO: offer is removed and unreserved or re-signed, ideally keeping the same id
-    
+
     // post offer which uses main arbitrator since least used is unregistered
     offer = await makeOffer({maker: user1});
     assert.equal(offer.getArbitratorSigner(), arbitratorApiUrl);
     await wait(TestConfig.walletSyncPeriodMs * 2);
-    
+
     // complete a trade which uses main arbitrator since least used is unregistered
     HavenoUtils.log(1, "Completing trade with main arbitrator since least used is unregistered");
     await executeTrade({maker: user1, taker: user2, offerId: offer.getId(), makerPaymentAccountId: offer.getPaymentAccountId()});
@@ -1681,14 +1684,14 @@ test("Selects arbitrators which are online, registered, and least used", async (
     trade = await user2.getTrade(offer.getId());
     HavenoUtils.log(1, "Done getting trade");
     assert.equal(trade.getArbitratorNodeAddress(), arbitratorApiUrl);
-    
+
     // release arbitrator2
     HavenoUtils.log(1, "Done getting trade");
     await releaseHavenoProcess(arbitrator2, true);
   } catch (e) {
     err = e;
   }
-  
+
   // cleanup if error
   if (err) {
     try { await arbitrator2.unregisterDisputeAgent("arbitrator"); }
@@ -1727,18 +1730,18 @@ async function executeTrades(ctxs: TradeContext[], executionCtx?: TradeContext):
   // assign default execution context
   if (!executionCtx) executionCtx = Object.assign({}, TestConfig.trade);
   if (executionCtx.concurrentTrades === undefined) executionCtx.concurrentTrades = ctxs.length > 1;
-  
+
   // start mining if executing trades concurrently
   let miningStarted = executionCtx.concurrentTrades && await startMining();
-  
+
   // execute trades
   let offerIds: string[] = [];
   let err = undefined
   try {
-    
+
     // assign default configs
     for (let i = 0; i < ctxs.length; i++) Object.assign(ctxs[i], TestConfig.trade, Object.assign({index: i}, ctxs[i]));
-    
+
     // wait for traders to have unlocked balance for trades
     let tradeAmount: bigint|undefined = undefined;
     const outputCounts = new Map<any, number>();
@@ -1788,7 +1791,7 @@ async function executeTrades(ctxs: TradeContext[], executionCtx?: TradeContext):
   } catch (e) {
     err = e;
   }
-  
+
   // stop mining if started, throw error or return offer ids
   if (miningStarted) await stopMining();
   if (err) throw err;
@@ -1802,7 +1805,7 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
     // assign default config
     if (!ctx) ctx = {};
     Object.assign(ctx, TestConfig.trade, Object.assign({}, ctx));
-    
+
     // fund maker and taker
     const makingOffer = ctx.makeOffer && !ctx.offerId;
     const clientsToFund: HavenoClient[] = [];
@@ -1811,7 +1814,7 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
       if (ctx.awaitFundsToTakeOffer && ctx.takeOffer && !ctx.isOfferTaken) clientsToFund.push(ctx.taker!);
       await waitForAvailableBalance(ctx.amount! * BigInt("2"), ...clientsToFund);
     }
-    
+
     // determine buyer and seller
     let offer: OfferInfo|undefined = undefined;
     let isBuyerMaker = false;
@@ -1827,11 +1830,11 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
     }
     ctx.buyer = isBuyerMaker ? ctx.maker : ctx.taker;
     ctx.seller = isBuyerMaker ? ctx.taker : ctx.maker;
-    
+
     // get info before trade
     const buyerBalancesBefore = await ctx.buyer!.getBalances();
     const sellerBalancesBefore = await ctx.seller!.getBalances();
-    
+
     // make offer if configured
     if (makingOffer) {
       offer = await makeOffer(ctx);
@@ -1839,9 +1842,9 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
       ctx.offerId = offer.getId();
       await wait(TestConfig.maxTimePeerNoticeMs + TestConfig.walletSyncPeriodMs * 2);
     }
-    
+
     // TODO (woodser): test error message taking offer before posted
-    
+
     // take offer or get existing trade
     let trade: TradeInfo|undefined = undefined;
     if (ctx.isOfferTaken) trade = await ctx.taker!.getTrade(ctx.offerId!);
@@ -1850,7 +1853,7 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
       trade = await takeOffer(ctx);
       ctx.isOfferTaken = true;
     }
-    
+
     // test trader chat
     if (ctx.testTraderChat) await testTradeChat(trade.getTradeId(), ctx.maker!, ctx.taker!);
 
@@ -1883,10 +1886,10 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
       else ctx.maker = undefined;
     }
     await Promise.all(promises);
-    
+
     // wait for deposit txs to unlock
     await waitForUnlockedTxs(trade.getMakerDepositTxId(), trade.getTakerDepositTxId());
-    
+
     // buyer comes online if offline
     if (ctx.buyerOfflineAfterTake) {
       ctx.buyer = await initHaveno({appName: buyerAppName, excludePorts: usedPorts});
@@ -1894,7 +1897,7 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
       else ctx.taker = ctx.buyer;
       usedPorts.push(getPort(ctx.buyer!.getUrl()));
     }
-    
+
     // test trade states
     await wait(TestConfig.maxWalletStartupMs + TestConfig.walletSyncPeriodMs * 2);
     const expectedState = ctx.isPaymentSent ? "PAYMENT_SENT" : "DEPOSITS_UNLOCKED" // TODO: test COMPLETED, PAYMENT_RECEIVED states?
@@ -1918,7 +1921,7 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
     expect(HavenoUtils.formToString(form)).toEqual(HavenoUtils.formToString(expectedForm));
 
     // buyer notified to send payment TODO
-    
+
     // open dispute(s) if configured
     if (ctx.buyerDisputeContext === DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK && !ctx.buyerOpenedDispute) {
       await ctx.buyer!.openDispute(ctx.offerId!);
@@ -1934,23 +1937,23 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
       ctx.disputePeer = ctx.disputeOpener === ctx.buyer ? ctx.seller : ctx.buyer;
       await testOpenDispute(ctx);
     }
-    
+
     // if dispute opened, resolve dispute if configured and return
     if (ctx.disputeOpener) {
       if (ctx.resolveDispute) await resolveDispute(ctx);
       return ctx.offerId!;
     }
-    
+
     // buyer confirms payment is sent
     if (!ctx.buyerSendsPayment) return offer!.getId();
     else if (!ctx.isPaymentSent) {
       HavenoUtils.log(1, "Buyer confirming payment sent");
-      await ctx.buyer!.confirmPaymentStarted(trade.getTradeId()); 
+      await ctx.buyer!.confirmPaymentStarted(trade.getTradeId());
       ctx.isPaymentSent = true;
       fetchedTrade = await ctx.buyer!.getTrade(trade.getTradeId());
       expect(fetchedTrade.getPhase()).toEqual("PAYMENT_SENT");
     }
-    
+
     // buyer goes offline if configured
     if (ctx.buyerOfflineAfterPaymentSent) {
       await releaseHavenoProcess(ctx.buyer!);
@@ -1958,7 +1961,7 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
       if (isBuyerMaker) ctx.maker = undefined;
       else ctx.taker = undefined;
     }
-    
+
     // seller comes online if offline
     if (!ctx.seller) {
       ctx.seller = await initHaveno({appName: sellerAppName, excludePorts: usedPorts});
@@ -1966,7 +1969,7 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
       else ctx.maker = ctx.seller;
       usedPorts.push(getPort(ctx.seller!.getUrl()))
     }
-    
+
     // seller notified payment is sent
     await wait(TestConfig.maxTimePeerNoticeMs + TestConfig.maxWalletStartupMs); // TODO: test notification
     if (ctx.sellerOfflineAfterTake) await wait(TestConfig.walletSyncPeriodMs); // wait to process mailbox messages
@@ -1998,13 +2001,13 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
       ctx.disputePeer = ctx.disputeOpener === ctx.buyer ? ctx.seller : ctx.buyer;
       await testOpenDispute(ctx);
     }
-    
+
     // if dispute opened, resolve dispute if configured and return
     if (ctx.disputeOpener) {
       if (ctx.resolveDispute) await resolveDispute(ctx);
       return ctx.offerId!;
     }
-    
+
     // seller confirms payment is received
     if (!ctx.sellerReceivesPayment) return offer!.getId();
     else if (!ctx.isPaymentReceived) {
@@ -2021,7 +2024,7 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
     await wait(TestConfig.walletSyncPeriodMs);
     await testTradeState(await ctx.seller!.getTrade(trade.getTradeId()), {phase: "PAYMENT_RECEIVED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"], isCompleted: false, isPayoutPublished: true});
     await testTradeState(await ctx.arbitrator!.getTrade(trade.getTradeId()), {phase: "COMPLETED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"], isCompleted: true, isPayoutPublished: true}); // arbitrator trade auto completes
-    
+
     // buyer comes online if offline
     if (ctx.buyerOfflineAfterPaymentSent) {
       ctx.buyer = await initHaveno({appName: buyerAppName, excludePorts: usedPorts});
@@ -2032,13 +2035,13 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
       await wait(TestConfig.maxWalletStartupMs + TestConfig.walletSyncPeriodMs);
     }
     await testTradeState(await ctx.buyer!.getTrade(trade.getTradeId()), {phase: "PAYMENT_RECEIVED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"], isCompleted: false, isPayoutPublished: true});
-    
+
     // test trade completion
     await ctx.buyer!.completeTrade(trade.getTradeId());
     await testTradeState(await ctx.buyer!.getTrade(trade.getTradeId()), {phase: "COMPLETED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"], isCompleted: true, isPayoutPublished: true});
     await ctx.seller!.completeTrade(trade.getTradeId());
     await testTradeState(await ctx.seller!.getTrade(trade.getTradeId()), {phase: "COMPLETED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"], isCompleted: true, isPayoutPublished: true});
-    
+
     // test balances after payout tx unless other trades can interfere
     if (!ctx.concurrentTrades) {
       const buyerBalancesAfter = await ctx.buyer!.getBalances();
@@ -2075,7 +2078,7 @@ async function testTradePayoutUnlock(ctx: TradeContext) {
   await testTradeState(await ctx.arbitrator!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"]}); // arbitrator idles wallet
   let payoutTx = await ctx.buyer?.getXmrTx(payoutTxId);
   expect(payoutTx?.getIsConfirmed());
-  
+
   // test after payout unlocked
   trade = await ctx.buyer!.getTrade(ctx.offerId!);
   if (trade.getPayoutState() !== "PAYOUT_UNLOCKED") await mineToHeight(height + 10);
@@ -2098,14 +2101,14 @@ async function testTradeState(trade: TradeInfo, ctx: TradeContext) {
 }
 
 async function makeOffer(ctx?: TradeContext): Promise<OfferInfo> {
-  
+
   // assign default config
   if (!ctx) ctx = {};
   Object.assign(ctx, TestConfig.trade, Object.assign({}, ctx));
 
   // wait for unlocked balance
   if (!ctx.concurrentTrades && ctx.awaitFundsToMakeOffer) await waitForAvailableBalance(ctx.amount! * BigInt("2"), ctx.maker);
-  
+
   // create payment account if not given // TODO: re-use existing payment account
   if (!ctx.makerPaymentAccountId) ctx.makerPaymentAccountId = (await createPaymentAccount(ctx.maker!, ctx.assetCode!)).getId();
 
@@ -2117,7 +2120,7 @@ async function makeOffer(ctx?: TradeContext): Promise<OfferInfo> {
     unlockedBalanceBefore = BigInt((await ctx.maker!.getBalances()).getAvailableBalance());
     if (unlockedBalanceBefore === BigInt(0)) throw new Error("Unlocked balance before posting offer was 0, even after waiting");
   }
-  
+
   // post offer
   const offer: OfferInfo = await ctx.maker!.postOffer(
         ctx.direction!,
@@ -2130,7 +2133,7 @@ async function makeOffer(ctx?: TradeContext): Promise<OfferInfo> {
         ctx.triggerPrice,
         ctx.minAmount);
   testOffer(offer, ctx);
-  
+
   // offer is included in my offers only
   if (!getOffer(await ctx.maker!.getMyOffers(ctx.assetCode!, ctx.direction), offer.getId())) {
     console.warn("Offer is not included in my offers after posting, waiting up to 10 seconds");
@@ -2138,7 +2141,7 @@ async function makeOffer(ctx?: TradeContext): Promise<OfferInfo> {
     if (!getOffer(await ctx.maker!.getMyOffers(ctx.assetCode!, ctx.direction), offer.getId())) throw new Error("Offer " + offer.getId() + " was not found in my offers");
   }
   if (getOffer(await ctx.maker!.getOffers(ctx.assetCode!, ctx.direction), offer.getId())) throw new Error("My offer " + offer.getId() + " should not appear in available offers");
-  
+
   // unlocked balance has decreased
   const unlockedBalanceAfter = BigInt((await ctx.maker!.getBalances()).getAvailableBalance());
   if (offer.getState() === "SCHEDULED") {
@@ -2148,79 +2151,79 @@ async function makeOffer(ctx?: TradeContext): Promise<OfferInfo> {
   } else {
     throw new Error("Unexpected offer state after posting: " + offer.getState());
   }
-  
+
   return offer;
 }
 
 async function takeOffer(ctx: TradeContext): Promise<TradeInfo> {
-  
+
   // assign default config
   if (!ctx) ctx = {};
   Object.assign(ctx, TestConfig.trade, Object.assign({}, ctx));
-  
+
   // taker sees offer
   if (!ctx.offerId) throw new Error("Must provide offer id");
   const takerOffer = getOffer(await ctx.taker!.getOffers(ctx.assetCode!, ctx.direction), ctx.offerId);
   if (!takerOffer) throw new Error("Offer " + ctx.offerId + " was not found in taker's offers");
   expect(takerOffer.getState()).toEqual("UNKNOWN"); // TODO: offer state should be known
-  
+
   // wait for unlocked balance
   if (ctx.awaitFundsToTakeOffer) await waitForAvailableBalance(ctx.amount! * BigInt("2"), ctx.taker);
-  
+
   // create payment account if not given // TODO: re-use existing payment account
   if (!ctx.takerPaymentAccountId) ctx.takerPaymentAccountId = (await createPaymentAccount(ctx.taker!, ctx.assetCode!)).getId();
-  
+
   // register to receive notifications
   const makerNotifications: NotificationMessage[] = [];
   const takerNotifications: NotificationMessage[] = [];
   await ctx.maker!.addNotificationListener(notification => { makerNotifications.push(notification); });
   await ctx.taker!.addNotificationListener(notification => { takerNotifications.push(notification); });
-  
+
   // take offer
   const takerBalancesBefore: XmrBalanceInfo = await ctx.taker!.getBalances();
   const startTime = Date.now();
   HavenoUtils.log(1, "Taking offer " + ctx.offerId);
   const trade = await ctx.taker!.takeOffer(ctx.offerId, ctx.takerPaymentAccountId!);
   HavenoUtils.log(1, "Done taking offer " + ctx.offerId + " in " + (Date.now() - startTime) + " ms");
-  
+
   // test taker's balances after taking trade
   if (!ctx.concurrentTrades) {
     const takerBalancesAfter: XmrBalanceInfo = await ctx.taker!.getBalances();
     expect(BigInt(takerBalancesAfter.getAvailableBalance())).toBeLessThan(BigInt(takerBalancesBefore.getAvailableBalance()));
     expect(BigInt(takerBalancesAfter.getReservedOfferBalance()) + BigInt(takerBalancesAfter.getReservedTradeBalance())).toBeGreaterThan(BigInt(takerBalancesBefore.getReservedOfferBalance()) + BigInt(takerBalancesBefore.getReservedTradeBalance()));
   }
-  
+
   // maker is notified that offer is taken
   await wait(TestConfig.maxTimePeerNoticeMs);
   const tradeNotifications = getNotifications(makerNotifications, NotificationMessage.NotificationType.TRADE_UPDATE, trade.getTradeId());
   expect(tradeNotifications.length).toBe(1);
-  assert(GenUtils.arrayContains(["DEPOSITS_PUBLISHED", "DEPOSITS_CONFIRMED"], tradeNotifications[0].getTrade()!.getPhase()));
+  assert(GenUtils.arrayContains(["DEPOSITS_PUBLISHED", "DEPOSITS_CONFIRMED", "DEPOSITS_UNLOCKED"], tradeNotifications[0].getTrade()!.getPhase(), "Unexpected trade phase: " + tradeNotifications[0].getTrade()!.getPhase()));
   expect(tradeNotifications[0].getTitle()).toEqual("Offer Taken");
   expect(tradeNotifications[0].getMessage()).toEqual("Your offer " + ctx.offerId + " has been accepted");
-  
+
   // maker is notified of balance change
-  
+
   // taker can get trade
   let fetchedTrade: TradeInfo = await ctx.taker!.getTrade(trade.getTradeId());
-  assert(GenUtils.arrayContains(["DEPOSITS_PUBLISHED", "DEPOSITS_CONFIRMED"], fetchedTrade.getPhase()));
+  assert(GenUtils.arrayContains(["DEPOSITS_PUBLISHED", "DEPOSITS_CONFIRMED", "DEPOSITS_UNLOCKED"], fetchedTrade.getPhase()), "Unexpected trade phase: " + fetchedTrade.getPhase());
   // TODO: test fetched trade
-  
+
   // taker is notified of balance change
 
   // maker can get trade
   fetchedTrade = await ctx.maker!.getTrade(trade.getTradeId());
-  assert(GenUtils.arrayContains(["DEPOSITS_PUBLISHED", "DEPOSITS_CONFIRMED"], fetchedTrade.getPhase()));
+  assert(GenUtils.arrayContains(["DEPOSITS_PUBLISHED", "DEPOSITS_CONFIRMED", "DEPOSITS_UNLOCKED"], fetchedTrade.getPhase()), "Unexpected trade phase: " + fetchedTrade.getPhase());
   return trade;
 }
 
 async function testOpenDispute(ctx: TradeContext) {
-  
+
   // test dispute state
   const openerDispute = await ctx.disputeOpener!.getDispute(ctx.offerId!);
   expect(openerDispute.getTradeId()).toEqual(ctx.offerId);
   expect(openerDispute.getIsOpener()).toBe(true);
   expect(openerDispute.getDisputeOpenerIsBuyer()).toBe(ctx.disputeOpener === ctx.buyer);
-  
+
   // get non-existing dispute should fail
   try {
     await ctx.disputeOpener!.getDispute("invalid");
@@ -2228,13 +2231,13 @@ async function testOpenDispute(ctx: TradeContext) {
   } catch (err: any) {
     assert.equal(err.message, "dispute for trade id 'invalid' not found");
   }
-  
+
   // peer sees the dispute
   await wait(TestConfig.maxTimePeerNoticeMs + TestConfig.maxWalletStartupMs);
   const peerDispute = await ctx.disputePeer!.getDispute(ctx.offerId!);
   expect(peerDispute.getTradeId()).toEqual(ctx.offerId);
   expect(peerDispute.getIsOpener()).toBe(false || ctx.buyerDisputeContext === ctx.sellerDisputeContext); // TODO: both peers think they're the opener if disputes opened at same time since not waiting for ack
-  
+
   // arbitrator sees both disputes
   const disputes = await ctx.arbitrator!.getDisputes();
   expect(disputes.length).toBeGreaterThanOrEqual(2);
@@ -2267,7 +2270,7 @@ async function testOpenDispute(ctx: TradeContext) {
     expect(buyerPaymentAccountPayload).toEqual(expectedBuyerPaymentAccountPayload);
     expect(await ctx.arbitrator?.getPaymentAccountPayloadForm(buyerPaymentAccountPayload!)).toEqual(await ctx.arbitrator?.getPaymentAccountPayloadForm(expectedBuyerPaymentAccountPayload!));
   }
-  
+
   // register to receive notifications
   const disputeOpenerNotifications: NotificationMessage[] = [];
   const disputePeerNotifications: NotificationMessage[] = [];
@@ -2275,12 +2278,12 @@ async function testOpenDispute(ctx: TradeContext) {
   await ctx.disputeOpener!.addNotificationListener(notification => { HavenoUtils.log(3, "Dispute opener received notification " + notification.getType() + " " + (notification.getChatMessage() ? notification.getChatMessage()?.getMessage() : "")); disputeOpenerNotifications.push(notification); });
   await ctx.disputePeer!.addNotificationListener(notification => { HavenoUtils.log(3, "Dispute peer received notification " + notification.getType() + " " + (notification.getChatMessage() ? notification.getChatMessage()?.getMessage() : "")); disputePeerNotifications.push(notification); });
   await arbitrator.addNotificationListener(notification => { HavenoUtils.log(3, "Arbitrator received notification " + notification.getType() + " " + (notification.getChatMessage() ? notification.getChatMessage()?.getMessage() : "")); arbitratorNotifications.push(notification); });
-  
+
   // arbitrator sends chat messages to traders
   HavenoUtils.log(1, "Testing chat messages");
   await ctx.arbitrator!.sendDisputeChatMessage(arbDisputeOpener!.getId(), "Arbitrator chat message to dispute opener", []);
   await ctx.arbitrator!.sendDisputeChatMessage(arbDisputePeer!.getId(), "Arbitrator chat message to dispute peer", []);
-  
+
   // traders reply to arbitrator chat messages
   await wait(TestConfig.maxTimePeerNoticeMs); // wait for arbitrator's message to arrive
   const attachment = new Attachment();
@@ -2295,8 +2298,8 @@ async function testOpenDispute(ctx: TradeContext) {
   await ctx.disputeOpener!.sendDisputeChatMessage(openerDispute.getId(), "Dispute opener chat message", [attachment, attachment2]);
   await wait(TestConfig.maxTimePeerNoticeMs); // wait for user2's message to arrive
   HavenoUtils.log(2, "Dispute peer sending chat message to arbitrator. tradeId=" + ctx.offerId + ", disputeId=" + peerDispute.getId());
-  await ctx.disputePeer!.sendDisputeChatMessage(peerDispute.getId(), "Dispute peer chat message", []); 
-  
+  await ctx.disputePeer!.sendDisputeChatMessage(peerDispute.getId(), "Dispute peer chat message", []);
+
   // test trader chat messages
   await wait(TestConfig.maxTimePeerNoticeMs);
   let dispute = await ctx.disputeOpener!.getDispute(ctx.offerId!);
@@ -2315,7 +2318,7 @@ async function testOpenDispute(ctx: TradeContext) {
   expect(messages.length).toBeGreaterThanOrEqual(3);
   expect(messages[messages.length - 2].getMessage()).toEqual("Arbitrator chat message to dispute peer");
   expect(messages[messages.length - 1].getMessage()).toEqual("Dispute peer chat message");
-    
+
   // test notifications of chat messages
   let chatNotifications = getNotifications(disputeOpenerNotifications, NotificationMessage.NotificationType.CHAT_MESSAGE, ctx.offerId);
   expect(chatNotifications.length).toBe(1);
@@ -2323,7 +2326,7 @@ async function testOpenDispute(ctx: TradeContext) {
   chatNotifications = getNotifications(disputePeerNotifications, NotificationMessage.NotificationType.CHAT_MESSAGE, ctx.offerId);
   expect(chatNotifications.length).toBe(1);
   expect(chatNotifications[0].getChatMessage()?.getMessage()).toEqual("Arbitrator chat message to dispute peer");
-  
+
   // arbitrator has 2 chat messages, one with attachments
   chatNotifications = getNotifications(arbitratorNotifications, NotificationMessage.NotificationType.CHAT_MESSAGE, ctx.offerId);
   expect(chatNotifications.length).toBe(2);
@@ -2349,7 +2352,7 @@ async function resolveDispute(ctx: TradeContext) {
   } catch (err: any) {
     assert.equal(err.message, "Loser payout is too small to cover the mining fee");
   }
-  
+
   // resolve dispute according to configuration
   const winner = ctx.disputeWinner === DisputeResult.Winner.BUYER ? ctx.buyer : ctx.seller;
   const loser = ctx.disputeWinner === DisputeResult.Winner.BUYER ? ctx.seller : ctx.buyer;
@@ -2359,14 +2362,14 @@ async function resolveDispute(ctx: TradeContext) {
   const startTime = Date.now();
   await arbitrator.resolveDispute(ctx.offerId!, ctx.disputeWinner!, ctx.disputeReason!, ctx.disputeSummary!, ctx.disputeWinnerAmount);
   HavenoUtils.log(1, "Done resolving dispute (" + (Date.now() - startTime) + ")");
-  
+
   // test resolved dispute
   await wait(TestConfig.maxWalletStartupMs + TestConfig.walletSyncPeriodMs * 2);
   let dispute = await ctx.disputeOpener!.getDispute(ctx.offerId!);
   assert(dispute.getIsClosed(), "Dispute is not closed for opener, trade " + ctx.offerId);
   dispute = await ctx.disputePeer!.getDispute(ctx.offerId!);
   assert(dispute.getIsClosed(), "Dispute is not closed for opener's peer, trade " + ctx.offerId);
-  
+
   // test trade state
   await testTradeState(await ctx.buyer!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"], disputeState: "DISPUTE_CLOSED", isCompleted: true, isPayoutPublished: true});
   await testTradeState(await ctx.seller!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"], disputeState: "DISPUTE_CLOSED", isCompleted: true, isPayoutPublished: true});
@@ -2518,13 +2521,13 @@ async function initHaveno(ctx?: HavenodContext): Promise<HavenoClient> {
   // connect to existing server or start new process
   let havenod: HavenoClient;
   try {
-    
+
     // try to connect to existing server
     if (!ctx.port) throw new Error("Cannot connect without port");
     havenod = new HavenoClient("http://localhost:" + ctx.port, ctx.apiPassword!);
     await havenod.getVersion();
   } catch (err: any) {
-    
+
     // get port for haveno process
     if (!ctx.port) {
       for (const httpPort of Array.from(TestConfig.ports.keys())) {
@@ -2537,7 +2540,7 @@ async function initHaveno(ctx?: HavenodContext): Promise<HavenoClient> {
       }
     }
     if (!ctx.port) throw new Error("No unused test ports available");
-    
+
     // start haveno process using configured ports if available
     const cmd: string[] = [
       "./haveno-daemon",
@@ -2554,11 +2557,11 @@ async function initHaveno(ctx?: HavenodContext): Promise<HavenoClient> {
     havenod = await HavenoClient.startProcess(TestConfig.haveno.path, cmd, "http://localhost:" + ctx.port, ctx.logProcessOutput!);
     HAVENO_PROCESSES.push(havenod);
   }
-  
+
   // open account if configured
   if (ctx.autoLogin) await initHavenoAccount(havenod, ctx.accountPassword!);
   return havenod;
-  
+
   async function getAvailablePort(): Promise<number> {
     return new Promise(function(resolve) {
       const srv = net.createServer();
@@ -2610,10 +2613,10 @@ async function initHavenoAccount(havenod: HavenoClient, password: string) {
  * Open or create funding wallet.
  */
 async function initFundingWallet() {
-  
+
   // init client connected to monero-wallet-rpc
   fundingWallet = await monerojs.connectToWalletRpc(TestConfig.fundingWallet.url, TestConfig.fundingWallet.username, TestConfig.fundingWallet.password);
-  
+
   // check if wallet is open
   let walletIsOpen = false
   try {
@@ -2622,19 +2625,19 @@ async function initFundingWallet() {
   } catch (err: any) {
     // do nothing
   }
-  
+
   // open wallet if necessary
   if (!walletIsOpen) {
-    
+
     // attempt to open funding wallet
     try {
       await fundingWallet.openWallet({path: TestConfig.fundingWallet.defaultPath, password: TestConfig.fundingWallet.walletPassword});
     } catch (err: any) {
       if (!(err instanceof monerojs.MoneroRpcError)) throw err;
-      
+
       // -1 returned when wallet does not exist or fails to open e.g. it's already open by another application
       if (err.getCode() === -1) {
-        
+
         // create wallet
         await fundingWallet.createWallet({
             path: TestConfig.fundingWallet.defaultPath,
@@ -2650,14 +2653,14 @@ async function initFundingWallet() {
 }
 
 async function prepareForTrading(numTrades: number, ...havenods: HavenoClient[]) {
-  
+
   // create payment accounts
   for (const havenod of havenods) {
     for (const assetCode of TestConfig.assetCodes) {
       if (!await hasPaymentAccount(havenod, assetCode)) await createPaymentAccount(havenod, assetCode);
     }
   }
-  
+
   // fund wallets
   const tradeAmount = BigInt("250000000000");
   const wallets: Promise<any>[] = [];
@@ -2711,35 +2714,35 @@ async function mineToHeight(height: number) {
  * Wait for unlocked balance in wallet or Haveno daemon.
  */
 async function waitForAvailableBalance(amount: bigint, ...wallets: any[]) {
-  
+
   // wrap common wallet functionality for tests
   class WalletWrapper {
-    
+
     _wallet: any;
-    
+
     constructor(wallet: any) {
       this._wallet = wallet;
     }
-    
+
     async getAvailableBalance(): Promise<bigint> {
       if (this._wallet instanceof HavenoClient) return BigInt((await this._wallet.getBalances()).getAvailableBalance());
       else return BigInt((await this._wallet.getUnlockedBalance()).toString());
     }
-    
+
     async getPendingBalance(): Promise<bigint> {
       if (this._wallet instanceof HavenoClient) return BigInt((await this._wallet.getBalances()).getPendingBalance());
       else return BigInt((await this._wallet.getBalance()).toString()) - await this.getAvailableBalance();
     }
-    
+
     async getDepositAddress(): Promise<string> {
       if (this._wallet instanceof HavenoClient) return await this._wallet.getXmrNewSubaddress();
       else return (await this._wallet.createSubaddress()).getAddress();
     }
   }
-  
+
   // wrap wallets
   for (let i = 0; i < wallets.length; i++) wallets[i] = new WalletWrapper(wallets[i]);
-  
+
   // fund wallets with insufficient balance
   let miningNeeded = false;
   const fundConfig = new MoneroTxConfig().setAccountIndex(0).setRelay(true);
@@ -2758,10 +2761,10 @@ async function waitForAvailableBalance(amount: bigint, ...wallets: any[]) {
     try { await fundingWallet.createTx(fundConfig); }
     catch (err: any) { throw new Error("Error funding wallets: " + err.message); }
   }
-  
+
   // done if all wallets have sufficient unlocked balance
   if (!miningNeeded) return;
-  
+
   // wait for funds to unlock
   const miningStarted = await startMining();
   HavenoUtils.log(1, "Mining for unlocked balance of " + amount);
@@ -2813,7 +2816,7 @@ async function waitForUnlockedTxs(...txHashes: string[]) {
 
 /**
  * Indicates if the given wallets have unspent outputs.
- * 
+ *
  * @param {MoneroWallet[]} wallets - wallets to check
  * @param {BigInt} amt - amount to check
  * @param {number?} numOutputs - number of outputs of the given amount (default 1)
@@ -2830,7 +2833,7 @@ async function hasUnspentOutputs(wallets: any[], amt: BigInt, numOutputs?: numbe
 
 /**
  * Fund the given wallets.
- * 
+ *
  * @param {MoneroWallet} wallets - monerojs wallets
  * @param {BigInt} amt - the amount to fund
  * @param {number?} numOutputs - the number of outputs of the given amount (default 1)
@@ -2839,7 +2842,7 @@ async function hasUnspentOutputs(wallets: any[], amt: BigInt, numOutputs?: numbe
 async function fundOutputs(wallets: any[], amt: bigint, numOutputs?: number, waitForUnlock?: boolean): Promise<void> {
   if (numOutputs === undefined) numOutputs = 1;
   if (waitForUnlock === undefined) waitForUnlock = true;
-  
+
   // collect destinations
   const destinations: any[] = [];
   for (const wallet of wallets) {
@@ -2849,7 +2852,7 @@ async function fundOutputs(wallets: any[], amt: bigint, numOutputs?: number, wai
     }
   }
   if (!destinations.length) return;
-  
+
   // fund destinations
   let txConfig = new MoneroTxConfig().setAccountIndex(0).setRelay(true);
   const txHashes: string[] = [];
@@ -2971,7 +2974,7 @@ function testIncomingTransfer(transfer: XmrIncomingTransfer) {
 function testOutgoingTransfer(transfer: XmrOutgoingTransfer, ctx: TxContext) {
   if (!ctx.isCreatedTx) assert(transfer.getSubaddressIndicesList().length > 0);
   for (const subaddressIdx of transfer.getSubaddressIndicesList()) assert(subaddressIdx >= 0);
-  
+
   // test destinations sum to outgoing amount
   if (transfer.getDestinationsList().length > 0) {
     let sum = BigInt(0);
@@ -3060,7 +3063,7 @@ function testOffer(offer: OfferInfo, config?: any) {
   if (config) {
     expect(HavenoUtils.centinerosToAtomicUnits(offer.getAmount())).toEqual(config.amount); // TODO (woodser): use atomic units in offer instead of centineros?
     expect(offer.getBuyerSecurityDeposit() / offer.getAmount()).toEqual(config.buyerSecurityDeposit);
-    expect(offer.getSellerSecurityDeposit() / offer.getAmount()).toEqual(config.buyerSecurityDeposit); // TODO: use same config.securityDeposit for buyer and seller? 
+    expect(offer.getSellerSecurityDeposit() / offer.getAmount()).toEqual(config.buyerSecurityDeposit); // TODO: use same config.securityDeposit for buyer and seller?
   }
   // TODO: test rest of offer
 }
@@ -3137,7 +3140,7 @@ function getValidFormInput(fieldId: PaymentAccountFormField.FieldId, form: Payme
     case PaymentAccountFormField.FieldId.COUNTRY:
     case PaymentAccountFormField.FieldId.BANK_COUNTRY_CODE:
     case PaymentAccountFormField.FieldId.INTERMEDIARY_COUNTRY_CODE:
-      return field.getSupportedCountriesList().length ? field.getSupportedCountriesList().at(0)!.getCode() : "FR";
+      return field.getSupportedCountriesList().length ? field.getSupportedCountriesList()[0]!.getCode() : "FR";
     case PaymentAccountFormField.FieldId.EMAIL:
       return "jdoe@no.com";
     case PaymentAccountFormField.FieldId.EMAIL_OR_MOBILE_NR:
@@ -3190,7 +3193,7 @@ function getValidFormInput(fieldId: PaymentAccountFormField.FieldId, form: Payme
       const country = HavenoUtils.getFormValue(form, PaymentAccountFormField.FieldId.COUNTRY);
       return GenUtils.arrayContains(field.getRequiredForCountriesList(), country) ? "My state" : "";
     case PaymentAccountFormField.FieldId.TRADE_CURRENCIES:
-      if (field.getComponent() === PaymentAccountFormField.Component.SELECT_ONE) return field.getSupportedCurrenciesList().at(0)!.getCode(); // TODO: randomly select?
+      if (field.getComponent() === PaymentAccountFormField.Component.SELECT_ONE) return field.getSupportedCurrenciesList()[0]!.getCode(); // TODO: randomly select?
       else return field.getSupportedCurrenciesList().map(currency => currency.getCode()).join(',');
     case PaymentAccountFormField.FieldId.USER_NAME:
       return "user123";
