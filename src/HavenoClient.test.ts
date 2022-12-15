@@ -1104,7 +1104,7 @@ test("Can create crypto payment accounts (CI)", async () => {
 });
 
 test("Can prepare for trading (CI)", async () => {
-  await prepareForTrading(4, user1, user2);
+  await prepareForTrading(5, user1, user2);
 });
 
 test("Can post and remove an offer (CI)", async () => {
@@ -1253,6 +1253,16 @@ test("Can schedule offers with locked funds (CI)", async () => {
   // stop and delete instances
   if (user3) await releaseHavenoProcess(user3, true);
   if (err) throw err;
+});
+
+test("Cannot post offer exceeding trade limit (CI)", async () => {
+  const revolutAccount = await createRevolutPaymentAccount(user1);
+  try {
+    await executeTrade({amount: BigInt("2100000000000"), assetCode: "USD", makerPaymentAccountId: revolutAccount.getId(), takeOffer: false});
+    throw new Error("Should have rejected posting offer above trade limit")
+  } catch (err) {
+    assert(err.message.indexOf("amount is larger than") === 0);
+  }
 });
 
 test("Can complete a trade", async () => {
@@ -3058,7 +3068,7 @@ function testCryptoPaymentAccountsEqual(acct1: PaymentAccount, acct2: PaymentAcc
   expect(acct1.getPaymentAccountPayload()!.getCryptoCurrencyAccountPayload()!.getAddress()).toEqual(acct2.getPaymentAccountPayload()!.getCryptoCurrencyAccountPayload()!.getAddress());
 }
 
-function testOffer(offer: OfferInfo, config?: any) {
+function testOffer(offer: OfferInfo, config?: TradeContext) {
   expect(offer.getId().length).toBeGreaterThan(0);
   if (config) {
     expect(HavenoUtils.centinerosToAtomicUnits(offer.getAmount())).toEqual(config.amount); // TODO (woodser): use atomic units in offer instead of centineros?
