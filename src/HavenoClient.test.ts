@@ -1455,7 +1455,7 @@ test("Cannot make or take offer with insufficient unlocked funds (CI)", async ()
   if (err) throw err;
 });
 
-test("Invalidates offers when reserved funds are spent", async () => {
+test("Invalidates offers when reserved funds are spent (CI)", async () => {
   let err;
   let tx;
   try {

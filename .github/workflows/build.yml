@@ -50,7 +50,7 @@ jobs:
         run: npm install
 
       - name: Run tests
-        run: npm run test -- --baseCurrencyNetwork=XMR_LOCAL
+        run: npm run test -- --baseCurrencyNetwork=XMR_LOCAL -t "CI"
 
       - name: Stop containers
         if: always()
