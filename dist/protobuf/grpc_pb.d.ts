@@ -1466,46 +1466,46 @@ export namespace GetMyOffersReply {
   }
 }
 
-export class CreateOfferRequest extends jspb.Message {
+export class PostOfferRequest extends jspb.Message {
   getCurrencyCode(): string;
-  setCurrencyCode(value: string): CreateOfferRequest;
+  setCurrencyCode(value: string): PostOfferRequest;
 
   getDirection(): string;
-  setDirection(value: string): CreateOfferRequest;
+  setDirection(value: string): PostOfferRequest;
 
   getPrice(): string;
-  setPrice(value: string): CreateOfferRequest;
+  setPrice(value: string): PostOfferRequest;
 
   getUseMarketBasedPrice(): boolean;
-  setUseMarketBasedPrice(value: boolean): CreateOfferRequest;
+  setUseMarketBasedPrice(value: boolean): PostOfferRequest;
 
   getMarketPriceMarginPct(): number;
-  setMarketPriceMarginPct(value: number): CreateOfferRequest;
+  setMarketPriceMarginPct(value: number): PostOfferRequest;
 
   getAmount(): string;
-  setAmount(value: string): CreateOfferRequest;
+  setAmount(value: string): PostOfferRequest;
 
   getMinAmount(): string;
-  setMinAmount(value: string): CreateOfferRequest;
+  setMinAmount(value: string): PostOfferRequest;
 
   getBuyerSecurityDepositPct(): number;
-  setBuyerSecurityDepositPct(value: number): CreateOfferRequest;
+  setBuyerSecurityDepositPct(value: number): PostOfferRequest;
 
   getTriggerPrice(): string;
-  setTriggerPrice(value: string): CreateOfferRequest;
+  setTriggerPrice(value: string): PostOfferRequest;
 
   getPaymentAccountId(): string;
-  setPaymentAccountId(value: string): CreateOfferRequest;
+  setPaymentAccountId(value: string): PostOfferRequest;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): CreateOfferRequest.AsObject;
-  static toObject(includeInstance: boolean, msg: CreateOfferRequest): CreateOfferRequest.AsObject;
-  static serializeBinaryToWriter(message: CreateOfferRequest, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): CreateOfferRequest;
-  static deserializeBinaryFromReader(message: CreateOfferRequest, reader: jspb.BinaryReader): CreateOfferRequest;
+  toObject(includeInstance?: boolean): PostOfferRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: PostOfferRequest): PostOfferRequest.AsObject;
+  static serializeBinaryToWriter(message: PostOfferRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PostOfferRequest;
+  static deserializeBinaryFromReader(message: PostOfferRequest, reader: jspb.BinaryReader): PostOfferRequest;
 }
 
-export namespace CreateOfferRequest {
+export namespace PostOfferRequest {
   export type AsObject = {
     currencyCode: string,
     direction: string,
@@ -1520,21 +1520,21 @@ export namespace CreateOfferRequest {
   }
 }
 
-export class CreateOfferReply extends jspb.Message {
+export class PostOfferReply extends jspb.Message {
   getOffer(): OfferInfo | undefined;
-  setOffer(value?: OfferInfo): CreateOfferReply;
+  setOffer(value?: OfferInfo): PostOfferReply;
   hasOffer(): boolean;
-  clearOffer(): CreateOfferReply;
+  clearOffer(): PostOfferReply;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): CreateOfferReply.AsObject;
-  static toObject(includeInstance: boolean, msg: CreateOfferReply): CreateOfferReply.AsObject;
-  static serializeBinaryToWriter(message: CreateOfferReply, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): CreateOfferReply;
-  static deserializeBinaryFromReader(message: CreateOfferReply, reader: jspb.BinaryReader): CreateOfferReply;
+  toObject(includeInstance?: boolean): PostOfferReply.AsObject;
+  static toObject(includeInstance: boolean, msg: PostOfferReply): PostOfferReply.AsObject;
+  static serializeBinaryToWriter(message: PostOfferReply, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PostOfferReply;
+  static deserializeBinaryFromReader(message: PostOfferReply, reader: jspb.BinaryReader): PostOfferReply;
 }
 
-export namespace CreateOfferReply {
+export namespace PostOfferReply {
   export type AsObject = {
     offer?: OfferInfo.AsObject,
   }
@@ -1840,6 +1840,11 @@ export class GetPaymentAccountFormRequest extends jspb.Message {
   getPaymentMethodId(): string;
   setPaymentMethodId(value: string): GetPaymentAccountFormRequest;
 
+  getPaymentAccountPayload(): pb_pb.PaymentAccountPayload | undefined;
+  setPaymentAccountPayload(value?: pb_pb.PaymentAccountPayload): GetPaymentAccountFormRequest;
+  hasPaymentAccountPayload(): boolean;
+  clearPaymentAccountPayload(): GetPaymentAccountFormRequest;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GetPaymentAccountFormRequest.AsObject;
   static toObject(includeInstance: boolean, msg: GetPaymentAccountFormRequest): GetPaymentAccountFormRequest.AsObject;
@@ -1851,6 +1856,7 @@ export class GetPaymentAccountFormRequest extends jspb.Message {
 export namespace GetPaymentAccountFormRequest {
   export type AsObject = {
     paymentMethodId: string,
+    paymentAccountPayload?: pb_pb.PaymentAccountPayload.AsObject,
   }
 }
 
@@ -2464,34 +2470,34 @@ export namespace GetTradesReply {
   }
 }
 
-export class KeepFundsRequest extends jspb.Message {
+export class CompleteTradeRequest extends jspb.Message {
   getTradeId(): string;
-  setTradeId(value: string): KeepFundsRequest;
+  setTradeId(value: string): CompleteTradeRequest;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): KeepFundsRequest.AsObject;
-  static toObject(includeInstance: boolean, msg: KeepFundsRequest): KeepFundsRequest.AsObject;
-  static serializeBinaryToWriter(message: KeepFundsRequest, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): KeepFundsRequest;
-  static deserializeBinaryFromReader(message: KeepFundsRequest, reader: jspb.BinaryReader): KeepFundsRequest;
+  toObject(includeInstance?: boolean): CompleteTradeRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: CompleteTradeRequest): CompleteTradeRequest.AsObject;
+  static serializeBinaryToWriter(message: CompleteTradeRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): CompleteTradeRequest;
+  static deserializeBinaryFromReader(message: CompleteTradeRequest, reader: jspb.BinaryReader): CompleteTradeRequest;
 }
 
-export namespace KeepFundsRequest {
+export namespace CompleteTradeRequest {
   export type AsObject = {
     tradeId: string,
   }
 }
 
-export class KeepFundsReply extends jspb.Message {
+export class CompleteTradeReply extends jspb.Message {
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): KeepFundsReply.AsObject;
-  static toObject(includeInstance: boolean, msg: KeepFundsReply): KeepFundsReply.AsObject;
-  static serializeBinaryToWriter(message: KeepFundsReply, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): KeepFundsReply;
-  static deserializeBinaryFromReader(message: KeepFundsReply, reader: jspb.BinaryReader): KeepFundsReply;
+  toObject(includeInstance?: boolean): CompleteTradeReply.AsObject;
+  static toObject(includeInstance: boolean, msg: CompleteTradeReply): CompleteTradeReply.AsObject;
+  static serializeBinaryToWriter(message: CompleteTradeReply, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): CompleteTradeReply;
+  static deserializeBinaryFromReader(message: CompleteTradeReply, reader: jspb.BinaryReader): CompleteTradeReply;
 }
 
-export namespace KeepFundsReply {
+export namespace CompleteTradeReply {
   export type AsObject = {
   }
 }
@@ -2661,8 +2667,17 @@ export class TradeInfo extends jspb.Message {
   getPeriodState(): string;
   setPeriodState(value: string): TradeInfo;
 
+  getPayoutState(): string;
+  setPayoutState(value: string): TradeInfo;
+
+  getDisputeState(): string;
+  setDisputeState(value: string): TradeInfo;
+
   getIsDepositPublished(): boolean;
   setIsDepositPublished(value: boolean): TradeInfo;
+
+  getIsDepositConfirmed(): boolean;
+  setIsDepositConfirmed(value: boolean): TradeInfo;
 
   getIsDepositUnlocked(): boolean;
   setIsDepositUnlocked(value: boolean): TradeInfo;
@@ -2675,6 +2690,12 @@ export class TradeInfo extends jspb.Message {
 
   getIsPayoutPublished(): boolean;
   setIsPayoutPublished(value: boolean): TradeInfo;
+
+  getIsPayoutConfirmed(): boolean;
+  setIsPayoutConfirmed(value: boolean): TradeInfo;
+
+  getIsPayoutUnlocked(): boolean;
+  setIsPayoutUnlocked(value: boolean): TradeInfo;
 
   getIsCompleted(): boolean;
   setIsCompleted(value: boolean): TradeInfo;
@@ -2722,11 +2743,16 @@ export namespace TradeInfo {
     state: string,
     phase: string,
     periodState: string,
+    payoutState: string,
+    disputeState: string,
     isDepositPublished: boolean,
+    isDepositConfirmed: boolean,
     isDepositUnlocked: boolean,
     isPaymentSent: boolean,
     isPaymentReceived: boolean,
     isPayoutPublished: boolean,
+    isPayoutConfirmed: boolean,
+    isPayoutUnlocked: boolean,
     isCompleted: boolean,
     contractAsJson: string,
     contract?: ContractInfo.AsObject,
@@ -2752,13 +2778,13 @@ export class ContractInfo extends jspb.Message {
   getTakerAccountId(): string;
   setTakerAccountId(value: string): ContractInfo;
 
-  getMakerPaymentAccountPayload(): PaymentAccountPayloadInfo | undefined;
-  setMakerPaymentAccountPayload(value?: PaymentAccountPayloadInfo): ContractInfo;
+  getMakerPaymentAccountPayload(): pb_pb.PaymentAccountPayload | undefined;
+  setMakerPaymentAccountPayload(value?: pb_pb.PaymentAccountPayload): ContractInfo;
   hasMakerPaymentAccountPayload(): boolean;
   clearMakerPaymentAccountPayload(): ContractInfo;
 
-  getTakerPaymentAccountPayload(): PaymentAccountPayloadInfo | undefined;
-  setTakerPaymentAccountPayload(value?: PaymentAccountPayloadInfo): ContractInfo;
+  getTakerPaymentAccountPayload(): pb_pb.PaymentAccountPayload | undefined;
+  setTakerPaymentAccountPayload(value?: pb_pb.PaymentAccountPayload): ContractInfo;
   hasTakerPaymentAccountPayload(): boolean;
   clearTakerPaymentAccountPayload(): ContractInfo;
 
@@ -2789,118 +2815,12 @@ export namespace ContractInfo {
     isBuyerMakerAndSellerTaker: boolean,
     makerAccountId: string,
     takerAccountId: string,
-    makerPaymentAccountPayload?: PaymentAccountPayloadInfo.AsObject,
-    takerPaymentAccountPayload?: PaymentAccountPayloadInfo.AsObject,
+    makerPaymentAccountPayload?: pb_pb.PaymentAccountPayload.AsObject,
+    takerPaymentAccountPayload?: pb_pb.PaymentAccountPayload.AsObject,
     makerPayoutAddressString: string,
     takerPayoutAddressString: string,
     lockTime: number,
     arbitratorNodeAddress: string,
-  }
-}
-
-export class PaymentAccountPayloadInfo extends jspb.Message {
-  getId(): string;
-  setId(value: string): PaymentAccountPayloadInfo;
-
-  getPaymentMethodId(): string;
-  setPaymentMethodId(value: string): PaymentAccountPayloadInfo;
-
-  getAddress(): string;
-  setAddress(value: string): PaymentAccountPayloadInfo;
-
-  getPaymentDetails(): string;
-  setPaymentDetails(value: string): PaymentAccountPayloadInfo;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): PaymentAccountPayloadInfo.AsObject;
-  static toObject(includeInstance: boolean, msg: PaymentAccountPayloadInfo): PaymentAccountPayloadInfo.AsObject;
-  static serializeBinaryToWriter(message: PaymentAccountPayloadInfo, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): PaymentAccountPayloadInfo;
-  static deserializeBinaryFromReader(message: PaymentAccountPayloadInfo, reader: jspb.BinaryReader): PaymentAccountPayloadInfo;
-}
-
-export namespace PaymentAccountPayloadInfo {
-  export type AsObject = {
-    id: string,
-    paymentMethodId: string,
-    address: string,
-    paymentDetails: string,
-  }
-}
-
-export class TxFeeRateInfo extends jspb.Message {
-  getUseCustomTxFeeRate(): boolean;
-  setUseCustomTxFeeRate(value: boolean): TxFeeRateInfo;
-
-  getCustomTxFeeRate(): number;
-  setCustomTxFeeRate(value: number): TxFeeRateInfo;
-
-  getFeeServiceRate(): number;
-  setFeeServiceRate(value: number): TxFeeRateInfo;
-
-  getLastFeeServiceRequestTs(): number;
-  setLastFeeServiceRequestTs(value: number): TxFeeRateInfo;
-
-  getMinFeeServiceRate(): number;
-  setMinFeeServiceRate(value: number): TxFeeRateInfo;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): TxFeeRateInfo.AsObject;
-  static toObject(includeInstance: boolean, msg: TxFeeRateInfo): TxFeeRateInfo.AsObject;
-  static serializeBinaryToWriter(message: TxFeeRateInfo, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): TxFeeRateInfo;
-  static deserializeBinaryFromReader(message: TxFeeRateInfo, reader: jspb.BinaryReader): TxFeeRateInfo;
-}
-
-export namespace TxFeeRateInfo {
-  export type AsObject = {
-    useCustomTxFeeRate: boolean,
-    customTxFeeRate: number,
-    feeServiceRate: number,
-    lastFeeServiceRequestTs: number,
-    minFeeServiceRate: number,
-  }
-}
-
-export class TxInfo extends jspb.Message {
-  getTxId(): string;
-  setTxId(value: string): TxInfo;
-
-  getInputSum(): number;
-  setInputSum(value: number): TxInfo;
-
-  getOutputSum(): number;
-  setOutputSum(value: number): TxInfo;
-
-  getFee(): number;
-  setFee(value: number): TxInfo;
-
-  getSize(): number;
-  setSize(value: number): TxInfo;
-
-  getIsPending(): boolean;
-  setIsPending(value: boolean): TxInfo;
-
-  getMemo(): string;
-  setMemo(value: string): TxInfo;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): TxInfo.AsObject;
-  static toObject(includeInstance: boolean, msg: TxInfo): TxInfo.AsObject;
-  static serializeBinaryToWriter(message: TxInfo, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): TxInfo;
-  static deserializeBinaryFromReader(message: TxInfo, reader: jspb.BinaryReader): TxInfo;
-}
-
-export namespace TxInfo {
-  export type AsObject = {
-    txId: string,
-    inputSum: number,
-    outputSum: number,
-    fee: number,
-    size: number,
-    isPending: boolean,
-    memo: string,
   }
 }
 
@@ -3357,170 +3277,6 @@ export namespace SendBtcRequest {
     amount: string,
     txFeeRate: string,
     memo: string,
-  }
-}
-
-export class SendBtcReply extends jspb.Message {
-  getTxInfo(): TxInfo | undefined;
-  setTxInfo(value?: TxInfo): SendBtcReply;
-  hasTxInfo(): boolean;
-  clearTxInfo(): SendBtcReply;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): SendBtcReply.AsObject;
-  static toObject(includeInstance: boolean, msg: SendBtcReply): SendBtcReply.AsObject;
-  static serializeBinaryToWriter(message: SendBtcReply, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): SendBtcReply;
-  static deserializeBinaryFromReader(message: SendBtcReply, reader: jspb.BinaryReader): SendBtcReply;
-}
-
-export namespace SendBtcReply {
-  export type AsObject = {
-    txInfo?: TxInfo.AsObject,
-  }
-}
-
-export class GetTxFeeRateRequest extends jspb.Message {
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): GetTxFeeRateRequest.AsObject;
-  static toObject(includeInstance: boolean, msg: GetTxFeeRateRequest): GetTxFeeRateRequest.AsObject;
-  static serializeBinaryToWriter(message: GetTxFeeRateRequest, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): GetTxFeeRateRequest;
-  static deserializeBinaryFromReader(message: GetTxFeeRateRequest, reader: jspb.BinaryReader): GetTxFeeRateRequest;
-}
-
-export namespace GetTxFeeRateRequest {
-  export type AsObject = {
-  }
-}
-
-export class GetTxFeeRateReply extends jspb.Message {
-  getTxFeeRateInfo(): TxFeeRateInfo | undefined;
-  setTxFeeRateInfo(value?: TxFeeRateInfo): GetTxFeeRateReply;
-  hasTxFeeRateInfo(): boolean;
-  clearTxFeeRateInfo(): GetTxFeeRateReply;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): GetTxFeeRateReply.AsObject;
-  static toObject(includeInstance: boolean, msg: GetTxFeeRateReply): GetTxFeeRateReply.AsObject;
-  static serializeBinaryToWriter(message: GetTxFeeRateReply, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): GetTxFeeRateReply;
-  static deserializeBinaryFromReader(message: GetTxFeeRateReply, reader: jspb.BinaryReader): GetTxFeeRateReply;
-}
-
-export namespace GetTxFeeRateReply {
-  export type AsObject = {
-    txFeeRateInfo?: TxFeeRateInfo.AsObject,
-  }
-}
-
-export class SetTxFeeRatePreferenceRequest extends jspb.Message {
-  getTxFeeRatePreference(): number;
-  setTxFeeRatePreference(value: number): SetTxFeeRatePreferenceRequest;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): SetTxFeeRatePreferenceRequest.AsObject;
-  static toObject(includeInstance: boolean, msg: SetTxFeeRatePreferenceRequest): SetTxFeeRatePreferenceRequest.AsObject;
-  static serializeBinaryToWriter(message: SetTxFeeRatePreferenceRequest, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): SetTxFeeRatePreferenceRequest;
-  static deserializeBinaryFromReader(message: SetTxFeeRatePreferenceRequest, reader: jspb.BinaryReader): SetTxFeeRatePreferenceRequest;
-}
-
-export namespace SetTxFeeRatePreferenceRequest {
-  export type AsObject = {
-    txFeeRatePreference: number,
-  }
-}
-
-export class SetTxFeeRatePreferenceReply extends jspb.Message {
-  getTxFeeRateInfo(): TxFeeRateInfo | undefined;
-  setTxFeeRateInfo(value?: TxFeeRateInfo): SetTxFeeRatePreferenceReply;
-  hasTxFeeRateInfo(): boolean;
-  clearTxFeeRateInfo(): SetTxFeeRatePreferenceReply;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): SetTxFeeRatePreferenceReply.AsObject;
-  static toObject(includeInstance: boolean, msg: SetTxFeeRatePreferenceReply): SetTxFeeRatePreferenceReply.AsObject;
-  static serializeBinaryToWriter(message: SetTxFeeRatePreferenceReply, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): SetTxFeeRatePreferenceReply;
-  static deserializeBinaryFromReader(message: SetTxFeeRatePreferenceReply, reader: jspb.BinaryReader): SetTxFeeRatePreferenceReply;
-}
-
-export namespace SetTxFeeRatePreferenceReply {
-  export type AsObject = {
-    txFeeRateInfo?: TxFeeRateInfo.AsObject,
-  }
-}
-
-export class UnsetTxFeeRatePreferenceRequest extends jspb.Message {
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): UnsetTxFeeRatePreferenceRequest.AsObject;
-  static toObject(includeInstance: boolean, msg: UnsetTxFeeRatePreferenceRequest): UnsetTxFeeRatePreferenceRequest.AsObject;
-  static serializeBinaryToWriter(message: UnsetTxFeeRatePreferenceRequest, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): UnsetTxFeeRatePreferenceRequest;
-  static deserializeBinaryFromReader(message: UnsetTxFeeRatePreferenceRequest, reader: jspb.BinaryReader): UnsetTxFeeRatePreferenceRequest;
-}
-
-export namespace UnsetTxFeeRatePreferenceRequest {
-  export type AsObject = {
-  }
-}
-
-export class UnsetTxFeeRatePreferenceReply extends jspb.Message {
-  getTxFeeRateInfo(): TxFeeRateInfo | undefined;
-  setTxFeeRateInfo(value?: TxFeeRateInfo): UnsetTxFeeRatePreferenceReply;
-  hasTxFeeRateInfo(): boolean;
-  clearTxFeeRateInfo(): UnsetTxFeeRatePreferenceReply;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): UnsetTxFeeRatePreferenceReply.AsObject;
-  static toObject(includeInstance: boolean, msg: UnsetTxFeeRatePreferenceReply): UnsetTxFeeRatePreferenceReply.AsObject;
-  static serializeBinaryToWriter(message: UnsetTxFeeRatePreferenceReply, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): UnsetTxFeeRatePreferenceReply;
-  static deserializeBinaryFromReader(message: UnsetTxFeeRatePreferenceReply, reader: jspb.BinaryReader): UnsetTxFeeRatePreferenceReply;
-}
-
-export namespace UnsetTxFeeRatePreferenceReply {
-  export type AsObject = {
-    txFeeRateInfo?: TxFeeRateInfo.AsObject,
-  }
-}
-
-export class GetTransactionRequest extends jspb.Message {
-  getTxId(): string;
-  setTxId(value: string): GetTransactionRequest;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): GetTransactionRequest.AsObject;
-  static toObject(includeInstance: boolean, msg: GetTransactionRequest): GetTransactionRequest.AsObject;
-  static serializeBinaryToWriter(message: GetTransactionRequest, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): GetTransactionRequest;
-  static deserializeBinaryFromReader(message: GetTransactionRequest, reader: jspb.BinaryReader): GetTransactionRequest;
-}
-
-export namespace GetTransactionRequest {
-  export type AsObject = {
-    txId: string,
-  }
-}
-
-export class GetTransactionReply extends jspb.Message {
-  getTxInfo(): TxInfo | undefined;
-  setTxInfo(value?: TxInfo): GetTransactionReply;
-  hasTxInfo(): boolean;
-  clearTxInfo(): GetTransactionReply;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): GetTransactionReply.AsObject;
-  static toObject(includeInstance: boolean, msg: GetTransactionReply): GetTransactionReply.AsObject;
-  static serializeBinaryToWriter(message: GetTransactionReply, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): GetTransactionReply;
-  static deserializeBinaryFromReader(message: GetTransactionReply, reader: jspb.BinaryReader): GetTransactionReply;
-}
-
-export namespace GetTransactionReply {
-  export type AsObject = {
-    txInfo?: TxInfo.AsObject,
   }
 }
 

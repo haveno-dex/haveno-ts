@@ -24,7 +24,6 @@ export default class HavenoUtils {
      *
      * @param {int} level - log level of the message
      * @param {string} msg - message to log
-     * @param {boolean?} warn - log the message as a warning if true
      */
     static log(level: number, msg: string): void;
     /**
@@ -51,13 +50,20 @@ export default class HavenoUtils {
      */
     static centinerosToAtomicUnits(centineros: number): bigint;
     /**
+     * Stringify a payment account form.
+     *
+     * @param form - form to stringify
+     * @return {string} the stringified form
+     */
+    static formToString(form: PaymentAccountForm): string;
+    /**
      * Get a form field value.
      *
-     * @param {PaymentAccountFormField.FieldId} fieldId - id of the field to get the value from
      * @param {PaymentAccountForm} form - form to get the field value from
+     * @param {PaymentAccountFormField.FieldId} fieldId - id of the field to get the value from
      * @return {string} the form field value
      */
-    static getFormValue(fieldId: PaymentAccountFormField.FieldId, form: PaymentAccountForm): string;
+    static getFormValue(form: PaymentAccountForm, fieldId: PaymentAccountFormField.FieldId): string;
     /**
      * Set a form field value.
      *

@@ -31,7 +31,6 @@ class HavenoUtils {
      *
      * @param {int} level - log level of the message
      * @param {string} msg - message to log
-     * @param {boolean?} warn - log the message as a warning if true
      */
     static log(level, msg) {
         (0, assert_1.default)(level === parseInt(level + "", 10) && level >= 0, "Log level must be an integer >= 0");
@@ -77,14 +76,27 @@ class HavenoUtils {
         return BigInt(centineros) * BigInt(HavenoUtils.centinerosToAUMultiplier);
     }
     /**
+     * Stringify a payment account form.
+     *
+     * @param form - form to stringify
+     * @return {string} the stringified form
+     */
+    static formToString(form) {
+        let str = "";
+        for (const field of form.getFieldsList()) {
+            str += field.getId() + ": " + this.getFormValue(form, field.getId()) + "\n";
+        }
+        return str.trim();
+    }
+    /**
      * Get a form field value.
      *
-     * @param {PaymentAccountFormField.FieldId} fieldId - id of the field to get the value from
      * @param {PaymentAccountForm} form - form to get the field value from
+     * @param {PaymentAccountFormField.FieldId} fieldId - id of the field to get the value from
      * @return {string} the form field value
      */
     // TODO: attach getter and setter to PaymentAccountForm prototype in typescript?
-    static getFormValue(fieldId, form) {
+    static getFormValue(form, fieldId) {
         for (const field of form.getFieldsList()) {
             if (field.getId() === fieldId)
                 return field.getValue();
