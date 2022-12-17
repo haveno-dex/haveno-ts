@@ -1,39 +1,38 @@
 import type * as grpcWeb from "grpc-web";
 import { GetVersionClient, AccountClient, MoneroConnectionsClient, DisputesClient, DisputeAgentsClient, NotificationsClient, WalletsClient, PriceClient, OffersClient, PaymentAccountsClient, TradesClient, ShutdownServerClient, MoneroNodeClient } from './protobuf/GrpcServiceClientPb';
 import { MarketPriceInfo, MarketDepthInfo, XmrBalanceInfo, OfferInfo, TradeInfo, XmrTx, XmrDestination, NotificationMessage, UrlConnection } from "./protobuf/grpc_pb";
-import { PaymentMethod, PaymentAccountForm, PaymentAccountFormField, PaymentAccount, Attachment, DisputeResult, Dispute, ChatMessage, MoneroNodeSettings } from "./protobuf/pb_pb";
+import { PaymentMethod, PaymentAccountForm, PaymentAccountFormField, PaymentAccount, PaymentAccountPayload, Attachment, DisputeResult, Dispute, ChatMessage, MoneroNodeSettings } from "./protobuf/pb_pb";
 /**
  * Haveno daemon client.
  */
 export default class HavenoClient {
-    _appName: string | undefined;
-    _getVersionClient: GetVersionClient;
-    _disputeAgentsClient: DisputeAgentsClient;
-    _disputesClient: DisputesClient;
-    _notificationsClient: NotificationsClient;
-    _notificationStream: grpcWeb.ClientReadableStream<NotificationMessage> | undefined;
-    _moneroConnectionsClient: MoneroConnectionsClient;
-    _moneroNodeClient: MoneroNodeClient;
-    _walletsClient: WalletsClient;
-    _priceClient: PriceClient;
-    _paymentAccountsClient: PaymentAccountsClient;
-    _offersClient: OffersClient;
-    _tradesClient: TradesClient;
-    _accountClient: AccountClient;
-    _shutdownServerClient: ShutdownServerClient;
-    _url: string;
-    _password: string;
-    _process: any;
-    _processLogging: boolean;
-    _walletRpcPort: number | undefined;
-    _notificationListeners: ((_notification: NotificationMessage) => void)[];
-    _registerNotificationListenerCalled: boolean;
-    _keepAliveLooper: any;
-    _keepAlivePeriodMs: number;
-    _paymentMethods: PaymentMethod[] | undefined;
-    static readonly _fullyInitializedMessage = "Application fully initialized";
-    static readonly _loginRequiredMessage = "Interactive login required";
-    onData: (data: any) => void;
+    /** @private */ _appName: string | undefined;
+    /** @private */ _getVersionClient: GetVersionClient;
+    /** @private */ _disputeAgentsClient: DisputeAgentsClient;
+    /** @private */ _disputesClient: DisputesClient;
+    /** @private */ _notificationsClient: NotificationsClient;
+    /** @private */ _notificationStream: grpcWeb.ClientReadableStream<NotificationMessage> | undefined;
+    /** @private */ _moneroConnectionsClient: MoneroConnectionsClient;
+    /** @private */ _moneroNodeClient: MoneroNodeClient;
+    /** @private */ _walletsClient: WalletsClient;
+    /** @private */ _priceClient: PriceClient;
+    /** @private */ _paymentAccountsClient: PaymentAccountsClient;
+    /** @private */ _offersClient: OffersClient;
+    /** @private */ _tradesClient: TradesClient;
+    /** @private */ _accountClient: AccountClient;
+    /** @private */ _shutdownServerClient: ShutdownServerClient;
+    /** @private */ _url: string;
+    /** @private */ _password: string;
+    /** @private */ _process: any;
+    /** @private */ _processLogging: boolean;
+    /** @private */ _walletRpcPort: number | undefined;
+    /** @private */ _notificationListeners: ((_notification: NotificationMessage) => void)[];
+    /** @private */ _registerNotificationListenerCalled: boolean;
+    /** @private */ _keepAliveLooper: any;
+    /** @private */ _keepAlivePeriodMs: number;
+    /** @private */ _paymentMethods: PaymentMethod[] | undefined;
+    /** @private */ static readonly _fullyInitializedMessage = "Application fully initialized";
+    /** @private */ static readonly _loginRequiredMessage = "Interactive login required";
     /**
      * Construct a client connected to a Haveno daemon.
      *
@@ -297,7 +296,7 @@ export default class HavenoClient {
      * @param {String} txHash - hash of the transaction to get
      * @return {XmrTx} the transaction with the hash
      */
-    getXmrTx(txHash: string): Promise<XmrTx>;
+    getXmrTx(txHash: string): Promise<XmrTx | undefined>;
     /**
      * Create but do not relay a transaction to send funds from the Monero wallet.
      *
@@ -365,6 +364,13 @@ export default class HavenoClient {
      * @return {PaymentAccountForm} the payment account form
      */
     getPaymentAccountForm(paymentMethodId: string): Promise<PaymentAccountForm>;
+    /**
+     * Get a form from the given payment account payload.
+     *
+     * @param {PaymentAccountPayload} paymentAccountPayload - payload to get as a form
+     * @return {PaymentAccountForm} the payment account form
+     */
+    getPaymentAccountPayloadForm(paymentAccountPayload: PaymentAccountPayload): Promise<PaymentAccountForm>;
     validateFormField(form: PaymentAccountForm, fieldId: PaymentAccountFormField.FieldId, value: string): Promise<void>;
     /**
      * Create a payment account.
@@ -460,6 +466,12 @@ export default class HavenoClient {
      */
     confirmPaymentReceived(tradeId: string): Promise<void>;
     /**
+     * Acknowledge that a trade has completed.
+     *
+     * @param {string} tradeId - the id of the trade
+     */
+    completeTrade(tradeId: string): Promise<void>;
+    /**
      * Get all chat messages for a trade.
      *
      * @param {string} tradeId - the id of the trade
@@ -490,7 +502,7 @@ export default class HavenoClient {
     openDispute(tradeId: string): Promise<void>;
     /**
      * Resolve a dispute. By default, the winner receives the trade amount and the security deposits are returned,
-     * but the arbitrator may award a custom amount to the winner.
+     * but the arbitrator may award a custom amount to the winner and the loser will get the rest.
      *
      * @param {string} tradeId - the id of the trade
      * @param {DisputeResult.Winner} winner - the winner of the dispute
@@ -529,27 +541,36 @@ export default class HavenoClient {
      * havenod.isHavenoConnectionInitialized() and havenod.awaitHavenoConnectionInitialized().
      * Independently, gRPC createAccount() and openAccount() return after all account setup and reading from disk.
      *
-     * @hidden
+     * @private
      */
     _awaitAppInitialized(): Promise<void>;
+    /** @private */
     _isAppInitialized(): Promise<boolean>;
+    /**
+     * Callback for grpc notifications.
+     *
+     * @private
+     */
+    _onNotification: (data: any) => void;
     /**
      * Update notification listener registration.
      * Due to the nature of grpc streaming, this method returns a promise
      * which may be resolved before the listener is actually registered.
+     *
+     * @private
      */
     _updateNotificationListenerRegistration(): Promise<void>;
     /**
      * Send a notification.
      *
-     * @hidden
+     * @private
      * @param {NotificationMessage} notification - notification to send
      */
     _sendNotification(notification: NotificationMessage): Promise<void>;
     /**
      * Restore an account chunk from zip bytes.
      *
-     * @hidden
+     * @private
      */
     _restoreAccountChunk(zipBytes: Uint8Array, offset: number, totalLength: number, hasMore: boolean): Promise<void>;
 }

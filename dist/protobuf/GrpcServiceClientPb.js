@@ -548,9 +548,9 @@ class OffersClient {
         this.methodDescriptorGetMyOffers = new grpcWeb.MethodDescriptor('/io.bisq.protobuffer.Offers/GetMyOffers', grpcWeb.MethodType.UNARY, grpc_pb.GetMyOffersRequest, grpc_pb.GetMyOffersReply, (request) => {
             return request.serializeBinary();
         }, grpc_pb.GetMyOffersReply.deserializeBinary);
-        this.methodDescriptorCreateOffer = new grpcWeb.MethodDescriptor('/io.bisq.protobuffer.Offers/CreateOffer', grpcWeb.MethodType.UNARY, grpc_pb.CreateOfferRequest, grpc_pb.CreateOfferReply, (request) => {
+        this.methodDescriptorPostOffer = new grpcWeb.MethodDescriptor('/io.bisq.protobuffer.Offers/PostOffer', grpcWeb.MethodType.UNARY, grpc_pb.PostOfferRequest, grpc_pb.PostOfferReply, (request) => {
             return request.serializeBinary();
-        }, grpc_pb.CreateOfferReply.deserializeBinary);
+        }, grpc_pb.PostOfferReply.deserializeBinary);
         this.methodDescriptorCancelOffer = new grpcWeb.MethodDescriptor('/io.bisq.protobuffer.Offers/CancelOffer', grpcWeb.MethodType.UNARY, grpc_pb.CancelOfferRequest, grpc_pb.CancelOfferReply, (request) => {
             return request.serializeBinary();
         }, grpc_pb.CancelOfferReply.deserializeBinary);
@@ -596,13 +596,13 @@ class OffersClient {
         return this.client_.unaryCall(this.hostname_ +
             '/io.bisq.protobuffer.Offers/GetMyOffers', request, metadata || {}, this.methodDescriptorGetMyOffers);
     }
-    createOffer(request, metadata, callback) {
+    postOffer(request, metadata, callback) {
         if (callback !== undefined) {
             return this.client_.rpcCall(this.hostname_ +
-                '/io.bisq.protobuffer.Offers/CreateOffer', request, metadata || {}, this.methodDescriptorCreateOffer, callback);
+                '/io.bisq.protobuffer.Offers/PostOffer', request, metadata || {}, this.methodDescriptorPostOffer, callback);
         }
         return this.client_.unaryCall(this.hostname_ +
-            '/io.bisq.protobuffer.Offers/CreateOffer', request, metadata || {}, this.methodDescriptorCreateOffer);
+            '/io.bisq.protobuffer.Offers/PostOffer', request, metadata || {}, this.methodDescriptorPostOffer);
     }
     cancelOffer(request, metadata, callback) {
         if (callback !== undefined) {
@@ -830,9 +830,9 @@ class TradesClient {
         this.methodDescriptorConfirmPaymentReceived = new grpcWeb.MethodDescriptor('/io.bisq.protobuffer.Trades/ConfirmPaymentReceived', grpcWeb.MethodType.UNARY, grpc_pb.ConfirmPaymentReceivedRequest, grpc_pb.ConfirmPaymentReceivedReply, (request) => {
             return request.serializeBinary();
         }, grpc_pb.ConfirmPaymentReceivedReply.deserializeBinary);
-        this.methodDescriptorKeepFunds = new grpcWeb.MethodDescriptor('/io.bisq.protobuffer.Trades/KeepFunds', grpcWeb.MethodType.UNARY, grpc_pb.KeepFundsRequest, grpc_pb.KeepFundsReply, (request) => {
+        this.methodDescriptorCompleteTrade = new grpcWeb.MethodDescriptor('/io.bisq.protobuffer.Trades/CompleteTrade', grpcWeb.MethodType.UNARY, grpc_pb.CompleteTradeRequest, grpc_pb.CompleteTradeReply, (request) => {
             return request.serializeBinary();
-        }, grpc_pb.KeepFundsReply.deserializeBinary);
+        }, grpc_pb.CompleteTradeReply.deserializeBinary);
         this.methodDescriptorWithdrawFunds = new grpcWeb.MethodDescriptor('/io.bisq.protobuffer.Trades/WithdrawFunds', grpcWeb.MethodType.UNARY, grpc_pb.WithdrawFundsRequest, grpc_pb.WithdrawFundsReply, (request) => {
             return request.serializeBinary();
         }, grpc_pb.WithdrawFundsReply.deserializeBinary);
@@ -892,13 +892,13 @@ class TradesClient {
         return this.client_.unaryCall(this.hostname_ +
             '/io.bisq.protobuffer.Trades/ConfirmPaymentReceived', request, metadata || {}, this.methodDescriptorConfirmPaymentReceived);
     }
-    keepFunds(request, metadata, callback) {
+    completeTrade(request, metadata, callback) {
         if (callback !== undefined) {
             return this.client_.rpcCall(this.hostname_ +
-                '/io.bisq.protobuffer.Trades/KeepFunds', request, metadata || {}, this.methodDescriptorKeepFunds, callback);
+                '/io.bisq.protobuffer.Trades/CompleteTrade', request, metadata || {}, this.methodDescriptorCompleteTrade, callback);
         }
         return this.client_.unaryCall(this.hostname_ +
-            '/io.bisq.protobuffer.Trades/KeepFunds', request, metadata || {}, this.methodDescriptorKeepFunds);
+            '/io.bisq.protobuffer.Trades/CompleteTrade', request, metadata || {}, this.methodDescriptorCompleteTrade);
     }
     withdrawFunds(request, metadata, callback) {
         if (callback !== undefined) {
@@ -952,21 +952,6 @@ class WalletsClient {
         this.methodDescriptorGetAddressBalance = new grpcWeb.MethodDescriptor('/io.bisq.protobuffer.Wallets/GetAddressBalance', grpcWeb.MethodType.UNARY, grpc_pb.GetAddressBalanceRequest, grpc_pb.GetAddressBalanceReply, (request) => {
             return request.serializeBinary();
         }, grpc_pb.GetAddressBalanceReply.deserializeBinary);
-        this.methodDescriptorSendBtc = new grpcWeb.MethodDescriptor('/io.bisq.protobuffer.Wallets/SendBtc', grpcWeb.MethodType.UNARY, grpc_pb.SendBtcRequest, grpc_pb.SendBtcReply, (request) => {
-            return request.serializeBinary();
-        }, grpc_pb.SendBtcReply.deserializeBinary);
-        this.methodDescriptorGetTxFeeRate = new grpcWeb.MethodDescriptor('/io.bisq.protobuffer.Wallets/GetTxFeeRate', grpcWeb.MethodType.UNARY, grpc_pb.GetTxFeeRateRequest, grpc_pb.GetTxFeeRateReply, (request) => {
-            return request.serializeBinary();
-        }, grpc_pb.GetTxFeeRateReply.deserializeBinary);
-        this.methodDescriptorSetTxFeeRatePreference = new grpcWeb.MethodDescriptor('/io.bisq.protobuffer.Wallets/SetTxFeeRatePreference', grpcWeb.MethodType.UNARY, grpc_pb.SetTxFeeRatePreferenceRequest, grpc_pb.SetTxFeeRatePreferenceReply, (request) => {
-            return request.serializeBinary();
-        }, grpc_pb.SetTxFeeRatePreferenceReply.deserializeBinary);
-        this.methodDescriptorUnsetTxFeeRatePreference = new grpcWeb.MethodDescriptor('/io.bisq.protobuffer.Wallets/UnsetTxFeeRatePreference', grpcWeb.MethodType.UNARY, grpc_pb.UnsetTxFeeRatePreferenceRequest, grpc_pb.UnsetTxFeeRatePreferenceReply, (request) => {
-            return request.serializeBinary();
-        }, grpc_pb.UnsetTxFeeRatePreferenceReply.deserializeBinary);
-        this.methodDescriptorGetTransaction = new grpcWeb.MethodDescriptor('/io.bisq.protobuffer.Wallets/GetTransaction', grpcWeb.MethodType.UNARY, grpc_pb.GetTransactionRequest, grpc_pb.GetTransactionReply, (request) => {
-            return request.serializeBinary();
-        }, grpc_pb.GetTransactionReply.deserializeBinary);
         this.methodDescriptorGetFundingAddresses = new grpcWeb.MethodDescriptor('/io.bisq.protobuffer.Wallets/GetFundingAddresses', grpcWeb.MethodType.UNARY, grpc_pb.GetFundingAddressesRequest, grpc_pb.GetFundingAddressesReply, (request) => {
             return request.serializeBinary();
         }, grpc_pb.GetFundingAddressesReply.deserializeBinary);
@@ -1055,46 +1040,6 @@ class WalletsClient {
         }
         return this.client_.unaryCall(this.hostname_ +
             '/io.bisq.protobuffer.Wallets/GetAddressBalance', request, metadata || {}, this.methodDescriptorGetAddressBalance);
-    }
-    sendBtc(request, metadata, callback) {
-        if (callback !== undefined) {
-            return this.client_.rpcCall(this.hostname_ +
-                '/io.bisq.protobuffer.Wallets/SendBtc', request, metadata || {}, this.methodDescriptorSendBtc, callback);
-        }
-        return this.client_.unaryCall(this.hostname_ +
-            '/io.bisq.protobuffer.Wallets/SendBtc', request, metadata || {}, this.methodDescriptorSendBtc);
-    }
-    getTxFeeRate(request, metadata, callback) {
-        if (callback !== undefined) {
-            return this.client_.rpcCall(this.hostname_ +
-                '/io.bisq.protobuffer.Wallets/GetTxFeeRate', request, metadata || {}, this.methodDescriptorGetTxFeeRate, callback);
-        }
-        return this.client_.unaryCall(this.hostname_ +
-            '/io.bisq.protobuffer.Wallets/GetTxFeeRate', request, metadata || {}, this.methodDescriptorGetTxFeeRate);
-    }
-    setTxFeeRatePreference(request, metadata, callback) {
-        if (callback !== undefined) {
-            return this.client_.rpcCall(this.hostname_ +
-                '/io.bisq.protobuffer.Wallets/SetTxFeeRatePreference', request, metadata || {}, this.methodDescriptorSetTxFeeRatePreference, callback);
-        }
-        return this.client_.unaryCall(this.hostname_ +
-            '/io.bisq.protobuffer.Wallets/SetTxFeeRatePreference', request, metadata || {}, this.methodDescriptorSetTxFeeRatePreference);
-    }
-    unsetTxFeeRatePreference(request, metadata, callback) {
-        if (callback !== undefined) {
-            return this.client_.rpcCall(this.hostname_ +
-                '/io.bisq.protobuffer.Wallets/UnsetTxFeeRatePreference', request, metadata || {}, this.methodDescriptorUnsetTxFeeRatePreference, callback);
-        }
-        return this.client_.unaryCall(this.hostname_ +
-            '/io.bisq.protobuffer.Wallets/UnsetTxFeeRatePreference', request, metadata || {}, this.methodDescriptorUnsetTxFeeRatePreference);
-    }
-    getTransaction(request, metadata, callback) {
-        if (callback !== undefined) {
-            return this.client_.rpcCall(this.hostname_ +
-                '/io.bisq.protobuffer.Wallets/GetTransaction', request, metadata || {}, this.methodDescriptorGetTransaction, callback);
-        }
-        return this.client_.unaryCall(this.hostname_ +
-            '/io.bisq.protobuffer.Wallets/GetTransaction', request, metadata || {}, this.methodDescriptorGetTransaction);
     }
     getFundingAddresses(request, metadata, callback) {
         if (callback !== undefined) {

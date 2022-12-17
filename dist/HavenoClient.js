@@ -21,11 +21,16 @@ class HavenoClient {
      * @param {string} password - Haveno daemon password
      */
     constructor(url, password) {
-        this._processLogging = false;
-        this._notificationListeners = [];
-        this._registerNotificationListenerCalled = false;
-        this._keepAlivePeriodMs = 60000;
-        this.onData = (data) => {
+        /** @private */ this._processLogging = false;
+        /** @private */ this._notificationListeners = [];
+        /** @private */ this._registerNotificationListenerCalled = false;
+        /** @private */ this._keepAlivePeriodMs = 60000;
+        /**
+         * Callback for grpc notifications.
+         *
+         * @private
+         */
+        this._onNotification = (data) => {
             if (data instanceof grpc_pb_1.NotificationMessage) {
                 for (const listener of this._notificationListeners)
                     listener(data);
@@ -903,7 +908,7 @@ class HavenoClient {
             if (tx.getHash() === txHash)
                 return tx;
         }
-        throw new HavenoError_1.default("No transaction with hash " + txHash);
+        return undefined;
     }
     /**
      * Create but do not relay a transaction to send funds from the Monero wallet.
@@ -1107,6 +1112,27 @@ class HavenoClient {
             throw new HavenoError_1.default(e.message, e.code);
         }
     }
+    /**
+     * Get a form from the given payment account payload.
+     *
+     * @param {PaymentAccountPayload} paymentAccountPayload - payload to get as a form
+     * @return {PaymentAccountForm} the payment account form
+     */
+    async getPaymentAccountPayloadForm(paymentAccountPayload) {
+        try {
+            return await new Promise((resolve, reject) => {
+                this._paymentAccountsClient.getPaymentAccountForm(new grpc_pb_1.GetPaymentAccountFormRequest().setPaymentAccountPayload(paymentAccountPayload), { password: this._password }, function (err, response) {
+                    if (err)
+                        reject(err);
+                    else
+                        resolve(response.getPaymentAccountForm());
+                });
+            });
+        }
+        catch (e) {
+            throw new HavenoError_1.default(e.message, e.code);
+        }
+    }
     /*
      * Validate a form field.
      *
@@ -1267,21 +1293,22 @@ class HavenoClient {
      */
     async postOffer(direction, amount, assetCode, paymentAccountId, buyerSecurityDepositPct, price, marketPriceMarginPct, triggerPrice, minAmount) {
         try {
-            const request = new grpc_pb_1.CreateOfferRequest()
+            const request = new grpc_pb_1.PostOfferRequest()
                 .setDirection(direction)
                 .setAmount(amount.toString())
                 .setCurrencyCode(assetCode)
                 .setPaymentAccountId(paymentAccountId)
                 .setBuyerSecurityDepositPct(buyerSecurityDepositPct)
-                .setPrice(price ? price.toString() : "1.0") // TOOD (woodser): positive price required even if using market price?
-                .setUseMarketBasedPrice(price === undefined) // TODO (woodser): this field is redundant; remove from api
+                .setUseMarketBasedPrice(price === undefined)
                 .setMinAmount(minAmount ? minAmount.toString() : amount.toString());
+            if (price)
+                request.setPrice(price.toString());
             if (marketPriceMarginPct)
                 request.setMarketPriceMarginPct(marketPriceMarginPct);
             if (triggerPrice)
                 request.setTriggerPrice(triggerPrice.toString());
             return await new Promise((resolve, reject) => {
-                this._offersClient.createOffer(request, { password: this._password }, function (err, response) {
+                this._offersClient.postOffer(request, { password: this._password }, function (err, response) {
                     if (err)
                         reject(err);
                     else
@@ -1422,6 +1449,26 @@ class HavenoClient {
         }
     }
     /**
+     * Acknowledge that a trade has completed.
+     *
+     * @param {string} tradeId - the id of the trade
+     */
+    async completeTrade(tradeId) {
+        try {
+            await new Promise((resolve, reject) => {
+                this._tradesClient.completeTrade(new grpc_pb_1.CompleteTradeRequest().setTradeId(tradeId), { password: this._password }, function (err) {
+                    if (err)
+                        reject(err);
+                    else
+                        resolve();
+                });
+            });
+        }
+        catch (e) {
+            throw new HavenoError_1.default(e.message, e.code);
+        }
+    }
+    /**
      * Get all chat messages for a trade.
      *
      * @param {string} tradeId - the id of the trade
@@ -1526,7 +1573,7 @@ class HavenoClient {
     }
     /**
      * Resolve a dispute. By default, the winner receives the trade amount and the security deposits are returned,
-     * but the arbitrator may award a custom amount to the winner.
+     * but the arbitrator may award a custom amount to the winner and the loser will get the rest.
      *
      * @param {string} tradeId - the id of the trade
      * @param {DisputeResult.Winner} winner - the winner of the dispute
@@ -1624,7 +1671,7 @@ class HavenoClient {
      * havenod.isHavenoConnectionInitialized() and havenod.awaitHavenoConnectionInitialized().
      * Independently, gRPC createAccount() and openAccount() return after all account setup and reading from disk.
      *
-     * @hidden
+     * @private
      */
     async _awaitAppInitialized() {
         try {
@@ -1651,7 +1698,7 @@ class HavenoClient {
             throw new HavenoError_1.default(e.message, e.code);
         }
     }
-    // @hidden
+    /** @private */
     async _isAppInitialized() {
         try {
             return await new Promise((resolve, reject) => {
@@ -1671,6 +1718,8 @@ class HavenoClient {
      * Update notification listener registration.
      * Due to the nature of grpc streaming, this method returns a promise
      * which may be resolved before the listener is actually registered.
+     *
+     * @private
      */
     async _updateNotificationListenerRegistration() {
         try {
@@ -1681,7 +1730,7 @@ class HavenoClient {
                 await new Promise((resolve) => {
                     // send request to register client listener
                     this._notificationStream = this._notificationsClient.registerNotificationListener(new grpc_pb_1.RegisterNotificationListenerRequest(), { password: this._password })
-                        .on('data', this.onData);
+                        .on('data', this._onNotification);
                     // periodically send keep alive requests // TODO (woodser): better way to keep notification stream alive?
                     let firstRequest = true;
                     this._keepAliveLooper = new TaskLooper_1.default(async () => {
@@ -1698,7 +1747,7 @@ class HavenoClient {
                 });
             }
             else {
-                this._notificationStream.removeListener('data', this.onData);
+                this._notificationStream.removeListener('data', this._onNotification);
                 this._keepAliveLooper.stop();
                 this._notificationStream.cancel();
                 this._notificationStream = undefined;
@@ -1711,7 +1760,7 @@ class HavenoClient {
     /**
      * Send a notification.
      *
-     * @hidden
+     * @private
      * @param {NotificationMessage} notification - notification to send
      */
     async _sendNotification(notification) {
@@ -1732,7 +1781,7 @@ class HavenoClient {
     /**
      * Restore an account chunk from zip bytes.
      *
-     * @hidden
+     * @private
      */
     async _restoreAccountChunk(zipBytes, offset, totalLength, hasMore) {
         try {
@@ -1757,6 +1806,6 @@ class HavenoClient {
 }
 exports.default = HavenoClient;
 // constants
-HavenoClient._fullyInitializedMessage = "Application fully initialized";
-HavenoClient._loginRequiredMessage = "Interactive login required";
+/** @private */ HavenoClient._fullyInitializedMessage = "Application fully initialized";
+/** @private */ HavenoClient._loginRequiredMessage = "Interactive login required";
 //# sourceMappingURL=HavenoClient.js.map
