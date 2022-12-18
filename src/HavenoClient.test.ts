@@ -1270,7 +1270,7 @@ test("Can complete a trade", async () => {
 });
 
 test("Can complete trades at the same time (CI)", async () => {
-  await executeTrades(getTradeContexts(6));
+  await executeTrades(getTradeContexts(4));
 });
 
 test("Can complete all trade combinations (stress)", async () => {
@@ -1492,9 +1492,9 @@ test("Invalidates offers when reserved funds are spent (CI)", async () => {
 
     // mine block so spend is confirmed
     await mineBlocks(1);
-    await wait(TestConfig.walletSyncPeriodMs * 2);
 
     // offer is removed from peer offers
+    await wait(20000);
     if (getOffer(await user2.getOffers(assetCode, "buy"), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in peer's offers after reserved funds spent");
 
     // offer is removed from my offers
