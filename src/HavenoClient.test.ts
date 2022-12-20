@@ -1390,7 +1390,7 @@ test("Can resolve disputes (CI)", async () => {
   await executeTrades(ctxs);
 
   // resolve disputes
-  for (const config of ctxs) config.resolveDispute = true;
+  for (const ctx of ctxs) ctx.resolveDispute = true;
   HavenoUtils.log(1, "Resolving disputes");
   await executeTrades(ctxs, {concurrentTrades: true}); // TODO: running in parallel doesn't test balances before and after, but this test takes ~10 minutes in sequence. use test weight config
 });
@@ -1738,8 +1738,9 @@ function tradeContextToString(ctx: TradeContext) {
 async function executeTrades(ctxs: TradeContext[], executionCtx?: TradeContext): Promise<string[]> {
 
   // assign default execution context
-  if (!executionCtx) executionCtx = Object.assign({}, TestConfig.trade);
+  if (!executionCtx) executionCtx = {};
   if (executionCtx.concurrentTrades === undefined) executionCtx.concurrentTrades = ctxs.length > 1;
+  Object.assign(executionCtx, TestConfig.trade, executionCtx);
 
   // start mining if executing trades concurrently
   let miningStarted = executionCtx.concurrentTrades && await startMining();
