@@ -774,7 +774,7 @@ test("Has a Monero wallet (CI)", async () => {
   }
 });
 
-test("Can get balances (CI)", async () => {
+test("Can get balances (CI, sanity check)", async () => {
   const balances: XmrBalanceInfo = await user1.getBalances();
   expect(BigInt(balances.getAvailableBalance())).toBeGreaterThanOrEqual(0);
   expect(BigInt(balances.getPendingBalance())).toBeGreaterThanOrEqual(0);
@@ -782,7 +782,7 @@ test("Can get balances (CI)", async () => {
   expect(BigInt(balances.getReservedTradeBalance())).toBeGreaterThanOrEqual(0);
 });
 
-test("Can receive push notifications (CI)", async () => {
+test("Can receive push notifications (CI, sanity check)", async () => {
 
   // add notification listener
   const notifications: NotificationMessage[] = [];
@@ -808,7 +808,7 @@ test("Can receive push notifications (CI)", async () => {
   }
 });
 
-test("Can get supported assets and their payment methods (CI)", async() => {
+test("Can get supported assets and their payment methods (CI, sanity check)", async() => {
   const assetCodes = await user1.getSupportedAssetCodes(); // TODO: replace with getSupportedAssets(): TradeCurrency[]
   for (const assetCode of assetCodes) {
     const paymentMethods = await user1.getPaymentMethods(assetCode);
@@ -816,7 +816,7 @@ test("Can get supported assets and their payment methods (CI)", async() => {
   }
 });
 
-test("Can get market prices (CI)", async () => {
+test("Can get market prices (CI, sanity check)", async () => {
 
   // get all market prices
   const prices: MarketPriceInfo[] = await user1.getPrices();
@@ -849,7 +849,7 @@ test("Can get market prices (CI)", async () => {
     .toThrow('Currency not found: INVALID_CURRENCY');
 });
 
-test("Can get market depth (CI)", async () => {
+test("Can get market depth (CI, sanity check)", async () => {
     const assetCode = "eth";
 
     // clear offers
@@ -976,7 +976,7 @@ test("Can get payment accounts (CI)", async () => {
 
 // TODO: rename ClearXChange to Zelle
 // TODO: FieldId represented as number
-test("Can validate payment account forms (CI)", async () => {
+test("Can validate payment account forms (CI, sanity check)", async () => {
 
   // supported payment methods
   const expectedPaymentMethods = ["BLOCK_CHAINS", "REVOLUT", "SEPA", "SEPA_INSTANT", "TRANSFERWISE", "CLEAR_X_CHANGE", "SWIFT", "F2F", "STRIKE", "MONEY_GRAM", "FASTER_PAYMENTS", "UPHOLD", "PAXUM"];
@@ -1110,7 +1110,7 @@ test("Can prepare for trading (CI)", async () => {
   await prepareForTrading(5, user1, user2);
 });
 
-test("Can post and remove an offer (CI)", async () => {
+test("Can post and remove an offer (CI, sanity check)", async () => {
 
   // wait for user1 to have unlocked balance to post offer
   await waitForAvailableBalance(BigInt("250000000000") * BigInt("2"), user1);
@@ -1258,7 +1258,7 @@ test("Can schedule offers with locked funds (CI)", async () => {
   if (err) throw err;
 });
 
-test("Cannot post offer exceeding trade limit (CI)", async () => {
+test("Cannot post offer exceeding trade limit (CI, sanity check)", async () => {
   const revolutAccount = await createRevolutPaymentAccount(user1);
   try {
     await executeTrade({amount: BigInt("2100000000000"), assetCode: "USD", makerPaymentAccountId: revolutAccount.getId(), takeOffer: false});
@@ -1272,7 +1272,7 @@ test("Can complete a trade", async () => {
   await executeTrade();
 });
 
-test("Can complete trades at the same time (CI)", async () => {
+test("Can complete trades at the same time (CI, sanity check)", async () => {
   await executeTrades(getTradeContexts(4));
 });
 
@@ -1314,7 +1314,7 @@ test("Can complete all trade combinations (stress)", async () => {
   await executeTrades(ctxs);
 });
 
-test("Can go offline while completing a trade (CI)", async () => {
+test("Can go offline while completing a trade (CI, sanity check)", async () => {
   let traders: HavenoClient[] = [];
   let ctx: TradeContext = {};
   let err: any;
@@ -1373,7 +1373,7 @@ test("Can resolve disputes (CI)", async () => {
     disputeWinner: DisputeResult.Winner.BUYER,
     disputeReason: DisputeResult.Reason.SELLER_NOT_RESPONDING,
     disputeSummary: "Split trade amount",
-    disputeWinnerAmount: BigInt(trade1.getAmountAsLong()) / BigInt(2) + HavenoUtils.centinerosToAtomicUnits(trade1.getOffer()!.getBuyerSecurityDeposit())
+    disputeWinnerAmount: BigInt(trade1.getAmountAsLong()) / BigInt(2) + BigInt(trade1.getOffer()!.getBuyerSecurityDeposit())
   });
   Object.assign(ctxs[2], {
     resolveDispute: false,
@@ -1381,7 +1381,7 @@ test("Can resolve disputes (CI)", async () => {
     disputeWinner: DisputeResult.Winner.SELLER,
     disputeReason: DisputeResult.Reason.TRADE_ALREADY_SETTLED,
     disputeSummary: "Seller gets everything",
-    disputeWinnerAmount: BigInt(trade2.getAmountAsLong()) + HavenoUtils.centinerosToAtomicUnits(trade2.getOffer()!.getBuyerSecurityDeposit() + trade2.getOffer()!.getSellerSecurityDeposit())
+    disputeWinnerAmount: BigInt(trade2.getAmountAsLong()) + BigInt(trade2.getOffer()!.getBuyerSecurityDeposit() + trade2.getOffer()!.getSellerSecurityDeposit())
   });
   Object.assign(ctxs[3], {
     resolveDispute: false,
@@ -1400,7 +1400,7 @@ test("Can resolve disputes (CI)", async () => {
   await executeTrades(ctxs, {concurrentTrades: true}); // TODO: running in parallel doesn't test balances before and after, but this test takes ~10 minutes in sequence. use test weight config
 });
 
-test("Cannot make or take offer with insufficient unlocked funds (CI)", async () => {
+test("Cannot make or take offer with insufficient unlocked funds (CI, sanity check)", async () => {
   let user3: HavenoClient|undefined;
   let err: any;
   try {
@@ -2063,8 +2063,8 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
       const buyerBalancesAfter = await ctx.buyer!.getBalances();
       const sellerBalancesAfter = await ctx.seller.getBalances();
       // TODO: getBalance() = available + pending + reserved offers? would simplify this equation
-      const buyerFee = BigInt(buyerBalancesBefore.getBalance()) + BigInt(buyerBalancesBefore.getReservedOfferBalance()) + HavenoUtils.centinerosToAtomicUnits(offer!.getAmount()) - (BigInt(buyerBalancesAfter.getBalance()) + BigInt(buyerBalancesAfter.getReservedOfferBalance())); // buyer fee = total balance before + offer amount - total balance after
-      const sellerFee = BigInt(sellerBalancesBefore.getBalance()) + BigInt(sellerBalancesBefore.getReservedOfferBalance()) - HavenoUtils.centinerosToAtomicUnits(offer!.getAmount()) - (BigInt(sellerBalancesAfter.getBalance()) + BigInt(sellerBalancesAfter.getReservedOfferBalance())); // seller fee = total balance before - offer amount - total balance after
+      const buyerFee = BigInt(buyerBalancesBefore.getBalance()) + BigInt(buyerBalancesBefore.getReservedOfferBalance()) + BigInt(offer!.getAmount()) - (BigInt(buyerBalancesAfter.getBalance()) + BigInt(buyerBalancesAfter.getReservedOfferBalance())); // buyer fee = total balance before + offer amount - total balance after
+      const sellerFee = BigInt(sellerBalancesBefore.getBalance()) + BigInt(sellerBalancesBefore.getReservedOfferBalance()) - BigInt(offer!.getAmount()) - (BigInt(sellerBalancesAfter.getBalance()) + BigInt(sellerBalancesAfter.getReservedOfferBalance())); // seller fee = total balance before - offer amount - total balance after
       expect(buyerFee).toBeLessThanOrEqual(TestConfig.maxFee);
       expect(buyerFee).toBeGreaterThan(BigInt("0"));
       expect(sellerFee).toBeLessThanOrEqual(TestConfig.maxFee);
@@ -2360,8 +2360,8 @@ async function resolveDispute(ctx: TradeContext) {
 
   // award too little to loser
   const offer = (await ctx.maker!.getTrade(ctx.offerId!)).getOffer();
-  const tradeAmount: bigint = HavenoUtils.centinerosToAtomicUnits(offer!.getAmount());
-  const customWinnerAmount = tradeAmount + HavenoUtils.centinerosToAtomicUnits(offer!.getBuyerSecurityDeposit() +  offer!.getSellerSecurityDeposit()) - BigInt("10000");
+  const tradeAmount: bigint = BigInt(offer!.getAmount());
+  const customWinnerAmount = tradeAmount + BigInt(offer!.getBuyerSecurityDeposit() +  offer!.getSellerSecurityDeposit()) - BigInt("10000");
   try {
     await arbitrator.resolveDispute(ctx.offerId!, ctx.disputeWinner!, ctx.disputeReason!, "Loser gets too little", customWinnerAmount);
     throw new Error("Should have failed resolving dispute with insufficient loser payout");
@@ -2399,8 +2399,8 @@ async function resolveDispute(ctx: TradeContext) {
     const loserBalancesAfter = await loser!.getBalances();
     const winnerDifference = BigInt(winnerBalancesAfter.getBalance()) - BigInt(winnerBalancesBefore.getBalance());
     const loserDifference = BigInt(loserBalancesAfter.getBalance()) - BigInt(loserBalancesBefore.getBalance());
-    const winnerSecurityDeposit = HavenoUtils.centinerosToAtomicUnits(ctx.disputeWinner === DisputeResult.Winner.BUYER ? offer!.getBuyerSecurityDeposit() : offer!.getSellerSecurityDeposit())
-    const loserSecurityDeposit = HavenoUtils.centinerosToAtomicUnits(ctx.disputeWinner === DisputeResult.Winner.BUYER ? offer!.getSellerSecurityDeposit() : offer!.getBuyerSecurityDeposit());
+    const winnerSecurityDeposit = BigInt(ctx.disputeWinner === DisputeResult.Winner.BUYER ? offer!.getBuyerSecurityDeposit() : offer!.getSellerSecurityDeposit())
+    const loserSecurityDeposit = BigInt(ctx.disputeWinner === DisputeResult.Winner.BUYER ? offer!.getSellerSecurityDeposit() : offer!.getBuyerSecurityDeposit());
     const winnerPayout = ctx.disputeWinnerAmount ? ctx.disputeWinnerAmount : tradeAmount + winnerSecurityDeposit; // TODO: this assumes security deposit is returned to winner, but won't be the case if payment sent
     const loserPayout = loserSecurityDeposit;
     expect(winnerDifference).toEqual(winnerPayout);
@@ -3077,7 +3077,7 @@ function testCryptoPaymentAccountsEqual(acct1: PaymentAccount, acct2: PaymentAcc
 function testOffer(offer: OfferInfo, config?: TradeContext) {
   expect(offer.getId().length).toBeGreaterThan(0);
   if (config) {
-    expect(HavenoUtils.centinerosToAtomicUnits(offer.getAmount())).toEqual(config.amount); // TODO (woodser): use atomic units in offer instead of centineros?
+    expect(BigInt(offer.getAmount())).toEqual(config.amount);
     expect(offer.getBuyerSecurityDeposit() / offer.getAmount()).toEqual(config.buyerSecurityDeposit);
     expect(offer.getSellerSecurityDeposit() / offer.getAmount()).toEqual(config.buyerSecurityDeposit); // TODO: use same config.securityDeposit for buyer and seller?
   }
