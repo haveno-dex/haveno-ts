@@ -2062,7 +2062,6 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
     if (!ctx.concurrentTrades) {
       const buyerBalancesAfter = await ctx.buyer!.getBalances();
       const sellerBalancesAfter = await ctx.seller.getBalances();
-      // TODO: getBalance() = available + pending + reserved offers? would simplify this equation
       const buyerFee = BigInt(buyerBalancesBefore.getBalance()) + BigInt(buyerBalancesBefore.getReservedOfferBalance()) + BigInt(offer!.getAmount()) - (BigInt(buyerBalancesAfter.getBalance()) + BigInt(buyerBalancesAfter.getReservedOfferBalance())); // buyer fee = total balance before + offer amount - total balance after
       const sellerFee = BigInt(sellerBalancesBefore.getBalance()) + BigInt(sellerBalancesBefore.getReservedOfferBalance()) - BigInt(offer!.getAmount()) - (BigInt(sellerBalancesAfter.getBalance()) + BigInt(sellerBalancesAfter.getReservedOfferBalance())); // seller fee = total balance before - offer amount - total balance after
       expect(buyerFee).toBeLessThanOrEqual(TestConfig.maxFee);

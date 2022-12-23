@@ -73,6 +73,7 @@ services:
       "--useDevPrivilegeKeys=true",
       "--nodePort=2002",
       "--appName=haveno-XMR_LOCAL_Seed1_2002",
+      "--xmrNode=http://localhost:28081"
     ]
     network_mode: "host"
     depends_on:
@@ -88,6 +89,7 @@ services:
       "--useDevPrivilegeKeys=true",
       "--nodePort=3002",
       "--appName=haveno-XMR_LOCAL_Seed2_3002",
+      "--xmrNode=http://localhost:28081"
     ]
     network_mode: "host"
     depends_on:
