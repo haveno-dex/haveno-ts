@@ -782,7 +782,7 @@ test("Can get balances (CI, sanity check)", async () => {
   expect(BigInt(balances.getReservedTradeBalance())).toBeGreaterThanOrEqual(0);
 });
 
-test("Can receive push notifications (CI, sanity check)", async () => {
+test("Can send and receive push notifications (CI, sanity check)", async () => {
 
   // add notification listener
   const notifications: NotificationMessage[] = [];
