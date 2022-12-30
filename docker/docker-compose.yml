@@ -15,6 +15,8 @@ services:
       - "8084:8084"
       - "8085:8085"
       - "8086:8086"
+      # envoy admin
+      - "9901:9901"
     volumes:
       - ./../config/envoy.test.yaml:/config/envoy.test.yaml
     command:
@@ -22,7 +24,12 @@ services:
       - ../config/envoy.test.yaml
 
   node1:
-    build: haveno/
+    build:
+      context: haveno/
+      args: [
+        GIT_OWNER=haveno-dex,
+        GIT_BRANCH=master,
+      ]
     container_name: node1
     entrypoint: [ "./.localnet/monerod" ]
     command: [
@@ -42,7 +49,12 @@ services:
     network_mode: "host"
 
   node2:
-    build: haveno/
+    build:
+      context: haveno/
+      args: [
+        GIT_OWNER=haveno-dex,
+        GIT_BRANCH=master,
+      ]
     container_name: node2
     entrypoint: [ "./.localnet/monerod" ]
     command: [
@@ -64,7 +76,12 @@ services:
       - node1
 
   seed1:
-    build: haveno/
+    build:
+      context: haveno/
+      args: [
+        GIT_OWNER=haveno-dex,
+        GIT_BRANCH=master,
+      ]
     container_name: seed1
     entrypoint: [ "./haveno-seednode" ]
     command: [
@@ -80,7 +97,12 @@ services:
       - node2
 
   seed2:
-    build: haveno/
+    build:
+      context: haveno/
+      args: [
+        GIT_OWNER=haveno-dex,
+        GIT_BRANCH=master,
+      ]
     container_name: seed2
     entrypoint: [ "./haveno-seednode" ]
     command: [
@@ -96,7 +118,12 @@ services:
       - node2
 
   arbitrator:
-    build: haveno/
+    build:
+      context: haveno/
+      args: [
+        GIT_OWNER=haveno-dex,
+        GIT_BRANCH=master,
+      ]
     container_name: arbitrator
     entrypoint: [ "./haveno-daemon" ]
     command: [
@@ -115,7 +142,12 @@ services:
       - seed1
 
   user1:
-    build: haveno/
+    build:
+      context: haveno/
+      args: [
+        GIT_OWNER=haveno-dex,
+        GIT_BRANCH=master,
+      ]
     container_name: user1
     entrypoint: [ "./haveno-daemon" ]
     command: [
@@ -134,7 +166,12 @@ services:
       - seed1
 
   user2:
-    build: haveno/
+    build:
+      context: haveno/
+      args: [
+        GIT_OWNER=haveno-dex,
+        GIT_BRANCH=master,
+      ]
     container_name: user2
     entrypoint: [ "./haveno-daemon" ]
     command: [
@@ -159,7 +196,12 @@ services:
     network_mode: "host"
 
   funding:
-    build: haveno/
+    build:
+      context: haveno/
+      args: [
+        GIT_OWNER=haveno-dex,
+        GIT_BRANCH=master,
+      ]
     container_name: funding_wallet
     entrypoint: [ "./.localnet/monero-wallet-rpc" ]
     command: [

@@ -5,6 +5,16 @@ on:
   pull_request:
     paths-ignore:
       - '**/README.md'
+  workflow_dispatch:
+    inputs:
+      owner:
+        description: 'Owner of the haveno repository.'
+        required: false
+        default: 'haveno-dex'
+      branch:
+        description: 'Haveno branch to run haveno-ts against.'
+        required: false
+        default: 'master'
 
 jobs:
   haveno-ts-e2e:
@@ -19,7 +29,16 @@ jobs:
         run: sudo killall mono
 
       - name: Start containers
-        run: docker-compose -f "./docker/docker-compose.yml" up -d --build
+        run: |
+          owner=${{ github.event.inputs.owner }}
+          branch=${{ github.event.inputs.branch }}
+          if [[ -n "$owner" ]]
+          then
+            docker-compose -f "./docker/docker-compose.yml" build --build-arg GIT_BRANCH=$branch --build-arg GIT_OWNER=$owner
+          else
+            docker-compose -f "./docker/docker-compose.yml" build
+          fi
+          docker-compose -f "./docker/docker-compose.yml" up -d
 
       - name: Install node
         uses: actions/setup-node@v3
