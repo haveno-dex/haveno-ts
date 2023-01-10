@@ -26,3 +26,6 @@ yarn-error.log*
 
 # generated code
 /src/protobuf/**
+
+# docs
+/docs

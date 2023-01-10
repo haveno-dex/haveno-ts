@@ -49,9 +49,45 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            node_modules
+            src/protobuf
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: ${{ runner.os }}-node-
+
       - name: Run tests
         run: npm run test -- --baseCurrencyNetwork=XMR_LOCAL -t "CI"
 
       - name: Stop containers
         if: always()
         run: docker-compose -f "./docker/docker-compose.yml" down
+
+  typedoc:
+    needs: haveno-ts-e2e
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Restore node_modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            node_modules
+            src/protobuf
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+
+      - name: Generate documentation
+        run: npx typedoc ./src/index.ts --entryPointStrategy expand src/ --exclude **/*.test.ts --excludePrivate
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: docs
