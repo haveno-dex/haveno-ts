@@ -363,7 +363,7 @@ export default class HavenoClient {
       await new Promise<void>((resolve, reject) => {
         this._accountClient.deleteAccount(new DeleteAccountRequest(), {password: this._password}, async function(err: grpcWeb.RpcError) {
           if (err) reject(err);
-          else setTimeout(resolve, 5000);
+          else setTimeout(resolve, 10000); // deleteAccount() call should return after finished and without requiring shut down
         });
       });
     } catch (e: any) {
