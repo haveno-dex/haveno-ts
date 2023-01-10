@@ -157,7 +157,7 @@ const TestConfig = {
         direction: "buy",               // buy or sell xmr
         amount: BigInt("200000000000"), // amount of xmr to trade
         minAmount: undefined,
-        assetCode: "eth",               // counter asset to trade
+        assetCode: "usd",               // counter asset to trade
         makerPaymentAccountId: undefined,
         buyerSecurityDeposit: 0.15,
         price: undefined,               // use market price if undefined
@@ -1409,7 +1409,7 @@ test("Cannot make or take offer with insufficient unlocked funds (CI, sanity che
     user3 = await initHaveno();
 
     // user3 creates ethereum payment account
-    const paymentAccount = await createCryptoPaymentAccount(user3);
+    const paymentAccount = await createPaymentAccount(user3, TestConfig.trade.assetCode);
 
     // user3 cannot make offer with insufficient funds
     try {
@@ -1422,7 +1422,7 @@ test("Cannot make or take offer with insufficient unlocked funds (CI, sanity che
     }
 
     // user1 posts offer
-    const offers: OfferInfo[] = await user1.getMyOffers("ETH");
+    const offers: OfferInfo[] = await user1.getMyOffers(TestConfig.trade.assetCode);
     let offer: OfferInfo;
     if (offers.length) offer = offers[0];
     else {
@@ -2571,6 +2571,9 @@ async function initHaveno(ctx?: HavenodContext): Promise<HavenoClient> {
     ];
     havenod = await HavenoClient.startProcess(TestConfig.haveno.path, cmd, "http://localhost:" + ctx.port, ctx.logProcessOutput!);
     HAVENO_PROCESSES.push(havenod);
+
+    // wait to process network notifications
+    await wait(3000);
   }
 
   // open account if configured
@@ -2672,7 +2675,9 @@ async function prepareForTrading(numTrades: number, ...havenods: HavenoClient[])
   // create payment accounts
   for (const havenod of havenods) {
     for (const assetCode of TestConfig.assetCodes) {
-      if (!await hasPaymentAccount(havenod, assetCode)) await createPaymentAccount(havenod, assetCode);
+      if (!await hasPaymentAccount(havenod, assetCode)) {
+        await createPaymentAccount(havenod, assetCode);
+      }
     }
   }
 
