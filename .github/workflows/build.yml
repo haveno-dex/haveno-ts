@@ -68,7 +68,10 @@ jobs:
   typedoc:
     needs: haveno-ts-e2e
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    permissions:
+      contents: write
+      packages: write
+    if: github.event_name == 'pull_request'
 
     steps:
       - name: Checkout code
