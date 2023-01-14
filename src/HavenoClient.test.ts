@@ -172,9 +172,10 @@ const TestConfig = {
         disputeWinner: DisputeResult.Winner.SELLER,
         disputeReason: DisputeResult.Reason.PEER_WAS_LATE,
         disputeSummary: "Seller is winner",
-        maxConcurrency: 14,
         walletSyncPeriodMs: 7000, // TODO (woodser): auto adjust higher if using remote connection
         maxTimePeerNoticeMs: 5000,
+        maxConcurrency: 14,
+        stopOnFailure: false
     }
 };
 
@@ -255,7 +256,7 @@ interface TradeContext {
     maxConcurrency?: number,
     walletSyncPeriodMs?: number,
     maxTimePeerNoticeMs?: number,
-
+    stopOnFailure?: boolean
 }
 
 enum TradeRole {
@@ -1794,7 +1795,7 @@ async function executeTrades(ctxs: TradeContext[], executionCtx?: TradeContext):
           const offerIdBatch = await Promise.all(tradePromises);
           for (const offerId of offerIdBatch) offerIds.push(offerId);
         } catch (e2) {
-          await Promise.allSettled(tradePromises); // wait for other trades to complete before throwing error
+          if (!executionCtx.stopOnFailure) await Promise.allSettled(tradePromises); // wait for other trades to complete before throwing error
           throw e2;
         }
         batchNum++;
