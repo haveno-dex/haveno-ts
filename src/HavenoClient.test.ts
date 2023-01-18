@@ -82,6 +82,7 @@ const TestConfig = {
     },
     defaultHavenod: {
         logProcessOutput: true, // log output for processes started by tests (except arbitrator, user1, and user2 which are configured separately)
+        logLevel: "info",
         apiPassword: "apitest",
         walletUsername: "haveno_user",
         walletDefaultPassword: "password", // only used if account password not set
@@ -181,6 +182,7 @@ const TestConfig = {
 
 interface HavenodContext {
     logProcessOutput?: boolean,
+    logLevel?: string,
     apiPassword?: string,
     walletUsername?: string,
     walletDefaultPassword?: string,
@@ -2568,7 +2570,8 @@ async function initHaveno(ctx?: HavenodContext): Promise<HavenoClient> {
       "--apiPassword", "apitest",
       "--apiPort", TestConfig.ports.get(ctx.port)![0],
       "--walletRpcBindPort", ctx.walletUrl ? getPort(ctx.walletUrl) : "" + await getAvailablePort(), // use configured port if given
-      "--passwordRequired", (ctx.accountPasswordRequired ? "true" : "false")
+      "--passwordRequired", (ctx.accountPasswordRequired ? "true" : "false"),
+      "--logLevel", ctx.logLevel!
     ];
     havenod = await HavenoClient.startProcess(TestConfig.haveno.path, cmd, "http://localhost:" + ctx.port, ctx.logProcessOutput!);
     HAVENO_PROCESSES.push(havenod);
