@@ -175,7 +175,7 @@ const TestConfig = {
         walletSyncPeriodMs: 7000, // TODO (woodser): auto adjust higher if using remote connection
         maxTimePeerNoticeMs: 5000,
         maxConcurrency: 14,
-        stopOnFailure: false
+        stopOnFailure: true
     }
 };
 
@@ -1374,7 +1374,7 @@ test("Can resolve disputes (CI)", async () => {
     disputeWinner: DisputeResult.Winner.BUYER,
     disputeReason: DisputeResult.Reason.SELLER_NOT_RESPONDING,
     disputeSummary: "Split trade amount",
-    disputeWinnerAmount: BigInt(trade1.getAmountAsLong()) / BigInt(2) + BigInt(trade1.getOffer()!.getBuyerSecurityDeposit())
+    disputeWinnerAmount: HavenoUtils.centinerosToAtomicUnits(trade1.getAmountAsLong()) / BigInt(2) + HavenoUtils.centinerosToAtomicUnits(trade1.getBuyerSecurityDeposit())
   });
   Object.assign(ctxs[2], {
     resolveDispute: false,
@@ -1382,7 +1382,7 @@ test("Can resolve disputes (CI)", async () => {
     disputeWinner: DisputeResult.Winner.SELLER,
     disputeReason: DisputeResult.Reason.TRADE_ALREADY_SETTLED,
     disputeSummary: "Seller gets everything",
-    disputeWinnerAmount: BigInt(trade2.getAmountAsLong()) + BigInt(trade2.getOffer()!.getBuyerSecurityDeposit() + trade2.getOffer()!.getSellerSecurityDeposit())
+    disputeWinnerAmount: HavenoUtils.centinerosToAtomicUnits(trade2.getAmountAsLong() + trade2.getBuyerSecurityDeposit() + trade2.getSellerSecurityDeposit())
   });
   Object.assign(ctxs[3], {
     resolveDispute: false,
