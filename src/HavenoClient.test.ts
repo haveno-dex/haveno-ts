@@ -1357,7 +1357,7 @@ test("Can go offline while completing a trade (CI, sanity check)", async () => {
   if (err) throw err;
 });
 
-test("Can go offline while resolving disputes", async () => {
+test("Can go offline while resolving disputes (CI)", async () => {
   let traders: HavenoClient[] = [];
   let ctx: TradeContext = {};
   let err: any;
