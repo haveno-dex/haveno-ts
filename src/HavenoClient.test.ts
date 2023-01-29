@@ -250,7 +250,7 @@ interface TradeContext {
     payoutState?: string[],
     disputeState?: string,
     isCompleted?: boolean,
-    isPayoutPublished?: boolean, // TODO: test isDepositPublished, etc
+    isPayoutPublished?: boolean, // TODO: test isDepositsPublished, etc
     isPayoutConfirmed?: boolean,
     isPayoutUnlocked?: boolean
     buyerOpenedDispute?: boolean,
@@ -1977,14 +1977,14 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
     if (getBuyer(ctx)) {
       expect((await getBuyer(ctx)!.getTrade(ctx.offer!.getId())).getPhase()).toEqual(expectedState);
       fetchedTrade = await getBuyer(ctx)!.getTrade(ctx.offerId!);
-      expect(fetchedTrade.getIsDepositUnlocked()).toBe(true);
+      expect(fetchedTrade.getIsDepositsUnlocked()).toBe(true);
       expect(fetchedTrade.getPhase()).toEqual(expectedState);
     }
 
     // test seller trade state if online
     if (getSeller(ctx)) {
       fetchedTrade = await getSeller(ctx)!.getTrade(trade.getTradeId());
-      expect(fetchedTrade.getIsDepositUnlocked()).toBe(true);
+      expect(fetchedTrade.getIsDepositsUnlocked()).toBe(true);
       expect(fetchedTrade.getPhase()).toEqual(expectedState);
     }
 
