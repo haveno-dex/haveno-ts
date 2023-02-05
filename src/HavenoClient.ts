@@ -1647,9 +1647,13 @@ export default class HavenoClient {
               firstRequest = false;
               return;
             }
-            await this._sendNotification(new NotificationMessage()
-                    .setType(NotificationMessage.NotificationType.KEEP_ALIVE)
-                    .setTimestamp(Date.now()));
+            try {
+              await this._sendNotification(new NotificationMessage()
+                  .setType(NotificationMessage.NotificationType.KEEP_ALIVE)
+                  .setTimestamp(Date.now()));
+            } catch (err: any) {
+              HavenoUtils.log(0, "Error sending keep alive request to Haveno daemon: " + err.message);
+            }
           });
           this._keepAliveLooper.start(this._keepAlivePeriodMs);
           
