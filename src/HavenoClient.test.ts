@@ -1185,6 +1185,10 @@ test("Can schedule offers with locked funds (CI)", async () => {
   let err: any;
   try {
 
+    // configure test
+    const completeTrade = true;
+    const resolveDispute = Math.random() < 0.5;
+
     // start user3
     user3 = await initHaveno();
     const user3Wallet = await monerojs.connectToWalletRpc("http://127.0.0.1:" + user3.getWalletRpcPort(), TestConfig.defaultHavenod.walletUsername, TestConfig.defaultHavenod.accountPassword);
@@ -1196,7 +1200,8 @@ test("Can schedule offers with locked funds (CI)", async () => {
     // schedule offer
     const assetCode = "BCH";
     const direction = "BUY";
-    let offer: OfferInfo = await makeOffer({maker: user3, assetCode: assetCode, direction: direction, awaitFundsToMakeOffer: false});
+    const ctx = Object.assign({}, TestConfig.trade, {maker: user3, assetCode: assetCode, direction: direction, awaitFundsToMakeOffer: false});
+    let offer: OfferInfo = await makeOffer(ctx);
     assert.equal(offer.getState(), "SCHEDULED");
 
     // has offer
@@ -1249,16 +1254,23 @@ test("Can schedule offers with locked funds (CI)", async () => {
     await wait(TestConfig.trade.maxTimePeerNoticeMs);
     if (!getOffer(await user1.getOffers(assetCode, direction), offer.getId())) throw new Error("Offer " + offer.getId() + " was not found in peer's offers after posted");
 
-    // cancel offer
-    await user3.removeOffer(offer.getId());
+    // complete trade or cancel offer depending on configuration
+    if (completeTrade) {
+      HavenoUtils.log(1, "Completing trade from scheduled offer, opening and resolving dispute: " + resolveDispute);
+      await executeTrade(Object.assign(ctx, {buyerDisputeContext: resolveDispute ? DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK : DisputeContext.NONE}));
+    } else {
+      
+      // cancel offer
+      await user3.removeOffer(offer.getId());
 
-    // offer is removed from my offers
-    if (getOffer(await user3.getMyOffers(assetCode), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in my offers after removal");
+      // offer is removed from my offers
+      if (getOffer(await user3.getMyOffers(assetCode), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in my offers after removal");
 
-    // reserved balance becomes unlocked
-    expect(BigInt((await user3.getBalances()).getAvailableBalance())).toEqual(outputAmt * BigInt(2));
-    expect(BigInt((await user3.getBalances()).getPendingBalance())).toEqual(BigInt(0));
-    expect(BigInt((await user3.getBalances()).getReservedOfferBalance())).toEqual(BigInt(0));
+      // reserved balance becomes unlocked
+      expect(BigInt((await user3.getBalances()).getAvailableBalance())).toEqual(outputAmt * BigInt(2));
+      expect(BigInt((await user3.getBalances()).getPendingBalance())).toEqual(BigInt(0));
+      expect(BigInt((await user3.getBalances()).getReservedOfferBalance())).toEqual(BigInt(0));
+    }
   } catch (err2) {
     err = err2;
   }
