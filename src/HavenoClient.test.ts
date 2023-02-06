@@ -2033,7 +2033,7 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
     if (!ctx.buyerSendsPayment) return ctx.offer!.getId();
     else if (!ctx.isPaymentSent) {
       HavenoUtils.log(1, "Buyer confirming payment sent");
-      await getBuyer(ctx)!.confirmPaymentStarted(trade.getTradeId());
+      await getBuyer(ctx)!.confirmPaymentSent(trade.getTradeId());
       ctx.isPaymentSent = true;
       fetchedTrade = await getBuyer(ctx)!.getTrade(trade.getTradeId());
       expect(fetchedTrade.getPhase()).toEqual("PAYMENT_SENT");
