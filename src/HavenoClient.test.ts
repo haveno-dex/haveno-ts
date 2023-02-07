@@ -173,7 +173,7 @@ const TestConfig = {
         disputeWinner: DisputeResult.Winner.SELLER,
         disputeReason: DisputeResult.Reason.PEER_WAS_LATE,
         disputeSummary: "Seller is winner",
-        walletSyncPeriodMs: 7000, // TODO (woodser): auto adjust higher if using remote connection
+        walletSyncPeriodMs: 5000,
         maxTimePeerNoticeMs: 5000,
         maxConcurrency: 14,
         stopOnFailure: true
@@ -1919,7 +1919,7 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
       ctx.offer = await makeOffer(ctx);
       expect(ctx.offer.getState()).toEqual("AVAILABLE");
       ctx.offerId = ctx.offer.getId();
-      await wait(ctx.maxTimePeerNoticeMs! + ctx.walletSyncPeriodMs! * 2);
+      await wait(ctx.maxTimePeerNoticeMs!);
     } else {
       ctx.offer = getOffer(await ctx.maker!.getMyOffers(ctx.assetCode!, ctx.direction), ctx.offerId!);
       if (!ctx.offer) {
