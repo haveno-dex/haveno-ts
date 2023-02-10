@@ -2170,7 +2170,7 @@ async function testTradePayoutUnlock(ctx: TradeContext) {
   await wait(TestConfig.maxWalletStartupMs + ctx.walletSyncPeriodMs! * 2);
   if (getBuyer(ctx)) await testTradeState(await getBuyer(ctx)!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"]});
   if (getSeller(ctx)) await testTradeState(await getSeller(ctx)!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"]});
-  await testTradeState(await ctx.arbitrator!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"]}); // arbitrator idles wallet
+  await testTradeState(await ctx.arbitrator!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"]});
   let payoutTx = getBuyer(ctx) ? await getBuyer(ctx)?.getXmrTx(payoutTxId) : await getSeller(ctx)?.getXmrTx(payoutTxId);
   expect(payoutTx?.getIsConfirmed());
 
@@ -2180,7 +2180,7 @@ async function testTradePayoutUnlock(ctx: TradeContext) {
   await wait(TestConfig.maxWalletStartupMs + ctx.walletSyncPeriodMs! * 2);
   if (await getBuyer(ctx)) await testTradeState(await getBuyer(ctx)!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_UNLOCKED"]});
   if (await getSeller(ctx)) await testTradeState(await getSeller(ctx)!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_UNLOCKED"]});
-  await testTradeState(await ctx.arbitrator!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"]}); // arbitrator idles wallet
+  await testTradeState(await ctx.arbitrator!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_UNLOCKED"]});
   payoutTx = getBuyer(ctx) ? await getBuyer(ctx)?.getXmrTx(payoutTxId) : await getSeller(ctx)?.getXmrTx(payoutTxId);
   expect(!payoutTx?.getIsLocked());
 }
@@ -2238,11 +2238,16 @@ async function makeOffer(ctx?: TradeContext): Promise<OfferInfo> {
   if (getOffer(await ctx.maker!.getOffers(ctx.assetCode!, ctx.direction), offer.getId())) throw new Error("My offer " + offer.getId() + " should not appear in available offers");
 
   // unlocked balance has decreased
-  const unlockedBalanceAfter = BigInt((await ctx.maker!.getBalances()).getAvailableBalance());
+  let unlockedBalanceAfter = BigInt((await ctx.maker!.getBalances()).getAvailableBalance());
   if (offer.getState() === "SCHEDULED") {
     if (unlockedBalanceAfter !== unlockedBalanceBefore) throw new Error("Unlocked balance should not change for scheduled offer " + offer.getId());
   } else if (offer.getState() === "AVAILABLE") {
-    if (unlockedBalanceAfter === unlockedBalanceBefore) throw new Error("Unlocked balance did not change after posting offer " + offer.getId() + ", before=" + unlockedBalanceBefore + ", after=" + unlockedBalanceAfter);
+    if (unlockedBalanceAfter === unlockedBalanceBefore) {
+      console.warn("Unlocked balance did not change after posting offer, waiting a sync period");
+      await wait(ctx.walletSyncPeriodMs!);
+      unlockedBalanceAfter = BigInt((await ctx.maker!.getBalances()).getAvailableBalance());
+      if (unlockedBalanceAfter === unlockedBalanceBefore) throw new Error("Unlocked balance did not change after posting offer " + offer.getId() + ", before=" + unlockedBalanceBefore + ", after=" + unlockedBalanceAfter);
+    }
   } else {
     throw new Error("Unexpected offer state after posting: " + offer.getState());
   }
