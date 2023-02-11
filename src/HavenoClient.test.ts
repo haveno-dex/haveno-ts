@@ -1098,16 +1098,19 @@ test("Can create crypto payment accounts (CI)", async () => {
   }
 
   // test invalid currency code
-  await expect(async () => { await user1.createCryptoPaymentAccount("My account", "ABC", "123"); })
+  await expect(async () => { await user1.createCryptoPaymentAccount("My first account", "ABC", "123"); })
       .rejects
       .toThrow("crypto currency with code 'abc' not found");
 
   // test invalid address
-  await expect(async () => { await user1.createCryptoPaymentAccount("My account", "ETH", "123"); })
+  await expect(async () => { await user1.createCryptoPaymentAccount("My second account", "ETH", "123"); })
       .rejects
       .toThrow('123 is not a valid eth address');
 
-  // TODO (woodser): test rejecting account with duplicate name
+  // test address duplicity
+  await expect(async () => { await user1.createCryptoPaymentAccount("My second account", "ABC", "666"); })
+      .rejects
+      .toThrow("Account 'My second account' is already taken");
 
   function testCryptoPaymentAccountEquals(paymentAccount: PaymentAccount, testAccount: any, name: string) {
     expect(paymentAccount.getAccountName()).toEqual(name);
@@ -1259,7 +1262,7 @@ test("Can schedule offers with locked funds (CI)", async () => {
       HavenoUtils.log(1, "Completing trade from scheduled offer, opening and resolving dispute: " + resolveDispute);
       await executeTrade(Object.assign(ctx, {buyerDisputeContext: resolveDispute ? DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK : DisputeContext.NONE}));
     } else {
-      
+
       // cancel offer
       await user3.removeOffer(offer.getId());
 
