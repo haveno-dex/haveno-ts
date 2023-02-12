@@ -52,3 +52,6 @@ Running the [API tests](./src/HavenoClient.test.ts) is the best way to develop a
 7. `cd haveno-ts`
 8. `npm install`
 9. `npm run test -- --baseCurrencyNetwork=XMR_LOCAL` to run all tests or `npm run test -- --baseCurrencyNetwork=XMR_LOCAL -t "my test"` to run tests by name.
+
+
+test
