@@ -1584,6 +1584,8 @@ test("Can handle unexpected errors during trade initialization", async () => {
   let traders: HavenoClient[] = [];
   let err: any;
   try {
+    
+    console.log("");
 
     // start and fund 3 trader processes
     HavenoUtils.log(1, "Starting trader processes");
