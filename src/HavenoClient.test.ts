@@ -1108,9 +1108,11 @@ test("Can create crypto payment accounts (CI)", async () => {
       .toThrow('123 is not a valid eth address');
 
   // test address duplicity
-  await expect(async () => { await user1.createCryptoPaymentAccount("My second account", "ABC", "666"); })
+  await user1.createCryptoPaymentAccount("Unique account name", TestConfig.cryptoAddresses[0].currencyCode, TestConfig.cryptoAddresses[0].address)
+
+  await expect(async () => { await user1.createCryptoPaymentAccount("Unique account name", TestConfig.cryptoAddresses[0].currencyCode, TestConfig.cryptoAddresses[0].address); })
       .rejects
-      .toThrow("Account 'My second account' is already taken");
+      .toThrow("Account 'Unique account name' is already taken");
 
   function testCryptoPaymentAccountEquals(paymentAccount: PaymentAccount, testAccount: any, name: string) {
     expect(paymentAccount.getAccountName()).toEqual(name);
