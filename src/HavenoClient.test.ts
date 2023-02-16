@@ -362,7 +362,7 @@ afterAll(async () => {
 // ----------------------------------- TESTS ----------------------------------
 
 test("Can get the version (ZI)", async () => {
-  console.log("Testing latest 8ec76aa1cdca5eeed0c579ef65252fc0168a8b98");
+  console.log("Testing latest 8ec76aa1cdca5eeed0c579ef65252fc0168a8b98 2");
   const version = await arbitrator.getVersion();
   expect(version).toEqual(TestConfig.haveno.version);
 });
