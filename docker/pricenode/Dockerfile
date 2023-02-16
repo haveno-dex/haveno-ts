@@ -12,7 +12,7 @@ RUN set -ex && adduser --system --group --disabled-password pricenode && \
 
 USER pricenode
 
-RUN set -ex && git clone --recursive https://github.com/woodser/haveno-pricenode.git /home/pricenode
+RUN set -ex && git clone --recursive https://github.com/haveno-dex/haveno-pricenode.git /home/pricenode
 
 WORKDIR /home/pricenode
 
