@@ -12,7 +12,7 @@ RUN set -ex && adduser --system --group --disabled-password haveno && \
 
 USER haveno
 
-RUN set -ex && git clone https://github.com/haveno-dex/haveno.git /home/haveno/haveno
+RUN set -ex && git clone https://github.com/woodser/haveno.git /home/haveno/haveno
 
 WORKDIR /home/haveno/haveno
 
