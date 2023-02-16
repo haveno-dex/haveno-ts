@@ -362,6 +362,7 @@ afterAll(async () => {
 // ----------------------------------- TESTS ----------------------------------
 
 test("Can get the version (CI)", async () => {
+  console.log("Test deployment branch");
   const version = await arbitrator.getVersion();
   expect(version).toEqual(TestConfig.haveno.version);
 });
