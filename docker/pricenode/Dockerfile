@@ -16,6 +16,6 @@ RUN set -ex && git clone --recursive https://github.com/haveno-dex/haveno-pricen
 
 WORKDIR /home/pricenode
 
-RUN gradle clean build -x test
+RUN ./gradlew clean build -x test
 
 ENTRYPOINT [ "./haveno-pricenode" ]
