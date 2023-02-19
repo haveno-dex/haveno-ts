@@ -18,6 +18,9 @@ jobs:
       - name: Stop Mono service
         run: sudo killall mono
 
+      - name: Collect Docker Logs
+        uses: jwalton/gh-docker-logs@v2.2.1
+
       - name: Start containers
         run: docker-compose -f "./docker/docker-compose.yml" up -d --build
 
