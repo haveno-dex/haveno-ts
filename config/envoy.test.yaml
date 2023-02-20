@@ -17,6 +17,9 @@ static_resources:
           "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
           codec_type: auto
           stat_prefix: ingress_http
+          common_http_protocol_options:
+            idle_timeout: 0s
+            max_requests_per_connection: 1
           route_config:
             name: local_route
             virtual_hosts:
@@ -56,6 +59,9 @@ static_resources:
           "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
           codec_type: auto
           stat_prefix: ingress_http
+          common_http_protocol_options:
+            idle_timeout: 0s
+            max_requests_per_connection: 1
           route_config:
             name: local_route
             virtual_hosts:
@@ -95,6 +101,9 @@ static_resources:
           "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
           codec_type: auto
           stat_prefix: ingress_http
+          common_http_protocol_options:
+            idle_timeout: 0s
+            max_requests_per_connection: 1
           route_config:
             name: local_route
             virtual_hosts:
@@ -134,6 +143,9 @@ static_resources:
           "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
           codec_type: auto
           stat_prefix: ingress_http
+          common_http_protocol_options:
+            idle_timeout: 0s
+            max_requests_per_connection: 1
           route_config:
             name: local_route
             virtual_hosts:
@@ -173,6 +185,9 @@ static_resources:
           "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
           codec_type: auto
           stat_prefix: ingress_http
+          common_http_protocol_options:
+            idle_timeout: 0s
+            max_requests_per_connection: 1
           route_config:
             name: local_route
             virtual_hosts:
@@ -212,6 +227,9 @@ static_resources:
           "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
           codec_type: auto
           stat_prefix: ingress_http
+          common_http_protocol_options:
+            idle_timeout: 0s
+            max_requests_per_connection: 1
           route_config:
             name: local_route
             virtual_hosts:
@@ -251,6 +269,9 @@ static_resources:
           "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
           codec_type: auto
           stat_prefix: ingress_http
+          common_http_protocol_options:
+            idle_timeout: 0s
+            max_requests_per_connection: 1
           route_config:
             name: local_route
             virtual_hosts:
@@ -290,6 +311,9 @@ static_resources:
           "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
           codec_type: auto
           stat_prefix: ingress_http
+          common_http_protocol_options:
+            idle_timeout: 0s
+            max_requests_per_connection: 1
           route_config:
             name: local_route
             virtual_hosts:
