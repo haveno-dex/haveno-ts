@@ -6,4 +6,4 @@ on:
 
 jobs:
   issueLabeled:
-    uses: haveno-dex/haveno/.github/workflows/label.yml@master 
+    uses: woodser/haveno/.github/workflows/label.yml@master 
