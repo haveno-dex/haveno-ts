@@ -419,9 +419,18 @@ test("Can manage an account (CI)", async () => {
     assert(await user3.accountExists());
     assert(await user3.isAccountOpen());
 
+    // try changing incorrect password
+    try {
+      await user3.changePassword("wrongPassword", "abc123");
+      throw new Error("Should have failed changing wrong password");
+    } catch (err: any) {
+      assert.equal(err.message, "Incorrect password");
+    }
+
     // change password
-    password = "newPassword";
-    await user3.changePassword(password);
+    const newPassword = "newPassword";
+    await user3.changePassword(password, newPassword);
+    password = newPassword;
     assert(await user3.accountExists());
     assert(await user3.isAccountOpen());
 
@@ -554,13 +563,13 @@ test("Can manage Monero daemon connections (CI)", async () => {
     testConnection(connection!, TestConfig.monerod2.url, OnlineStatus.ONLINE, AuthenticationStatus.AUTHENTICATED, 1);
 
     // change account password
-    const password = "newPassword";
-    await user3.changePassword("newPassword");
+    const newPassword = "newPassword";
+    await user3.changePassword(TestConfig.defaultHavenod.accountPassword, newPassword);
 
     // restart user3
     const appName = user3.getAppName();
     await releaseHavenoProcess(user3);
-    user3 = await initHaveno({appName: appName, accountPassword: password});
+    user3 = await initHaveno({appName: appName, accountPassword: newPassword});
 
     // connection is restored, online, and authenticated
     connection = await user3.getMoneroConnection();

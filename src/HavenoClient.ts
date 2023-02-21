@@ -301,9 +301,12 @@ export default class HavenoClient {
    * 
    * @param {string} password - the new account password
    */
-  async changePassword(password: string): Promise<void> {
+  async changePassword(oldPassword: string, newPassword: string): Promise<void> {
     try {
-      await this._accountClient.changePassword(new ChangePasswordRequest().setPassword(password), {password: this._password});
+      const request = new ChangePasswordRequest()
+          .setOldPassword(oldPassword)
+          .setNewPassword(newPassword);
+      await this._accountClient.changePassword(request, {password: this._password});
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);
     }
