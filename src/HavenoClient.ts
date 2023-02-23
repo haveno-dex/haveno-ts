@@ -958,14 +958,16 @@ export default class HavenoClient {
   /**
    * Get the user's posted offers to buy or sell XMR.
    * 
-   * @param {string} assetCode - traded asset code
+   * @param {string|undefined} assetCode - traded asset code
    * @param {string|undefined} direction - "buy" or "sell" XMR (default all)
    * @return {OfferInfo[]} the user's created offers
    */
-  async getMyOffers(assetCode: string, direction?: string): Promise<OfferInfo[]> {
+  async getMyOffers(assetCode?: string, direction?: string): Promise<OfferInfo[]> {
     try {
-      if (!direction) return (await this.getMyOffers(assetCode, "buy")).concat(await this.getMyOffers(assetCode, "sell")); // TODO: implement in backend
-      return (await this._offersClient.getMyOffers(new GetOffersRequest().setDirection(direction).setCurrencyCode(assetCode), {password: this._password})).getOffersList();
+      const req = new GetOffersRequest();
+      if (assetCode) req.setCurrencyCode(assetCode);
+      if (direction) req.setDirection(direction);
+      return (await this._offersClient.getMyOffers(req, {password: this._password})).getOffersList();
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);
     }
