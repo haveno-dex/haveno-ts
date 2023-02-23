@@ -967,9 +967,18 @@ test("Can get offers (CI)", async () => {
 });
 
 test("Can get my offers (CI)", async () => {
+
+  // get all offers
+  const offers: OfferInfo[] = await user1.getMyOffers();
+  for (const offer of offers) testOffer(offer);
+
+  // get offers by asset code
   for (const assetCode of TestConfig.assetCodes) {
     const offers: OfferInfo[] = await user1.getMyOffers(assetCode);
-    for (const offer of offers)  testOffer(offer);
+    for (const offer of offers) {
+      testOffer(offer);
+      expect(assetCode).toEqual(isCrypto(assetCode) ? offer.getBaseCurrencyCode() : offer.getCounterCurrencyCode()); // crypto asset codes are base
+    }
   }
 });
 
