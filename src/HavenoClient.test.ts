@@ -1255,6 +1255,7 @@ test("Can schedule offers with locked funds (CI)", async () => {
     const user3Config = {appName: user3.getAppName()};
     await releaseHavenoProcess(user3);
     user3 = await initHaveno(user3Config);
+    ctx.maker = user3;
 
     // has offer
     offer = await user3.getMyOffer(offer.getId());
