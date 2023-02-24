@@ -79,7 +79,7 @@ export default class HavenoClient {
    * @param {string[]} cmd - command to start the process
    * @param {string} url - Haveno daemon url (must proxy to api port)
    * @param {boolean} enableLogging - specifies if logging is enabled or disabled at log level 3
-   * @return {haveno} a client connected to the newly started Haveno process
+   * @return {HavenoClient} a client connected to the newly started Haveno process
    */
   static async startProcess(havenoPath: string, cmd: string[], url: string, enableLogging: boolean): Promise<HavenoClient> {
     try {
@@ -1326,33 +1326,31 @@ export default class HavenoClient {
   async _updateNotificationListenerRegistration(): Promise<void> {
     try {
       const listening = this._notificationListeners.length > 0;
-      if (listening && this._notificationStream || !listening && !this._notificationStream) return; // no difference
+      if ((listening && this._notificationStream) || (!listening && !this._notificationStream)) return; // no difference
       if (listening) {
-        await new Promise<void>((resolve) => {
-          
-          // send request to register client listener
-          this._notificationStream = this._notificationsClient.registerNotificationListener(new RegisterNotificationListenerRequest(), {password: this._password})
-                    .on('data', this._onNotification);
-          
-          // periodically send keep alive requests // TODO (woodser): better way to keep notification stream alive?
-          let firstRequest = true;
-          this._keepAliveLooper = new TaskLooper(async () => {
-            if (firstRequest) {
-              firstRequest = false;
-              return;
-            }
-            try {
-              await this._sendNotification(new NotificationMessage()
-                  .setType(NotificationMessage.NotificationType.KEEP_ALIVE)
-                  .setTimestamp(Date.now()));
-            } catch (err: any) {
-              HavenoUtils.log(0, "Error sending keep alive request to Haveno daemon: " + err.message);
-            }
-          });
-          this._keepAliveLooper.start(this._keepAlivePeriodMs);
-          
-          setTimeout(resolve, 1000); // TODO: call returns before listener registered
+
+        // send request to register client listener
+        this._notificationStream = this._notificationsClient.registerNotificationListener(new RegisterNotificationListenerRequest(), {password: this._password})
+            .on('data', this._onNotification);
+
+        // periodically send keep alive requests // TODO (woodser): better way to keep notification stream alive?
+        let firstRequest = true;
+        this._keepAliveLooper = new TaskLooper(async () => {
+          if (firstRequest) {
+            firstRequest = false;
+            return;
+          }
+          try {
+            await this._sendNotification(new NotificationMessage()
+                .setType(NotificationMessage.NotificationType.KEEP_ALIVE)
+                .setTimestamp(Date.now()));
+          } catch (err: any) {
+            HavenoUtils.log(0, "Error sending keep alive request to Haveno daemon " + this.getUrl() + ": " + err.message);
+          }
         });
+        this._keepAliveLooper.start(this._keepAlivePeriodMs);
+
+        await HavenoUtils.waitFor(1000); // TODO: call returns before listener registered
       } else {
         this._notificationStream!.removeListener('data', this._onNotification);
         this._keepAliveLooper.stop();

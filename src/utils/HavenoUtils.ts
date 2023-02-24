@@ -130,4 +130,13 @@ export default class HavenoUtils {
     }
     throw new Error("PaymentAccountForm does not have field " + fieldId);
   }
+
+  /**
+   * Wait for the duration.
+   * 
+   * @param {number} durationMs - the duration to wait for in milliseconds
+   */
+    static async waitFor(durationMs: number) {
+      return new Promise(function(resolve) { setTimeout(resolve, durationMs); });
+    }
 }
