@@ -1502,7 +1502,7 @@ test("Cannot make or take offer with insufficient unlocked funds (CI, sanity che
       assert.equal(errTyped.code, 2);
     }
 
-    // user1 posts offer
+    // user1 gets or posts offer
     const offers: OfferInfo[] = await user1.getMyOffers(TestConfig.trade.assetCode);
     let offer: OfferInfo;
     if (offers.length) offer = offers[0];
@@ -1532,6 +1532,9 @@ test("Cannot make or take offer with insufficient unlocked funds (CI, sanity che
       assert.equal(errTyped.code, 3);
       assert(errTyped.message.includes("trade with id '" + offer.getId() + "' not found"));
     }
+
+    // remove offer if posted
+    if (!offers.length) await user1.removeOffer(offer.getId());
   } catch (err2) {
     err = err2;
   }
@@ -1744,6 +1747,7 @@ test("Selects arbitrators which are online, registered, and least used", async (
     HavenoUtils.log(1, "Posting offer which uses main arbitrator since least used is offline");
     let offer = await makeOffer({maker: user1});
     assert.equal(offer.getArbitratorSigner(), arbitratorApiUrl);
+    await user1.removeOffer(offer.getId());
 
     // complete a trade which uses main arbitrator since signer/least used is offline
     HavenoUtils.log(1, "Completing trade using main arbitrator since signer/least used is offline");
