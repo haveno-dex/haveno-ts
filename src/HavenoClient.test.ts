@@ -297,49 +297,56 @@ const OFFLINE_ERR_MSG = "Http response at 400 or 500 level";
 jest.setTimeout(TestConfig.testTimeout);
 
 beforeAll(async () => {
+  try {
 
-  // set log level for tests
-  HavenoUtils.setLogLevel(TestConfig.logLevel);
+    // set log level for tests
+    HavenoUtils.setLogLevel(TestConfig.logLevel);
 
-  // initialize funding wallet
-  await initFundingWallet();
-  HavenoUtils.log(0, "Funding wallet balance: " + await fundingWallet.getBalance());
-  HavenoUtils.log(0, "Funding wallet unlocked balance: " + await fundingWallet.getUnlockedBalance());
-  const subaddress = await fundingWallet.createSubaddress(0);
-  HavenoUtils.log(0, "Funding wallet height: " + await fundingWallet.getHeight());
-  HavenoUtils.log(0, "Funding wallet mnemonic: " + await fundingWallet.getMnemonic());
-  HavenoUtils.log(0, "Funding wallet primary address: " + await fundingWallet.getPrimaryAddress());
-  HavenoUtils.log(0, "Funding wallet new subaddress: " + subaddress.getAddress());
+    // initialize funding wallet
+    await initFundingWallet();
+    HavenoUtils.log(0, "Funding wallet balance: " + await fundingWallet.getBalance());
+    HavenoUtils.log(0, "Funding wallet unlocked balance: " + await fundingWallet.getUnlockedBalance());
+    const subaddress = await fundingWallet.createSubaddress(0);
+    HavenoUtils.log(0, "Funding wallet height: " + await fundingWallet.getHeight());
+    HavenoUtils.log(0, "Funding wallet mnemonic: " + await fundingWallet.getMnemonic());
+    HavenoUtils.log(0, "Funding wallet primary address: " + await fundingWallet.getPrimaryAddress());
+    HavenoUtils.log(0, "Funding wallet new subaddress: " + subaddress.getAddress());
 
-  // initialize monerod
-  monerod = await monerojs.connectToDaemonRpc(TestConfig.monerod.url, TestConfig.monerod.username, TestConfig.monerod.password);
-  await mineToHeight(160); // initialize blockchain to latest block type
+    // initialize monerod
+    monerod = await monerojs.connectToDaemonRpc(TestConfig.monerod.url, TestConfig.monerod.username, TestConfig.monerod.password);
+    await mineToHeight(160); // initialize blockchain to latest block type
 
-  // start configured haveno daemons
-  const promises: Promise<HavenoClient>[] = [];
-  for (const config of TestConfig.startupHavenods) promises.push(initHaveno(config));
-  for (const settledPromise of await Promise.allSettled(promises)) {
-    if (settledPromise.status !== "fulfilled") throw new Error((settledPromise as PromiseRejectedResult).reason);
-    startupHavenods.push((settledPromise as PromiseFulfilledResult<HavenoClient>).value);
+    // start configured haveno daemons
+    const promises: Promise<HavenoClient>[] = [];
+    let err;
+    for (const config of TestConfig.startupHavenods) promises.push(initHaveno(config));
+    for (const settledPromise of await Promise.allSettled(promises)) {
+      if (settledPromise.status === "fulfilled") startupHavenods.push((settledPromise as PromiseFulfilledResult<HavenoClient>).value);
+      else if (!err) err = new Error((settledPromise as PromiseRejectedResult).reason);
+    }
+    if (err) throw err;
+
+    // assign arbitrator, user1, user2
+    arbitrator = startupHavenods[0];
+    user1 = startupHavenods[1];
+    user2 = startupHavenods[2];
+    TestConfig.trade.arbitrator = arbitrator;
+    TestConfig.trade.maker = user1;
+    TestConfig.trade.taker = user2;
+
+    // connect client wallets
+    user1Wallet = await monerojs.connectToWalletRpc(TestConfig.startupHavenods[1].walletUrl, TestConfig.defaultHavenod.walletUsername, TestConfig.startupHavenods[1].accountPasswordRequired ? TestConfig.startupHavenods[1].accountPassword : TestConfig.defaultHavenod.walletDefaultPassword);
+    user2Wallet = await monerojs.connectToWalletRpc(TestConfig.startupHavenods[2].walletUrl, TestConfig.defaultHavenod.walletUsername, TestConfig.startupHavenods[2].accountPasswordRequired ? TestConfig.startupHavenods[2].accountPassword : TestConfig.defaultHavenod.walletDefaultPassword);
+
+    // register arbitrator dispute agent
+    await arbitrator.registerDisputeAgent("arbitrator", getArbitratorPrivKey(0));
+
+    // create test data directory if it doesn't exist
+    if (!fs.existsSync(TestConfig.testDataDir)) fs.mkdirSync(TestConfig.testDataDir);
+  } catch (err) {
+    await shutDown();
+    throw err;
   }
-
-  // assign arbitrator, user1, user2
-  arbitrator = startupHavenods[0];
-  user1 = startupHavenods[1];
-  user2 = startupHavenods[2];
-  TestConfig.trade.arbitrator = arbitrator;
-  TestConfig.trade.maker = user1;
-  TestConfig.trade.taker = user2;
-
-  // connect client wallets
-  user1Wallet = await monerojs.connectToWalletRpc(TestConfig.startupHavenods[1].walletUrl, TestConfig.defaultHavenod.walletUsername, TestConfig.startupHavenods[1].accountPasswordRequired ? TestConfig.startupHavenods[1].accountPassword : TestConfig.defaultHavenod.walletDefaultPassword);
-  user2Wallet = await monerojs.connectToWalletRpc(TestConfig.startupHavenods[2].walletUrl, TestConfig.defaultHavenod.walletUsername, TestConfig.startupHavenods[2].accountPasswordRequired ? TestConfig.startupHavenods[2].accountPassword : TestConfig.defaultHavenod.walletDefaultPassword);
-
-  // register arbitrator dispute agent
-  await arbitrator.registerDisputeAgent("arbitrator", getArbitratorPrivKey(0));
-
-  // create test data directory if it doesn't exist
-  if (!fs.existsSync(TestConfig.testDataDir)) fs.mkdirSync(TestConfig.testDataDir);
 });
 
 beforeEach(async () => {
@@ -347,6 +354,10 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
+  await shutDown();
+});
+
+async function shutDown() {
 
   // release haveno processes
   const promises: Promise<void>[] = [];
@@ -357,7 +368,7 @@ afterAll(async () => {
 
   // terminate monero-javascript worker
   (await monerojs.LibraryUtils.getWorker()).terminate();
-});
+}
 
 // ----------------------------------- TESTS ----------------------------------
 
@@ -2725,7 +2736,14 @@ async function initHaveno(ctx?: HavenodContext): Promise<HavenoClient> {
   }
 
   // open account if configured
-  if (ctx.autoLogin) await initHavenoAccount(havenod, ctx.accountPassword!);
+  if (ctx.autoLogin) {
+    try {
+      await initHavenoAccount(havenod, ctx.accountPassword!);
+    } catch (err) {
+      await releaseHavenoProcess(havenod);
+      throw err;
+    }
+  }
   return havenod;
 
   async function getAvailablePort(): Promise<number> {
