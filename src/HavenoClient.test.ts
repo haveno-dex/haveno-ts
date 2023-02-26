@@ -427,6 +427,14 @@ test("Can manage an account (CI)", async () => {
       assert.equal(err.message, "Incorrect password");
     }
 
+    // try setting password below minimum length
+    try {
+      await user3.changePassword(password, "abc123");
+      throw new Error("Should have failed setting password below minimum length")
+    } catch (err: any) {
+      assert.equal(err.message, "Password must be at least 8 characters");
+    }
+
     // change password
     const newPassword = "newPassword";
     await user3.changePassword(password, newPassword);
