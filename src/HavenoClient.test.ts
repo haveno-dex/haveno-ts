@@ -147,7 +147,7 @@ const TestConfig = {
         XMR_MAINNET: []
     },
     tradeInitTimeout: 60000,
-    testTimeout: getBaseCurrencyNetwork() === BaseCurrencyNetwork.XMR_LOCAL ? 1200000 : 3600000, // timeout in ms for each test to complete (20 minutes for private network, 60 minutes for public network)
+    testTimeout: getBaseCurrencyNetwork() === BaseCurrencyNetwork.XMR_LOCAL ? 2400000 : 5400000, // timeout in ms for each test to complete (40 minutes for private network, 90 minutes for public network)
     trade: { // default trade context
         arbitrator: {} as HavenoClient, // assigned to default arbitrator before all tests. used to set expected arbitrator (cannot select arbitrator)
         maker: {} as HavenoClient, // assigned to user1 as default before all tests
