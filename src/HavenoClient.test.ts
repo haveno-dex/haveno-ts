@@ -113,7 +113,7 @@ const TestConfig = {
         }
     ],
     maxFee: BigInt("75000000000"),
-    daemonPollPeriodMs: 15000,
+    daemonPollPeriodMs: 5000,
     maxWalletStartupMs: 10000, // TODO (woodser): make shorter by switching to jni
     maxCpuPct: 0.25,
     assetCodes: ["USD", "GBP", "EUR", "ETH", "BTC", "BCH", "LTC"], // primary asset codes
@@ -600,7 +600,8 @@ test("Can manage Monero daemon connections (CI)", async () => {
     await user3.setAutoSwitch(true);
 
     // stop monerod
-    await monerod2.stopProcess();
+    //await monerod2.stopProcess(); // TODO (monero-javascript): monerod remains available after await monerod.stopProcess() for up to 40 seconds
+    await GenUtils.killProcess(monerod2.process, "SIGKILL");
 
     // test auto switch after periodic connection check
     await wait(TestConfig.daemonPollPeriodMs * 2);
