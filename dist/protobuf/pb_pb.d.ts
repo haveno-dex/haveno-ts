@@ -166,11 +166,6 @@ export class NetworkEnvelope extends jspb.Message {
   hasRefreshTradeStateRequest(): boolean;
   clearRefreshTradeStateRequest(): NetworkEnvelope;
 
-  getTraderSignedWitnessMessage(): TraderSignedWitnessMessage | undefined;
-  setTraderSignedWitnessMessage(value?: TraderSignedWitnessMessage): NetworkEnvelope;
-  hasTraderSignedWitnessMessage(): boolean;
-  clearTraderSignedWitnessMessage(): NetworkEnvelope;
-
   getGetInventoryRequest(): GetInventoryRequest | undefined;
   setGetInventoryRequest(value?: GetInventoryRequest): NetworkEnvelope;
   hasGetInventoryRequest(): boolean;
@@ -281,7 +276,6 @@ export namespace NetworkEnvelope {
     depositTxAndDelayedPayoutTxMessage?: DepositTxAndDelayedPayoutTxMessage.AsObject,
     peerPublishedDelayedPayoutTxMessage?: PeerPublishedDelayedPayoutTxMessage.AsObject,
     refreshTradeStateRequest?: RefreshTradeStateRequest.AsObject,
-    traderSignedWitnessMessage?: TraderSignedWitnessMessage.AsObject,
     getInventoryRequest?: GetInventoryRequest.AsObject,
     getInventoryResponse?: GetInventoryResponse.AsObject,
     signOfferRequest?: SignOfferRequest.AsObject,
@@ -331,7 +325,6 @@ export namespace NetworkEnvelope {
     DEPOSIT_TX_AND_DELAYED_PAYOUT_TX_MESSAGE = 31,
     PEER_PUBLISHED_DELAYED_PAYOUT_TX_MESSAGE = 32,
     REFRESH_TRADE_STATE_REQUEST = 33,
-    TRADER_SIGNED_WITNESS_MESSAGE = 34,
     GET_INVENTORY_REQUEST = 35,
     GET_INVENTORY_RESPONSE = 36,
     SIGN_OFFER_REQUEST = 1001,
@@ -1344,16 +1337,6 @@ export class InitMultisigRequest extends jspb.Message {
   getTradeId(): string;
   setTradeId(value: string): InitMultisigRequest;
 
-  getSenderNodeAddress(): NodeAddress | undefined;
-  setSenderNodeAddress(value?: NodeAddress): InitMultisigRequest;
-  hasSenderNodeAddress(): boolean;
-  clearSenderNodeAddress(): InitMultisigRequest;
-
-  getPubKeyRing(): PubKeyRing | undefined;
-  setPubKeyRing(value?: PubKeyRing): InitMultisigRequest;
-  hasPubKeyRing(): boolean;
-  clearPubKeyRing(): InitMultisigRequest;
-
   getUid(): string;
   setUid(value: string): InitMultisigRequest;
 
@@ -1380,8 +1363,6 @@ export class InitMultisigRequest extends jspb.Message {
 export namespace InitMultisigRequest {
   export type AsObject = {
     tradeId: string,
-    senderNodeAddress?: NodeAddress.AsObject,
-    pubKeyRing?: PubKeyRing.AsObject,
     uid: string,
     currentDate: number,
     preparedMultisigHex: string,
@@ -1393,16 +1374,6 @@ export namespace InitMultisigRequest {
 export class SignContractRequest extends jspb.Message {
   getTradeId(): string;
   setTradeId(value: string): SignContractRequest;
-
-  getSenderNodeAddress(): NodeAddress | undefined;
-  setSenderNodeAddress(value?: NodeAddress): SignContractRequest;
-  hasSenderNodeAddress(): boolean;
-  clearSenderNodeAddress(): SignContractRequest;
-
-  getPubKeyRing(): PubKeyRing | undefined;
-  setPubKeyRing(value?: PubKeyRing): SignContractRequest;
-  hasPubKeyRing(): boolean;
-  clearPubKeyRing(): SignContractRequest;
 
   getUid(): string;
   setUid(value: string): SignContractRequest;
@@ -1424,6 +1395,11 @@ export class SignContractRequest extends jspb.Message {
   getDepositTxHash(): string;
   setDepositTxHash(value: string): SignContractRequest;
 
+  getAccountAgeWitnessSignatureOfDepositHash(): Uint8Array | string;
+  getAccountAgeWitnessSignatureOfDepositHash_asU8(): Uint8Array;
+  getAccountAgeWitnessSignatureOfDepositHash_asB64(): string;
+  setAccountAgeWitnessSignatureOfDepositHash(value: Uint8Array | string): SignContractRequest;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): SignContractRequest.AsObject;
   static toObject(includeInstance: boolean, msg: SignContractRequest): SignContractRequest.AsObject;
@@ -1435,30 +1411,19 @@ export class SignContractRequest extends jspb.Message {
 export namespace SignContractRequest {
   export type AsObject = {
     tradeId: string,
-    senderNodeAddress?: NodeAddress.AsObject,
-    pubKeyRing?: PubKeyRing.AsObject,
     uid: string,
     currentDate: number,
     accountId: string,
     paymentAccountPayloadHash: Uint8Array | string,
     payoutAddress: string,
     depositTxHash: string,
+    accountAgeWitnessSignatureOfDepositHash: Uint8Array | string,
   }
 }
 
 export class SignContractResponse extends jspb.Message {
   getTradeId(): string;
   setTradeId(value: string): SignContractResponse;
-
-  getSenderNodeAddress(): NodeAddress | undefined;
-  setSenderNodeAddress(value?: NodeAddress): SignContractResponse;
-  hasSenderNodeAddress(): boolean;
-  clearSenderNodeAddress(): SignContractResponse;
-
-  getPubKeyRing(): PubKeyRing | undefined;
-  setPubKeyRing(value?: PubKeyRing): SignContractResponse;
-  hasPubKeyRing(): boolean;
-  clearPubKeyRing(): SignContractResponse;
 
   getUid(): string;
   setUid(value: string): SignContractResponse;
@@ -1488,8 +1453,6 @@ export class SignContractResponse extends jspb.Message {
 export namespace SignContractResponse {
   export type AsObject = {
     tradeId: string,
-    senderNodeAddress?: NodeAddress.AsObject,
-    pubKeyRing?: PubKeyRing.AsObject,
     uid: string,
     currentDate: number,
     contractAsJson: string,
@@ -1501,16 +1464,6 @@ export namespace SignContractResponse {
 export class DepositRequest extends jspb.Message {
   getTradeId(): string;
   setTradeId(value: string): DepositRequest;
-
-  getSenderNodeAddress(): NodeAddress | undefined;
-  setSenderNodeAddress(value?: NodeAddress): DepositRequest;
-  hasSenderNodeAddress(): boolean;
-  clearSenderNodeAddress(): DepositRequest;
-
-  getPubKeyRing(): PubKeyRing | undefined;
-  setPubKeyRing(value?: PubKeyRing): DepositRequest;
-  hasPubKeyRing(): boolean;
-  clearPubKeyRing(): DepositRequest;
 
   getUid(): string;
   setUid(value: string): DepositRequest;
@@ -1543,8 +1496,6 @@ export class DepositRequest extends jspb.Message {
 export namespace DepositRequest {
   export type AsObject = {
     tradeId: string,
-    senderNodeAddress?: NodeAddress.AsObject,
-    pubKeyRing?: PubKeyRing.AsObject,
     uid: string,
     currentDate: number,
     contractSignature: string,
@@ -1558,21 +1509,14 @@ export class DepositResponse extends jspb.Message {
   getTradeId(): string;
   setTradeId(value: string): DepositResponse;
 
-  getSenderNodeAddress(): NodeAddress | undefined;
-  setSenderNodeAddress(value?: NodeAddress): DepositResponse;
-  hasSenderNodeAddress(): boolean;
-  clearSenderNodeAddress(): DepositResponse;
-
-  getPubKeyRing(): PubKeyRing | undefined;
-  setPubKeyRing(value?: PubKeyRing): DepositResponse;
-  hasPubKeyRing(): boolean;
-  clearPubKeyRing(): DepositResponse;
-
   getUid(): string;
   setUid(value: string): DepositResponse;
 
   getCurrentDate(): number;
   setCurrentDate(value: number): DepositResponse;
+
+  getErrorMessage(): string;
+  setErrorMessage(value: string): DepositResponse;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): DepositResponse.AsObject;
@@ -1585,10 +1529,9 @@ export class DepositResponse extends jspb.Message {
 export namespace DepositResponse {
   export type AsObject = {
     tradeId: string,
-    senderNodeAddress?: NodeAddress.AsObject,
-    pubKeyRing?: PubKeyRing.AsObject,
     uid: string,
     currentDate: number,
+    errorMessage: string,
   }
 }
 
@@ -1861,6 +1804,11 @@ export class PaymentSentMessage extends jspb.Message {
   getPaymentAccountKey_asB64(): string;
   setPaymentAccountKey(value: Uint8Array | string): PaymentSentMessage;
 
+  getSellerAccountAgeWitness(): AccountAgeWitness | undefined;
+  setSellerAccountAgeWitness(value?: AccountAgeWitness): PaymentSentMessage;
+  hasSellerAccountAgeWitness(): boolean;
+  clearSellerAccountAgeWitness(): PaymentSentMessage;
+
   getBuyerSignature(): Uint8Array | string;
   getBuyerSignature_asU8(): Uint8Array;
   getBuyerSignature_asB64(): string;
@@ -1884,6 +1832,7 @@ export namespace PaymentSentMessage {
     payoutTxHex: string,
     updatedMultisigHex: string,
     paymentAccountKey: Uint8Array | string,
+    sellerAccountAgeWitness?: AccountAgeWitness.AsObject,
     buyerSignature: Uint8Array | string,
   }
 }
@@ -1900,11 +1849,6 @@ export class PaymentReceivedMessage extends jspb.Message {
   getUid(): string;
   setUid(value: string): PaymentReceivedMessage;
 
-  getSignedWitness(): SignedWitness | undefined;
-  setSignedWitness(value?: SignedWitness): PaymentReceivedMessage;
-  hasSignedWitness(): boolean;
-  clearSignedWitness(): PaymentReceivedMessage;
-
   getUnsignedPayoutTxHex(): string;
   setUnsignedPayoutTxHex(value: string): PaymentReceivedMessage;
 
@@ -1916,6 +1860,16 @@ export class PaymentReceivedMessage extends jspb.Message {
 
   getDeferPublishPayout(): boolean;
   setDeferPublishPayout(value: boolean): PaymentReceivedMessage;
+
+  getBuyerAccountAgeWitness(): AccountAgeWitness | undefined;
+  setBuyerAccountAgeWitness(value?: AccountAgeWitness): PaymentReceivedMessage;
+  hasBuyerAccountAgeWitness(): boolean;
+  clearBuyerAccountAgeWitness(): PaymentReceivedMessage;
+
+  getBuyerSignedWitness(): SignedWitness | undefined;
+  setBuyerSignedWitness(value?: SignedWitness): PaymentReceivedMessage;
+  hasBuyerSignedWitness(): boolean;
+  clearBuyerSignedWitness(): PaymentReceivedMessage;
 
   getPaymentSentMessage(): PaymentSentMessage | undefined;
   setPaymentSentMessage(value?: PaymentSentMessage): PaymentReceivedMessage;
@@ -1940,11 +1894,12 @@ export namespace PaymentReceivedMessage {
     tradeId: string,
     senderNodeAddress?: NodeAddress.AsObject,
     uid: string,
-    signedWitness?: SignedWitness.AsObject,
     unsignedPayoutTxHex: string,
     signedPayoutTxHex: string,
     updatedMultisigHex: string,
     deferPublishPayout: boolean,
+    buyerAccountAgeWitness?: AccountAgeWitness.AsObject,
+    buyerSignedWitness?: SignedWitness.AsObject,
     paymentSentMessage?: PaymentSentMessage.AsObject,
     sellerSignature: Uint8Array | string,
   }
@@ -2043,40 +1998,6 @@ export namespace RefreshTradeStateRequest {
     uid: string,
     tradeId: string,
     senderNodeAddress?: NodeAddress.AsObject,
-  }
-}
-
-export class TraderSignedWitnessMessage extends jspb.Message {
-  getUid(): string;
-  setUid(value: string): TraderSignedWitnessMessage;
-
-  getTradeId(): string;
-  setTradeId(value: string): TraderSignedWitnessMessage;
-
-  getSenderNodeAddress(): NodeAddress | undefined;
-  setSenderNodeAddress(value?: NodeAddress): TraderSignedWitnessMessage;
-  hasSenderNodeAddress(): boolean;
-  clearSenderNodeAddress(): TraderSignedWitnessMessage;
-
-  getSignedWitness(): SignedWitness | undefined;
-  setSignedWitness(value?: SignedWitness): TraderSignedWitnessMessage;
-  hasSignedWitness(): boolean;
-  clearSignedWitness(): TraderSignedWitnessMessage;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): TraderSignedWitnessMessage.AsObject;
-  static toObject(includeInstance: boolean, msg: TraderSignedWitnessMessage): TraderSignedWitnessMessage.AsObject;
-  static serializeBinaryToWriter(message: TraderSignedWitnessMessage, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): TraderSignedWitnessMessage;
-  static deserializeBinaryFromReader(message: TraderSignedWitnessMessage, reader: jspb.BinaryReader): TraderSignedWitnessMessage;
-}
-
-export namespace TraderSignedWitnessMessage {
-  export type AsObject = {
-    uid: string,
-    tradeId: string,
-    senderNodeAddress?: NodeAddress.AsObject,
-    signedWitness?: SignedWitness.AsObject,
   }
 }
 
@@ -3427,9 +3348,6 @@ export class OfferPayload extends jspb.Message {
   getBlockHeightAtOfferCreation(): number;
   setBlockHeightAtOfferCreation(value: number): OfferPayload;
 
-  getTxFee(): number;
-  setTxFee(value: number): OfferPayload;
-
   getMakerFee(): number;
   setMakerFee(value: number): OfferPayload;
 
@@ -3513,7 +3431,6 @@ export namespace OfferPayload {
     acceptedBankIdsList: Array<string>,
     versionNr: string,
     blockHeightAtOfferCreation: number,
-    txFee: number,
     makerFee: number,
     buyerSecurityDeposit: number,
     sellerSecurityDeposit: number,
@@ -6498,14 +6415,31 @@ export namespace SignedOfferList {
 }
 
 export class SignedOffer extends jspb.Message {
+  getTimeStamp(): number;
+  setTimeStamp(value: number): SignedOffer;
+
   getOfferId(): string;
   setOfferId(value: string): SignedOffer;
+
+  getTradeAmount(): number;
+  setTradeAmount(value: number): SignedOffer;
+
+  getMakerTradeFee(): number;
+  setMakerTradeFee(value: number): SignedOffer;
 
   getReserveTxHash(): string;
   setReserveTxHash(value: string): SignedOffer;
 
   getReserveTxHex(): string;
   setReserveTxHex(value: string): SignedOffer;
+
+  getReserveTxKeyImagesList(): Array<string>;
+  setReserveTxKeyImagesList(value: Array<string>): SignedOffer;
+  clearReserveTxKeyImagesList(): SignedOffer;
+  addReserveTxKeyImages(value: string, index?: number): SignedOffer;
+
+  getReserveTxMinerFee(): number;
+  setReserveTxMinerFee(value: number): SignedOffer;
 
   getArbitratorSignature(): string;
   setArbitratorSignature(value: string): SignedOffer;
@@ -6520,9 +6454,14 @@ export class SignedOffer extends jspb.Message {
 
 export namespace SignedOffer {
   export type AsObject = {
+    timeStamp: number,
     offerId: string,
+    tradeAmount: number,
+    makerTradeFee: number,
     reserveTxHash: string,
     reserveTxHex: string,
+    reserveTxKeyImagesList: Array<string>,
+    reserveTxMinerFee: number,
     arbitratorSignature: string,
   }
 }
@@ -6683,9 +6622,6 @@ export class Trade extends jspb.Message {
   getAmountAsLong(): number;
   setAmountAsLong(value: number): Trade;
 
-  getTxFeeAsLong(): number;
-  setTxFeeAsLong(value: number): Trade;
-
   getTakerFeeAsLong(): number;
   setTakerFeeAsLong(value: number): Trade;
 
@@ -6747,6 +6683,9 @@ export class Trade extends jspb.Message {
   getLockTime(): number;
   setLockTime(value: number): Trade;
 
+  getStartTime(): number;
+  setStartTime(value: number): Trade;
+
   getRefundAgentNodeAddress(): NodeAddress | undefined;
   setRefundAgentNodeAddress(value?: NodeAddress): Trade;
   hasRefundAgentNodeAddress(): boolean;
@@ -6780,7 +6719,6 @@ export namespace Trade {
     payoutTxHex: string,
     payoutTxKey: string,
     amountAsLong: number,
-    txFeeAsLong: number,
     takerFeeAsLong: number,
     takeOfferDate: number,
     price: number,
@@ -6798,6 +6736,7 @@ export namespace Trade {
     chatMessageList: Array<ChatMessage.AsObject>,
     mediationResultState: MediationResultState,
     lockTime: number,
+    startTime: number,
     refundAgentNodeAddress?: NodeAddress.AsObject,
     refundResultState: RefundResultState,
     counterCurrencyExtraData: string,
@@ -6817,22 +6756,23 @@ export namespace Trade {
     SENT_PUBLISH_DEPOSIT_TX_REQUEST = 8,
     SEND_FAILED_PUBLISH_DEPOSIT_TX_REQUEST = 9,
     SAW_ARRIVED_PUBLISH_DEPOSIT_TX_REQUEST = 10,
-    ARBITRATOR_PUBLISHED_DEPOSIT_TXS = 11,
-    DEPOSIT_TXS_SEEN_IN_NETWORK = 12,
-    DEPOSIT_TXS_CONFIRMED_IN_BLOCKCHAIN = 13,
-    DEPOSIT_TXS_UNLOCKED_IN_BLOCKCHAIN = 14,
-    BUYER_CONFIRMED_IN_UI_PAYMENT_SENT = 15,
-    BUYER_SENT_PAYMENT_SENT_MSG = 16,
-    BUYER_SEND_FAILED_PAYMENT_SENT_MSG = 17,
-    BUYER_STORED_IN_MAILBOX_PAYMENT_SENT_MSG = 18,
-    BUYER_SAW_ARRIVED_PAYMENT_SENT_MSG = 19,
-    SELLER_RECEIVED_PAYMENT_SENT_MSG = 20,
-    SELLER_CONFIRMED_IN_UI_PAYMENT_RECEIPT = 21,
-    SELLER_SENT_PAYMENT_RECEIVED_MSG = 22,
-    SELLER_SEND_FAILED_PAYMENT_RECEIVED_MSG = 23,
-    SELLER_STORED_IN_MAILBOX_PAYMENT_RECEIVED_MSG = 24,
-    SELLER_SAW_ARRIVED_PAYMENT_RECEIVED_MSG = 25,
-    TRADE_COMPLETED = 26,
+    PUBLISH_DEPOSIT_TX_REQUEST_FAILED = 11,
+    ARBITRATOR_PUBLISHED_DEPOSIT_TXS = 12,
+    DEPOSIT_TXS_SEEN_IN_NETWORK = 13,
+    DEPOSIT_TXS_CONFIRMED_IN_BLOCKCHAIN = 14,
+    DEPOSIT_TXS_UNLOCKED_IN_BLOCKCHAIN = 15,
+    BUYER_CONFIRMED_IN_UI_PAYMENT_SENT = 16,
+    BUYER_SENT_PAYMENT_SENT_MSG = 17,
+    BUYER_SEND_FAILED_PAYMENT_SENT_MSG = 18,
+    BUYER_STORED_IN_MAILBOX_PAYMENT_SENT_MSG = 19,
+    BUYER_SAW_ARRIVED_PAYMENT_SENT_MSG = 20,
+    SELLER_RECEIVED_PAYMENT_SENT_MSG = 21,
+    SELLER_CONFIRMED_IN_UI_PAYMENT_RECEIPT = 22,
+    SELLER_SENT_PAYMENT_RECEIVED_MSG = 23,
+    SELLER_SEND_FAILED_PAYMENT_RECEIVED_MSG = 24,
+    SELLER_STORED_IN_MAILBOX_PAYMENT_RECEIVED_MSG = 25,
+    SELLER_SAW_ARRIVED_PAYMENT_RECEIVED_MSG = 26,
+    TRADE_COMPLETED = 27,
   }
 
   export enum Phase { 
@@ -7022,8 +6962,8 @@ export class ProcessModel extends jspb.Message {
   getMyMultiSigPubKey_asB64(): string;
   setMyMultiSigPubKey(value: Uint8Array | string): ProcessModel;
 
-  getPaymentStartedMessageState(): string;
-  setPaymentStartedMessageState(value: string): ProcessModel;
+  getPaymentSentMessageState(): string;
+  setPaymentSentMessageState(value: string): ProcessModel;
 
   getMediatedPayoutTxSignature(): Uint8Array | string;
   getMediatedPayoutTxSignature_asU8(): Uint8Array;
@@ -7036,31 +6976,49 @@ export class ProcessModel extends jspb.Message {
   getSellerPayoutAmountFromMediation(): number;
   setSellerPayoutAmountFromMediation(value: number): ProcessModel;
 
+  getDepositsConfirmedMessagesDelivered(): boolean;
+  setDepositsConfirmedMessagesDelivered(value: boolean): ProcessModel;
+
   getMakerSignature(): string;
   setMakerSignature(value: string): ProcessModel;
 
-  getMaker(): TradingPeer | undefined;
-  setMaker(value?: TradingPeer): ProcessModel;
+  getMaker(): TradePeer | undefined;
+  setMaker(value?: TradePeer): ProcessModel;
   hasMaker(): boolean;
   clearMaker(): ProcessModel;
 
-  getTaker(): TradingPeer | undefined;
-  setTaker(value?: TradingPeer): ProcessModel;
+  getTaker(): TradePeer | undefined;
+  setTaker(value?: TradePeer): ProcessModel;
   hasTaker(): boolean;
   clearTaker(): ProcessModel;
 
-  getArbitrator(): TradingPeer | undefined;
-  setArbitrator(value?: TradingPeer): ProcessModel;
+  getArbitrator(): TradePeer | undefined;
+  setArbitrator(value?: TradePeer): ProcessModel;
   hasArbitrator(): boolean;
   clearArbitrator(): ProcessModel;
 
-  getTempTradingPeerNodeAddress(): NodeAddress | undefined;
-  setTempTradingPeerNodeAddress(value?: NodeAddress): ProcessModel;
-  hasTempTradingPeerNodeAddress(): boolean;
-  clearTempTradingPeerNodeAddress(): ProcessModel;
+  getTempTradePeerNodeAddress(): NodeAddress | undefined;
+  setTempTradePeerNodeAddress(value?: NodeAddress): ProcessModel;
+  hasTempTradePeerNodeAddress(): boolean;
+  clearTempTradePeerNodeAddress(): ProcessModel;
 
   getMultisigAddress(): string;
   setMultisigAddress(value: string): ProcessModel;
+
+  getPaymentSentMessage(): PaymentSentMessage | undefined;
+  setPaymentSentMessage(value?: PaymentSentMessage): ProcessModel;
+  hasPaymentSentMessage(): boolean;
+  clearPaymentSentMessage(): ProcessModel;
+
+  getPaymentReceivedMessage(): PaymentReceivedMessage | undefined;
+  setPaymentReceivedMessage(value?: PaymentReceivedMessage): ProcessModel;
+  hasPaymentReceivedMessage(): boolean;
+  clearPaymentReceivedMessage(): ProcessModel;
+
+  getDisputeClosedMessage(): DisputeClosedMessage | undefined;
+  setDisputeClosedMessage(value?: DisputeClosedMessage): ProcessModel;
+  hasDisputeClosedMessage(): boolean;
+  clearDisputeClosedMessage(): ProcessModel;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ProcessModel.AsObject;
@@ -7083,156 +7041,163 @@ export namespace ProcessModel {
     useSavingsWallet: boolean,
     fundsNeededForTradeAsLong: number,
     myMultiSigPubKey: Uint8Array | string,
-    paymentStartedMessageState: string,
+    paymentSentMessageState: string,
     mediatedPayoutTxSignature: Uint8Array | string,
     buyerPayoutAmountFromMediation: number,
     sellerPayoutAmountFromMediation: number,
+    depositsConfirmedMessagesDelivered: boolean,
     makerSignature: string,
-    maker?: TradingPeer.AsObject,
-    taker?: TradingPeer.AsObject,
-    arbitrator?: TradingPeer.AsObject,
-    tempTradingPeerNodeAddress?: NodeAddress.AsObject,
+    maker?: TradePeer.AsObject,
+    taker?: TradePeer.AsObject,
+    arbitrator?: TradePeer.AsObject,
+    tempTradePeerNodeAddress?: NodeAddress.AsObject,
     multisigAddress: string,
+    paymentSentMessage?: PaymentSentMessage.AsObject,
+    paymentReceivedMessage?: PaymentReceivedMessage.AsObject,
+    disputeClosedMessage?: DisputeClosedMessage.AsObject,
   }
 }
 
-export class TradingPeer extends jspb.Message {
+export class TradePeer extends jspb.Message {
   getNodeAddress(): NodeAddress | undefined;
-  setNodeAddress(value?: NodeAddress): TradingPeer;
+  setNodeAddress(value?: NodeAddress): TradePeer;
   hasNodeAddress(): boolean;
-  clearNodeAddress(): TradingPeer;
+  clearNodeAddress(): TradePeer;
 
   getPubKeyRing(): PubKeyRing | undefined;
-  setPubKeyRing(value?: PubKeyRing): TradingPeer;
+  setPubKeyRing(value?: PubKeyRing): TradePeer;
   hasPubKeyRing(): boolean;
-  clearPubKeyRing(): TradingPeer;
+  clearPubKeyRing(): TradePeer;
 
   getAccountId(): string;
-  setAccountId(value: string): TradingPeer;
+  setAccountId(value: string): TradePeer;
 
   getPaymentAccountId(): string;
-  setPaymentAccountId(value: string): TradingPeer;
+  setPaymentAccountId(value: string): TradePeer;
 
   getPaymentMethodId(): string;
-  setPaymentMethodId(value: string): TradingPeer;
+  setPaymentMethodId(value: string): TradePeer;
 
   getPaymentAccountPayloadHash(): Uint8Array | string;
   getPaymentAccountPayloadHash_asU8(): Uint8Array;
   getPaymentAccountPayloadHash_asB64(): string;
-  setPaymentAccountPayloadHash(value: Uint8Array | string): TradingPeer;
+  setPaymentAccountPayloadHash(value: Uint8Array | string): TradePeer;
 
   getEncryptedPaymentAccountPayload(): Uint8Array | string;
   getEncryptedPaymentAccountPayload_asU8(): Uint8Array;
   getEncryptedPaymentAccountPayload_asB64(): string;
-  setEncryptedPaymentAccountPayload(value: Uint8Array | string): TradingPeer;
+  setEncryptedPaymentAccountPayload(value: Uint8Array | string): TradePeer;
 
   getPaymentAccountKey(): Uint8Array | string;
   getPaymentAccountKey_asU8(): Uint8Array;
   getPaymentAccountKey_asB64(): string;
-  setPaymentAccountKey(value: Uint8Array | string): TradingPeer;
+  setPaymentAccountKey(value: Uint8Array | string): TradePeer;
 
   getPaymentAccountPayload(): PaymentAccountPayload | undefined;
-  setPaymentAccountPayload(value?: PaymentAccountPayload): TradingPeer;
+  setPaymentAccountPayload(value?: PaymentAccountPayload): TradePeer;
   hasPaymentAccountPayload(): boolean;
-  clearPaymentAccountPayload(): TradingPeer;
+  clearPaymentAccountPayload(): TradePeer;
 
   getPayoutAddressString(): string;
-  setPayoutAddressString(value: string): TradingPeer;
+  setPayoutAddressString(value: string): TradePeer;
 
   getContractAsJson(): string;
-  setContractAsJson(value: string): TradingPeer;
+  setContractAsJson(value: string): TradePeer;
 
   getContractSignature(): string;
-  setContractSignature(value: string): TradingPeer;
+  setContractSignature(value: string): TradePeer;
 
   getSignature(): Uint8Array | string;
   getSignature_asU8(): Uint8Array;
   getSignature_asB64(): string;
-  setSignature(value: Uint8Array | string): TradingPeer;
+  setSignature(value: Uint8Array | string): TradePeer;
 
   getMultiSigPubKey(): Uint8Array | string;
   getMultiSigPubKey_asU8(): Uint8Array;
   getMultiSigPubKey_asB64(): string;
-  setMultiSigPubKey(value: Uint8Array | string): TradingPeer;
+  setMultiSigPubKey(value: Uint8Array | string): TradePeer;
 
   getRawTransactionInputsList(): Array<RawTransactionInput>;
-  setRawTransactionInputsList(value: Array<RawTransactionInput>): TradingPeer;
-  clearRawTransactionInputsList(): TradingPeer;
+  setRawTransactionInputsList(value: Array<RawTransactionInput>): TradePeer;
+  clearRawTransactionInputsList(): TradePeer;
   addRawTransactionInputs(value?: RawTransactionInput, index?: number): RawTransactionInput;
 
   getChangeOutputValue(): number;
-  setChangeOutputValue(value: number): TradingPeer;
+  setChangeOutputValue(value: number): TradePeer;
 
   getChangeOutputAddress(): string;
-  setChangeOutputAddress(value: string): TradingPeer;
+  setChangeOutputAddress(value: string): TradePeer;
 
   getAccountAgeWitnessNonce(): Uint8Array | string;
   getAccountAgeWitnessNonce_asU8(): Uint8Array;
   getAccountAgeWitnessNonce_asB64(): string;
-  setAccountAgeWitnessNonce(value: Uint8Array | string): TradingPeer;
+  setAccountAgeWitnessNonce(value: Uint8Array | string): TradePeer;
 
   getAccountAgeWitnessSignature(): Uint8Array | string;
   getAccountAgeWitnessSignature_asU8(): Uint8Array;
   getAccountAgeWitnessSignature_asB64(): string;
-  setAccountAgeWitnessSignature(value: Uint8Array | string): TradingPeer;
+  setAccountAgeWitnessSignature(value: Uint8Array | string): TradePeer;
+
+  getAccountAgeWitness(): AccountAgeWitness | undefined;
+  setAccountAgeWitness(value?: AccountAgeWitness): TradePeer;
+  hasAccountAgeWitness(): boolean;
+  clearAccountAgeWitness(): TradePeer;
 
   getCurrentDate(): number;
-  setCurrentDate(value: number): TradingPeer;
+  setCurrentDate(value: number): TradePeer;
 
   getMediatedPayoutTxSignature(): Uint8Array | string;
   getMediatedPayoutTxSignature_asU8(): Uint8Array;
   getMediatedPayoutTxSignature_asB64(): string;
-  setMediatedPayoutTxSignature(value: Uint8Array | string): TradingPeer;
+  setMediatedPayoutTxSignature(value: Uint8Array | string): TradePeer;
 
   getReserveTxHash(): string;
-  setReserveTxHash(value: string): TradingPeer;
+  setReserveTxHash(value: string): TradePeer;
 
   getReserveTxHex(): string;
-  setReserveTxHex(value: string): TradingPeer;
+  setReserveTxHex(value: string): TradePeer;
 
   getReserveTxKey(): string;
-  setReserveTxKey(value: string): TradingPeer;
+  setReserveTxKey(value: string): TradePeer;
 
   getReserveTxKeyImagesList(): Array<string>;
-  setReserveTxKeyImagesList(value: Array<string>): TradingPeer;
-  clearReserveTxKeyImagesList(): TradingPeer;
-  addReserveTxKeyImages(value: string, index?: number): TradingPeer;
+  setReserveTxKeyImagesList(value: Array<string>): TradePeer;
+  clearReserveTxKeyImagesList(): TradePeer;
+  addReserveTxKeyImages(value: string, index?: number): TradePeer;
 
   getPreparedMultisigHex(): string;
-  setPreparedMultisigHex(value: string): TradingPeer;
+  setPreparedMultisigHex(value: string): TradePeer;
 
   getMadeMultisigHex(): string;
-  setMadeMultisigHex(value: string): TradingPeer;
+  setMadeMultisigHex(value: string): TradePeer;
 
   getExchangedMultisigHex(): string;
-  setExchangedMultisigHex(value: string): TradingPeer;
+  setExchangedMultisigHex(value: string): TradePeer;
 
   getDepositTxHash(): string;
-  setDepositTxHash(value: string): TradingPeer;
+  setDepositTxHash(value: string): TradePeer;
 
   getDepositTxHex(): string;
-  setDepositTxHex(value: string): TradingPeer;
+  setDepositTxHex(value: string): TradePeer;
 
   getDepositTxKey(): string;
-  setDepositTxKey(value: string): TradingPeer;
+  setDepositTxKey(value: string): TradePeer;
+
+  getSecurityDeposit(): number;
+  setSecurityDeposit(value: number): TradePeer;
 
   getUpdatedMultisigHex(): string;
-  setUpdatedMultisigHex(value: string): TradingPeer;
-
-  getPaymentSentMessage(): PaymentSentMessage | undefined;
-  setPaymentSentMessage(value?: PaymentSentMessage): TradingPeer;
-  hasPaymentSentMessage(): boolean;
-  clearPaymentSentMessage(): TradingPeer;
+  setUpdatedMultisigHex(value: string): TradePeer;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): TradingPeer.AsObject;
-  static toObject(includeInstance: boolean, msg: TradingPeer): TradingPeer.AsObject;
-  static serializeBinaryToWriter(message: TradingPeer, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): TradingPeer;
-  static deserializeBinaryFromReader(message: TradingPeer, reader: jspb.BinaryReader): TradingPeer;
+  toObject(includeInstance?: boolean): TradePeer.AsObject;
+  static toObject(includeInstance: boolean, msg: TradePeer): TradePeer.AsObject;
+  static serializeBinaryToWriter(message: TradePeer, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): TradePeer;
+  static deserializeBinaryFromReader(message: TradePeer, reader: jspb.BinaryReader): TradePeer;
 }
 
-export namespace TradingPeer {
+export namespace TradePeer {
   export type AsObject = {
     nodeAddress?: NodeAddress.AsObject,
     pubKeyRing?: PubKeyRing.AsObject,
@@ -7253,6 +7218,7 @@ export namespace TradingPeer {
     changeOutputAddress: string,
     accountAgeWitnessNonce: Uint8Array | string,
     accountAgeWitnessSignature: Uint8Array | string,
+    accountAgeWitness?: AccountAgeWitness.AsObject,
     currentDate: number,
     mediatedPayoutTxSignature: Uint8Array | string,
     reserveTxHash: string,
@@ -7265,8 +7231,8 @@ export namespace TradingPeer {
     depositTxHash: string,
     depositTxHex: string,
     depositTxKey: string,
+    securityDeposit: number,
     updatedMultisigHex: string,
-    paymentSentMessage?: PaymentSentMessage.AsObject,
   }
 }
 

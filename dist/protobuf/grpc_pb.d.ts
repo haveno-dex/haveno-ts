@@ -232,8 +232,11 @@ export namespace IsAppInitializedReply {
 }
 
 export class ChangePasswordRequest extends jspb.Message {
-  getPassword(): string;
-  setPassword(value: string): ChangePasswordRequest;
+  getOldPassword(): string;
+  setOldPassword(value: string): ChangePasswordRequest;
+
+  getNewPassword(): string;
+  setNewPassword(value: string): ChangePasswordRequest;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ChangePasswordRequest.AsObject;
@@ -245,7 +248,8 @@ export class ChangePasswordRequest extends jspb.Message {
 
 export namespace ChangePasswordRequest {
   export type AsObject = {
-    password: string,
+    oldPassword: string,
+    newPassword: string,
   }
 }
 
@@ -721,10 +725,11 @@ export namespace NotificationMessage {
   }
 
   export enum NotificationType { 
-    APP_INITIALIZED = 0,
-    KEEP_ALIVE = 1,
-    TRADE_UPDATE = 2,
-    CHAT_MESSAGE = 3,
+    ERROR = 0,
+    APP_INITIALIZED = 1,
+    KEEP_ALIVE = 2,
+    TRADE_UPDATE = 3,
+    CHAT_MESSAGE = 4,
   }
 }
 
@@ -2324,34 +2329,34 @@ export namespace TakeOfferReply {
   }
 }
 
-export class ConfirmPaymentStartedRequest extends jspb.Message {
+export class ConfirmPaymentSentRequest extends jspb.Message {
   getTradeId(): string;
-  setTradeId(value: string): ConfirmPaymentStartedRequest;
+  setTradeId(value: string): ConfirmPaymentSentRequest;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): ConfirmPaymentStartedRequest.AsObject;
-  static toObject(includeInstance: boolean, msg: ConfirmPaymentStartedRequest): ConfirmPaymentStartedRequest.AsObject;
-  static serializeBinaryToWriter(message: ConfirmPaymentStartedRequest, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): ConfirmPaymentStartedRequest;
-  static deserializeBinaryFromReader(message: ConfirmPaymentStartedRequest, reader: jspb.BinaryReader): ConfirmPaymentStartedRequest;
+  toObject(includeInstance?: boolean): ConfirmPaymentSentRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: ConfirmPaymentSentRequest): ConfirmPaymentSentRequest.AsObject;
+  static serializeBinaryToWriter(message: ConfirmPaymentSentRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ConfirmPaymentSentRequest;
+  static deserializeBinaryFromReader(message: ConfirmPaymentSentRequest, reader: jspb.BinaryReader): ConfirmPaymentSentRequest;
 }
 
-export namespace ConfirmPaymentStartedRequest {
+export namespace ConfirmPaymentSentRequest {
   export type AsObject = {
     tradeId: string,
   }
 }
 
-export class ConfirmPaymentStartedReply extends jspb.Message {
+export class ConfirmPaymentSentReply extends jspb.Message {
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): ConfirmPaymentStartedReply.AsObject;
-  static toObject(includeInstance: boolean, msg: ConfirmPaymentStartedReply): ConfirmPaymentStartedReply.AsObject;
-  static serializeBinaryToWriter(message: ConfirmPaymentStartedReply, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): ConfirmPaymentStartedReply;
-  static deserializeBinaryFromReader(message: ConfirmPaymentStartedReply, reader: jspb.BinaryReader): ConfirmPaymentStartedReply;
+  toObject(includeInstance?: boolean): ConfirmPaymentSentReply.AsObject;
+  static toObject(includeInstance: boolean, msg: ConfirmPaymentSentReply): ConfirmPaymentSentReply.AsObject;
+  static serializeBinaryToWriter(message: ConfirmPaymentSentReply, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ConfirmPaymentSentReply;
+  static deserializeBinaryFromReader(message: ConfirmPaymentSentReply, reader: jspb.BinaryReader): ConfirmPaymentSentReply;
 }
 
-export namespace ConfirmPaymentStartedReply {
+export namespace ConfirmPaymentSentReply {
   export type AsObject = {
   }
 }
@@ -2634,9 +2639,6 @@ export class TradeInfo extends jspb.Message {
   getRole(): string;
   setRole(value: string): TradeInfo;
 
-  getTxFeeAsLong(): number;
-  setTxFeeAsLong(value: number): TradeInfo;
-
   getTakerFeeAsLong(): number;
   setTakerFeeAsLong(value: number): TradeInfo;
 
@@ -2649,14 +2651,20 @@ export class TradeInfo extends jspb.Message {
   getAmountAsLong(): number;
   setAmountAsLong(value: number): TradeInfo;
 
+  getBuyerSecurityDeposit(): number;
+  setBuyerSecurityDeposit(value: number): TradeInfo;
+
+  getSellerSecurityDeposit(): number;
+  setSellerSecurityDeposit(value: number): TradeInfo;
+
   getPrice(): string;
   setPrice(value: string): TradeInfo;
 
   getArbitratorNodeAddress(): string;
   setArbitratorNodeAddress(value: string): TradeInfo;
 
-  getTradingPeerNodeAddress(): string;
-  setTradingPeerNodeAddress(value: string): TradeInfo;
+  getTradePeerNodeAddress(): string;
+  setTradePeerNodeAddress(value: string): TradeInfo;
 
   getState(): string;
   setState(value: string): TradeInfo;
@@ -2673,14 +2681,14 @@ export class TradeInfo extends jspb.Message {
   getDisputeState(): string;
   setDisputeState(value: string): TradeInfo;
 
-  getIsDepositPublished(): boolean;
-  setIsDepositPublished(value: boolean): TradeInfo;
+  getIsDepositsPublished(): boolean;
+  setIsDepositsPublished(value: boolean): TradeInfo;
 
-  getIsDepositConfirmed(): boolean;
-  setIsDepositConfirmed(value: boolean): TradeInfo;
+  getIsDepositsConfirmed(): boolean;
+  setIsDepositsConfirmed(value: boolean): TradeInfo;
 
-  getIsDepositUnlocked(): boolean;
-  setIsDepositUnlocked(value: boolean): TradeInfo;
+  getIsDepositsUnlocked(): boolean;
+  setIsDepositsUnlocked(value: boolean): TradeInfo;
 
   getIsPaymentSent(): boolean;
   setIsPaymentSent(value: boolean): TradeInfo;
@@ -2732,22 +2740,23 @@ export namespace TradeInfo {
     shortId: string,
     date: number,
     role: string,
-    txFeeAsLong: number,
     takerFeeAsLong: number,
     takerFeeTxId: string,
     payoutTxId: string,
     amountAsLong: number,
+    buyerSecurityDeposit: number,
+    sellerSecurityDeposit: number,
     price: string,
     arbitratorNodeAddress: string,
-    tradingPeerNodeAddress: string,
+    tradePeerNodeAddress: string,
     state: string,
     phase: string,
     periodState: string,
     payoutState: string,
     disputeState: string,
-    isDepositPublished: boolean,
-    isDepositConfirmed: boolean,
-    isDepositUnlocked: boolean,
+    isDepositsPublished: boolean,
+    isDepositsConfirmed: boolean,
+    isDepositsUnlocked: boolean,
     isPaymentSent: boolean,
     isPaymentReceived: boolean,
     isPayoutPublished: boolean,
