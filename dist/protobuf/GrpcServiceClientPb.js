@@ -824,9 +824,9 @@ class TradesClient {
         this.methodDescriptorTakeOffer = new grpcWeb.MethodDescriptor('/io.bisq.protobuffer.Trades/TakeOffer', grpcWeb.MethodType.UNARY, grpc_pb.TakeOfferRequest, grpc_pb.TakeOfferReply, (request) => {
             return request.serializeBinary();
         }, grpc_pb.TakeOfferReply.deserializeBinary);
-        this.methodDescriptorConfirmPaymentStarted = new grpcWeb.MethodDescriptor('/io.bisq.protobuffer.Trades/ConfirmPaymentStarted', grpcWeb.MethodType.UNARY, grpc_pb.ConfirmPaymentStartedRequest, grpc_pb.ConfirmPaymentStartedReply, (request) => {
+        this.methodDescriptorConfirmPaymentSent = new grpcWeb.MethodDescriptor('/io.bisq.protobuffer.Trades/ConfirmPaymentSent', grpcWeb.MethodType.UNARY, grpc_pb.ConfirmPaymentSentRequest, grpc_pb.ConfirmPaymentSentReply, (request) => {
             return request.serializeBinary();
-        }, grpc_pb.ConfirmPaymentStartedReply.deserializeBinary);
+        }, grpc_pb.ConfirmPaymentSentReply.deserializeBinary);
         this.methodDescriptorConfirmPaymentReceived = new grpcWeb.MethodDescriptor('/io.bisq.protobuffer.Trades/ConfirmPaymentReceived', grpcWeb.MethodType.UNARY, grpc_pb.ConfirmPaymentReceivedRequest, grpc_pb.ConfirmPaymentReceivedReply, (request) => {
             return request.serializeBinary();
         }, grpc_pb.ConfirmPaymentReceivedReply.deserializeBinary);
@@ -876,13 +876,13 @@ class TradesClient {
         return this.client_.unaryCall(this.hostname_ +
             '/io.bisq.protobuffer.Trades/TakeOffer', request, metadata || {}, this.methodDescriptorTakeOffer);
     }
-    confirmPaymentStarted(request, metadata, callback) {
+    confirmPaymentSent(request, metadata, callback) {
         if (callback !== undefined) {
             return this.client_.rpcCall(this.hostname_ +
-                '/io.bisq.protobuffer.Trades/ConfirmPaymentStarted', request, metadata || {}, this.methodDescriptorConfirmPaymentStarted, callback);
+                '/io.bisq.protobuffer.Trades/ConfirmPaymentSent', request, metadata || {}, this.methodDescriptorConfirmPaymentSent, callback);
         }
         return this.client_.unaryCall(this.hostname_ +
-            '/io.bisq.protobuffer.Trades/ConfirmPaymentStarted', request, metadata || {}, this.methodDescriptorConfirmPaymentStarted);
+            '/io.bisq.protobuffer.Trades/ConfirmPaymentSent', request, metadata || {}, this.methodDescriptorConfirmPaymentSent);
     }
     confirmPaymentReceived(request, metadata, callback) {
         if (callback !== undefined) {

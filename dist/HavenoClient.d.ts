@@ -47,7 +47,7 @@ export default class HavenoClient {
      * @param {string[]} cmd - command to start the process
      * @param {string} url - Haveno daemon url (must proxy to api port)
      * @param {boolean} enableLogging - specifies if logging is enabled or disabled at log level 3
-     * @return {haveno} a client connected to the newly started Haveno process
+     * @return {HavenoClient} a client connected to the newly started Haveno process
      */
     static startProcess(havenoPath: string, cmd: string[], url: string, enableLogging: boolean): Promise<HavenoClient>;
     /**
@@ -119,13 +119,13 @@ export default class HavenoClient {
      *
      * @param {string} password - the new account password
      */
-    changePassword(password: string): Promise<void>;
+    changePassword(oldPassword: string, newPassword: string): Promise<void>;
     /**
      * Close the currently open account.
      */
     closeAccount(): Promise<void>;
     /**
-     * Permanently delete the Haveno account and shutdown the server. // TODO: possible to not shutdown server?
+     * Permanently delete the Haveno account.
      */
     deleteAccount(): Promise<void>;
     /**
@@ -399,11 +399,11 @@ export default class HavenoClient {
     /**
      * Get the user's posted offers to buy or sell XMR.
      *
-     * @param {string} assetCode - traded asset code
+     * @param {string|undefined} assetCode - traded asset code
      * @param {string|undefined} direction - "buy" or "sell" XMR (default all)
      * @return {OfferInfo[]} the user's created offers
      */
-    getMyOffers(assetCode: string, direction?: string): Promise<OfferInfo[]>;
+    getMyOffers(assetCode?: string, direction?: string): Promise<OfferInfo[]>;
     /**
      * Get my offer by id.
      *
@@ -454,11 +454,11 @@ export default class HavenoClient {
      */
     getTrades(): Promise<TradeInfo[]>;
     /**
-     * Confirm a payment is started.
+     * Confirm a payment is sent.
      *
      * @param {string} tradeId - the id of the trade
      */
-    confirmPaymentStarted(tradeId: string): Promise<void>;
+    confirmPaymentSent(tradeId: string): Promise<void>;
     /**
      * Confirm a payment is received.
      *

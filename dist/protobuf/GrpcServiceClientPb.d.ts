@@ -386,9 +386,9 @@ export declare class TradesClient {
     methodDescriptorTakeOffer: grpcWeb.MethodDescriptor<grpc_pb.TakeOfferRequest, grpc_pb.TakeOfferReply>;
     takeOffer(request: grpc_pb.TakeOfferRequest, metadata: grpcWeb.Metadata | null): Promise<grpc_pb.TakeOfferReply>;
     takeOffer(request: grpc_pb.TakeOfferRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.TakeOfferReply) => void): grpcWeb.ClientReadableStream<grpc_pb.TakeOfferReply>;
-    methodDescriptorConfirmPaymentStarted: grpcWeb.MethodDescriptor<grpc_pb.ConfirmPaymentStartedRequest, grpc_pb.ConfirmPaymentStartedReply>;
-    confirmPaymentStarted(request: grpc_pb.ConfirmPaymentStartedRequest, metadata: grpcWeb.Metadata | null): Promise<grpc_pb.ConfirmPaymentStartedReply>;
-    confirmPaymentStarted(request: grpc_pb.ConfirmPaymentStartedRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.ConfirmPaymentStartedReply) => void): grpcWeb.ClientReadableStream<grpc_pb.ConfirmPaymentStartedReply>;
+    methodDescriptorConfirmPaymentSent: grpcWeb.MethodDescriptor<grpc_pb.ConfirmPaymentSentRequest, grpc_pb.ConfirmPaymentSentReply>;
+    confirmPaymentSent(request: grpc_pb.ConfirmPaymentSentRequest, metadata: grpcWeb.Metadata | null): Promise<grpc_pb.ConfirmPaymentSentReply>;
+    confirmPaymentSent(request: grpc_pb.ConfirmPaymentSentRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.ConfirmPaymentSentReply) => void): grpcWeb.ClientReadableStream<grpc_pb.ConfirmPaymentSentReply>;
     methodDescriptorConfirmPaymentReceived: grpcWeb.MethodDescriptor<grpc_pb.ConfirmPaymentReceivedRequest, grpc_pb.ConfirmPaymentReceivedReply>;
     confirmPaymentReceived(request: grpc_pb.ConfirmPaymentReceivedRequest, metadata: grpcWeb.Metadata | null): Promise<grpc_pb.ConfirmPaymentReceivedReply>;
     confirmPaymentReceived(request: grpc_pb.ConfirmPaymentReceivedRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.ConfirmPaymentReceivedReply) => void): grpcWeb.ClientReadableStream<grpc_pb.ConfirmPaymentReceivedReply>;

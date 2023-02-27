@@ -73,4 +73,10 @@ export default class HavenoUtils {
      * @return {string} the form field value
      */
     static setFormValue(fieldId: PaymentAccountFormField.FieldId, value: string, form: PaymentAccountForm): void;
+    /**
+     * Wait for the duration.
+     *
+     * @param {number} durationMs - the duration to wait for in milliseconds
+     */
+    static waitFor(durationMs: number): Promise<unknown>;
 }
