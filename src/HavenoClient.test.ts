@@ -156,11 +156,11 @@ const TestConfig = {
         takeOffer: true,
         awaitFundsToMakeOffer: true,
         direction: "buy",               // buy or sell xmr
-        amount: BigInt("200000000000"), // amount of xmr to trade
+        amount: BigInt("200000000000"), // amount of xmr to trade (0.2 XMR)
         minAmount: undefined,
         assetCode: "usd",               // counter asset to trade
         makerPaymentAccountId: undefined,
-        buyerSecurityDeposit: 0.15,
+        buyerSecurityDepositPct: 0.15,
         price: undefined,               // use market price if undefined
         priceMargin: 0.0,
         triggerPrice: undefined,
@@ -219,7 +219,7 @@ interface TradeContext {
     amount?: bigint,
     minAmount?: bigint,
     makerPaymentAccountId?: string,
-    buyerSecurityDeposit?: number,
+    buyerSecurityDepositPct?: number,
     price?: number,
     priceMargin?: number,
     triggerPrice?: number,
@@ -1474,7 +1474,7 @@ test("Can resolve disputes (CI)", async () => {
     disputeWinner: DisputeResult.Winner.BUYER,
     disputeReason: DisputeResult.Reason.SELLER_NOT_RESPONDING,
     disputeSummary: "Split trade amount",
-    disputeWinnerAmount: HavenoUtils.centinerosToAtomicUnits(trade1.getAmountAsLong()) / BigInt(2) + HavenoUtils.centinerosToAtomicUnits(trade1.getBuyerSecurityDeposit())
+    disputeWinnerAmount: BigInt(trade1.getAmountAsLong()) / BigInt(2) + BigInt(trade1.getBuyerSecurityDeposit())
   });
   Object.assign(ctxs[2], {
     resolveDispute: false,
@@ -1482,7 +1482,7 @@ test("Can resolve disputes (CI)", async () => {
     disputeWinner: DisputeResult.Winner.SELLER,
     disputeReason: DisputeResult.Reason.TRADE_ALREADY_SETTLED,
     disputeSummary: "Seller gets everything",
-    disputeWinnerAmount: HavenoUtils.centinerosToAtomicUnits(trade2.getAmountAsLong() + trade2.getBuyerSecurityDeposit() + trade2.getSellerSecurityDeposit())
+    disputeWinnerAmount: BigInt(trade2.getAmountAsLong()) + BigInt(trade2.getBuyerSecurityDeposit()) + BigInt(trade2.getSellerSecurityDeposit())
   });
   Object.assign(ctxs[3], {
     resolveDispute: false,
@@ -2264,7 +2264,7 @@ async function makeOffer(ctx?: TradeContext): Promise<OfferInfo> {
         ctx.amount!,
         ctx.assetCode!,
         ctx.makerPaymentAccountId!,
-        ctx.buyerSecurityDeposit!,
+        ctx.buyerSecurityDepositPct!,
         ctx.price,
         ctx.priceMargin,
         ctx.triggerPrice,
@@ -2507,7 +2507,7 @@ async function resolveDispute(ctx: TradeContext) {
 
   // award too little to loser
   const tradeAmount: bigint = BigInt(ctx.offer!.getAmount());
-  const customWinnerAmount = tradeAmount + BigInt(ctx.offer!.getBuyerSecurityDeposit() +  ctx.offer!.getSellerSecurityDeposit()) - BigInt("10000");
+  const customWinnerAmount = tradeAmount + BigInt(ctx.offer!.getBuyerSecurityDeposit()) + BigInt(ctx.offer!.getSellerSecurityDeposit()) - BigInt("10000");
   try {
     await arbitrator.resolveDispute(ctx.offerId!, ctx.disputeWinner!, ctx.disputeReason!, "Loser gets too little", customWinnerAmount);
     throw new Error("Should have failed resolving dispute with insufficient loser payout");
@@ -3261,8 +3261,8 @@ function testOffer(offer: OfferInfo, config?: TradeContext) {
   expect(offer.getId().length).toBeGreaterThan(0);
   if (config) {
     expect(BigInt(offer.getAmount())).toEqual(config.amount);
-    expect(offer.getBuyerSecurityDeposit() / offer.getAmount()).toEqual(config.buyerSecurityDeposit);
-    expect(offer.getSellerSecurityDeposit() / offer.getAmount()).toEqual(config.buyerSecurityDeposit); // TODO: use same config.securityDeposit for buyer and seller?
+    expect(HavenoUtils.divideBI(BigInt(offer.getBuyerSecurityDeposit()), BigInt(offer.getAmount()))).toEqual(config.buyerSecurityDepositPct);
+    expect(HavenoUtils.divideBI(BigInt(offer.getSellerSecurityDeposit()), BigInt(offer.getAmount()))).toEqual(config.buyerSecurityDepositPct); // TODO: using same security deposit config for buyer and seller
   }
   // TODO: test rest of offer
 }
