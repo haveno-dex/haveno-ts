@@ -8,7 +8,6 @@ import { PaymentAccountForm, PaymentAccountFormField } from "../protobuf/pb_pb";
 export default class HavenoUtils {
     
   static logLevel = 0;
-  static centinerosToAUMultiplier = 10000;
   static months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   static lastLogTimeMs = 0;
   
@@ -75,16 +74,6 @@ export default class HavenoUtils {
   }
   
   /**
-   * Convert centineros to atomic units.
-   * 
-   * @param {number} centineros - denominates an amount of XMR in centineros
-   * @return {BigInt} the amount denominated in atomic units
-   */
-  static centinerosToAtomicUnits(centineros: number): bigint {
-    return BigInt(centineros) * BigInt(HavenoUtils.centinerosToAUMultiplier);
-  }
-
-  /**
    * Stringify a payment account form.
    * 
    * @param form - form to stringify
@@ -139,4 +128,15 @@ export default class HavenoUtils {
     static async waitFor(durationMs: number) {
       return new Promise(function(resolve) { setTimeout(resolve, durationMs); });
     }
+
+  /**
+   * Divide one bigint by another.
+   * 
+   * @param {bigint} a dividend
+   * @param {bigint} b divisor
+   * @returns {number} the result
+   */
+  static divideBI(a: bigint, b: bigint): number {
+    return Number(a * 100n / b) / 100
+  }
 }
