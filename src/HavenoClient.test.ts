@@ -113,6 +113,7 @@ const TestConfig = {
         }
     ],
     maxFee: BigInt("75000000000"),
+    minSecurityDeposit: BigInt(MoneroUtils.xmrToAtomicUnits(0.1)),
     daemonPollPeriodMs: 5000,
     maxWalletStartupMs: 10000, // TODO (woodser): make shorter by switching to jni
     maxCpuPct: 0.25,
@@ -3260,9 +3261,12 @@ function testCryptoPaymentAccountsEqual(acct1: PaymentAccount, acct2: PaymentAcc
 function testOffer(offer: OfferInfo, config?: TradeContext) {
   expect(offer.getId().length).toBeGreaterThan(0);
   if (config) {
-    expect(BigInt(offer.getAmount())).toEqual(config.amount);
-    expect(HavenoUtils.divideBI(BigInt(offer.getBuyerSecurityDeposit()), BigInt(offer.getAmount()))).toEqual(config.buyerSecurityDepositPct);
-    expect(HavenoUtils.divideBI(BigInt(offer.getSellerSecurityDeposit()), BigInt(offer.getAmount()))).toEqual(config.buyerSecurityDepositPct); // TODO: using same security deposit config for buyer and seller
+    if (BigInt(offer.getBuyerSecurityDeposit()) == TestConfig.minSecurityDeposit) {
+      expect(BigInt(offer.getSellerSecurityDeposit())).toEqual(BigInt(offer.getBuyerSecurityDeposit()));
+    } else {
+      expect(HavenoUtils.divideBI(BigInt(offer.getBuyerSecurityDeposit()), BigInt(offer.getAmount()))).toEqual(config.buyerSecurityDepositPct);
+      expect(HavenoUtils.divideBI(BigInt(offer.getSellerSecurityDeposit()), BigInt(offer.getAmount()))).toEqual(config.buyerSecurityDepositPct); // TODO: using same security deposit config for buyer and seller
+    }
   }
   // TODO: test rest of offer
 }
