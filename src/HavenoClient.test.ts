@@ -163,7 +163,6 @@ const TestConfig = {
         makerPaymentAccountId: undefined,
         buyerSecurityDepositPct: 0.15,
         price: undefined,               // use market price if undefined
-        priceMargin: 0.0,
         triggerPrice: undefined,
         awaitFundsToTakeOffer: true,
         offerId: undefined,
@@ -897,7 +896,7 @@ test("Can get market depth (CI, sanity check)", async () => {
     await clearOffers(user2, assetCode);
     async function clearOffers(havenod: HavenoClient, assetCode: string) {
       for (const offer of await havenod.getMyOffers(assetCode)) {
-        if (offer.getBaseCurrencyCode().toLowerCase() === assetCode.toLowerCase()) { // TODO (woodser): offer base currency and counter currency are switched for cryptos
+        if (offer.getBaseCurrencyCode().toLowerCase() === assetCode.toLowerCase()) {
             await havenod.removeOffer(offer.getId());
         }
       }
@@ -912,10 +911,10 @@ test("Can get market depth (CI, sanity check)", async () => {
     expect(marketDepth.getSellDepthList().length).toEqual(0);
 
     // post offers to buy and sell
-    await makeOffer({maker: user1, direction: "buy", amount: BigInt("150000000000"), assetCode: assetCode, priceMargin: 0.00, price: 17.0}); // TODO: offer price is reversed. fix everywhere
-    await makeOffer({maker: user1, direction: "buy", amount: BigInt("150000000000"), assetCode: assetCode, priceMargin: 0.02, price: 17.2});
-    await makeOffer({maker: user1, direction: "buy", amount: BigInt("200000000000"), assetCode: assetCode, priceMargin: 0.05, price: 17.3});
-    await makeOffer({maker: user1, direction: "buy", amount: BigInt("150000000000"), assetCode: assetCode, priceMargin: 0.02, price: 17.3});
+    await makeOffer({maker: user1, direction: "buy", amount: BigInt("150000000000"), assetCode: assetCode, price: 17.0});
+    await makeOffer({maker: user1, direction: "buy", amount: BigInt("150000000000"), assetCode: assetCode, price: 17.2});
+    await makeOffer({maker: user1, direction: "buy", amount: BigInt("200000000000"), assetCode: assetCode, price: 17.3});
+    await makeOffer({maker: user1, direction: "buy", amount: BigInt("150000000000"), assetCode: assetCode, price: 17.3});
     await makeOffer({maker: user1, direction: "sell", amount: BigInt("300000000000"), assetCode: assetCode, priceMargin: 0.00});
     await makeOffer({maker: user1, direction: "sell", amount: BigInt("300000000000"), assetCode: assetCode, priceMargin: 0.02});
     await makeOffer({maker: user1, direction: "sell", amount: BigInt("400000000000"), assetCode: assetCode, priceMargin: 0.05});
@@ -1340,7 +1339,9 @@ test("Can complete a trade", async () => {
 });
 
 test("Can complete trades at the same time (CI, sanity check)", async () => {
-  await executeTrades(getTradeContexts(4));
+  const ctxs = getTradeContexts(TestConfig.assetCodes.length);
+  for (let i = 0; i < ctxs.length; i++) ctxs[i].assetCode = TestConfig.assetCodes[i]; // test each asset code
+  await executeTrades(ctxs, {maxConcurrency: 4}); // cap concurrency for CI tests
 });
 
 test("Can complete all trade combinations (stress)", async () => {
@@ -3258,17 +3259,19 @@ function testCryptoPaymentAccountsEqual(acct1: PaymentAccount, acct2: PaymentAcc
   expect(acct1.getPaymentAccountPayload()!.getCryptoCurrencyAccountPayload()!.getAddress()).toEqual(acct2.getPaymentAccountPayload()!.getCryptoCurrencyAccountPayload()!.getAddress());
 }
 
-function testOffer(offer: OfferInfo, config?: TradeContext) {
+function testOffer(offer: OfferInfo, ctx?: TradeContext) {
   expect(offer.getId().length).toBeGreaterThan(0);
-  if (config) {
+  if (ctx) {
     if (BigInt(offer.getBuyerSecurityDeposit()) == TestConfig.minSecurityDeposit) {
       expect(BigInt(offer.getSellerSecurityDeposit())).toEqual(BigInt(offer.getBuyerSecurityDeposit()));
     } else {
-      expect(HavenoUtils.divideBI(BigInt(offer.getBuyerSecurityDeposit()), BigInt(offer.getAmount()))).toEqual(config.buyerSecurityDepositPct);
-      expect(HavenoUtils.divideBI(BigInt(offer.getSellerSecurityDeposit()), BigInt(offer.getAmount()))).toEqual(config.buyerSecurityDepositPct); // TODO: using same security deposit config for buyer and seller
+      expect(HavenoUtils.divideBI(BigInt(offer.getBuyerSecurityDeposit()), BigInt(offer.getAmount()))).toEqual(ctx.buyerSecurityDepositPct);
+      expect(HavenoUtils.divideBI(BigInt(offer.getSellerSecurityDeposit()), BigInt(offer.getAmount()))).toEqual(ctx.buyerSecurityDepositPct); // TODO: using same security deposit config for buyer and seller
     }
+    expect(offer.getUseMarketBasedPrice()).toEqual(!ctx?.price);
+    expect(offer.getMarketPriceMarginPct()).toEqual(ctx?.priceMargin ? ctx?.priceMargin : 0);
+    // TODO: test rest of offer
   }
-  // TODO: test rest of offer
 }
 
 function testMoneroNodeSettingsEqual(settingsBefore: MoneroNodeSettings, settingsAfter: MoneroNodeSettings) {
