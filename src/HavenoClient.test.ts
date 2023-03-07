@@ -1476,7 +1476,7 @@ test("Can resolve disputes (CI)", async () => {
     disputeWinner: DisputeResult.Winner.BUYER,
     disputeReason: DisputeResult.Reason.SELLER_NOT_RESPONDING,
     disputeSummary: "Split trade amount",
-    disputeWinnerAmount: BigInt(trade1.getAmountAsLong()) / BigInt(2) + BigInt(trade1.getBuyerSecurityDeposit())
+    disputeWinnerAmount: BigInt(trade1.getAmount()) / BigInt(2) + BigInt(trade1.getBuyerSecurityDeposit())
   });
   Object.assign(ctxs[2], {
     resolveDispute: false,
@@ -1484,7 +1484,7 @@ test("Can resolve disputes (CI)", async () => {
     disputeWinner: DisputeResult.Winner.SELLER,
     disputeReason: DisputeResult.Reason.TRADE_ALREADY_SETTLED,
     disputeSummary: "Seller gets everything",
-    disputeWinnerAmount: BigInt(trade2.getAmountAsLong()) + BigInt(trade2.getBuyerSecurityDeposit()) + BigInt(trade2.getSellerSecurityDeposit())
+    disputeWinnerAmount: BigInt(trade2.getAmount()) + BigInt(trade2.getBuyerSecurityDeposit()) + BigInt(trade2.getSellerSecurityDeposit())
   });
   Object.assign(ctxs[3], {
     resolveDispute: false,
