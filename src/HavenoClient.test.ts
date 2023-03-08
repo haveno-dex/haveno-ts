@@ -1874,7 +1874,7 @@ async function executeTrades(ctxs: TradeContext[], executionCtx?: TradeContext):
   // assign default execution context
   if (!executionCtx) executionCtx = {};
   if (executionCtx.concurrentTrades === undefined) executionCtx.concurrentTrades = ctxs.length > 1;
-  Object.assign(executionCtx, TestConfig.trade, executionCtx);
+  Object.assign(executionCtx, TestConfig.trade, Object.assign({}, executionCtx));
 
   // start mining if executing trades concurrently
   let miningStarted = executionCtx.concurrentTrades && await startMining();
