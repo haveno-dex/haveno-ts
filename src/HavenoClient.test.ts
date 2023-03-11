@@ -2506,10 +2506,18 @@ async function resolveDispute(ctx: TradeContext) {
   }
   await Promise.all(promises);
 
+  // award too much to winner
+  const tradeAmount: bigint = BigInt(ctx.offer!.getAmount());
+  let customWinnerAmount = tradeAmount + BigInt(ctx.offer!.getBuyerSecurityDeposit()) + BigInt(ctx.offer!.getSellerSecurityDeposit()) + BigInt("10000");
+  try {
+    await arbitrator.resolveDispute(ctx.offerId!, ctx.disputeWinner!, ctx.disputeReason!, "Winner gets too much", customWinnerAmount);
+    throw new Error("Should have failed resolving dispute with too much winner payout");
+  } catch (err: any) {
+    assert.equal(err.message, "Winner payout is more than the trade wallet's balance");
+  }
 
   // award too little to loser
-  const tradeAmount: bigint = BigInt(ctx.offer!.getAmount());
-  const customWinnerAmount = tradeAmount + BigInt(ctx.offer!.getBuyerSecurityDeposit()) + BigInt(ctx.offer!.getSellerSecurityDeposit()) - BigInt("10000");
+  customWinnerAmount = tradeAmount + BigInt(ctx.offer!.getBuyerSecurityDeposit()) + BigInt(ctx.offer!.getSellerSecurityDeposit()) - BigInt("10000");
   try {
     await arbitrator.resolveDispute(ctx.offerId!, ctx.disputeWinner!, ctx.disputeReason!, "Loser gets too little", customWinnerAmount);
     throw new Error("Should have failed resolving dispute with insufficient loser payout");
