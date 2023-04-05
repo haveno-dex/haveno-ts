@@ -1388,12 +1388,9 @@ test("Can go offline while completing a trade (CI, sanity check)", async () => {
   let err: any;
   try {
 
-    // start and fund 2 trader processes
+    // start 2 trader processes
     HavenoUtils.log(1, "Starting trader processes");
     traders = await initHavenos(2);
-    HavenoUtils.log(1, "Funding traders");
-    const tradeAmount = BigInt("250000000000");
-    await waitForAvailableBalance(tradeAmount * BigInt("2"), ...traders);
 
     // create trade config
     ctx = Object.assign({}, TestConfig.trade);
@@ -1402,6 +1399,11 @@ test("Can go offline while completing a trade (CI, sanity check)", async () => {
     ctx.buyerOfflineAfterTake = true;
     ctx.sellerOfflineAfterTake = true;
     ctx.buyerOfflineAfterPaymentSent = true;
+
+    // fund traders
+    HavenoUtils.log(1, "Funding traders");
+    const tradeAmount = BigInt("250000000000");
+    await waitForAvailableBalance(tradeAmount * BigInt("2"), ...traders);
 
     // execute trade
     await executeTrade(ctx);
@@ -1421,12 +1423,9 @@ test("Can go offline while resolving disputes (CI)", async () => {
   let err: any;
   try {
 
-    // start and fund 2 trader processes
+    // start trader processes
     HavenoUtils.log(1, "Starting trader processes");
     traders = await initHavenos(2);
-    HavenoUtils.log(1, "Funding traders");
-    const tradeAmount = BigInt("250000000000");
-    await waitForAvailableBalance(tradeAmount * BigInt("2"), ...traders);
 
     // create trade config
     ctx = Object.assign(getTradeContexts(1)[0], {
@@ -1440,6 +1439,11 @@ test("Can go offline while resolving disputes (CI)", async () => {
       disputeReason: DisputeResult.Reason.NO_REPLY,
       disputeSummary: "Seller wins dispute because buyer has not replied",
     });
+
+    // fund traders
+    HavenoUtils.log(1, "Funding traders");
+    const tradeAmount = BigInt("250000000000");
+    await waitForAvailableBalance(tradeAmount * BigInt("2"), ...traders);
 
     // execute trade
     await executeTrade(ctx);
