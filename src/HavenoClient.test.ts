@@ -175,8 +175,9 @@ const TestConfig = {
         disputeSummary: "Seller is winner",
         walletSyncPeriodMs: 5000,
         maxTimePeerNoticeMs: 5000,
-        maxConcurrency: 14,
-        stopOnFailure: true
+        maxConcurrency: 14,  // max concurrency
+        maxConcurrencyCI: 4, // CI test max concurrency
+        stopOnFailure: false
     }
 };
 
@@ -1146,11 +1147,11 @@ test("Can create crypto payment accounts (CI)", async () => {
       .toThrow('123 is not a valid eth address');
 
   // test address duplicity
-  await user1.createCryptoPaymentAccount("Unique account name", TestConfig.cryptoAddresses[0].currencyCode, TestConfig.cryptoAddresses[0].address)
-
-  await expect(async () => { await user1.createCryptoPaymentAccount("Unique account name", TestConfig.cryptoAddresses[0].currencyCode, TestConfig.cryptoAddresses[0].address); })
+  let uid = "Unique account name " + GenUtils.getUUID();
+  await user1.createCryptoPaymentAccount(uid, TestConfig.cryptoAddresses[0].currencyCode, TestConfig.cryptoAddresses[0].address)
+  await expect(async () => { await user1.createCryptoPaymentAccount(uid, TestConfig.cryptoAddresses[0].currencyCode, TestConfig.cryptoAddresses[0].address); })
       .rejects
-      .toThrow("Account 'Unique account name' is already taken");
+      .toThrow("Account '" + uid + "' is already taken");
 
   function testCryptoPaymentAccountEquals(paymentAccount: PaymentAccount, testAccount: any, name: string) {
     expect(paymentAccount.getAccountName()).toEqual(name);
@@ -1341,7 +1342,7 @@ test("Can complete a trade", async () => {
 test("Can complete trades at the same time (CI, sanity check)", async () => {
   const ctxs = getTradeContexts(TestConfig.assetCodes.length);
   for (let i = 0; i < ctxs.length; i++) ctxs[i].assetCode = TestConfig.assetCodes[i]; // test each asset code
-  await executeTrades(ctxs, {maxConcurrency: 4}); // cap concurrency for CI tests
+  await executeTrades(ctxs, {maxConcurrency: TestConfig.trade.maxConcurrencyCI}); // cap concurrency for CI tests
 });
 
 test("Can complete all trade combinations (stress)", async () => {
