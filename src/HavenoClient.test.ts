@@ -2792,7 +2792,7 @@ async function releaseHavenoProcess(havenod: HavenoClient, deleteAppDir?: boolea
   try {
     await havenod.shutdownServer();
   } catch (err: any) {
-    assert.equal(err.message, OFFLINE_ERR_MSG);
+    assert(err.message.indexOf(OFFLINE_ERR_MSG) >= 0, "Unexpected error shutting down server: " + err.message);
   }
   if (deleteAppDir) deleteHavenoInstance(havenod);
 }
