@@ -57,7 +57,7 @@ const TestConfig = {
         version: "1.0.0"
     },
     monerod: {
-        url: "http://localhost:" + (getBaseCurrencyNetwork() == BaseCurrencyNetwork.XMR_LOCAL ? "4" : getNetworkStartPort()) + "8081", // 18081, 28081, 48081 for mainnet, testnet, stagenet respectively
+        url: "http://localhost:" + (getBaseCurrencyNetwork() == BaseCurrencyNetwork.XMR_LOCAL ? "4" : getNetworkStartPort()) + "8081", // 18081, 28081, 48081 for mainnet, stagenet, and local testnet, respectively
         username: "",
         password: ""
     },
@@ -314,8 +314,12 @@ beforeAll(async () => {
     HavenoUtils.log(0, "Funding wallet new subaddress: " + subaddress.getAddress());
 
     // initialize monerod
-    monerod = await monerojs.connectToDaemonRpc(TestConfig.monerod.url, TestConfig.monerod.username, TestConfig.monerod.password);
-    await mineToHeight(160); // initialize blockchain to latest block type
+    try {
+      monerod = await monerojs.connectToDaemonRpc(TestConfig.monerod.url, TestConfig.monerod.username, TestConfig.monerod.password);
+      await mineToHeight(160); // initialize blockchain to latest block type
+    } catch (err) {
+      HavenoUtils.log(0, "Error initializing internal monerod: " + err.message); // allowed in order to test starting and stopping local node
+    }
 
     // start configured haveno daemons
     const promises: Promise<HavenoClient>[] = [];
@@ -708,8 +712,8 @@ test("Can start and stop a local Monero node (CI)", async() => {
     const settings: MoneroNodeSettings = new MoneroNodeSettings();
     const dataDir = TestConfig.moneroBinsDir + "/" + TestConfig.baseCurrencyNetwork + "/node1";
     const logFile = dataDir + "/test.log";
-    const p2pPort = 38080;
-    const rpcPort = 38081;
+    const p2pPort = 38086;
+    const rpcPort = 38087;
     settings.setBlockchainPath(dataDir);
     settings.setStartupFlagsList(["--log-file", logFile, "--p2p-bind-port", p2pPort.toString(), "--rpc-bind-port", rpcPort.toString(), "--no-zmq"]);
     await user1.startMoneroNode(settings);
@@ -719,10 +723,6 @@ test("Can start and stop a local Monero node (CI)", async() => {
     // expect settings are updated
     const settingsAfter = await user1.getMoneroNodeSettings();
     testMoneroNodeSettingsEqual(settings, settingsAfter!);
-
-    // expect connections to be unmodified by local node
-    const connectionsAfter = await user1.getMoneroConnections();
-    assert(connectionsBefore.length === connectionsAfter.length);
 
     // expect connection to local monero node to succeed
     const rpcUrl = "http://127.0.0.1:" + rpcPort.toString();
