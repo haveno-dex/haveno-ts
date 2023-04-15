@@ -475,10 +475,12 @@ test("Can manage an account (CI)", async () => {
     stream.end();
     assert(size > 0);
 
-    // delete account
+    // delete account and wait until connected
     await user3.deleteAccount();
+    HavenoUtils.log(1, "Waiting to be connected to havenod after deleting account"); // TODO: build this into deleteAccount
     do { await wait(1000); }
     while(!await user3.isConnectedToDaemon());
+    HavenoUtils.log(1, "Reconnecting to havenod");
     assert(!await user3.accountExists());
 
     // restore account
