@@ -1030,7 +1030,7 @@ test("Can get payment accounts (CI)", async () => {
 test("Can validate payment account forms (CI, sanity check)", async () => {
 
   // supported payment methods
-  const expectedPaymentMethods = ["BLOCK_CHAINS", "REVOLUT", "SEPA", "SEPA_INSTANT", "TRANSFERWISE", "CLEAR_X_CHANGE", "SWIFT", "F2F", "STRIKE", "MONEY_GRAM", "FASTER_PAYMENTS", "UPHOLD", "PAXUM"];
+  const expectedPaymentMethods = ["BLOCK_CHAINS", "REVOLUT", "SEPA", "SEPA_INSTANT", "TRANSFERWISE", "ZELLE", "SWIFT", "F2F", "STRIKE", "MONEY_GRAM", "FASTER_PAYMENTS", "UPHOLD", "PAXUM"];
 
   // get payment methods
   const paymentMethods = await user1.getPaymentMethods();
@@ -2564,7 +2564,7 @@ async function resolveDispute(ctx: TradeContext) {
   }
   if (getDisputePeer(ctx)) {
     const dispute = await getDisputePeer(ctx)!.getDispute(ctx.offerId!);
-    assert(dispute.getIsClosed(), "Dispute is not closed for opener, trade " + ctx.offerId);
+    assert(dispute.getIsClosed(), "Dispute is not closed for opener's peer, trade " + ctx.offerId);
   }
 
   // test trade state
@@ -3586,9 +3586,9 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
       case PaymentAccountForm.FormId.TRANSFERWISE:
         expect(account.getPaymentAccountPayload()!.getTransferwiseAccountPayload()!.getEmail()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.EMAIL).getValue());
         break;
-      case PaymentAccountForm.FormId.CLEAR_X_CHANGE:
-        expect(account.getPaymentAccountPayload()!.getClearXchangeAccountPayload()!.getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
-        expect(account.getPaymentAccountPayload()!.getClearXchangeAccountPayload()!.getEmailOrMobileNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.EMAIL_OR_MOBILE_NR).getValue());
+      case PaymentAccountForm.FormId.ZELLE:
+        expect(account.getPaymentAccountPayload()!.getZelleAccountPayload()!.getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
+        expect(account.getPaymentAccountPayload()!.getZelleAccountPayload()!.getEmailOrMobileNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.EMAIL_OR_MOBILE_NR).getValue());
         break;
       case PaymentAccountForm.FormId.SWIFT:
         expect(account.getPaymentAccountPayload()!.getSwiftAccountPayload()!.getBankSwiftCode()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.BANK_SWIFT_CODE).getValue());
