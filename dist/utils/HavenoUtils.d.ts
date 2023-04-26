@@ -4,7 +4,6 @@ import { PaymentAccountForm, PaymentAccountFormField } from "../protobuf/pb_pb";
  */
 export default class HavenoUtils {
     static logLevel: number;
-    static centinerosToAUMultiplier: number;
     static months: string[];
     static lastLogTimeMs: number;
     /**
@@ -43,13 +42,6 @@ export default class HavenoUtils {
      */
     static kill(process: any, signal?: string): Promise<void>;
     /**
-     * Convert centineros to atomic units.
-     *
-     * @param {number} centineros - denominates an amount of XMR in centineros
-     * @return {BigInt} the amount denominated in atomic units
-     */
-    static centinerosToAtomicUnits(centineros: number): bigint;
-    /**
      * Stringify a payment account form.
      *
      * @param form - form to stringify
@@ -79,4 +71,12 @@ export default class HavenoUtils {
      * @param {number} durationMs - the duration to wait for in milliseconds
      */
     static waitFor(durationMs: number): Promise<unknown>;
+    /**
+     * Divide one bigint by another.
+     *
+     * @param {bigint} a dividend
+     * @param {bigint} b divisor
+     * @returns {number} the result
+     */
+    static divideBI(a: bigint, b: bigint): number;
 }

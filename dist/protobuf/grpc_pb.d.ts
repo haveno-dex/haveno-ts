@@ -1593,11 +1593,11 @@ export class OfferInfo extends jspb.Message {
   getMarketPriceMarginPct(): number;
   setMarketPriceMarginPct(value: number): OfferInfo;
 
-  getAmount(): number;
-  setAmount(value: number): OfferInfo;
+  getAmount(): string;
+  setAmount(value: string): OfferInfo;
 
-  getMinAmount(): number;
-  setMinAmount(value: number): OfferInfo;
+  getMinAmount(): string;
+  setMinAmount(value: string): OfferInfo;
 
   getVolume(): string;
   setVolume(value: string): OfferInfo;
@@ -1605,8 +1605,8 @@ export class OfferInfo extends jspb.Message {
   getMinVolume(): string;
   setMinVolume(value: string): OfferInfo;
 
-  getBuyerSecurityDeposit(): number;
-  setBuyerSecurityDeposit(value: number): OfferInfo;
+  getBuyerSecurityDeposit(): string;
+  setBuyerSecurityDeposit(value: string): OfferInfo;
 
   getTriggerPrice(): string;
   setTriggerPrice(value: string): OfferInfo;
@@ -1632,17 +1632,14 @@ export class OfferInfo extends jspb.Message {
   getState(): string;
   setState(value: string): OfferInfo;
 
-  getSellerSecurityDeposit(): number;
-  setSellerSecurityDeposit(value: number): OfferInfo;
+  getSellerSecurityDeposit(): string;
+  setSellerSecurityDeposit(value: string): OfferInfo;
 
-  getOfferFeePaymentTxId(): string;
-  setOfferFeePaymentTxId(value: string): OfferInfo;
+  getOfferFeeTxId(): string;
+  setOfferFeeTxId(value: string): OfferInfo;
 
-  getTxFee(): number;
-  setTxFee(value: number): OfferInfo;
-
-  getMakerFee(): number;
-  setMakerFee(value: number): OfferInfo;
+  getMakerFee(): string;
+  setMakerFee(value: string): OfferInfo;
 
   getIsActivated(): boolean;
   setIsActivated(value: boolean): OfferInfo;
@@ -1680,11 +1677,11 @@ export namespace OfferInfo {
     price: string,
     useMarketBasedPrice: boolean,
     marketPriceMarginPct: number,
-    amount: number,
-    minAmount: number,
+    amount: string,
+    minAmount: string,
     volume: string,
     minVolume: string,
-    buyerSecurityDeposit: number,
+    buyerSecurityDeposit: string,
     triggerPrice: string,
     paymentAccountId: string,
     paymentMethodId: string,
@@ -1693,10 +1690,9 @@ export namespace OfferInfo {
     counterCurrencyCode: string,
     date: number,
     state: string,
-    sellerSecurityDeposit: number,
-    offerFeePaymentTxId: string,
-    txFee: number,
-    makerFee: number,
+    sellerSecurityDeposit: string,
+    offerFeeTxId: string,
+    makerFee: string,
     isActivated: boolean,
     isMyOffer: boolean,
     ownerNodeAddress: string,
@@ -2639,8 +2635,8 @@ export class TradeInfo extends jspb.Message {
   getRole(): string;
   setRole(value: string): TradeInfo;
 
-  getTakerFeeAsLong(): number;
-  setTakerFeeAsLong(value: number): TradeInfo;
+  getTakerFee(): string;
+  setTakerFee(value: string): TradeInfo;
 
   getTakerFeeTxId(): string;
   setTakerFeeTxId(value: string): TradeInfo;
@@ -2648,14 +2644,14 @@ export class TradeInfo extends jspb.Message {
   getPayoutTxId(): string;
   setPayoutTxId(value: string): TradeInfo;
 
-  getAmountAsLong(): number;
-  setAmountAsLong(value: number): TradeInfo;
+  getAmount(): string;
+  setAmount(value: string): TradeInfo;
 
-  getBuyerSecurityDeposit(): number;
-  setBuyerSecurityDeposit(value: number): TradeInfo;
+  getBuyerSecurityDeposit(): string;
+  setBuyerSecurityDeposit(value: string): TradeInfo;
 
-  getSellerSecurityDeposit(): number;
-  setSellerSecurityDeposit(value: number): TradeInfo;
+  getSellerSecurityDeposit(): string;
+  setSellerSecurityDeposit(value: string): TradeInfo;
 
   getPrice(): string;
   setPrice(value: string): TradeInfo;
@@ -2740,12 +2736,12 @@ export namespace TradeInfo {
     shortId: string,
     date: number,
     role: string,
-    takerFeeAsLong: number,
+    takerFee: string,
     takerFeeTxId: string,
     payoutTxId: string,
-    amountAsLong: number,
-    buyerSecurityDeposit: number,
-    sellerSecurityDeposit: number,
+    amount: string,
+    buyerSecurityDeposit: string,
+    sellerSecurityDeposit: string,
     price: string,
     arbitratorNodeAddress: string,
     tradePeerNodeAddress: string,
