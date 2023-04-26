@@ -1,5 +1,5 @@
 /**
- * @fileoverview gRPC-Web generated client stub for io.bisq.protobuffer
+ * @fileoverview gRPC-Web generated client stub for io.haveno.protobuffer
  * @enhanceable
  * @public
  */

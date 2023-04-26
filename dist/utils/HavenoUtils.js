@@ -67,15 +67,6 @@ class HavenoUtils {
         });
     }
     /**
-     * Convert centineros to atomic units.
-     *
-     * @param {number} centineros - denominates an amount of XMR in centineros
-     * @return {BigInt} the amount denominated in atomic units
-     */
-    static centinerosToAtomicUnits(centineros) {
-        return BigInt(centineros) * BigInt(HavenoUtils.centinerosToAUMultiplier);
-    }
-    /**
      * Stringify a payment account form.
      *
      * @param form - form to stringify
@@ -128,10 +119,19 @@ class HavenoUtils {
     static async waitFor(durationMs) {
         return new Promise(function (resolve) { setTimeout(resolve, durationMs); });
     }
+    /**
+     * Divide one bigint by another.
+     *
+     * @param {bigint} a dividend
+     * @param {bigint} b divisor
+     * @returns {number} the result
+     */
+    static divideBI(a, b) {
+        return Number(a * 100n / b) / 100;
+    }
 }
 exports.default = HavenoUtils;
 HavenoUtils.logLevel = 0;
-HavenoUtils.centinerosToAUMultiplier = 10000;
 HavenoUtils.months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 HavenoUtils.lastLogTimeMs = 0;
 //# sourceMappingURL=HavenoUtils.js.map
