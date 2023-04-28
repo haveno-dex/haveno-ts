@@ -42,7 +42,7 @@ Running the [API tests](./src/HavenoClient.test.ts) is the best way to develop a
 
 1. [Run a local Haveno test network](https://github.com/haveno-dex/haveno/blob/master/docs/installing.md) and then shut down the arbitrator, user1, and user2 or run them as daemons, e.g. `make user1-daemon-local`. You may omit the arbitrator registration steps since it's done automatically in the tests.
 2. Clone this project to the same parent directory as the haveno project: `git clone https://github.com/haveno-dex/haveno-ts`
-3. In a new terminal, start envoy with the config in haveno-ts/config/envoy.test.yaml (change absolute path for your system): `docker run --rm --add-host host.docker.internal:host-gateway -it -v ~/git/haveno-ts/config/envoy.test.yaml:/envoy.test.yaml -p 8079:8079 -p 8080:8080 -p 8081:8081 -p 8082:8082 -p 8083:8083 -p 8084:8084 -p 8085:8085 -p 8086:8086 envoyproxy/envoy-dev:latest -c /envoy.test.yaml`
+3. In a new terminal, start envoy with the config in haveno-ts/config/envoy.test.yaml.<br>For example (change absolute path for your system): `docker run --rm --add-host host.docker.internal:host-gateway -it -v ~/git/haveno-ts/config/envoy.test.yaml:/envoy.test.yaml -p 8079:8079 -p 8080:8080 -p 8081:8081 -p 8082:8082 -p 8083:8083 -p 8084:8084 -p 8085:8085 -p 8086:8086 envoyproxy/envoy-dev:latest -c /envoy.test.yaml`
 4. In a new terminal, start the funding wallet. This wallet will be funded automatically in order to fund the tests.<br>For example: `cd ~/git/haveno && make funding-wallet-local`.
 5. Install protobuf compiler [v3.20.3](https://github.com/protocolbuffers/protobuf/releases/tag/v3.20.3) for your system.
 6. Download `protoc-gen-grpc-web` plugin and make executable as [shown here](https://github.com/grpc/grpc-web#code-generator-plugin).
