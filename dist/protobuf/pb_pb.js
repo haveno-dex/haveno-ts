@@ -50976,7 +50976,6 @@ proto.io.haveno.protobuffer.ProcessModel.toObject = function(includeInstance, ms
     useSavingsWallet: jspb.Message.getBooleanFieldWithDefault(msg, 6, false),
     fundsNeededForTrade: jspb.Message.getFieldWithDefault(msg, 7, 0),
     paymentSentMessageState: jspb.Message.getFieldWithDefault(msg, 8, ""),
-    depositsConfirmedMessagesDelivered: jspb.Message.getBooleanFieldWithDefault(msg, 9, false),
     makerSignature: msg.getMakerSignature_asB64(),
     maker: (f = msg.getMaker()) && proto.io.haveno.protobuffer.TradePeer.toObject(includeInstance, f),
     taker: (f = msg.getTaker()) && proto.io.haveno.protobuffer.TradePeer.toObject(includeInstance, f),
@@ -51057,10 +51056,6 @@ proto.io.haveno.protobuffer.ProcessModel.deserializeBinaryFromReader = function(
     case 8:
       var value = /** @type {string} */ (reader.readString());
       msg.setPaymentSentMessageState(value);
-      break;
-    case 9:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setDepositsConfirmedMessagesDelivered(value);
       break;
     case 10:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
@@ -51200,13 +51195,6 @@ proto.io.haveno.protobuffer.ProcessModel.serializeBinaryToWriter = function(mess
   if (f.length > 0) {
     writer.writeString(
       8,
-      f
-    );
-  }
-  f = message.getDepositsConfirmedMessagesDelivered();
-  if (f) {
-    writer.writeBool(
-      9,
       f
     );
   }
@@ -51488,24 +51476,6 @@ proto.io.haveno.protobuffer.ProcessModel.prototype.getPaymentSentMessageState = 
  */
 proto.io.haveno.protobuffer.ProcessModel.prototype.setPaymentSentMessageState = function(value) {
   return jspb.Message.setProto3StringField(this, 8, value);
-};
-
-
-/**
- * optional bool deposits_confirmed_messages_delivered = 9;
- * @return {boolean}
- */
-proto.io.haveno.protobuffer.ProcessModel.prototype.getDepositsConfirmedMessagesDelivered = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 9, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.io.haveno.protobuffer.ProcessModel} returns this
- */
-proto.io.haveno.protobuffer.ProcessModel.prototype.setDepositsConfirmedMessagesDelivered = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 9, value);
 };
 
 
@@ -51973,7 +51943,8 @@ proto.io.haveno.protobuffer.TradePeer.toObject = function(includeInstance, msg) 
     depositTxHex: jspb.Message.getFieldWithDefault(msg, 1009, ""),
     depositTxKey: jspb.Message.getFieldWithDefault(msg, 1010, ""),
     securityDeposit: jspb.Message.getFieldWithDefault(msg, 1011, 0),
-    updatedMultisigHex: jspb.Message.getFieldWithDefault(msg, 1012, "")
+    updatedMultisigHex: jspb.Message.getFieldWithDefault(msg, 1012, ""),
+    depositsConfirmedMessageAcked: jspb.Message.getBooleanFieldWithDefault(msg, 1013, false)
   };
 
   if (includeInstance) {
@@ -52129,6 +52100,10 @@ proto.io.haveno.protobuffer.TradePeer.deserializeBinaryFromReader = function(msg
     case 1012:
       var value = /** @type {string} */ (reader.readString());
       msg.setUpdatedMultisigHex(value);
+      break;
+    case 1013:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setDepositsConfirmedMessageAcked(value);
       break;
     default:
       reader.skipField();
@@ -52363,6 +52338,13 @@ proto.io.haveno.protobuffer.TradePeer.serializeBinaryToWriter = function(message
   if (f.length > 0) {
     writer.writeString(
       1012,
+      f
+    );
+  }
+  f = message.getDepositsConfirmedMessageAcked();
+  if (f) {
+    writer.writeBool(
+      1013,
       f
     );
   }
@@ -53151,6 +53133,24 @@ proto.io.haveno.protobuffer.TradePeer.prototype.getUpdatedMultisigHex = function
  */
 proto.io.haveno.protobuffer.TradePeer.prototype.setUpdatedMultisigHex = function(value) {
   return jspb.Message.setProto3StringField(this, 1012, value);
+};
+
+
+/**
+ * optional bool deposits_confirmed_message_acked = 1013;
+ * @return {boolean}
+ */
+proto.io.haveno.protobuffer.TradePeer.prototype.getDepositsConfirmedMessageAcked = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 1013, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.io.haveno.protobuffer.TradePeer} returns this
+ */
+proto.io.haveno.protobuffer.TradePeer.prototype.setDepositsConfirmedMessageAcked = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 1013, value);
 };
 
 

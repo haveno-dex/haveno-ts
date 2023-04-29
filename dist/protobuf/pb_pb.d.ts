@@ -6322,9 +6322,6 @@ export class ProcessModel extends jspb.Message {
   getPaymentSentMessageState(): string;
   setPaymentSentMessageState(value: string): ProcessModel;
 
-  getDepositsConfirmedMessagesDelivered(): boolean;
-  setDepositsConfirmedMessagesDelivered(value: boolean): ProcessModel;
-
   getMakerSignature(): Uint8Array | string;
   getMakerSignature_asU8(): Uint8Array;
   getMakerSignature_asB64(): string;
@@ -6397,7 +6394,6 @@ export namespace ProcessModel {
     useSavingsWallet: boolean,
     fundsNeededForTrade: number,
     paymentSentMessageState: string,
-    depositsConfirmedMessagesDelivered: boolean,
     makerSignature: Uint8Array | string,
     maker?: TradePeer.AsObject,
     taker?: TradePeer.AsObject,
@@ -6525,6 +6521,9 @@ export class TradePeer extends jspb.Message {
   getUpdatedMultisigHex(): string;
   setUpdatedMultisigHex(value: string): TradePeer;
 
+  getDepositsConfirmedMessageAcked(): boolean;
+  setDepositsConfirmedMessageAcked(value: boolean): TradePeer;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): TradePeer.AsObject;
   static toObject(includeInstance: boolean, msg: TradePeer): TradePeer.AsObject;
@@ -6564,6 +6563,7 @@ export namespace TradePeer {
     depositTxKey: string,
     securityDeposit: number,
     updatedMultisigHex: string,
+    depositsConfirmedMessageAcked: boolean,
   }
 }
 
