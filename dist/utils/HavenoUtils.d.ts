@@ -6,6 +6,7 @@ export default class HavenoUtils {
     static logLevel: number;
     static months: string[];
     static lastLogTimeMs: number;
+    static AU_PER_XMR: bigint;
     /**
      * Set the log level with 0 being least verbose.
      *
@@ -79,4 +80,18 @@ export default class HavenoUtils {
      * @returns {number} the result
      */
     static divideBI(a: bigint, b: bigint): number;
+    /**
+     * Convert XMR to atomic units.
+     *
+     * @param {number|string} amountXmr - amount in XMR to convert to atomic units
+     * @return {BigInt} amount in atomic units
+     */
+    static xmrToAtomicUnits(amountXmr: number | string): BigInt;
+    /**
+     * Convert atomic units to XMR.
+     *
+     * @param {BigInt|string} amountAtomicUnits - amount in atomic units to convert to XMR
+     * @return {number} amount in XMR
+     */
+    static atomicUnitsToXmr(amountAtomicUnits: BigInt | string): number;
 }
