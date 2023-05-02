@@ -176,8 +176,8 @@ const TestConfig = {
         walletSyncPeriodMs: 5000,
         maxTimePeerNoticeMs: 5000,
         maxConcurrency: 14,  // max concurrency
-        maxConcurrencyCI: 4, // CI test max concurrency
-        stopOnFailure: false
+        maxConcurrencyCI: 14, // CI test max concurrency
+        stopOnFailure: true
     }
 };
 
@@ -380,6 +380,12 @@ async function shutDown() {
 test("Can get the version (CI)", async () => {
   const version = await arbitrator.getVersion();
   expect(version).toEqual(TestConfig.haveno.version);
+});
+
+test("Can convert between XMR and atomic units (CI)", async () => {
+  expect(BigInt(250000000000)).toEqual(HavenoUtils.xmrToAtomicUnits(0.25));
+  expect(HavenoUtils.atomicUnitsToXmr("250000000000")).toEqual(.25);
+  expect(HavenoUtils.atomicUnitsToXmr(BigInt("250000000000"))).toEqual(.25);
 });
 
 test("Can manage an account (CI)", async () => {
