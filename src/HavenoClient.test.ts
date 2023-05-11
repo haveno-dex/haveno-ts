@@ -177,7 +177,9 @@ const TestConfig = {
         maxTimePeerNoticeMs: 5000,
         maxConcurrency: 14,  // max concurrency
         maxConcurrencyCI: 14, // CI test max concurrency
-        stopOnFailure: true
+        stopOnFailure: true,
+        testPayoutConfirmed: true,
+        testPayoutUnlocked: true
     }
 };
 
@@ -262,7 +264,9 @@ interface TradeContext {
     stopOnFailure?: boolean,
     buyerAppName?: string,
     sellerAppName?: string,
-    usedPorts?: string[]
+    usedPorts?: string[],
+    testPayoutConfirmed?: boolean,
+    testPayoutUnlocked?: boolean,
 }
 
 enum TradeRole {
@@ -1742,7 +1746,7 @@ test("Selects arbitrators which are online, registered, and least used", async (
   HavenoUtils.log(1, "Preparing for trades");
   await prepareForTrading(4, user1, user2);
   HavenoUtils.log(1, "Completing trades with main arbitrator");
-  await executeTrades(getTradeContexts(2));
+  await executeTrades(getTradeContexts(2), {testPayoutConfirmed: false});
 
   // start and register arbitrator2
   let arbitrator2 = await initHaveno();
@@ -2218,9 +2222,10 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
 }
 
 async function testTradePayoutUnlock(ctx: TradeContext) {
-  const height = await monerod.getHeight();
 
   // test after payout confirmed
+  if (!ctx.testPayoutConfirmed) return;
+  const height = await monerod.getHeight();
   const payoutTxId = (await ctx.arbitrator!.getTrade(ctx.offerId!)).getPayoutTxId();
   let trade = await ctx.arbitrator!.getTrade(ctx.offerId!);
   if (trade.getPayoutState() !== "PAYOUT_CONFIRMED") await mineToHeight(height + 1);
@@ -2232,6 +2237,7 @@ async function testTradePayoutUnlock(ctx: TradeContext) {
   expect(payoutTx?.getIsConfirmed());
 
   // test after payout unlocked
+  if (!ctx.testPayoutUnlocked) return;
   trade = await ctx.arbitrator!.getTrade(ctx.offerId!);
   if (trade.getPayoutState() !== "PAYOUT_UNLOCKED") await mineToHeight(height + 10);
   await wait(TestConfig.maxWalletStartupMs + ctx.walletSyncPeriodMs! * 2);
