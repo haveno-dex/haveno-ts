@@ -3535,10 +3535,10 @@ export class PaymentAccountPayload extends jspb.Message {
   hasAmazonGiftCardAccountPayload(): boolean;
   clearAmazonGiftCardAccountPayload(): PaymentAccountPayload;
 
-  getCashByMailAccountPayload(): CashByMailAccountPayload | undefined;
-  setCashByMailAccountPayload(value?: CashByMailAccountPayload): PaymentAccountPayload;
-  hasCashByMailAccountPayload(): boolean;
-  clearCashByMailAccountPayload(): PaymentAccountPayload;
+  getPayByMailAccountPayload(): PayByMailAccountPayload | undefined;
+  setPayByMailAccountPayload(value?: PayByMailAccountPayload): PaymentAccountPayload;
+  hasPayByMailAccountPayload(): boolean;
+  clearPayByMailAccountPayload(): PaymentAccountPayload;
 
   getCapitualAccountPayload(): CapitualAccountPayload | undefined;
   setCapitualAccountPayload(value?: CapitualAccountPayload): PaymentAccountPayload;
@@ -3618,7 +3618,7 @@ export namespace PaymentAccountPayload {
     transferwiseAccountPayload?: TransferwiseAccountPayload.AsObject,
     australiaPayidPayload?: AustraliaPayidPayload.AsObject,
     amazonGiftCardAccountPayload?: AmazonGiftCardAccountPayload.AsObject,
-    cashByMailAccountPayload?: CashByMailAccountPayload.AsObject,
+    payByMailAccountPayload?: PayByMailAccountPayload.AsObject,
     capitualAccountPayload?: CapitualAccountPayload.AsObject,
     payseraAccountPayload?: PayseraAccountPayload.AsObject,
     paxumAccountPayload?: PaxumAccountPayload.AsObject,
@@ -3657,7 +3657,7 @@ export namespace PaymentAccountPayload {
     TRANSFERWISE_ACCOUNT_PAYLOAD = 29,
     AUSTRALIA_PAYID_PAYLOAD = 30,
     AMAZON_GIFT_CARD_ACCOUNT_PAYLOAD = 31,
-    CASH_BY_MAIL_ACCOUNT_PAYLOAD = 32,
+    PAY_BY_MAIL_ACCOUNT_PAYLOAD = 32,
     CAPITUAL_ACCOUNT_PAYLOAD = 33,
     PAYSERA_ACCOUNT_PAYLOAD = 34,
     PAXUM_ACCOUNT_PAYLOAD = 35,
@@ -4799,25 +4799,25 @@ export namespace PaytmAccountPayload {
   }
 }
 
-export class CashByMailAccountPayload extends jspb.Message {
+export class PayByMailAccountPayload extends jspb.Message {
   getPostalAddress(): string;
-  setPostalAddress(value: string): CashByMailAccountPayload;
+  setPostalAddress(value: string): PayByMailAccountPayload;
 
   getContact(): string;
-  setContact(value: string): CashByMailAccountPayload;
+  setContact(value: string): PayByMailAccountPayload;
 
   getExtraInfo(): string;
-  setExtraInfo(value: string): CashByMailAccountPayload;
+  setExtraInfo(value: string): PayByMailAccountPayload;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): CashByMailAccountPayload.AsObject;
-  static toObject(includeInstance: boolean, msg: CashByMailAccountPayload): CashByMailAccountPayload.AsObject;
-  static serializeBinaryToWriter(message: CashByMailAccountPayload, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): CashByMailAccountPayload;
-  static deserializeBinaryFromReader(message: CashByMailAccountPayload, reader: jspb.BinaryReader): CashByMailAccountPayload;
+  toObject(includeInstance?: boolean): PayByMailAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: PayByMailAccountPayload): PayByMailAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: PayByMailAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PayByMailAccountPayload;
+  static deserializeBinaryFromReader(message: PayByMailAccountPayload, reader: jspb.BinaryReader): PayByMailAccountPayload;
 }
 
-export namespace CashByMailAccountPayload {
+export namespace PayByMailAccountPayload {
   export type AsObject = {
     postalAddress: string,
     contact: string,
@@ -6712,10 +6712,10 @@ export class PreferencesPayload extends jspb.Message {
   hasUserCountry(): boolean;
   clearUserCountry(): PreferencesPayload;
 
-  getFiatCurrenciesList(): Array<TradeCurrency>;
-  setFiatCurrenciesList(value: Array<TradeCurrency>): PreferencesPayload;
-  clearFiatCurrenciesList(): PreferencesPayload;
-  addFiatCurrencies(value?: TradeCurrency, index?: number): TradeCurrency;
+  getTraditionalCurrenciesList(): Array<TradeCurrency>;
+  setTraditionalCurrenciesList(value: Array<TradeCurrency>): PreferencesPayload;
+  clearTraditionalCurrenciesList(): PreferencesPayload;
+  addTraditionalCurrencies(value?: TradeCurrency, index?: number): TradeCurrency;
 
   getCryptoCurrenciesList(): Array<TradeCurrency>;
   setCryptoCurrenciesList(value: Array<TradeCurrency>): PreferencesPayload;
@@ -6921,7 +6921,7 @@ export namespace PreferencesPayload {
   export type AsObject = {
     userLanguage: string,
     userCountry?: Country.AsObject,
-    fiatCurrenciesList: Array<TradeCurrency.AsObject>,
+    traditionalCurrenciesList: Array<TradeCurrency.AsObject>,
     cryptoCurrenciesList: Array<TradeCurrency.AsObject>,
     blockChainExplorerMainNet?: BlockChainExplorer.AsObject,
     blockChainExplorerTestNet?: BlockChainExplorer.AsObject,
@@ -7291,10 +7291,10 @@ export class TradeCurrency extends jspb.Message {
   hasCryptoCurrency(): boolean;
   clearCryptoCurrency(): TradeCurrency;
 
-  getFiatCurrency(): FiatCurrency | undefined;
-  setFiatCurrency(value?: FiatCurrency): TradeCurrency;
-  hasFiatCurrency(): boolean;
-  clearFiatCurrency(): TradeCurrency;
+  getTraditionalCurrency(): TraditionalCurrency | undefined;
+  setTraditionalCurrency(value?: TraditionalCurrency): TradeCurrency;
+  hasTraditionalCurrency(): boolean;
+  clearTraditionalCurrency(): TradeCurrency;
 
   getMessageCase(): TradeCurrency.MessageCase;
 
@@ -7311,13 +7311,13 @@ export namespace TradeCurrency {
     code: string,
     name: string,
     cryptoCurrency?: CryptoCurrency.AsObject,
-    fiatCurrency?: FiatCurrency.AsObject,
+    traditionalCurrency?: TraditionalCurrency.AsObject,
   }
 
   export enum MessageCase { 
     MESSAGE_NOT_SET = 0,
     CRYPTO_CURRENCY = 3,
-    FIAT_CURRENCY = 4,
+    TRADITIONAL_CURRENCY = 4,
   }
 }
 
@@ -7339,21 +7339,21 @@ export namespace CryptoCurrency {
   }
 }
 
-export class FiatCurrency extends jspb.Message {
+export class TraditionalCurrency extends jspb.Message {
   getCurrency(): Currency | undefined;
-  setCurrency(value?: Currency): FiatCurrency;
+  setCurrency(value?: Currency): TraditionalCurrency;
   hasCurrency(): boolean;
-  clearCurrency(): FiatCurrency;
+  clearCurrency(): TraditionalCurrency;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): FiatCurrency.AsObject;
-  static toObject(includeInstance: boolean, msg: FiatCurrency): FiatCurrency.AsObject;
-  static serializeBinaryToWriter(message: FiatCurrency, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): FiatCurrency;
-  static deserializeBinaryFromReader(message: FiatCurrency, reader: jspb.BinaryReader): FiatCurrency;
+  toObject(includeInstance?: boolean): TraditionalCurrency.AsObject;
+  static toObject(includeInstance: boolean, msg: TraditionalCurrency): TraditionalCurrency.AsObject;
+  static serializeBinaryToWriter(message: TraditionalCurrency, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): TraditionalCurrency;
+  static deserializeBinaryFromReader(message: TraditionalCurrency, reader: jspb.BinaryReader): TraditionalCurrency;
 }
 
-export namespace FiatCurrency {
+export namespace TraditionalCurrency {
   export type AsObject = {
     currency?: Currency.AsObject,
   }

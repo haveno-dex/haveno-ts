@@ -1755,26 +1755,29 @@ test("Selects arbitrators which are online, registered, and least used", async (
   await wait(TestConfig.trade.walletSyncPeriodMs * 2);
 
   // get internal api addresses
-  const arbitratorApiUrl = "localhost:" + TestConfig.ports.get(getPort(arbitrator.getUrl()))![1]; // TODO: havenod.getApiUrl()?
+  const arbitrator1ApiUrl = "localhost:" + TestConfig.ports.get(getPort(arbitrator.getUrl()))![1]; // TODO: havenod.getApiUrl()?
   const arbitrator2ApiUrl = "localhost:" + TestConfig.ports.get(getPort(arbitrator2.getUrl()))![1];
 
   let err = undefined;
   try {
 
-    // post 2 offers which use arbitrator2 since it's least used
-    HavenoUtils.log(1, "Posting offers signed by arbitrator2");
-    const offers: OfferInfo[] = [];
-    for (let i = 0; i < 2; i++) {
+    // post offers signed by each arbitrator randomly
+    HavenoUtils.log(1, "Posting offers signed by both arbitrators randomly");
+    let offer1: OfferInfo | undefined;
+    let offer2: OfferInfo | undefined;
+    while (true) {
       const offer = await makeOffer({maker: user1});
-      assert.equal(offer.getArbitratorSigner(), arbitrator2ApiUrl);
-      offers.push(offer);
+      if (offer.getArbitratorSigner() === arbitrator1ApiUrl && !offer1) offer1 = offer;
+      else if (offer.getArbitratorSigner() === arbitrator2ApiUrl && !offer2) offer2 = offer;
+      else await user1.removeOffer(offer.getId());
+      if (offer1 && offer2) break;
     }
     await wait(TestConfig.trade.walletSyncPeriodMs * 2);
 
     // complete a trade which uses arbitrator2 since it's least used
     HavenoUtils.log(1, "Completing trade using arbitrator2");
-    await executeTrade({maker: user1, taker: user2, arbitrator: arbitrator2, offerId: offers[0].getId(), makerPaymentAccountId: offers[0].getPaymentAccountId()});
-    let trade = await user1.getTrade(offers[0].getId());
+    await executeTrade({maker: user1, taker: user2, arbitrator: arbitrator2, offerId: offer1.getId(), makerPaymentAccountId: offer1.getPaymentAccountId(), testPayoutConfirmed: false});
+    let trade = await user1.getTrade(offer1.getId());
     assert.equal(trade.getArbitratorNodeAddress(), arbitrator2ApiUrl);
 
     // arbitrator2 goes offline without unregistering
@@ -1782,17 +1785,17 @@ test("Selects arbitrators which are online, registered, and least used", async (
     const arbitrator2AppName = arbitrator2.getAppName()
     await releaseHavenoProcess(arbitrator2);
 
-    // post offer which uses main arbitrator since least used is offline
-    HavenoUtils.log(1, "Posting offer which uses main arbitrator since least used is offline");
+    // post offer which uses main arbitrator since arbitrator2 is offline
+    HavenoUtils.log(1, "Posting offer which uses main arbitrator since arbitrator2 is offline");
     let offer = await makeOffer({maker: user1});
-    assert.equal(offer.getArbitratorSigner(), arbitratorApiUrl);
+    assert.equal(offer.getArbitratorSigner(), arbitrator1ApiUrl);
     await user1.removeOffer(offer.getId());
 
-    // complete a trade which uses main arbitrator since signer/least used is offline
-    HavenoUtils.log(1, "Completing trade using main arbitrator since signer/least used is offline");
-    await executeTrade({maker: user1, taker: user2, offerId: offers[1].getId(), makerPaymentAccountId: offers[1].getPaymentAccountId()});
-    trade = await user1.getTrade(offers[1].getId());
-    assert.equal(trade.getArbitratorNodeAddress(), arbitratorApiUrl);
+    // complete a trade which uses main arbitrator since arbitrator2 is offline
+    HavenoUtils.log(1, "Completing trade using main arbitrator since arbitrator2 is offline");
+    await executeTrade({maker: user1, taker: user2, offerId: offer2.getId(), makerPaymentAccountId: offer2.getPaymentAccountId(), testPayoutConfirmed: false});
+    trade = await user1.getTrade(offer2.getId());
+    assert.equal(trade.getArbitratorNodeAddress(), arbitrator1ApiUrl);
 
     // start and unregister arbitrator2
     HavenoUtils.log(1, "Starting and unregistering arbitrator2");
@@ -1803,7 +1806,7 @@ test("Selects arbitrators which are online, registered, and least used", async (
     // cannot take offers signed by unregistered arbitrator
     HavenoUtils.log(1, "Taking offer signed by unregistered arbitrator");
     try {
-    await executeTrade({maker: user1, taker: user2, offerId: offers[1].getId()});
+    await executeTrade({maker: user1, taker: user2, offerId: offer2.getId()});
       throw new Error("Should have failed taking offer signed by unregistered arbitrator");
     } catch (e2) {
       assert (e2.message.indexOf("not found") > 0);
@@ -1811,18 +1814,18 @@ test("Selects arbitrators which are online, registered, and least used", async (
 
     // TODO: offer is removed and unreserved or re-signed, ideally keeping the same id
 
-    // post offer which uses main arbitrator since least used is unregistered
+    // post offer which uses main arbitrator since arbitrator2 is unregistered
     offer = await makeOffer({maker: user1});
-    assert.equal(offer.getArbitratorSigner(), arbitratorApiUrl);
+    assert.equal(offer.getArbitratorSigner(), arbitrator1ApiUrl);
     await wait(TestConfig.trade.walletSyncPeriodMs * 2);
 
-    // complete a trade which uses main arbitrator since least used is unregistered
-    HavenoUtils.log(1, "Completing trade with main arbitrator since least used is unregistered");
-    await executeTrade({maker: user1, taker: user2, offerId: offer.getId(), makerPaymentAccountId: offer.getPaymentAccountId()});
-    HavenoUtils.log(1, "Done completing trade with main arbitrator since least used is unregistered");
+    // complete a trade which uses main arbitrator since arbitrator2 is unregistered
+    HavenoUtils.log(1, "Completing trade with main arbitrator since arbitrator2 is unregistered");
+    await executeTrade({maker: user1, taker: user2, offerId: offer.getId(), makerPaymentAccountId: offer.getPaymentAccountId(), testPayoutConfirmed: false});
+    HavenoUtils.log(1, "Done completing trade with main arbitrator since arbitrator2 is unregistered");
     trade = await user2.getTrade(offer.getId());
     HavenoUtils.log(1, "Done getting trade");
-    assert.equal(trade.getArbitratorNodeAddress(), arbitratorApiUrl);
+    assert.equal(trade.getArbitratorNodeAddress(), arbitrator1ApiUrl);
 
     // release arbitrator2
     HavenoUtils.log(1, "Done getting trade");
@@ -1984,8 +1987,10 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
     } else {
       ctx.offer = getOffer(await ctx.maker!.getMyOffers(ctx.assetCode!, ctx.direction), ctx.offerId!);
       if (!ctx.offer) {
-        const trade = await ctx.maker!.getTrade(ctx.offerId!);
-        ctx.offer = trade.getOffer();
+        try {
+          const trade = await ctx.maker!.getTrade(ctx.offerId!);
+          ctx.offer = trade.getOffer();
+        } catch (err) { /* ignore */ }
       }
     }
 
