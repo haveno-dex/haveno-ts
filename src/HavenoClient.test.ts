@@ -176,7 +176,7 @@ const TestConfig = {
         walletSyncPeriodMs: 5000,
         maxTimePeerNoticeMs: 5000,
         maxConcurrency: 14,  // max concurrency
-        maxConcurrencyCI: 14, // CI test max concurrency
+        maxConcurrencyCI: 7, // CI test max concurrency
         stopOnFailure: true,
         testPayoutConfirmed: true,
         testPayoutUnlocked: true
