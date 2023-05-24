@@ -117,7 +117,7 @@ const TestConfig = {
     daemonPollPeriodMs: 5000,
     maxWalletStartupMs: 10000, // TODO (woodser): make shorter by switching to jni
     maxCpuPct: 0.25,
-    assetCodes: ["USD", "GBP", "EUR", "ETH", "BTC", "BCH", "LTC"], // primary asset codes
+    assetCodes: ["USD", "GBP", "EUR", "ETH", "BTC", "BCH", "LTC", "WOW"], // primary asset codes
     cryptoAddresses: [{
             currencyCode: "ETH",
             address: "0xdBdAb835Acd6fC84cF5F9aDD3c0B5a1E25fbd99f"
@@ -130,6 +130,9 @@ const TestConfig = {
         }, {
             currencyCode: "LTC",
             address: "LXUTUN5mTPc2LsS7cEjkyjTRcfYyJGoUuQ"
+        }, {
+            currencyCode: "WOW",
+            address: "WW2FZKUtFwaBc7wsdQ1jNHGFmSNw9xq3WKLBgYJob4M5Kbzk3oKYfVT8WEBnre6dbzMYg9q3gacG2fJyCgCyu6TV1THkny26P"
         }
     ],
     ports: new Map<string, string[]>([ // map http ports to havenod api and p2p ports
