@@ -76,8 +76,8 @@ const TestConfig = {
         walletPassword: "abc123",
         defaultPath: "funding_wallet-" + getBaseCurrencyNetwork(),
         minimumFunding: BigInt("5000000000000"),
-        mnemonic: "silk mocked cucumber lettuce hope adrenalin aching lush roles fuel revamp baptism wrist long tender teardrop midst pastry pigment equip frying inbound pinched ravine frying",
-        primaryAddress: "A1y9sbVt8nqhZAVm3me1U18rUVXcjeNKuBd1oE2cTs8biA9cozPMeyYLhe77nPv12JA3ejJN3qprmREriit2fi6tJDi99RR",
+        mnemonic: "origin hickory pavements tudor sizes hornet tether segments sack technical elbow unsafe legion nitrogen adapt yearbook idols fuzzy pitched goes tusks elbow erase fossil erase",
+        primaryAddress: "9xSyMy1r9h3BVjMrF3CTqQCQy36yCfkpn7uVfMyTUbez3hhumqBUqGUNNALjcd7f1HJBRdeH82bCC3veFHW7z3xm28gug4d",
         restoreHeight: 150
     },
     defaultHavenod: {
@@ -176,7 +176,7 @@ const TestConfig = {
         walletSyncPeriodMs: 5000,
         maxTimePeerNoticeMs: 5000,
         maxConcurrency: 14,  // max concurrency
-        maxConcurrencyCI: 7, // CI test max concurrency
+        maxConcurrencyCI: 4, // CI test max concurrency
         stopOnFailure: true,
         testPayoutConfirmed: true,
         testPayoutUnlocked: true
