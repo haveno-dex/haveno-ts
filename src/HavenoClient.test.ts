@@ -176,7 +176,7 @@ const TestConfig = {
         walletSyncPeriodMs: 5000,
         maxTimePeerNoticeMs: 5000,
         maxConcurrency: 14,  // max concurrency
-        maxConcurrencyCI: 4, // CI test max concurrency
+        maxConcurrencyCI: 7, // CI test max concurrency
         stopOnFailure: true,
         testPayoutConfirmed: true,
         testPayoutUnlocked: true
@@ -376,7 +376,7 @@ async function shutDown() {
   await Promise.all(promises);
 
   // terminate monero-javascript worker
-  (await monerojs.LibraryUtils.getWorker()).terminate();
+  await monerojs.LibraryUtils.terminateWorker();
 }
 
 // ----------------------------------- TESTS ----------------------------------
