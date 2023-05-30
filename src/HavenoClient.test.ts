@@ -157,8 +157,8 @@ const TestConfig = {
         takeOffer: true,
         awaitFundsToMakeOffer: true,
         direction: "buy",               // buy or sell xmr
-        amount: BigInt("200000000000"), // amount of xmr to trade (0.2 XMR)
-        minAmount: undefined,
+        offerAmount: BigInt("200000000000"), // amount of xmr to trade (0.2 XMR)
+        offerMinAmount: undefined,
         assetCode: "usd",               // counter asset to trade
         makerPaymentAccountId: undefined,
         buyerSecurityDepositPct: 0.15,
@@ -219,8 +219,9 @@ interface TradeContext {
     awaitFundsToMakeOffer?: boolean
     direction?: string,
     assetCode?: string,
-    amount?: bigint,
-    minAmount?: bigint,
+    offerAmount?: bigint, // offer amount or max
+    offerMinAmount?: bigint,
+    tradeAmount?: bigint, // trade amount within offer range
     makerPaymentAccountId?: string,
     buyerSecurityDepositPct?: number,
     price?: number,
@@ -924,13 +925,13 @@ test("Can get market depth (CI, sanity check)", async () => {
     expect(marketDepth.getSellDepthList().length).toEqual(0);
 
     // post offers to buy and sell
-    await makeOffer({maker: user1, direction: "buy", amount: BigInt("150000000000"), assetCode: assetCode, price: 17.0});
-    await makeOffer({maker: user1, direction: "buy", amount: BigInt("150000000000"), assetCode: assetCode, price: 17.2});
-    await makeOffer({maker: user1, direction: "buy", amount: BigInt("200000000000"), assetCode: assetCode, price: 17.3});
-    await makeOffer({maker: user1, direction: "buy", amount: BigInt("150000000000"), assetCode: assetCode, price: 17.3});
-    await makeOffer({maker: user1, direction: "sell", amount: BigInt("300000000000"), assetCode: assetCode, priceMargin: 0.00});
-    await makeOffer({maker: user1, direction: "sell", amount: BigInt("300000000000"), assetCode: assetCode, priceMargin: 0.02});
-    await makeOffer({maker: user1, direction: "sell", amount: BigInt("400000000000"), assetCode: assetCode, priceMargin: 0.05});
+    await makeOffer({maker: user1, direction: "buy", offerAmount: BigInt("150000000000"), assetCode: assetCode, price: 17.0});
+    await makeOffer({maker: user1, direction: "buy", offerAmount: BigInt("150000000000"), assetCode: assetCode, price: 17.2});
+    await makeOffer({maker: user1, direction: "buy", offerAmount: BigInt("200000000000"), assetCode: assetCode, price: 17.3});
+    await makeOffer({maker: user1, direction: "buy", offerAmount: BigInt("150000000000"), assetCode: assetCode, price: 17.3});
+    await makeOffer({maker: user1, direction: "sell", offerAmount: BigInt("300000000000"), assetCode: assetCode, priceMargin: 0.00});
+    await makeOffer({maker: user1, direction: "sell", offerAmount: BigInt("300000000000"), assetCode: assetCode, priceMargin: 0.02});
+    await makeOffer({maker: user1, direction: "sell", offerAmount: BigInt("400000000000"), assetCode: assetCode, priceMargin: 0.05});
 
     // get user2's market depth
     await wait(TestConfig.trade.maxTimePeerNoticeMs);
@@ -1340,15 +1341,20 @@ test("Can schedule offers with locked funds (CI)", async () => {
 test("Cannot post offer exceeding trade limit (CI, sanity check)", async () => {
   const revolutAccount = await createRevolutPaymentAccount(user1);
   try {
-    await executeTrade({amount: BigInt("2100000000000"), assetCode: "USD", makerPaymentAccountId: revolutAccount.getId(), takeOffer: false});
+    await executeTrade({offerAmount: BigInt("2100000000000"), assetCode: "USD", makerPaymentAccountId: revolutAccount.getId(), takeOffer: false});
     throw new Error("Should have rejected posting offer above trade limit")
   } catch (err) {
     assert(err.message.indexOf("amount is larger than") === 0);
   }
 });
 
-test("Can complete a trade", async () => {
-  await executeTrade();
+test("Can complete a trade within a range", async () => {
+  await executeTrade({
+    price: 150,
+    offerAmount: HavenoUtils.xmrToAtomicUnits(1),
+    offerMinAmount: HavenoUtils.xmrToAtomicUnits(.15),
+    tradeAmount: HavenoUtils.xmrToAtomicUnits(.18)
+  });
 });
 
 test("Can complete trades at the same time (CI, sanity check)", async () => {
@@ -1548,7 +1554,7 @@ test("Cannot make or take offer with insufficient unlocked funds (CI, sanity che
     else {
       const tradeAmount = BigInt("250000000000");
       await waitForAvailableBalance(tradeAmount * BigInt("2"), user1);
-      offer = await makeOffer({maker: user1, amount: tradeAmount, awaitFundsToMakeOffer: false});
+      offer = await makeOffer({maker: user1, offerAmount: tradeAmount, awaitFundsToMakeOffer: false});
       assert.equal(offer.getState(), "AVAILABLE");
       await wait(TestConfig.trade.walletSyncPeriodMs * 2);
     }
@@ -1598,7 +1604,7 @@ test("Invalidates offers when reserved funds are spent (CI)", async () => {
     // post offer
     await wait(1000);
     const assetCode = getRandomAssetCode();
-    const offer: OfferInfo = await makeOffer({maker: user1, assetCode: assetCode, amount: tradeAmount});
+    const offer: OfferInfo = await makeOffer({maker: user1, assetCode: assetCode, offerAmount: tradeAmount});
 
     // get key images reserved by offer
     const reservedKeyImages: any[] = [];
@@ -1660,7 +1666,7 @@ test("Can handle unexpected errors during trade initialization", async () => {
 
     // trader 0 posts offer
     HavenoUtils.log(1, "Posting offer");
-    let offer = await makeOffer({maker: traders[0], amount: tradeAmount});
+    let offer = await makeOffer({maker: traders[0], offerAmount: tradeAmount});
     offer = await traders[0].getMyOffer(offer.getId());
     assert.equal(offer.getState(), "AVAILABLE");
 
@@ -1875,8 +1881,9 @@ function getTradeContexts(numConfigs: number): TradeContext[] {
 
 function tradeContextToString(ctx: TradeContext) {
   return JSON.stringify(Object.assign({}, ctx, {
-    amount: ctx.amount ? ctx.amount.toString() : undefined,
-    minAmount: ctx.minAmount ? ctx.minAmount.toString() : undefined,
+    offerAmount: ctx.offerAmount ? ctx.offerAmount.toString() : undefined,
+    offerMinAmount: ctx.offerMinAmount ? ctx.offerMinAmount.toString() : undefined,
+    tradeAmount: ctx.tradeAmount ? ctx.tradeAmount.toString() : undefined,
     disputeWinnerAmount: ctx.disputeWinnerAmount ? ctx.disputeWinnerAmount.toString() : undefined,
     arbitrator: ctx.arbitrator ? ctx.arbitrator.getUrl() : undefined,
     maker: ctx.maker ? ctx.maker.getUrl() : undefined,
@@ -1911,7 +1918,7 @@ async function executeTrades(ctxs: TradeContext[], executionCtx?: TradeContext):
     let tradeAmount: bigint|undefined = undefined;
     const outputCounts = new Map<any, number>();
     for (const ctx of ctxs) {
-      if (!tradeAmount || tradeAmount < ctx.amount!) tradeAmount = ctx.amount; // use max amount
+      if (!tradeAmount || tradeAmount < ctx.offerAmount!) tradeAmount = ctx.offerAmount; // use max amount
       if (ctx.awaitFundsToMakeOffer && ctx.makeOffer && !ctx.offerId) {
         const wallet = await getWallet(ctx.maker!);
         if (outputCounts.has(wallet)) outputCounts.set(wallet, outputCounts.get(wallet)! + 1);
@@ -1971,7 +1978,7 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
     if (!ctx.concurrentTrades) { // already funded
       if (ctx.awaitFundsToMakeOffer && makingOffer && !ctx.offerId) clientsToFund.push(ctx.maker!);
       if (ctx.awaitFundsToTakeOffer && ctx.takeOffer && !ctx.isOfferTaken) clientsToFund.push(ctx.taker!);
-      await waitForAvailableBalance(ctx.amount! * BigInt("2"), ...clientsToFund);
+      await waitForAvailableBalance(ctx.offerAmount! * BigInt("2"), ...clientsToFund);
     }
 
     // get info before trade
@@ -2207,8 +2214,8 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
     if (!ctx.concurrentTrades) {
       const buyerBalancesAfter = await getBuyer(ctx)!.getBalances();
       const sellerBalancesAfter = await getSeller(ctx)!.getBalances();
-      const buyerFee = BigInt(buyerBalancesBefore.getBalance()) + BigInt(buyerBalancesBefore.getReservedOfferBalance()) + BigInt(ctx.offer!.getAmount()) - (BigInt(buyerBalancesAfter.getBalance()) + BigInt(buyerBalancesAfter.getReservedOfferBalance())); // buyer fee = total balance before + offer amount - total balance after
-      const sellerFee = BigInt(sellerBalancesBefore.getBalance()) + BigInt(sellerBalancesBefore.getReservedOfferBalance()) - BigInt(ctx.offer!.getAmount()) - (BigInt(sellerBalancesAfter.getBalance()) + BigInt(sellerBalancesAfter.getReservedOfferBalance())); // seller fee = total balance before - offer amount - total balance after
+      const buyerFee = BigInt(buyerBalancesBefore.getBalance()) + BigInt(buyerBalancesBefore.getReservedOfferBalance()) + BigInt(ctx.tradeAmount!) - (BigInt(buyerBalancesAfter.getBalance()) + BigInt(buyerBalancesAfter.getReservedOfferBalance())); // buyer fee = total balance before + trade amount - total balance after
+      const sellerFee = BigInt(sellerBalancesBefore.getBalance()) + BigInt(sellerBalancesBefore.getReservedOfferBalance()) - BigInt(ctx.tradeAmount!) - (BigInt(sellerBalancesAfter.getBalance()) + BigInt(sellerBalancesAfter.getReservedOfferBalance())); // seller fee = total balance before - trade amount - total balance after
       expect(buyerFee).toBeLessThanOrEqual(TestConfig.maxFee);
       expect(buyerFee).toBeGreaterThan(BigInt("0"));
       expect(sellerFee).toBeLessThanOrEqual(TestConfig.maxFee);
@@ -2270,7 +2277,7 @@ async function makeOffer(ctx?: TradeContext): Promise<OfferInfo> {
   Object.assign(ctx, TestConfig.trade, Object.assign({}, ctx));
 
   // wait for unlocked balance
-  if (!ctx.concurrentTrades && ctx.awaitFundsToMakeOffer) await waitForAvailableBalance(ctx.amount! * BigInt("2"), ctx.maker);
+  if (!ctx.concurrentTrades && ctx.awaitFundsToMakeOffer) await waitForAvailableBalance(ctx.offerAmount! * BigInt("2"), ctx.maker);
 
   // create payment account if not given // TODO: re-use existing payment account
   if (!ctx.makerPaymentAccountId) ctx.makerPaymentAccountId = (await createPaymentAccount(ctx.maker!, ctx.assetCode!)).getId();
@@ -2287,14 +2294,14 @@ async function makeOffer(ctx?: TradeContext): Promise<OfferInfo> {
   // post offer
   const offer: OfferInfo = await ctx.maker!.postOffer(
         ctx.direction!,
-        ctx.amount!,
+        ctx.offerAmount!,
         ctx.assetCode!,
         ctx.makerPaymentAccountId!,
         ctx.buyerSecurityDepositPct!,
         ctx.price,
         ctx.priceMargin,
         ctx.triggerPrice,
-        ctx.minAmount);
+        ctx.offerMinAmount);
   testOffer(offer, ctx);
 
   // offer is included in my offers only
@@ -2336,7 +2343,7 @@ async function takeOffer(ctx: TradeContext): Promise<TradeInfo> {
   expect(takerOffer.getState()).toEqual("UNKNOWN"); // TODO: offer state should be known
 
   // wait for unlocked balance
-  if (ctx.awaitFundsToTakeOffer) await waitForAvailableBalance(ctx.amount! * BigInt("2"), ctx.taker);
+  if (ctx.awaitFundsToTakeOffer) await waitForAvailableBalance(ctx.offerAmount! * BigInt("2"), ctx.taker);
 
   // create payment account if not given // TODO: re-use existing payment account
   if (!ctx.takerPaymentAccountId) ctx.takerPaymentAccountId = (await createPaymentAccount(ctx.taker!, ctx.assetCode!)).getId();
@@ -2351,8 +2358,11 @@ async function takeOffer(ctx: TradeContext): Promise<TradeInfo> {
   const takerBalancesBefore: XmrBalanceInfo = await ctx.taker!.getBalances();
   const startTime = Date.now();
   HavenoUtils.log(1, "Taking offer " + ctx.offerId);
-  const trade = await ctx.taker!.takeOffer(ctx.offerId, ctx.takerPaymentAccountId!);
+  const trade = await ctx.taker!.takeOffer(ctx.offerId, ctx.takerPaymentAccountId!, ctx.tradeAmount);
   HavenoUtils.log(1, "Done taking offer " + ctx.offerId + " in " + (Date.now() - startTime) + " ms");
+
+  // assign expected trade amount
+  if (!ctx.tradeAmount) ctx.tradeAmount = ctx.offerAmount;
 
   // test taker's balances after taking trade
   if (!ctx.concurrentTrades) {
@@ -2374,6 +2384,7 @@ async function takeOffer(ctx: TradeContext): Promise<TradeInfo> {
   // taker can get trade
   let fetchedTrade: TradeInfo = await ctx.taker!.getTrade(trade.getTradeId());
   assert(GenUtils.arrayContains(["DEPOSITS_PUBLISHED", "DEPOSITS_CONFIRMED", "DEPOSITS_UNLOCKED"], fetchedTrade.getPhase()), "Unexpected trade phase: " + fetchedTrade.getPhase());
+  expect(BigInt(fetchedTrade.getAmount())).toEqual(ctx.tradeAmount ? ctx.tradeAmount : ctx.offerAmount);
   // TODO: test fetched trade
 
   // taker is notified of balance change

@@ -20540,7 +20540,8 @@ proto.io.haveno.protobuffer.TakeOfferRequest.prototype.toObject = function(opt_i
 proto.io.haveno.protobuffer.TakeOfferRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
     offerId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    paymentAccountId: jspb.Message.getFieldWithDefault(msg, 2, "")
+    paymentAccountId: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    amount: jspb.Message.getFieldWithDefault(msg, 3, "0")
   };
 
   if (includeInstance) {
@@ -20585,6 +20586,10 @@ proto.io.haveno.protobuffer.TakeOfferRequest.deserializeBinaryFromReader = funct
       var value = /** @type {string} */ (reader.readString());
       msg.setPaymentAccountId(value);
       break;
+    case 3:
+      var value = /** @type {string} */ (reader.readUint64String());
+      msg.setAmount(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -20628,6 +20633,13 @@ proto.io.haveno.protobuffer.TakeOfferRequest.serializeBinaryToWriter = function(
       f
     );
   }
+  f = message.getAmount();
+  if (parseInt(f, 10) !== 0) {
+    writer.writeUint64String(
+      3,
+      f
+    );
+  }
 };
 
 
@@ -20664,6 +20676,24 @@ proto.io.haveno.protobuffer.TakeOfferRequest.prototype.getPaymentAccountId = fun
  */
 proto.io.haveno.protobuffer.TakeOfferRequest.prototype.setPaymentAccountId = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * optional uint64 amount = 3;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.TakeOfferRequest.prototype.getAmount = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, "0"));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.TakeOfferRequest} returns this
+ */
+proto.io.haveno.protobuffer.TakeOfferRequest.prototype.setAmount = function(value) {
+  return jspb.Message.setProto3StringIntField(this, 3, value);
 };
 
 

@@ -1046,13 +1046,18 @@ export default class HavenoClient {
    * 
    * @param {string} offerId - id of the offer to take
    * @param {string} paymentAccountId - id of the payment account
+   * @param {bigint|undefined} amount - amount the taker chooses to buy or sell within the offer range (default is max offer amount)
    * @return {TradeInfo} the initialized trade
    */
-  async takeOffer(offerId: string, paymentAccountId: string): Promise<TradeInfo> {
+  async takeOffer(offerId: string,
+                  paymentAccountId: string,
+                  amount?: bigint): Promise<TradeInfo> {
     try {
       const request = new TakeOfferRequest()
           .setOfferId(offerId)
           .setPaymentAccountId(paymentAccountId);
+      if (amount) request.setAmount(amount.toString());
+      HavenoUtils.log(0, "Taking offer with taker amount: " + amount);
       return (await this._tradesClient.takeOffer(request, {password: this._password})).getTrade()!;
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);

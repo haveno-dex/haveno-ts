@@ -2284,6 +2284,9 @@ export class TakeOfferRequest extends jspb.Message {
   getPaymentAccountId(): string;
   setPaymentAccountId(value: string): TakeOfferRequest;
 
+  getAmount(): string;
+  setAmount(value: string): TakeOfferRequest;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): TakeOfferRequest.AsObject;
   static toObject(includeInstance: boolean, msg: TakeOfferRequest): TakeOfferRequest.AsObject;
@@ -2296,6 +2299,7 @@ export namespace TakeOfferRequest {
   export type AsObject = {
     offerId: string,
     paymentAccountId: string,
+    amount: string,
   }
 }
 

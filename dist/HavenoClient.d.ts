@@ -437,9 +437,10 @@ export default class HavenoClient {
      *
      * @param {string} offerId - id of the offer to take
      * @param {string} paymentAccountId - id of the payment account
+     * @param {bigint|undefined} amount - amount the taker chooses to buy or sell within the offer range (default is max offer amount)
      * @return {TradeInfo} the initialized trade
      */
-    takeOffer(offerId: string, paymentAccountId: string): Promise<TradeInfo>;
+    takeOffer(offerId: string, paymentAccountId: string, amount?: bigint): Promise<TradeInfo>;
     /**
      * Get a trade by id.
      *
