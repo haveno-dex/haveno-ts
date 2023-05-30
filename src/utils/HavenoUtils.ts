@@ -147,7 +147,7 @@ export default class HavenoUtils {
    * @param {number|string} amountXmr - amount in XMR to convert to atomic units
    * @return {BigInt} amount in atomic units
    */
-  static xmrToAtomicUnits(amountXmr: number|string): BigInt {
+  static xmrToAtomicUnits(amountXmr: number|string): bigint {
     if (typeof amountXmr === "number") amountXmr = "" + amountXmr;
     else if (typeof amountXmr !== "string") throw new Error("Must provide XMR amount as a string or js number to convert to atomic units");
     let decimalDivisor = 1;
