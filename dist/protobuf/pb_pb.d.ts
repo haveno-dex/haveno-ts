@@ -3575,6 +3575,11 @@ export class PaymentAccountPayload extends jspb.Message {
   hasVerseAccountPayload(): boolean;
   clearVerseAccountPayload(): PaymentAccountPayload;
 
+  getCashByAtmAccountPayload(): CashByAtmAccountPayload | undefined;
+  setCashByAtmAccountPayload(value?: CashByAtmAccountPayload): PaymentAccountPayload;
+  hasCashByAtmAccountPayload(): boolean;
+  clearCashByAtmAccountPayload(): PaymentAccountPayload;
+
   getMessageCase(): PaymentAccountPayload.MessageCase;
 
   serializeBinary(): Uint8Array;
@@ -3626,6 +3631,7 @@ export namespace PaymentAccountPayload {
     celPayAccountPayload?: CelPayAccountPayload.AsObject,
     moneseAccountPayload?: MoneseAccountPayload.AsObject,
     verseAccountPayload?: VerseAccountPayload.AsObject,
+    cashByAtmAccountPayload?: CashByAtmAccountPayload.AsObject,
   }
 
   export enum MessageCase { 
@@ -3665,6 +3671,7 @@ export namespace PaymentAccountPayload {
     CEL_PAY_ACCOUNT_PAYLOAD = 37,
     MONESE_ACCOUNT_PAYLOAD = 38,
     VERSE_ACCOUNT_PAYLOAD = 39,
+    CASH_BY_ATM_ACCOUNT_PAYLOAD = 40,
   }
 }
 
@@ -4821,6 +4828,24 @@ export namespace PayByMailAccountPayload {
   export type AsObject = {
     postalAddress: string,
     contact: string,
+    extraInfo: string,
+  }
+}
+
+export class CashByAtmAccountPayload extends jspb.Message {
+  getExtraInfo(): string;
+  setExtraInfo(value: string): CashByAtmAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): CashByAtmAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: CashByAtmAccountPayload): CashByAtmAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: CashByAtmAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): CashByAtmAccountPayload;
+  static deserializeBinaryFromReader(message: CashByAtmAccountPayload, reader: jspb.BinaryReader): CashByAtmAccountPayload;
+}
+
+export namespace CashByAtmAccountPayload {
+  export type AsObject = {
     extraInfo: string,
   }
 }
