@@ -2504,10 +2504,10 @@ export class Filter extends jspb.Message {
   getPreventPublicBtcNetwork(): boolean;
   setPreventPublicBtcNetwork(value: boolean): Filter;
 
-  getBtcNodesList(): Array<string>;
-  setBtcNodesList(value: Array<string>): Filter;
-  clearBtcNodesList(): Filter;
-  addBtcNodes(value: string, index?: number): Filter;
+  getXmrNodesList(): Array<string>;
+  setXmrNodesList(value: Array<string>): Filter;
+  clearXmrNodesList(): Filter;
+  addXmrNodes(value: string, index?: number): Filter;
 
   getDisableTradeBelowVersion(): string;
   setDisableTradeBelowVersion(value: string): Filter;
@@ -2584,7 +2584,7 @@ export namespace Filter {
     seedNodesList: Array<string>,
     priceRelayNodesList: Array<string>,
     preventPublicBtcNetwork: boolean,
-    btcNodesList: Array<string>,
+    xmrNodesList: Array<string>,
     disableTradeBelowVersion: string,
     mediatorsList: Array<string>,
     refundagentsList: Array<string>,
@@ -3575,10 +3575,10 @@ export class PaymentAccountPayload extends jspb.Message {
   hasVerseAccountPayload(): boolean;
   clearVerseAccountPayload(): PaymentAccountPayload;
 
-  getCashByAtmAccountPayload(): CashByAtmAccountPayload | undefined;
-  setCashByAtmAccountPayload(value?: CashByAtmAccountPayload): PaymentAccountPayload;
-  hasCashByAtmAccountPayload(): boolean;
-  clearCashByAtmAccountPayload(): PaymentAccountPayload;
+  getCashAtAtmAccountPayload(): CashAtAtmAccountPayload | undefined;
+  setCashAtAtmAccountPayload(value?: CashAtAtmAccountPayload): PaymentAccountPayload;
+  hasCashAtAtmAccountPayload(): boolean;
+  clearCashAtAtmAccountPayload(): PaymentAccountPayload;
 
   getMessageCase(): PaymentAccountPayload.MessageCase;
 
@@ -3631,7 +3631,7 @@ export namespace PaymentAccountPayload {
     celPayAccountPayload?: CelPayAccountPayload.AsObject,
     moneseAccountPayload?: MoneseAccountPayload.AsObject,
     verseAccountPayload?: VerseAccountPayload.AsObject,
-    cashByAtmAccountPayload?: CashByAtmAccountPayload.AsObject,
+    cashAtAtmAccountPayload?: CashAtAtmAccountPayload.AsObject,
   }
 
   export enum MessageCase { 
@@ -3671,7 +3671,7 @@ export namespace PaymentAccountPayload {
     CEL_PAY_ACCOUNT_PAYLOAD = 37,
     MONESE_ACCOUNT_PAYLOAD = 38,
     VERSE_ACCOUNT_PAYLOAD = 39,
-    CASH_BY_ATM_ACCOUNT_PAYLOAD = 40,
+    CASH_AT_ATM_ACCOUNT_PAYLOAD = 40,
   }
 }
 
@@ -4832,19 +4832,19 @@ export namespace PayByMailAccountPayload {
   }
 }
 
-export class CashByAtmAccountPayload extends jspb.Message {
+export class CashAtAtmAccountPayload extends jspb.Message {
   getExtraInfo(): string;
-  setExtraInfo(value: string): CashByAtmAccountPayload;
+  setExtraInfo(value: string): CashAtAtmAccountPayload;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): CashByAtmAccountPayload.AsObject;
-  static toObject(includeInstance: boolean, msg: CashByAtmAccountPayload): CashByAtmAccountPayload.AsObject;
-  static serializeBinaryToWriter(message: CashByAtmAccountPayload, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): CashByAtmAccountPayload;
-  static deserializeBinaryFromReader(message: CashByAtmAccountPayload, reader: jspb.BinaryReader): CashByAtmAccountPayload;
+  toObject(includeInstance?: boolean): CashAtAtmAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: CashAtAtmAccountPayload): CashAtAtmAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: CashAtAtmAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): CashAtAtmAccountPayload;
+  static deserializeBinaryFromReader(message: CashAtAtmAccountPayload, reader: jspb.BinaryReader): CashAtAtmAccountPayload;
 }
 
-export namespace CashByAtmAccountPayload {
+export namespace CashAtAtmAccountPayload {
   export type AsObject = {
     extraInfo: string,
   }
@@ -5693,6 +5693,7 @@ export namespace XmrAddressEntry {
     RESERVED_FOR_TRADE = 4,
     MULTI_SIG = 5,
     TRADE_PAYOUT = 6,
+    BASE_ADDRESS = 7,
   }
 }
 
@@ -6769,8 +6770,8 @@ export class PreferencesPayload extends jspb.Message {
   getTacAccepted(): boolean;
   setTacAccepted(value: boolean): PreferencesPayload;
 
-  getUseTorForBitcoinJ(): boolean;
-  setUseTorForBitcoinJ(value: boolean): PreferencesPayload;
+  getUseTorForMonero(): boolean;
+  setUseTorForMonero(value: boolean): PreferencesPayload;
 
   getShowOwnOffersInOfferBook(): boolean;
   setShowOwnOffersInOfferBook(value: boolean): PreferencesPayload;
@@ -6816,8 +6817,8 @@ export class PreferencesPayload extends jspb.Message {
   getPeerTagMapMap(): jspb.Map<string, string>;
   clearPeerTagMapMap(): PreferencesPayload;
 
-  getBitcoinNodes(): string;
-  setBitcoinNodes(value: string): PreferencesPayload;
+  getMoneroNodes(): string;
+  setMoneroNodes(value: string): PreferencesPayload;
 
   getIgnoreTradersListList(): Array<string>;
   setIgnoreTradersListList(value: Array<string>): PreferencesPayload;
@@ -6849,8 +6850,8 @@ export class PreferencesPayload extends jspb.Message {
   getCustomBridges(): string;
   setCustomBridges(value: string): PreferencesPayload;
 
-  getBitcoinNodesOptionOrdinal(): number;
-  setBitcoinNodesOptionOrdinal(value: number): PreferencesPayload;
+  getMoneroNodesOptionOrdinal(): number;
+  setMoneroNodesOptionOrdinal(value: number): PreferencesPayload;
 
   getReferralId(): string;
   setReferralId(value: string): PreferencesPayload;
@@ -6954,7 +6955,7 @@ export namespace PreferencesPayload {
     autoSelectArbitrators: boolean,
     dontShowAgainMapMap: Array<[string, boolean]>,
     tacAccepted: boolean,
-    useTorForBitcoinJ: boolean,
+    useTorForMonero: boolean,
     showOwnOffersInOfferBook: boolean,
     preferredTradeCurrency?: TradeCurrency.AsObject,
     withdrawalTxFeeInVbytes: number,
@@ -6969,7 +6970,7 @@ export namespace PreferencesPayload {
     sortMarketCurrenciesNumerically: boolean,
     usePercentageBasedPrice: boolean,
     peerTagMapMap: Array<[string, string]>,
-    bitcoinNodes: string,
+    moneroNodes: string,
     ignoreTradersListList: Array<string>,
     directoryChooserPath: string,
     useAnimations: boolean,
@@ -6978,7 +6979,7 @@ export namespace PreferencesPayload {
     bridgeOptionOrdinal: number,
     torTransportOrdinal: number,
     customBridges: string,
-    bitcoinNodesOptionOrdinal: number,
+    moneroNodesOptionOrdinal: number,
     referralId: string,
     phoneKeyAndToken: string,
     useSoundForMobileNotifications: boolean,
