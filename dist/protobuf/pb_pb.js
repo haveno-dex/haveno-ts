@@ -46880,12 +46880,10 @@ proto.io.haveno.protobuffer.XmrAddressEntry.serializeBinaryToWriter = function(m
 proto.io.haveno.protobuffer.XmrAddressEntry.Context = {
   PB_ERROR: 0,
   ARBITRATOR: 1,
-  AVAILABLE: 2,
-  OFFER_FUNDING: 3,
-  RESERVED_FOR_TRADE: 4,
-  MULTI_SIG: 5,
-  TRADE_PAYOUT: 6,
-  BASE_ADDRESS: 7
+  BASE_ADDRESS: 2,
+  AVAILABLE: 3,
+  OFFER_FUNDING: 4,
+  TRADE_PAYOUT: 5
 };
 
 /**
@@ -48270,12 +48268,13 @@ proto.io.haveno.protobuffer.OpenOffer.toObject = function(includeInstance, msg) 
     offer: (f = msg.getOffer()) && proto.io.haveno.protobuffer.Offer.toObject(includeInstance, f),
     state: jspb.Message.getFieldWithDefault(msg, 2, 0),
     triggerPrice: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    autoSplit: jspb.Message.getBooleanFieldWithDefault(msg, 4, false),
+    splitOutput: jspb.Message.getBooleanFieldWithDefault(msg, 4, false),
     scheduledTxHashesList: (f = jspb.Message.getRepeatedField(msg, 5)) == null ? undefined : f,
     scheduledAmount: jspb.Message.getFieldWithDefault(msg, 6, ""),
-    reserveTxHash: jspb.Message.getFieldWithDefault(msg, 7, ""),
-    reserveTxHex: jspb.Message.getFieldWithDefault(msg, 8, ""),
-    reserveTxKey: jspb.Message.getFieldWithDefault(msg, 9, "")
+    splitOutputTxHash: jspb.Message.getFieldWithDefault(msg, 7, ""),
+    reserveTxHash: jspb.Message.getFieldWithDefault(msg, 8, ""),
+    reserveTxHex: jspb.Message.getFieldWithDefault(msg, 9, ""),
+    reserveTxKey: jspb.Message.getFieldWithDefault(msg, 10, "")
   };
 
   if (includeInstance) {
@@ -48327,7 +48326,7 @@ proto.io.haveno.protobuffer.OpenOffer.deserializeBinaryFromReader = function(msg
       break;
     case 4:
       var value = /** @type {boolean} */ (reader.readBool());
-      msg.setAutoSplit(value);
+      msg.setSplitOutput(value);
       break;
     case 5:
       var value = /** @type {string} */ (reader.readString());
@@ -48339,13 +48338,17 @@ proto.io.haveno.protobuffer.OpenOffer.deserializeBinaryFromReader = function(msg
       break;
     case 7:
       var value = /** @type {string} */ (reader.readString());
-      msg.setReserveTxHash(value);
+      msg.setSplitOutputTxHash(value);
       break;
     case 8:
       var value = /** @type {string} */ (reader.readString());
-      msg.setReserveTxHex(value);
+      msg.setReserveTxHash(value);
       break;
     case 9:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setReserveTxHex(value);
+      break;
+    case 10:
       var value = /** @type {string} */ (reader.readString());
       msg.setReserveTxKey(value);
       break;
@@ -48400,7 +48403,7 @@ proto.io.haveno.protobuffer.OpenOffer.serializeBinaryToWriter = function(message
       f
     );
   }
-  f = message.getAutoSplit();
+  f = message.getSplitOutput();
   if (f) {
     writer.writeBool(
       4,
@@ -48421,24 +48424,31 @@ proto.io.haveno.protobuffer.OpenOffer.serializeBinaryToWriter = function(message
       f
     );
   }
-  f = message.getReserveTxHash();
+  f = message.getSplitOutputTxHash();
   if (f.length > 0) {
     writer.writeString(
       7,
       f
     );
   }
-  f = message.getReserveTxHex();
+  f = message.getReserveTxHash();
   if (f.length > 0) {
     writer.writeString(
       8,
       f
     );
   }
-  f = message.getReserveTxKey();
+  f = message.getReserveTxHex();
   if (f.length > 0) {
     writer.writeString(
       9,
+      f
+    );
+  }
+  f = message.getReserveTxKey();
+  if (f.length > 0) {
+    writer.writeString(
+      10,
       f
     );
   }
@@ -48532,10 +48542,10 @@ proto.io.haveno.protobuffer.OpenOffer.prototype.setTriggerPrice = function(value
 
 
 /**
- * optional bool auto_split = 4;
+ * optional bool split_output = 4;
  * @return {boolean}
  */
-proto.io.haveno.protobuffer.OpenOffer.prototype.getAutoSplit = function() {
+proto.io.haveno.protobuffer.OpenOffer.prototype.getSplitOutput = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 4, false));
 };
 
@@ -48544,7 +48554,7 @@ proto.io.haveno.protobuffer.OpenOffer.prototype.getAutoSplit = function() {
  * @param {boolean} value
  * @return {!proto.io.haveno.protobuffer.OpenOffer} returns this
  */
-proto.io.haveno.protobuffer.OpenOffer.prototype.setAutoSplit = function(value) {
+proto.io.haveno.protobuffer.OpenOffer.prototype.setSplitOutput = function(value) {
   return jspb.Message.setProto3BooleanField(this, 4, value);
 };
 
@@ -48605,10 +48615,10 @@ proto.io.haveno.protobuffer.OpenOffer.prototype.setScheduledAmount = function(va
 
 
 /**
- * optional string reserve_tx_hash = 7;
+ * optional string split_output_tx_hash = 7;
  * @return {string}
  */
-proto.io.haveno.protobuffer.OpenOffer.prototype.getReserveTxHash = function() {
+proto.io.haveno.protobuffer.OpenOffer.prototype.getSplitOutputTxHash = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
 };
 
@@ -48617,16 +48627,16 @@ proto.io.haveno.protobuffer.OpenOffer.prototype.getReserveTxHash = function() {
  * @param {string} value
  * @return {!proto.io.haveno.protobuffer.OpenOffer} returns this
  */
-proto.io.haveno.protobuffer.OpenOffer.prototype.setReserveTxHash = function(value) {
+proto.io.haveno.protobuffer.OpenOffer.prototype.setSplitOutputTxHash = function(value) {
   return jspb.Message.setProto3StringField(this, 7, value);
 };
 
 
 /**
- * optional string reserve_tx_hex = 8;
+ * optional string reserve_tx_hash = 8;
  * @return {string}
  */
-proto.io.haveno.protobuffer.OpenOffer.prototype.getReserveTxHex = function() {
+proto.io.haveno.protobuffer.OpenOffer.prototype.getReserveTxHash = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 8, ""));
 };
 
@@ -48635,16 +48645,16 @@ proto.io.haveno.protobuffer.OpenOffer.prototype.getReserveTxHex = function() {
  * @param {string} value
  * @return {!proto.io.haveno.protobuffer.OpenOffer} returns this
  */
-proto.io.haveno.protobuffer.OpenOffer.prototype.setReserveTxHex = function(value) {
+proto.io.haveno.protobuffer.OpenOffer.prototype.setReserveTxHash = function(value) {
   return jspb.Message.setProto3StringField(this, 8, value);
 };
 
 
 /**
- * optional string reserve_tx_key = 9;
+ * optional string reserve_tx_hex = 9;
  * @return {string}
  */
-proto.io.haveno.protobuffer.OpenOffer.prototype.getReserveTxKey = function() {
+proto.io.haveno.protobuffer.OpenOffer.prototype.getReserveTxHex = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 9, ""));
 };
 
@@ -48653,8 +48663,26 @@ proto.io.haveno.protobuffer.OpenOffer.prototype.getReserveTxKey = function() {
  * @param {string} value
  * @return {!proto.io.haveno.protobuffer.OpenOffer} returns this
  */
-proto.io.haveno.protobuffer.OpenOffer.prototype.setReserveTxKey = function(value) {
+proto.io.haveno.protobuffer.OpenOffer.prototype.setReserveTxHex = function(value) {
   return jspb.Message.setProto3StringField(this, 9, value);
+};
+
+
+/**
+ * optional string reserve_tx_key = 10;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.OpenOffer.prototype.getReserveTxKey = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 10, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.OpenOffer} returns this
+ */
+proto.io.haveno.protobuffer.OpenOffer.prototype.setReserveTxKey = function(value) {
+  return jspb.Message.setProto3StringField(this, 10, value);
 };
 
 
@@ -54543,7 +54571,8 @@ proto.io.haveno.protobuffer.PreferencesPayload.toObject = function(includeInstan
     moneroNodeSettings: (f = msg.getMoneroNodeSettings()) && proto.io.haveno.protobuffer.MoneroNodeSettings.toObject(includeInstance, f),
     clearDataAfterDays: jspb.Message.getFieldWithDefault(msg, 59, 0),
     buyScreenCryptoCurrencyCode: jspb.Message.getFieldWithDefault(msg, 60, ""),
-    sellScreenCryptoCurrencyCode: jspb.Message.getFieldWithDefault(msg, 61, "")
+    sellScreenCryptoCurrencyCode: jspb.Message.getFieldWithDefault(msg, 61, ""),
+    splitOfferOutput: jspb.Message.getBooleanFieldWithDefault(msg, 62, false)
   };
 
   if (includeInstance) {
@@ -54836,6 +54865,10 @@ proto.io.haveno.protobuffer.PreferencesPayload.deserializeBinaryFromReader = fun
     case 61:
       var value = /** @type {string} */ (reader.readString());
       msg.setSellScreenCryptoCurrencyCode(value);
+      break;
+    case 62:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setSplitOfferOutput(value);
       break;
     default:
       reader.skipField();
@@ -55293,6 +55326,13 @@ proto.io.haveno.protobuffer.PreferencesPayload.serializeBinaryToWriter = functio
   if (f.length > 0) {
     writer.writeString(
       61,
+      f
+    );
+  }
+  f = message.getSplitOfferOutput();
+  if (f) {
+    writer.writeBool(
+      62,
       f
     );
   }
@@ -56614,6 +56654,24 @@ proto.io.haveno.protobuffer.PreferencesPayload.prototype.getSellScreenCryptoCurr
  */
 proto.io.haveno.protobuffer.PreferencesPayload.prototype.setSellScreenCryptoCurrencyCode = function(value) {
   return jspb.Message.setProto3StringField(this, 61, value);
+};
+
+
+/**
+ * optional bool split_offer_output = 62;
+ * @return {boolean}
+ */
+proto.io.haveno.protobuffer.PreferencesPayload.prototype.getSplitOfferOutput = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 62, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.io.haveno.protobuffer.PreferencesPayload} returns this
+ */
+proto.io.haveno.protobuffer.PreferencesPayload.prototype.setSplitOfferOutput = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 62, value);
 };
 
 

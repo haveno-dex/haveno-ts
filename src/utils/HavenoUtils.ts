@@ -138,7 +138,7 @@ export default class HavenoUtils {
    * @returns {number} the result
    */
   static divideBI(a: bigint, b: bigint): number {
-    return Number(a * 100n / b) / 100
+    return Number(a * 10000000000000n / b) / 10000000000000;
   }
 
   /**

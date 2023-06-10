@@ -14510,7 +14510,8 @@ proto.io.haveno.protobuffer.PostOfferRequest.toObject = function(includeInstance
     minAmount: jspb.Message.getFieldWithDefault(msg, 7, "0"),
     buyerSecurityDepositPct: jspb.Message.getFloatingPointFieldWithDefault(msg, 8, 0.0),
     triggerPrice: jspb.Message.getFieldWithDefault(msg, 9, ""),
-    paymentAccountId: jspb.Message.getFieldWithDefault(msg, 10, "")
+    splitOutput: jspb.Message.getBooleanFieldWithDefault(msg, 10, false),
+    paymentAccountId: jspb.Message.getFieldWithDefault(msg, 11, "")
   };
 
   if (includeInstance) {
@@ -14584,6 +14585,10 @@ proto.io.haveno.protobuffer.PostOfferRequest.deserializeBinaryFromReader = funct
       msg.setTriggerPrice(value);
       break;
     case 10:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setSplitOutput(value);
+      break;
+    case 11:
       var value = /** @type {string} */ (reader.readString());
       msg.setPaymentAccountId(value);
       break;
@@ -14679,10 +14684,17 @@ proto.io.haveno.protobuffer.PostOfferRequest.serializeBinaryToWriter = function(
       f
     );
   }
+  f = message.getSplitOutput();
+  if (f) {
+    writer.writeBool(
+      10,
+      f
+    );
+  }
   f = message.getPaymentAccountId();
   if (f.length > 0) {
     writer.writeString(
-      10,
+      11,
       f
     );
   }
@@ -14852,11 +14864,29 @@ proto.io.haveno.protobuffer.PostOfferRequest.prototype.setTriggerPrice = functio
 
 
 /**
- * optional string payment_account_id = 10;
+ * optional bool split_output = 10;
+ * @return {boolean}
+ */
+proto.io.haveno.protobuffer.PostOfferRequest.prototype.getSplitOutput = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 10, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.io.haveno.protobuffer.PostOfferRequest} returns this
+ */
+proto.io.haveno.protobuffer.PostOfferRequest.prototype.setSplitOutput = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 10, value);
+};
+
+
+/**
+ * optional string payment_account_id = 11;
  * @return {string}
  */
 proto.io.haveno.protobuffer.PostOfferRequest.prototype.getPaymentAccountId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 10, ""));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 11, ""));
 };
 
 
@@ -14865,7 +14895,7 @@ proto.io.haveno.protobuffer.PostOfferRequest.prototype.getPaymentAccountId = fun
  * @return {!proto.io.haveno.protobuffer.PostOfferRequest} returns this
  */
 proto.io.haveno.protobuffer.PostOfferRequest.prototype.setPaymentAccountId = function(value) {
-  return jspb.Message.setProto3StringField(this, 10, value);
+  return jspb.Message.setProto3StringField(this, 11, value);
 };
 
 

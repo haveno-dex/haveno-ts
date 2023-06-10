@@ -999,7 +999,8 @@ export default class HavenoClient {
    * @param {number} marketPriceMarginPct - if using market price, % from market price to accept (optional, default 0%)
    * @param {bigint} minAmount - minimum amount to trade (optional, default to fixed amount)
    * @param {number} triggerPrice - price to remove offer (optional)
-   * @return {OfferInfo} the posted offer 
+   * @param {number} splitOutput - create a new output reserved for the offer, incurring an on-chain transaction and 10 confirmations before the offer goes live (default = false)
+   * @return {OfferInfo} the posted offer
    */
   async postOffer(direction: string,
                   amount: bigint,
@@ -1009,6 +1010,7 @@ export default class HavenoClient {
                   price?: number,
                   marketPriceMarginPct?: number,
                   triggerPrice?: number,
+                  splitOutput?: boolean,
                   minAmount?: bigint): Promise<OfferInfo> {
     try {
       const request = new PostOfferRequest()
@@ -1022,6 +1024,7 @@ export default class HavenoClient {
       if (price) request.setPrice(price.toString());
       if (marketPriceMarginPct) request.setMarketPriceMarginPct(marketPriceMarginPct);
       if (triggerPrice) request.setTriggerPrice(triggerPrice.toString());
+      if (splitOutput) request.setSplitOutput(splitOutput);
       return (await this._offersClient.postOffer(request, {password: this._password})).getOffer()!;
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);

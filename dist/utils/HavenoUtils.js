@@ -127,7 +127,7 @@ class HavenoUtils {
      * @returns {number} the result
      */
     static divideBI(a, b) {
-        return Number(a * 100n / b) / 100;
+        return Number(a * 10000000000000n / b) / 10000000000000;
     }
     /**
      * Convert XMR to atomic units.

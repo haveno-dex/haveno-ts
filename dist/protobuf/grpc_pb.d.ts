@@ -1499,6 +1499,9 @@ export class PostOfferRequest extends jspb.Message {
   getTriggerPrice(): string;
   setTriggerPrice(value: string): PostOfferRequest;
 
+  getSplitOutput(): boolean;
+  setSplitOutput(value: boolean): PostOfferRequest;
+
   getPaymentAccountId(): string;
   setPaymentAccountId(value: string): PostOfferRequest;
 
@@ -1521,6 +1524,7 @@ export namespace PostOfferRequest {
     minAmount: string,
     buyerSecurityDepositPct: number,
     triggerPrice: string,
+    splitOutput: boolean,
     paymentAccountId: string,
   }
 }
