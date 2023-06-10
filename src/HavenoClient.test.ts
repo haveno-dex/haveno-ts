@@ -227,6 +227,7 @@ interface TradeContext {
     price?: number,
     priceMargin?: number,
     triggerPrice?: number,
+    splitOutput?: boolean,
 
     // take offer
     taker?: HavenoClient,
@@ -1235,7 +1236,6 @@ test("Can post and remove an offer (CI, sanity check)", async () => {
   expect(BigInt((await user1.getBalances()).getAvailableBalance())).toEqual(availableBalanceBefore);
 });
 
-// TODO: support splitting outputs
 // TODO: provide number of confirmations in offer status
 test("Can schedule offers with locked funds (CI)", async () => {
   let user3: HavenoClient|undefined;
@@ -1299,7 +1299,7 @@ test("Can schedule offers with locked funds (CI)", async () => {
     await wait(TestConfig.trade.maxTimePeerNoticeMs);
     if (getOffer(await user1.getOffers(assetCode, direction), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in peer's offers before posted");
 
-    // wait for deposit txs to unlock
+    // wait for funding txs to unlock
     await waitForAvailableBalance(outputAmt, user3);
 
     // one output is reserved, one is unlocked
@@ -1336,6 +1336,17 @@ test("Can schedule offers with locked funds (CI)", async () => {
   // stop and delete instances
   if (user3) await releaseHavenoProcess(user3, true);
   if (err) throw err;
+});
+
+test("Can split offer outputs (CI)", async () => {
+  let randomOfferAmount = 1.0 + (Math.random() * 1.0); // random amount between 1 and 2 xmr
+  await executeTrade({
+    price: 150,
+    offerAmount: HavenoUtils.xmrToAtomicUnits(randomOfferAmount),
+    offerMinAmount: HavenoUtils.xmrToAtomicUnits(.15),
+    tradeAmount: HavenoUtils.xmrToAtomicUnits(.92),
+    splitOutput: true
+  });
 });
 
 test("Cannot post offer exceeding trade limit (CI, sanity check)", async () => {
@@ -1988,7 +1999,7 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
     // make offer if configured
     if (makingOffer) {
       ctx.offer = await makeOffer(ctx);
-      expect(ctx.offer.getState()).toEqual("AVAILABLE");
+      expect(ctx.offer.getState()).toEqual(ctx.splitOutput ? "SCHEDULED" : "AVAILABLE");
       ctx.offerId = ctx.offer.getId();
       await wait(ctx.maxTimePeerNoticeMs!);
     } else {
@@ -2002,6 +2013,12 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
     }
 
     // TODO (woodser): test error message taking offer before posted
+
+    // wait for split output tx to unlock
+    if (ctx.splitOutput) {
+      await mineToHeight(await monerod.getHeight() + 10); // TODO: wait for offer to be available (dandilion)
+      await wait(TestConfig.daemonPollPeriodMs * 2);
+    }
 
     // take offer or get existing trade
     let trade: TradeInfo|undefined = undefined;
@@ -2301,6 +2318,7 @@ async function makeOffer(ctx?: TradeContext): Promise<OfferInfo> {
         ctx.price,
         ctx.priceMargin,
         ctx.triggerPrice,
+        ctx.splitOutput,
         ctx.offerMinAmount);
   testOffer(offer, ctx);
 
@@ -2315,7 +2333,7 @@ async function makeOffer(ctx?: TradeContext): Promise<OfferInfo> {
   // unlocked balance has decreased
   let unlockedBalanceAfter = BigInt((await ctx.maker!.getBalances()).getAvailableBalance());
   if (offer.getState() === "SCHEDULED") {
-    if (unlockedBalanceAfter !== unlockedBalanceBefore) throw new Error("Unlocked balance should not change for scheduled offer " + offer.getId());
+    if (!ctx.splitOutput && unlockedBalanceAfter !== unlockedBalanceBefore) throw new Error("Unlocked balance should not change for scheduled offer " + offer.getId());
   } else if (offer.getState() === "AVAILABLE") {
     if (unlockedBalanceAfter === unlockedBalanceBefore) {
       console.warn("Unlocked balance did not change after posting offer, waiting a sync period");
@@ -3308,8 +3326,16 @@ function testOffer(offer: OfferInfo, ctx?: TradeContext) {
     if (BigInt(offer.getBuyerSecurityDeposit()) == TestConfig.minSecurityDeposit) {
       expect(BigInt(offer.getSellerSecurityDeposit())).toEqual(BigInt(offer.getBuyerSecurityDeposit()));
     } else {
-      expect(HavenoUtils.divideBI(BigInt(offer.getBuyerSecurityDeposit()), BigInt(offer.getAmount()))).toEqual(ctx.buyerSecurityDepositPct);
-      expect(HavenoUtils.divideBI(BigInt(offer.getSellerSecurityDeposit()), BigInt(offer.getAmount()))).toEqual(ctx.buyerSecurityDepositPct); // TODO: using same security deposit config for buyer and seller
+      let buyerSecurityDepositPct = HavenoUtils.divideBI(BigInt(offer.getBuyerSecurityDeposit()), BigInt(offer.getAmount()));
+      let sellerSecurityDepositPct = HavenoUtils.divideBI(BigInt(offer.getSellerSecurityDeposit()), BigInt(offer.getAmount()));
+      if (ctx.splitOutput) {
+        const tolerance = 0.000001;
+        assert(ctx.buyerSecurityDepositPct! - buyerSecurityDepositPct < tolerance);
+        assert(ctx.buyerSecurityDepositPct! - sellerSecurityDepositPct < tolerance);
+      } else {
+        expect(buyerSecurityDepositPct).toEqual(ctx.buyerSecurityDepositPct);
+        expect(sellerSecurityDepositPct).toEqual(ctx.buyerSecurityDepositPct); // TODO: using same security deposit config for buyer and seller
+      }
     }
     expect(offer.getUseMarketBasedPrice()).toEqual(!ctx?.price);
     expect(offer.getMarketPriceMarginPct()).toEqual(ctx?.priceMargin ? ctx?.priceMargin : 0);

@@ -979,9 +979,10 @@ class HavenoClient {
      * @param {number} marketPriceMarginPct - if using market price, % from market price to accept (optional, default 0%)
      * @param {bigint} minAmount - minimum amount to trade (optional, default to fixed amount)
      * @param {number} triggerPrice - price to remove offer (optional)
+     * @param {number} splitOutput - create a new output reserved for the offer, incurring an on-chain transaction and 10 confirmations before the offer goes live (default = false)
      * @return {OfferInfo} the posted offer
      */
-    async postOffer(direction, amount, assetCode, paymentAccountId, buyerSecurityDepositPct, price, marketPriceMarginPct, triggerPrice, minAmount) {
+    async postOffer(direction, amount, assetCode, paymentAccountId, buyerSecurityDepositPct, price, marketPriceMarginPct, triggerPrice, splitOutput, minAmount) {
         try {
             const request = new grpc_pb_1.PostOfferRequest()
                 .setDirection(direction)
@@ -997,6 +998,8 @@ class HavenoClient {
                 request.setMarketPriceMarginPct(marketPriceMarginPct);
             if (triggerPrice)
                 request.setTriggerPrice(triggerPrice.toString());
+            if (splitOutput)
+                request.setSplitOutput(splitOutput);
             return (await this._offersClient.postOffer(request, { password: this._password })).getOffer();
         }
         catch (e) {

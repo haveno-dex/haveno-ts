@@ -5688,12 +5688,10 @@ export namespace XmrAddressEntry {
   export enum Context { 
     PB_ERROR = 0,
     ARBITRATOR = 1,
-    AVAILABLE = 2,
-    OFFER_FUNDING = 3,
-    RESERVED_FOR_TRADE = 4,
-    MULTI_SIG = 5,
-    TRADE_PAYOUT = 6,
-    BASE_ADDRESS = 7,
+    BASE_ADDRESS = 2,
+    AVAILABLE = 3,
+    OFFER_FUNDING = 4,
+    TRADE_PAYOUT = 5,
   }
 }
 
@@ -5877,8 +5875,8 @@ export class OpenOffer extends jspb.Message {
   getTriggerPrice(): number;
   setTriggerPrice(value: number): OpenOffer;
 
-  getAutoSplit(): boolean;
-  setAutoSplit(value: boolean): OpenOffer;
+  getSplitOutput(): boolean;
+  setSplitOutput(value: boolean): OpenOffer;
 
   getScheduledTxHashesList(): Array<string>;
   setScheduledTxHashesList(value: Array<string>): OpenOffer;
@@ -5887,6 +5885,9 @@ export class OpenOffer extends jspb.Message {
 
   getScheduledAmount(): string;
   setScheduledAmount(value: string): OpenOffer;
+
+  getSplitOutputTxHash(): string;
+  setSplitOutputTxHash(value: string): OpenOffer;
 
   getReserveTxHash(): string;
   setReserveTxHash(value: string): OpenOffer;
@@ -5910,9 +5911,10 @@ export namespace OpenOffer {
     offer?: Offer.AsObject,
     state: OpenOffer.State,
     triggerPrice: number,
-    autoSplit: boolean,
+    splitOutput: boolean,
     scheduledTxHashesList: Array<string>,
     scheduledAmount: string,
+    splitOutputTxHash: string,
     reserveTxHash: string,
     reserveTxHex: string,
     reserveTxKey: string,
@@ -6935,6 +6937,9 @@ export class PreferencesPayload extends jspb.Message {
   getSellScreenCryptoCurrencyCode(): string;
   setSellScreenCryptoCurrencyCode(value: string): PreferencesPayload;
 
+  getSplitOfferOutput(): boolean;
+  setSplitOfferOutput(value: boolean): PreferencesPayload;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PreferencesPayload.AsObject;
   static toObject(includeInstance: boolean, msg: PreferencesPayload): PreferencesPayload.AsObject;
@@ -7006,6 +7011,7 @@ export namespace PreferencesPayload {
     clearDataAfterDays: number,
     buyScreenCryptoCurrencyCode: string,
     sellScreenCryptoCurrencyCode: string,
+    splitOfferOutput: boolean,
   }
 }
 
