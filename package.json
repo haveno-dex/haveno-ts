@@ -1,6 +1,6 @@
 {
   "name": "haveno-ts",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "Haveno TypeScript interface",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
