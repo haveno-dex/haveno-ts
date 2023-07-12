@@ -1285,25 +1285,28 @@ test("Can schedule offers with locked funds (CI)", async () => {
     offer = await makeOffer({maker: user3, assetCode: assetCode, direction: direction, awaitFundsToMakeOffer: false});
     assert.equal(offer.getState(), "SCHEDULED");
 
-    // restart user3
-    const user3Config = {appName: user3.getAppName()};
-    await releaseHavenoProcess(user3);
-    user3 = await initHaveno(user3Config);
-    ctx.maker = user3;
-
-    // has offer
-    offer = await user3.getMyOffer(offer.getId());
-    assert.equal(offer.getState(), "SCHEDULED");
-
     // peer does not see offer because it's scheduled
     await wait(TestConfig.trade.maxTimePeerNoticeMs);
     if (getOffer(await user1.getOffers(assetCode, direction), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in peer's offers before posted");
 
-    // wait for funding txs to unlock
+    // stop user3
+    const user3Config = {appName: user3.getAppName()};
+    await releaseHavenoProcess(user3);
+
+    // mine 10 blocks
+    await mineBlocks(10);
+
+    // restart user3
+    user3 = await initHaveno(user3Config);
+    ctx.maker = user3;
+
+    // has offer
     await waitForAvailableBalance(outputAmt, user3);
+    offer = await user3.getMyOffer(offer.getId());
+    assert.equal(offer.getState(), "SCHEDULED");
 
     // one output is reserved, one is unlocked
-    await wait(TestConfig.trade.maxTimePeerNoticeMs);
+    await wait(TestConfig.trade.maxTimePeerNoticeMs + TestConfig.trade.walletSyncPeriodMs);
     expect(BigInt((await user3.getBalances()).getAvailableBalance())).toEqual(outputAmt);
     expect(BigInt((await user3.getBalances()).getPendingBalance())).toEqual(BigInt(0));
     expect(BigInt((await user3.getBalances()).getReservedOfferBalance())).toEqual(outputAmt);
@@ -1604,6 +1607,7 @@ test("Invalidates offers when reserved funds are spent (CI)", async () => {
   let err;
   let tx;
   try {
+    
     // wait for user1 to have unlocked balance for trade
     const tradeAmount = BigInt("250000000000");
     await waitForAvailableBalance(tradeAmount * BigInt("2"), user1);
