@@ -2565,7 +2565,7 @@ async function resolveDispute(ctx: TradeContext) {
 
   // award too much to winner
   const tradeAmount: bigint = BigInt(ctx.offer!.getAmount());
-  let customWinnerAmount = tradeAmount + BigInt(ctx.offer!.getBuyerSecurityDeposit()) + BigInt(ctx.offer!.getSellerSecurityDeposit()) + BigInt("10000");
+  let customWinnerAmount = tradeAmount + BigInt(ctx.offer!.getBuyerSecurityDeposit()) + BigInt(ctx.offer!.getSellerSecurityDeposit()); // mining fee is subtracted from security deposits
   try {
     await arbitrator.resolveDispute(ctx.offerId!, ctx.disputeWinner!, ctx.disputeReason!, "Winner gets too much", customWinnerAmount);
     throw new Error("Should have failed resolving dispute with too much winner payout");
@@ -2574,7 +2574,10 @@ async function resolveDispute(ctx: TradeContext) {
   }
 
   // award too little to loser
-  customWinnerAmount = tradeAmount + BigInt(ctx.offer!.getBuyerSecurityDeposit()) + BigInt(ctx.offer!.getSellerSecurityDeposit()) - BigInt("10000");
+  let trade = await arbitrator.getTrade(ctx.offerId!)
+  let makerDepositTx = await monerod.getTx(trade.getMakerDepositTxId());
+  let takerDepositTx = await monerod.getTx(trade.getTakerDepositTxId());
+  customWinnerAmount = tradeAmount + BigInt(ctx.offer!.getBuyerSecurityDeposit()) + BigInt(ctx.offer!.getSellerSecurityDeposit()) - BigInt(makerDepositTx.getFee().toString()) - BigInt(takerDepositTx.getFee().toString()) - BigInt("10000");
   try {
     await arbitrator.resolveDispute(ctx.offerId!, ctx.disputeWinner!, ctx.disputeReason!, "Loser gets too little", customWinnerAmount);
     throw new Error("Should have failed resolving dispute with insufficient loser payout");
@@ -2623,18 +2626,20 @@ async function resolveDispute(ctx: TradeContext) {
   await testTradeState(await ctx.arbitrator!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"], disputeState: "DISPUTE_CLOSED", isCompleted: true, isPayoutPublished: true});
 
   // test balances after payout tx unless concurrent trades
+  let buyerDepositTx = getBuyer(ctx) === ctx.maker ? makerDepositTx : takerDepositTx;
+  let sellerDepositTx = getBuyer(ctx) === ctx.maker ? takerDepositTx : makerDepositTx;
   if (!ctx.concurrentTrades) {
     if (winner) {
       const winnerBalancesAfter = await winner!.getBalances();
       const winnerDifference = BigInt(winnerBalancesAfter.getBalance()) - BigInt(winnerBalancesBefore!.getBalance());
-      const winnerSecurityDeposit = BigInt(ctx.disputeWinner === DisputeResult.Winner.BUYER ? ctx.offer!.getBuyerSecurityDeposit() : ctx.offer!.getSellerSecurityDeposit())
+      const winnerSecurityDeposit = BigInt(ctx.disputeWinner === DisputeResult.Winner.BUYER ? ctx.offer!.getBuyerSecurityDeposit() : ctx.offer!.getSellerSecurityDeposit()) - BigInt(ctx.disputeWinner === DisputeResult.Winner.BUYER ? buyerDepositTx.getFee().toString() : sellerDepositTx.getFee().toString());
       const winnerPayout = ctx.disputeWinnerAmount ? ctx.disputeWinnerAmount : tradeAmount + winnerSecurityDeposit; // TODO: this assumes security deposit is returned to winner, but won't be the case if payment sent
       expect(winnerDifference).toEqual(winnerPayout);
     }
     if (loser) {
       const loserBalancesAfter = await loser!.getBalances();
       const loserDifference = BigInt(loserBalancesAfter.getBalance()) - BigInt(loserBalancesBefore!.getBalance());
-      const loserSecurityDeposit = BigInt(ctx.disputeWinner === DisputeResult.Winner.BUYER ? ctx.offer!.getSellerSecurityDeposit() : ctx.offer!.getBuyerSecurityDeposit());
+      const loserSecurityDeposit = BigInt(ctx.disputeWinner === DisputeResult.Winner.BUYER ? ctx.offer!.getSellerSecurityDeposit() : ctx.offer!.getBuyerSecurityDeposit()) - BigInt(ctx.disputeWinner === DisputeResult.Winner.BUYER ? sellerDepositTx.getFee().toString() : buyerDepositTx.getFee().toString());
       const loserPayout = loserSecurityDeposit;
       expect(loserPayout - loserDifference).toBeLessThan(TestConfig.maxFee);
     }
