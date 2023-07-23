@@ -227,7 +227,7 @@ interface TradeContext {
     price?: number,
     priceMargin?: number,
     triggerPrice?: number,
-    splitOutput?: boolean,
+    reserveExactAmount?: boolean,
 
     // take offer
     taker?: HavenoClient,
@@ -1341,14 +1341,14 @@ test("Can schedule offers with locked funds (CI)", async () => {
   if (err) throw err;
 });
 
-test("Can split offer outputs (CI)", async () => {
+test("Can reserve exact amount needed for offer (CI)", async () => {
   let randomOfferAmount = 1.0 + (Math.random() * 1.0); // random amount between 1 and 2 xmr
   await executeTrade({
     price: 150,
     offerAmount: HavenoUtils.xmrToAtomicUnits(randomOfferAmount),
     offerMinAmount: HavenoUtils.xmrToAtomicUnits(.15),
     tradeAmount: HavenoUtils.xmrToAtomicUnits(.92),
-    splitOutput: true
+    reserveExactAmount: true
   });
 });
 
@@ -2003,7 +2003,7 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
     // make offer if configured
     if (makingOffer) {
       ctx.offer = await makeOffer(ctx);
-      expect(ctx.offer.getState()).toEqual(ctx.splitOutput ? "SCHEDULED" : "AVAILABLE");
+      expect(ctx.offer.getState()).toEqual(ctx.reserveExactAmount ? "SCHEDULED" : "AVAILABLE");
       ctx.offerId = ctx.offer.getId();
       await wait(ctx.maxTimePeerNoticeMs!);
     } else {
@@ -2019,7 +2019,7 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
     // TODO (woodser): test error message taking offer before posted
 
     // wait for split output tx to unlock
-    if (ctx.splitOutput) {
+    if (ctx.reserveExactAmount) {
       await mineToHeight(await monerod.getHeight() + 10); // TODO: wait for offer to be available (dandilion)
       await wait(TestConfig.daemonPollPeriodMs * 2);
     }
@@ -2322,7 +2322,7 @@ async function makeOffer(ctx?: TradeContext): Promise<OfferInfo> {
         ctx.price,
         ctx.priceMargin,
         ctx.triggerPrice,
-        ctx.splitOutput,
+        ctx.reserveExactAmount,
         ctx.offerMinAmount);
   testOffer(offer, ctx);
 
@@ -2337,7 +2337,7 @@ async function makeOffer(ctx?: TradeContext): Promise<OfferInfo> {
   // unlocked balance has decreased
   let unlockedBalanceAfter = BigInt((await ctx.maker!.getBalances()).getAvailableBalance());
   if (offer.getState() === "SCHEDULED") {
-    if (!ctx.splitOutput && unlockedBalanceAfter !== unlockedBalanceBefore) throw new Error("Unlocked balance should not change for scheduled offer " + offer.getId());
+    if (!ctx.reserveExactAmount && unlockedBalanceAfter !== unlockedBalanceBefore) throw new Error("Unlocked balance should not change for scheduled offer " + offer.getId());
   } else if (offer.getState() === "AVAILABLE") {
     if (unlockedBalanceAfter === unlockedBalanceBefore) {
       console.warn("Unlocked balance did not change after posting offer, waiting a sync period");
@@ -3337,7 +3337,7 @@ function testOffer(offer: OfferInfo, ctx?: TradeContext) {
     } else {
       let buyerSecurityDepositPct = HavenoUtils.divideBI(BigInt(offer.getBuyerSecurityDeposit()), BigInt(offer.getAmount()));
       let sellerSecurityDepositPct = HavenoUtils.divideBI(BigInt(offer.getSellerSecurityDeposit()), BigInt(offer.getAmount()));
-      if (ctx.splitOutput) {
+      if (ctx.reserveExactAmount) {
         const tolerance = 0.000001;
         assert(ctx.buyerSecurityDepositPct! - buyerSecurityDepositPct < tolerance);
         assert(ctx.buyerSecurityDepositPct! - sellerSecurityDepositPct < tolerance);
