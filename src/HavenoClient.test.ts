@@ -76,7 +76,7 @@ const TestConfig = {
         walletPassword: "abc123",
         defaultPath: "funding_wallet-" + getBaseCurrencyNetwork(),
         minimumFunding: BigInt("5000000000000"),
-        mnemonic: "origin hickory pavements tudor sizes hornet tether segments sack technical elbow unsafe legion nitrogen adapt yearbook idols fuzzy pitched goes tusks elbow erase fossil erase",
+        seed: "origin hickory pavements tudor sizes hornet tether segments sack technical elbow unsafe legion nitrogen adapt yearbook idols fuzzy pitched goes tusks elbow erase fossil erase",
         primaryAddress: "9xSyMy1r9h3BVjMrF3CTqQCQy36yCfkpn7uVfMyTUbez3hhumqBUqGUNNALjcd7f1HJBRdeH82bCC3veFHW7z3xm28gug4d",
         restoreHeight: 150
     },
@@ -315,7 +315,7 @@ beforeAll(async () => {
     HavenoUtils.log(0, "Funding wallet unlocked balance: " + await fundingWallet.getUnlockedBalance());
     const subaddress = await fundingWallet.createSubaddress(0);
     HavenoUtils.log(0, "Funding wallet height: " + await fundingWallet.getHeight());
-    HavenoUtils.log(0, "Funding wallet mnemonic: " + await fundingWallet.getMnemonic());
+    HavenoUtils.log(0, "Funding wallet seed: " + await fundingWallet.getSeed());
     HavenoUtils.log(0, "Funding wallet primary address: " + await fundingWallet.getPrimaryAddress());
     HavenoUtils.log(0, "Funding wallet new subaddress: " + subaddress.getAddress());
 
@@ -2911,7 +2911,7 @@ async function initFundingWallet() {
         await fundingWallet.createWallet({
             path: TestConfig.fundingWallet.defaultPath,
             password: TestConfig.fundingWallet.walletPassword,
-            mnemonic: TestConfig.fundingWallet.mnemonic,
+            seed: TestConfig.fundingWallet.seed,
             restoreHeight: TestConfig.fundingWallet.restoreHeight
         });
       } else {
