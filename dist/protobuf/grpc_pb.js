@@ -14510,7 +14510,7 @@ proto.io.haveno.protobuffer.PostOfferRequest.toObject = function(includeInstance
     minAmount: jspb.Message.getFieldWithDefault(msg, 7, "0"),
     buyerSecurityDepositPct: jspb.Message.getFloatingPointFieldWithDefault(msg, 8, 0.0),
     triggerPrice: jspb.Message.getFieldWithDefault(msg, 9, ""),
-    splitOutput: jspb.Message.getBooleanFieldWithDefault(msg, 10, false),
+    reserveExactAmount: jspb.Message.getBooleanFieldWithDefault(msg, 10, false),
     paymentAccountId: jspb.Message.getFieldWithDefault(msg, 11, "")
   };
 
@@ -14586,7 +14586,7 @@ proto.io.haveno.protobuffer.PostOfferRequest.deserializeBinaryFromReader = funct
       break;
     case 10:
       var value = /** @type {boolean} */ (reader.readBool());
-      msg.setSplitOutput(value);
+      msg.setReserveExactAmount(value);
       break;
     case 11:
       var value = /** @type {string} */ (reader.readString());
@@ -14684,7 +14684,7 @@ proto.io.haveno.protobuffer.PostOfferRequest.serializeBinaryToWriter = function(
       f
     );
   }
-  f = message.getSplitOutput();
+  f = message.getReserveExactAmount();
   if (f) {
     writer.writeBool(
       10,
@@ -14864,10 +14864,10 @@ proto.io.haveno.protobuffer.PostOfferRequest.prototype.setTriggerPrice = functio
 
 
 /**
- * optional bool split_output = 10;
+ * optional bool reserve_exact_amount = 10;
  * @return {boolean}
  */
-proto.io.haveno.protobuffer.PostOfferRequest.prototype.getSplitOutput = function() {
+proto.io.haveno.protobuffer.PostOfferRequest.prototype.getReserveExactAmount = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 10, false));
 };
 
@@ -14876,7 +14876,7 @@ proto.io.haveno.protobuffer.PostOfferRequest.prototype.getSplitOutput = function
  * @param {boolean} value
  * @return {!proto.io.haveno.protobuffer.PostOfferRequest} returns this
  */
-proto.io.haveno.protobuffer.PostOfferRequest.prototype.setSplitOutput = function(value) {
+proto.io.haveno.protobuffer.PostOfferRequest.prototype.setReserveExactAmount = function(value) {
   return jspb.Message.setProto3BooleanField(this, 10, value);
 };
 

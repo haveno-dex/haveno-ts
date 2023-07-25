@@ -5875,8 +5875,8 @@ export class OpenOffer extends jspb.Message {
   getTriggerPrice(): number;
   setTriggerPrice(value: number): OpenOffer;
 
-  getSplitOutput(): boolean;
-  setSplitOutput(value: boolean): OpenOffer;
+  getReserveExactAmount(): boolean;
+  setReserveExactAmount(value: boolean): OpenOffer;
 
   getScheduledTxHashesList(): Array<string>;
   setScheduledTxHashesList(value: Array<string>): OpenOffer;
@@ -5911,7 +5911,7 @@ export namespace OpenOffer {
     offer?: Offer.AsObject,
     state: OpenOffer.State,
     triggerPrice: number,
-    splitOutput: boolean,
+    reserveExactAmount: boolean,
     scheduledTxHashesList: Array<string>,
     scheduledAmount: string,
     splitOutputTxHash: string,

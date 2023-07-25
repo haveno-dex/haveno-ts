@@ -423,10 +423,10 @@ export default class HavenoClient {
      * @param {number} marketPriceMarginPct - if using market price, % from market price to accept (optional, default 0%)
      * @param {bigint} minAmount - minimum amount to trade (optional, default to fixed amount)
      * @param {number} triggerPrice - price to remove offer (optional)
-     * @param {number} splitOutput - create a new output reserved for the offer, incurring an on-chain transaction and 10 confirmations before the offer goes live (default = false)
+     * @param {number} reserveExactAmount - reserve exact amount needed for offer, incurring on-chain transaction and 10 confirmations before the offer goes live (default = false)
      * @return {OfferInfo} the posted offer
      */
-    postOffer(direction: string, amount: bigint, assetCode: string, paymentAccountId: string, buyerSecurityDepositPct: number, price?: number, marketPriceMarginPct?: number, triggerPrice?: number, splitOutput?: boolean, minAmount?: bigint): Promise<OfferInfo>;
+    postOffer(direction: string, amount: bigint, assetCode: string, paymentAccountId: string, buyerSecurityDepositPct: number, price?: number, marketPriceMarginPct?: number, triggerPrice?: number, reserveExactAmount?: boolean, minAmount?: bigint): Promise<OfferInfo>;
     /**
      * Remove a posted offer, releasing its reserved funds.
      *
