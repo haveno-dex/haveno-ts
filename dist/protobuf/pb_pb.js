@@ -48268,7 +48268,7 @@ proto.io.haveno.protobuffer.OpenOffer.toObject = function(includeInstance, msg) 
     offer: (f = msg.getOffer()) && proto.io.haveno.protobuffer.Offer.toObject(includeInstance, f),
     state: jspb.Message.getFieldWithDefault(msg, 2, 0),
     triggerPrice: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    splitOutput: jspb.Message.getBooleanFieldWithDefault(msg, 4, false),
+    reserveExactAmount: jspb.Message.getBooleanFieldWithDefault(msg, 4, false),
     scheduledTxHashesList: (f = jspb.Message.getRepeatedField(msg, 5)) == null ? undefined : f,
     scheduledAmount: jspb.Message.getFieldWithDefault(msg, 6, ""),
     splitOutputTxHash: jspb.Message.getFieldWithDefault(msg, 7, ""),
@@ -48326,7 +48326,7 @@ proto.io.haveno.protobuffer.OpenOffer.deserializeBinaryFromReader = function(msg
       break;
     case 4:
       var value = /** @type {boolean} */ (reader.readBool());
-      msg.setSplitOutput(value);
+      msg.setReserveExactAmount(value);
       break;
     case 5:
       var value = /** @type {string} */ (reader.readString());
@@ -48403,7 +48403,7 @@ proto.io.haveno.protobuffer.OpenOffer.serializeBinaryToWriter = function(message
       f
     );
   }
-  f = message.getSplitOutput();
+  f = message.getReserveExactAmount();
   if (f) {
     writer.writeBool(
       4,
@@ -48542,10 +48542,10 @@ proto.io.haveno.protobuffer.OpenOffer.prototype.setTriggerPrice = function(value
 
 
 /**
- * optional bool split_output = 4;
+ * optional bool reserve_exact_amount = 4;
  * @return {boolean}
  */
-proto.io.haveno.protobuffer.OpenOffer.prototype.getSplitOutput = function() {
+proto.io.haveno.protobuffer.OpenOffer.prototype.getReserveExactAmount = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 4, false));
 };
 
@@ -48554,7 +48554,7 @@ proto.io.haveno.protobuffer.OpenOffer.prototype.getSplitOutput = function() {
  * @param {boolean} value
  * @return {!proto.io.haveno.protobuffer.OpenOffer} returns this
  */
-proto.io.haveno.protobuffer.OpenOffer.prototype.setSplitOutput = function(value) {
+proto.io.haveno.protobuffer.OpenOffer.prototype.setReserveExactAmount = function(value) {
   return jspb.Message.setProto3BooleanField(this, 4, value);
 };
 
