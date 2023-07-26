@@ -2322,8 +2322,8 @@ async function makeOffer(ctx?: TradeContext): Promise<OfferInfo> {
         ctx.price,
         ctx.priceMargin,
         ctx.triggerPrice,
-        ctx.reserveExactAmount,
-        ctx.offerMinAmount);
+        ctx.offerMinAmount,
+        ctx.reserveExactAmount);
   testOffer(offer, ctx);
 
   // offer is included in my offers only
