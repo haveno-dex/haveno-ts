@@ -179,7 +179,7 @@ const TestConfig = {
         maxConcurrencyCI: 7, // CI test max concurrency
         stopOnFailure: true,
         testPayoutConfirmed: true,
-        testPayoutUnlocked: true
+        testPayoutUnlocked: false
     }
 };
 
@@ -1367,7 +1367,8 @@ test("Can complete a trade within a range", async () => {
     price: 150,
     offerAmount: HavenoUtils.xmrToAtomicUnits(1),
     offerMinAmount: HavenoUtils.xmrToAtomicUnits(.15),
-    tradeAmount: HavenoUtils.xmrToAtomicUnits(.18)
+    tradeAmount: HavenoUtils.xmrToAtomicUnits(.18),
+    testPayoutUnlocked: true, // override to test unlock
   });
 });
 
@@ -1471,6 +1472,7 @@ test("Can go offline while resolving disputes (CI)", async () => {
       disputeWinner: DisputeResult.Winner.SELLER,
       disputeReason: DisputeResult.Reason.NO_REPLY,
       disputeSummary: "Seller wins dispute because buyer has not replied",
+      testTradePayoutUnlock: true
     });
 
     // fund traders
