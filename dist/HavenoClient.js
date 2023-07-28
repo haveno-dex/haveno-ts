@@ -977,12 +977,12 @@ class HavenoClient {
      * @param {number} buyerSecurityDepositPct - buyer security deposit as % of trade amount
      * @param {number} price - trade price (optional, default to market price)
      * @param {number} marketPriceMarginPct - if using market price, % from market price to accept (optional, default 0%)
-     * @param {bigint} minAmount - minimum amount to trade (optional, default to fixed amount)
      * @param {number} triggerPrice - price to remove offer (optional)
+     * @param {bigint} minAmount - minimum amount to trade (optional, default to fixed amount)
      * @param {number} reserveExactAmount - reserve exact amount needed for offer, incurring on-chain transaction and 10 confirmations before the offer goes live (default = false)
      * @return {OfferInfo} the posted offer
      */
-    async postOffer(direction, amount, assetCode, paymentAccountId, buyerSecurityDepositPct, price, marketPriceMarginPct, triggerPrice, reserveExactAmount, minAmount) {
+    async postOffer(direction, amount, assetCode, paymentAccountId, buyerSecurityDepositPct, price, marketPriceMarginPct, triggerPrice, minAmount, reserveExactAmount) {
         try {
             const request = new grpc_pb_1.PostOfferRequest()
                 .setDirection(direction)
