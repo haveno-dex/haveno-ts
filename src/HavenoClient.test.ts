@@ -570,7 +570,6 @@ test("Can manage Monero daemon connections (CI)", async () => {
     // start monerod2
     const cmd = [
       TestConfig.moneroBinsDir + "/monerod",
-      "--" + monerojs.MoneroNetworkType.toString(TestConfig.networkType).toLowerCase(),
       "--no-igd",
       "--hide-my-port",
       "--data-dir",  TestConfig.moneroBinsDir + "/" + TestConfig.baseCurrencyNetwork.toLowerCase() + "/testnode",
@@ -578,6 +577,7 @@ test("Can manage Monero daemon connections (CI)", async () => {
       "--rpc-bind-port", TestConfig.monerod2.rpcBindPort,
       "--no-zmq"
     ];
+    if (getBaseCurrencyNetwork() !== BaseCurrencyNetwork.XMR_MAINNET) cmd.push("--" + monerojs.MoneroNetworkType.toString(TestConfig.networkType).toLowerCase());
     if (TestConfig.monerod2.username) cmd.push("--rpc-login", TestConfig.monerod2.username + ":" + TestConfig.monerod2.password);
     monerod2 = await monerojs.connectToDaemonRpc(cmd);
 
@@ -1487,8 +1487,8 @@ test("Can go offline while resolving disputes (CI)", async () => {
   }
 
   // stop and delete traders
-  await releaseHavenoProcess(ctx.maker!, true);
-  deleteHavenoInstanceByAppName(ctx.sellerAppName!); // seller is offline
+  if (ctx.maker) await releaseHavenoProcess(ctx.maker!, true);
+  if (ctx.sellerAppName) deleteHavenoInstanceByAppName(ctx.sellerAppName!); // seller is offline
   if (err) throw err;
 });
 
