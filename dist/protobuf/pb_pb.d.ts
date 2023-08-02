@@ -2501,8 +2501,8 @@ export class Filter extends jspb.Message {
   clearPriceRelayNodesList(): Filter;
   addPriceRelayNodes(value: string, index?: number): Filter;
 
-  getPreventPublicBtcNetwork(): boolean;
-  setPreventPublicBtcNetwork(value: boolean): Filter;
+  getPreventPublicXmrNetwork(): boolean;
+  setPreventPublicXmrNetwork(value: boolean): Filter;
 
   getXmrNodesList(): Array<string>;
   setXmrNodesList(value: Array<string>): Filter;
@@ -2527,10 +2527,10 @@ export class Filter extends jspb.Message {
   clearBannedsignerpubkeysList(): Filter;
   addBannedsignerpubkeys(value: string, index?: number): Filter;
 
-  getBtcFeeReceiverAddressesList(): Array<string>;
-  setBtcFeeReceiverAddressesList(value: Array<string>): Filter;
-  clearBtcFeeReceiverAddressesList(): Filter;
-  addBtcFeeReceiverAddresses(value: string, index?: number): Filter;
+  getXmrFeeReceiverAddressesList(): Array<string>;
+  setXmrFeeReceiverAddressesList(value: Array<string>): Filter;
+  clearXmrFeeReceiverAddressesList(): Filter;
+  addXmrFeeReceiverAddresses(value: string, index?: number): Filter;
 
   getCreationDate(): number;
   setCreationDate(value: number): Filter;
@@ -2583,13 +2583,13 @@ export namespace Filter {
     arbitratorsList: Array<string>,
     seedNodesList: Array<string>,
     priceRelayNodesList: Array<string>,
-    preventPublicBtcNetwork: boolean,
+    preventPublicXmrNetwork: boolean,
     xmrNodesList: Array<string>,
     disableTradeBelowVersion: string,
     mediatorsList: Array<string>,
     refundagentsList: Array<string>,
     bannedsignerpubkeysList: Array<string>,
-    btcFeeReceiverAddressesList: Array<string>,
+    xmrFeeReceiverAddressesList: Array<string>,
     creationDate: number,
     signerPubKeyAsHex: string,
     bannedprivilegeddevpubkeysList: Array<string>,
