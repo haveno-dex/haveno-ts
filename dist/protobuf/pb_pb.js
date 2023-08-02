@@ -23003,13 +23003,13 @@ proto.io.haveno.protobuffer.Filter.toObject = function(includeInstance, msg) {
     arbitratorsList: (f = jspb.Message.getRepeatedField(msg, 9)) == null ? undefined : f,
     seedNodesList: (f = jspb.Message.getRepeatedField(msg, 10)) == null ? undefined : f,
     priceRelayNodesList: (f = jspb.Message.getRepeatedField(msg, 11)) == null ? undefined : f,
-    preventPublicBtcNetwork: jspb.Message.getBooleanFieldWithDefault(msg, 12, false),
+    preventPublicXmrNetwork: jspb.Message.getBooleanFieldWithDefault(msg, 12, false),
     xmrNodesList: (f = jspb.Message.getRepeatedField(msg, 13)) == null ? undefined : f,
     disableTradeBelowVersion: jspb.Message.getFieldWithDefault(msg, 14, ""),
     mediatorsList: (f = jspb.Message.getRepeatedField(msg, 15)) == null ? undefined : f,
     refundagentsList: (f = jspb.Message.getRepeatedField(msg, 16)) == null ? undefined : f,
     bannedsignerpubkeysList: (f = jspb.Message.getRepeatedField(msg, 17)) == null ? undefined : f,
-    btcFeeReceiverAddressesList: (f = jspb.Message.getRepeatedField(msg, 18)) == null ? undefined : f,
+    xmrFeeReceiverAddressesList: (f = jspb.Message.getRepeatedField(msg, 18)) == null ? undefined : f,
     creationDate: jspb.Message.getFieldWithDefault(msg, 19, 0),
     signerPubKeyAsHex: jspb.Message.getFieldWithDefault(msg, 20, ""),
     bannedprivilegeddevpubkeysList: (f = jspb.Message.getRepeatedField(msg, 21)) == null ? undefined : f,
@@ -23103,7 +23103,7 @@ proto.io.haveno.protobuffer.Filter.deserializeBinaryFromReader = function(msg, r
       break;
     case 12:
       var value = /** @type {boolean} */ (reader.readBool());
-      msg.setPreventPublicBtcNetwork(value);
+      msg.setPreventPublicXmrNetwork(value);
       break;
     case 13:
       var value = /** @type {string} */ (reader.readString());
@@ -23127,7 +23127,7 @@ proto.io.haveno.protobuffer.Filter.deserializeBinaryFromReader = function(msg, r
       break;
     case 18:
       var value = /** @type {string} */ (reader.readString());
-      msg.addBtcFeeReceiverAddresses(value);
+      msg.addXmrFeeReceiverAddresses(value);
       break;
     case 19:
       var value = /** @type {number} */ (reader.readInt64());
@@ -23265,7 +23265,7 @@ proto.io.haveno.protobuffer.Filter.serializeBinaryToWriter = function(message, w
       f
     );
   }
-  f = message.getPreventPublicBtcNetwork();
+  f = message.getPreventPublicXmrNetwork();
   if (f) {
     writer.writeBool(
       12,
@@ -23307,7 +23307,7 @@ proto.io.haveno.protobuffer.Filter.serializeBinaryToWriter = function(message, w
       f
     );
   }
-  f = message.getBtcFeeReceiverAddressesList();
+  f = message.getXmrFeeReceiverAddressesList();
   if (f.length > 0) {
     writer.writeRepeatedString(
       18,
@@ -23753,10 +23753,10 @@ proto.io.haveno.protobuffer.Filter.prototype.clearPriceRelayNodesList = function
 
 
 /**
- * optional bool prevent_public_btc_network = 12;
+ * optional bool prevent_public_xmr_network = 12;
  * @return {boolean}
  */
-proto.io.haveno.protobuffer.Filter.prototype.getPreventPublicBtcNetwork = function() {
+proto.io.haveno.protobuffer.Filter.prototype.getPreventPublicXmrNetwork = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 12, false));
 };
 
@@ -23765,7 +23765,7 @@ proto.io.haveno.protobuffer.Filter.prototype.getPreventPublicBtcNetwork = functi
  * @param {boolean} value
  * @return {!proto.io.haveno.protobuffer.Filter} returns this
  */
-proto.io.haveno.protobuffer.Filter.prototype.setPreventPublicBtcNetwork = function(value) {
+proto.io.haveno.protobuffer.Filter.prototype.setPreventPublicXmrNetwork = function(value) {
   return jspb.Message.setProto3BooleanField(this, 12, value);
 };
 
@@ -23937,10 +23937,10 @@ proto.io.haveno.protobuffer.Filter.prototype.clearBannedsignerpubkeysList = func
 
 
 /**
- * repeated string btc_fee_receiver_addresses = 18;
+ * repeated string xmr_fee_receiver_addresses = 18;
  * @return {!Array<string>}
  */
-proto.io.haveno.protobuffer.Filter.prototype.getBtcFeeReceiverAddressesList = function() {
+proto.io.haveno.protobuffer.Filter.prototype.getXmrFeeReceiverAddressesList = function() {
   return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 18));
 };
 
@@ -23949,7 +23949,7 @@ proto.io.haveno.protobuffer.Filter.prototype.getBtcFeeReceiverAddressesList = fu
  * @param {!Array<string>} value
  * @return {!proto.io.haveno.protobuffer.Filter} returns this
  */
-proto.io.haveno.protobuffer.Filter.prototype.setBtcFeeReceiverAddressesList = function(value) {
+proto.io.haveno.protobuffer.Filter.prototype.setXmrFeeReceiverAddressesList = function(value) {
   return jspb.Message.setField(this, 18, value || []);
 };
 
@@ -23959,7 +23959,7 @@ proto.io.haveno.protobuffer.Filter.prototype.setBtcFeeReceiverAddressesList = fu
  * @param {number=} opt_index
  * @return {!proto.io.haveno.protobuffer.Filter} returns this
  */
-proto.io.haveno.protobuffer.Filter.prototype.addBtcFeeReceiverAddresses = function(value, opt_index) {
+proto.io.haveno.protobuffer.Filter.prototype.addXmrFeeReceiverAddresses = function(value, opt_index) {
   return jspb.Message.addToRepeatedField(this, 18, value, opt_index);
 };
 
@@ -23968,8 +23968,8 @@ proto.io.haveno.protobuffer.Filter.prototype.addBtcFeeReceiverAddresses = functi
  * Clears the list making it empty but non-null.
  * @return {!proto.io.haveno.protobuffer.Filter} returns this
  */
-proto.io.haveno.protobuffer.Filter.prototype.clearBtcFeeReceiverAddressesList = function() {
-  return this.setBtcFeeReceiverAddressesList([]);
+proto.io.haveno.protobuffer.Filter.prototype.clearXmrFeeReceiverAddressesList = function() {
+  return this.setXmrFeeReceiverAddressesList([]);
 };
 
 
