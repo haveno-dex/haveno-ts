@@ -243,7 +243,7 @@ interface TradeContext {
     disputeWinner?: DisputeResult.Winner,
     disputeReason?: DisputeResult.Reason,
     disputeSummary?: string,
-    disputeWinnerAmount?: bigint
+    disputeWinnerAmount?: bigint,
 
     // other context
     offer?: OfferInfo,
