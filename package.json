@@ -7,7 +7,7 @@
   "files": ["dist/**/*"],
   "scripts": {
     "prepare": "scripts/build_protobuf.sh",
-    "test": "jest",
+    "test": "node --no-experimental-fetch ./node_modules/.bin/jest",
     "eslint": "eslint .",
     "eslintfix": "eslint src/* --fix",
     "typedoc": "typedoc ./src/index.ts --entryPointStrategy expand src/ --exclude **/*.test.ts --excludePrivate"
