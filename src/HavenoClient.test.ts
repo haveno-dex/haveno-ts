@@ -112,8 +112,8 @@ const TestConfig = {
             walletUrl: "http://127.0.0.1:38092",
         }
     ],
-    maxFee: BigInt("75000000000"),
-    minSecurityDeposit: BigInt(MoneroUtils.xmrToAtomicUnits(0.1)),
+    maxFee: HavenoUtils.xmrToAtomicUnits(0.1), // local testnet fees can be relatively high
+    minSecurityDeposit: MoneroUtils.xmrToAtomicUnits(0.1),
     daemonPollPeriodMs: 5000,
     maxWalletStartupMs: 10000, // TODO (woodser): make shorter by switching to jni
     maxCpuPct: 0.25,
