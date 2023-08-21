@@ -2740,9 +2740,6 @@ export class OfferPayload extends jspb.Message {
   getMakerPaymentAccountId(): string;
   setMakerPaymentAccountId(value: string): OfferPayload;
 
-  getOfferFeeTxId(): string;
-  setOfferFeeTxId(value: string): OfferPayload;
-
   getCountryCode(): string;
   setCountryCode(value: string): OfferPayload;
 
@@ -2843,7 +2840,6 @@ export namespace OfferPayload {
     counterCurrencyCode: string,
     paymentMethodId: string,
     makerPaymentAccountId: string,
-    offerFeeTxId: string,
     countryCode: string,
     acceptedCountryCodesList: Array<string>,
     bankId: string,
@@ -2989,18 +2985,10 @@ export class Dispute extends jspb.Message {
   getContractHash_asB64(): string;
   setContractHash(value: Uint8Array | string): Dispute;
 
-  getDepositTxSerialized(): Uint8Array | string;
-  getDepositTxSerialized_asU8(): Uint8Array;
-  getDepositTxSerialized_asB64(): string;
-  setDepositTxSerialized(value: Uint8Array | string): Dispute;
-
   getPayoutTxSerialized(): Uint8Array | string;
   getPayoutTxSerialized_asU8(): Uint8Array;
   getPayoutTxSerialized_asB64(): string;
   setPayoutTxSerialized(value: Uint8Array | string): Dispute;
-
-  getDepositTxId(): string;
-  setDepositTxId(value: string): Dispute;
 
   getPayoutTxId(): string;
   setPayoutTxId(value: string): Dispute;
@@ -3094,9 +3082,7 @@ export namespace Dispute {
     tradeDate: number,
     contract?: Contract.AsObject,
     contractHash: Uint8Array | string,
-    depositTxSerialized: Uint8Array | string,
     payoutTxSerialized: Uint8Array | string,
-    depositTxId: string,
     payoutTxId: string,
     contractAsJson: string,
     makerContractSignature: Uint8Array | string,
@@ -6333,9 +6319,6 @@ export class ProcessModel extends jspb.Message {
   hasPubKeyRing(): boolean;
   clearPubKeyRing(): ProcessModel;
 
-  getTakeOfferFeeTxId(): string;
-  setTakeOfferFeeTxId(value: string): ProcessModel;
-
   getPayoutTxSignature(): Uint8Array | string;
   getPayoutTxSignature_asU8(): Uint8Array;
   getPayoutTxSignature_asB64(): string;
@@ -6417,7 +6400,6 @@ export namespace ProcessModel {
     offerId: string,
     accountId: string,
     pubKeyRing?: PubKeyRing.AsObject,
-    takeOfferFeeTxId: string,
     payoutTxSignature: Uint8Array | string,
     useSavingsWallet: boolean,
     fundsNeededForTrade: number,
