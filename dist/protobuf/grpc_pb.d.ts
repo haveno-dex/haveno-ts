@@ -1639,9 +1639,6 @@ export class OfferInfo extends jspb.Message {
   getSellerSecurityDeposit(): string;
   setSellerSecurityDeposit(value: string): OfferInfo;
 
-  getOfferFeeTxId(): string;
-  setOfferFeeTxId(value: string): OfferInfo;
-
   getMakerFee(): string;
   setMakerFee(value: string): OfferInfo;
 
@@ -1695,7 +1692,6 @@ export namespace OfferInfo {
     date: number,
     state: string,
     sellerSecurityDeposit: string,
-    offerFeeTxId: string,
     makerFee: string,
     isActivated: boolean,
     isMyOffer: boolean,
