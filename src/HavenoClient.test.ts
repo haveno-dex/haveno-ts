@@ -1037,7 +1037,6 @@ test("Can get payment accounts (CI)", async () => {
   }
 });
 
-// TODO: rename ClearXChange to Zelle
 // TODO: FieldId represented as number
 test("Can validate payment account forms (CI, sanity check)", async () => {
 
@@ -1071,7 +1070,7 @@ test("Can validate payment account forms (CI, sanity check)", async () => {
       }
 
       // validate valid form field
-      const validInput = getValidFormInput(field.getId(), accountForm);
+      const validInput = getValidFormInput(accountForm, field.getId());
       await user1.validateFormField(accountForm, field.getId(), validInput);
       field.setValue(validInput);
     }
@@ -3367,16 +3366,16 @@ function getFormField(form: PaymentAccountForm, fieldId: PaymentAccountFormField
     throw new Error("Form field not found: " + fieldId);
 }
 
-function getValidFormInput(fieldId: PaymentAccountFormField.FieldId, form: PaymentAccountForm): string {
+function getValidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFormField.FieldId): string {
   const field = getFormField(form, fieldId);
   switch (fieldId) {
     case PaymentAccountFormField.FieldId.ACCEPTED_COUNTRY_CODES:
-      if (form.getId().toString() === "SEPA" || form.getId().toString() === "SEPA_INSTANT") return "BE," + field.getSupportedSepaEuroCountriesList().map(country => country.getCode()).join(',');
+      if (form.getId() === PaymentAccountForm.FormId.SEPA || form.getId() === PaymentAccountForm.FormId.SEPA_INSTANT) return "BE," + field.getSupportedSepaEuroCountriesList().map(country => country.getCode()).join(',');
       return field.getSupportedCountriesList().map(country => country.getCode()).join(',');
     case PaymentAccountFormField.FieldId.ACCOUNT_ID:
       return "jdoe@no.com";
     case PaymentAccountFormField.FieldId.ACCOUNT_NAME:
-      return form.getId().toString() + " " + GenUtils.getUUID(); // TODO: rename to form.getPaymentMethodId()
+      return "Form_" + form.getId() + " " + GenUtils.getUUID(); // TODO: rename to form.getPaymentMethodId()
     case PaymentAccountFormField.FieldId.ACCOUNT_NR:
       return "12345678";
     case PaymentAccountFormField.FieldId.ACCOUNT_OWNER:
@@ -3479,7 +3478,10 @@ function getValidFormInput(fieldId: PaymentAccountFormField.FieldId, form: Payme
       const country = HavenoUtils.getFormValue(form, PaymentAccountFormField.FieldId.COUNTRY);
       return GenUtils.arrayContains(field.getRequiredForCountriesList(), country) ? "My state" : "";
     case PaymentAccountFormField.FieldId.TRADE_CURRENCIES:
-      if (field.getComponent() === PaymentAccountFormField.Component.SELECT_ONE) return field.getSupportedCurrenciesList()[0]!.getCode(); // TODO: randomly select?
+      if (field.getComponent() === PaymentAccountFormField.Component.SELECT_ONE) {
+        if (form.getId() === PaymentAccountForm.FormId.F2F) return "XAU";
+        return field.getSupportedCurrenciesList()[0]!.getCode(); // TODO: randomly select?
+      }
       else return field.getSupportedCurrenciesList().map(currency => currency.getCode()).join(',');
     case PaymentAccountFormField.FieldId.USER_NAME:
       return "user123";
