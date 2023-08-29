@@ -862,8 +862,8 @@ test("Can send and receive push notifications (CI, sanity check)", async () => {
   }
 });
 
-test("Can get supported assets and their payment methods (CI, sanity check)", async() => {
-  const assetCodes = await user1.getSupportedAssetCodes(); // TODO: replace with getSupportedAssets(): TradeCurrency[]
+test("Can get asset codes with prices and their payment methods (CI, sanity check)", async() => {
+  const assetCodes = await user1.getPricedAssetCodes();
   for (const assetCode of assetCodes) {
     const paymentMethods = await user1.getPaymentMethods(assetCode);
     expect(paymentMethods.length).toBeGreaterThanOrEqual(0);
