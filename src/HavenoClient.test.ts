@@ -1040,8 +1040,8 @@ test("Can get payment accounts (CI)", async () => {
 // TODO: FieldId represented as number
 test("Can validate payment account forms (CI, sanity check)", async () => {
 
-  // supported payment methods
-  const expectedPaymentMethods = ["BLOCK_CHAINS", "REVOLUT", "SEPA", "SEPA_INSTANT", "TRANSFERWISE", "ZELLE", "SWIFT", "F2F", "STRIKE", "MONEY_GRAM", "FASTER_PAYMENTS", "UPHOLD", "PAXUM", "PAY_BY_MAIL"];
+  // expected payment methods
+  const expectedPaymentMethods = Object.keys(PaymentAccountForm.FormId);
 
   // get payment methods
   const paymentMethods = await user1.getPaymentMethods();
@@ -1097,7 +1097,7 @@ test("Can validate payment account forms (CI, sanity check)", async () => {
 test("Can create fiat payment accounts (CI)", async () => {
 
   // get payment account form
-  const paymentMethodId = 'REVOLUT';
+  const paymentMethodId = HavenoUtils.getPaymentMethodId(PaymentAccountForm.FormId.REVOLUT);
   const accountForm = await user1.getPaymentAccountForm(paymentMethodId);
 
   // edit form
@@ -3296,8 +3296,8 @@ function getCryptoAddress(currencyCode: string): string|undefined {
   }
 }
 
-async function createPaymentAccount(trader: HavenoClient, assetCodes: string, paymentMethodId?: string) {
-  if (!paymentMethodId) paymentMethodId = isCrypto(assetCodes!) ? "block_chains" : "revolut";
+async function createPaymentAccount(trader: HavenoClient, assetCodes: string, paymentMethodId?: string | PaymentAccountForm.FormId) {
+  if (!paymentMethodId) paymentMethodId = isCrypto(assetCodes!) ? PaymentAccountForm.FormId.BLOCK_CHAINS : PaymentAccountForm.FormId.REVOLUT;
   const accountForm = await trader.getPaymentAccountForm(paymentMethodId);
   for (const field of accountForm.getFieldsList()) field.setValue(getValidFormInput(accountForm, field.getId()));
   HavenoUtils.setFormValue(PaymentAccountFormField.FieldId.TRADE_CURRENCIES, assetCodes, accountForm);

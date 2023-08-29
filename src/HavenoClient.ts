@@ -860,11 +860,12 @@ export default class HavenoClient {
   /**
    * Get a form for the given payment method to complete and create a new payment account.
    * 
-   * @param {string} paymentMethodId - the id of the payment method
+   * @param {string | PaymentAccountForm.FormId} paymentMethodId - the id of the payment method
    * @return {PaymentAccountForm} the payment account form
    */
-  async getPaymentAccountForm(paymentMethodId: string): Promise<PaymentAccountForm> {
+  async getPaymentAccountForm(paymentMethodId: string | PaymentAccountForm.FormId): Promise<PaymentAccountForm> {
     try {
+      paymentMethodId = HavenoUtils.getPaymentMethodId(paymentMethodId); // validate and normalize
       return (await this._paymentAccountsClient.getPaymentAccountForm(new GetPaymentAccountFormRequest().setPaymentMethodId(paymentMethodId), {password: this._password})).getPaymentAccountForm()!;
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);
