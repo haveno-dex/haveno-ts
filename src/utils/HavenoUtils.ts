@@ -73,53 +73,6 @@ export default class HavenoUtils {
       process.kill(signal ? signal : "SIGINT");
     });
   }
-  
-  /**
-   * Stringify a payment account form.
-   * 
-   * @param form - form to stringify
-   * @return {string} the stringified form
-   */
-  static formToString(form: PaymentAccountForm): string {
-    let str = "";
-    for (const field of form.getFieldsList()) {
-      str += field.getId() + ": " + this.getFormValue(form, field.getId()) + "\n";
-    }
-    return str.trim();
-  }
-  
-  /**
-   * Get a form field value.
-   * 
-   * @param {PaymentAccountForm} form - form to get the field value from
-   * @param {PaymentAccountFormField.FieldId} fieldId - id of the field to get the value from
-   * @return {string} the form field value
-   */
-  // TODO: attach getter and setter to PaymentAccountForm prototype in typescript?
-  static getFormValue(form: PaymentAccountForm, fieldId: PaymentAccountFormField.FieldId): string {
-    for (const field of form.getFieldsList()) {
-      if (field.getId() === fieldId) return field.getValue();
-    }
-    throw new Error("PaymentAccountForm does not have field " + fieldId);
-  }
-  
-  /**
-   * Set a form field value.
-   * 
-   * @param {PaymentAccountFormField.FieldId} fieldId - id of the field to set the value of
-   * @param {string} value - field value to set
-   * @param {PaymentAccountForm} form - form to get the field from
-   * @return {string} the form field value
-   */
-  static setFormValue(fieldId: PaymentAccountFormField.FieldId, value: string, form: PaymentAccountForm): void {
-    for (const field of form.getFieldsList()) {
-      if (field.getId() === fieldId) {
-        field.setValue(value);
-        return;
-      }
-    }
-    throw new Error("PaymentAccountForm does not have field " + fieldId);
-  }
 
   /**
    * Wait for the duration.
@@ -172,4 +125,80 @@ export default class HavenoUtils {
     const remainder: bigint = amountAtomicUnits as bigint % HavenoUtils.AU_PER_XMR;
     return Number(quotient) + Number(remainder) / Number(HavenoUtils.AU_PER_XMR);
   }
+
+  // ------------------------- PAYMENT ACCOUNT FORMS --------------------------
+
+  /**
+   * Get a validated payment method id from a string or form id.
+   * 
+   * @param {string |  PaymentAccountForm.FormId} id - identifies the payment method
+   * @returns {string} the payment method id
+   */
+  static getPaymentMethodId(id: string | PaymentAccountForm.FormId) {
+    if (typeof id === "string") {
+      id = id.toUpperCase();
+      if (!(id in PaymentAccountForm.FormId)) throw Error("Invalid payment method: " + id);
+      return id;
+    } else {
+      let keyByValue = getKeyByValue(PaymentAccountForm.FormId, id);
+      if (!keyByValue) throw Error("No payment method id with form id " + id);
+      return keyByValue;
+    }
+  }
+
+  /**
+   * Stringify a payment account form.
+   * 
+   * @param form - form to stringify
+   * @return {string} the stringified form
+   */
+  static formToString(form: PaymentAccountForm): string {
+    let str = "";
+    for (const field of form.getFieldsList()) {
+      str += field.getId() + ": " + this.getFormValue(form, field.getId()) + "\n";
+    }
+    return str.trim();
+  }
+  
+  /**
+   * Get a form field value.
+   * 
+   * @param {PaymentAccountForm} form - form to get the field value from
+   * @param {PaymentAccountFormField.FieldId} fieldId - id of the field to get the value from
+   * @return {string} the form field value
+   */
+  // TODO: attach getter and setter to PaymentAccountForm prototype in typescript?
+  static getFormValue(form: PaymentAccountForm, fieldId: PaymentAccountFormField.FieldId): string {
+    for (const field of form.getFieldsList()) {
+      if (field.getId() === fieldId) return field.getValue();
+    }
+    throw new Error("PaymentAccountForm does not have field " + fieldId);
+  }
+  
+  /**
+   * Set a form field value.
+   * 
+   * @param {PaymentAccountFormField.FieldId} fieldId - id of the field to set the value of
+   * @param {string} value - field value to set
+   * @param {PaymentAccountForm} form - form to get the field from
+   * @return {string} the form field value
+   */
+  static setFormValue(fieldId: PaymentAccountFormField.FieldId, value: string, form: PaymentAccountForm): void {
+    for (const field of form.getFieldsList()) {
+      if (field.getId() === fieldId) {
+        field.setValue(value);
+        return;
+      }
+    }
+    throw new Error("PaymentAccountForm does not have field " + fieldId);
+  }
+}
+
+function getKeyByValue(object: any, value: number): string | undefined {
+  for (const key in object) {
+      if (object.hasOwnProperty(key) && object[key] === value) {
+          return key;
+      }
+  }
+  return undefined;
 }
