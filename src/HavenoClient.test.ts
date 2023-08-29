@@ -1041,7 +1041,7 @@ test("Can get payment accounts (CI)", async () => {
 test("Can validate payment account forms (CI, sanity check)", async () => {
 
   // supported payment methods
-  const expectedPaymentMethods = ["BLOCK_CHAINS", "REVOLUT", "SEPA", "SEPA_INSTANT", "TRANSFERWISE", "ZELLE", "SWIFT", "F2F", "STRIKE", "MONEY_GRAM", "FASTER_PAYMENTS", "UPHOLD", "PAXUM"];
+  const expectedPaymentMethods = ["BLOCK_CHAINS", "REVOLUT", "SEPA", "SEPA_INSTANT", "TRANSFERWISE", "ZELLE", "SWIFT", "F2F", "STRIKE", "MONEY_GRAM", "FASTER_PAYMENTS", "UPHOLD", "PAXUM", "PAY_BY_MAIL"];
 
   // get payment methods
   const paymentMethods = await user1.getPaymentMethods();
@@ -3470,7 +3470,7 @@ function getValidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountForm
     case PaymentAccountFormField.FieldId.PIX_KEY:
       throw new Error("Not implemented");
     case PaymentAccountFormField.FieldId.POSTAL_ADDRESS:
-      throw new Error("Not implemented");
+      return "123 street";
     case PaymentAccountFormField.FieldId.PROMPT_PAY_ID:
       throw new Error("Not implemented");
     case PaymentAccountFormField.FieldId.QUESTION:
@@ -3604,7 +3604,7 @@ function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFo
     case PaymentAccountFormField.FieldId.PIX_KEY:
       throw new Error("Not implemented");
     case PaymentAccountFormField.FieldId.POSTAL_ADDRESS:
-      throw new Error("Not implemented");
+      return "";
     case PaymentAccountFormField.FieldId.PROMPT_PAY_ID:
       throw new Error("Not implemented");
     case PaymentAccountFormField.FieldId.QUESTION:
@@ -3711,6 +3711,13 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
       case PaymentAccountForm.FormId.PAXUM:
         expect(account.getPaymentAccountPayload()!.getPaxumAccountPayload()!.getEmail()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.EMAIL).getValue());
         expect(account.getTradeCurrenciesList().map(currency => currency.getCode()).join(",")).toEqual(getFormField(form, PaymentAccountFormField.FieldId.TRADE_CURRENCIES).getValue());
+        break;
+      case PaymentAccountForm.FormId.PAY_BY_MAIL:
+        expect(account.getPaymentAccountPayload()!.getPayByMailAccountPayload()!.getContact()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.CONTACT).getValue());
+        expect(account.getPaymentAccountPayload()!.getPayByMailAccountPayload()!.getPostalAddress()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.POSTAL_ADDRESS).getValue());
+        expect(account.getPaymentAccountPayload()!.getPayByMailAccountPayload()!.getExtraInfo()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.EXTRA_INFO).getValue());
+        expect(account.getTradeCurrenciesList().length).toEqual(1);
+        expect(account.getTradeCurrenciesList()[0].getCode()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.TRADE_CURRENCIES).getValue());
         break;
       default:
         throw new Error("Unhandled payment method type: " + form.getId());
