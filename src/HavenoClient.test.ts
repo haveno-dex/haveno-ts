@@ -3299,7 +3299,6 @@ function getCryptoAddress(currencyCode: string): string|undefined {
 
 async function createPaymentAccount(trader: HavenoClient, assetCodes: string, paymentMethodId?: string) {
   if (!paymentMethodId) paymentMethodId = isCrypto(assetCodes!) ? "block_chains" : "revolut";
-  paymentMethodId = paymentMethodId.toUpperCase(); // TODO: remove case sensitivity
   const accountForm = await trader.getPaymentAccountForm(paymentMethodId);
   for (const field of accountForm.getFieldsList()) field.setValue(getValidFormInput(accountForm, field.getId()));
   HavenoUtils.setFormValue(PaymentAccountFormField.FieldId.TRADE_CURRENCIES, assetCodes, accountForm);
