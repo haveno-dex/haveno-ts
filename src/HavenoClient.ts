@@ -754,13 +754,13 @@ export default class HavenoClient {
   }
   
   /**
-   * Get all supported assets codes.
+   * Get all asset codes with price information.
    * 
    * TODO: replace this with getSupportedAssetCodes(): Promise<TradeCurrency[]>)
    * 
    * @return {Promise<string[]>} all supported trade assets
    */
-  async getSupportedAssetCodes(): Promise<string[]> {
+  async getPricedAssetCodes(): Promise<string[]> {
     const assetCodes: string[] = [];
     for (const price of await this.getPrices()) assetCodes.push(price.getCurrencyCode());
     return assetCodes;
