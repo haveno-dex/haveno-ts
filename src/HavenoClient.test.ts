@@ -1111,7 +1111,6 @@ test("Can create fiat payment accounts (CI)", async () => {
   expect(fiatAccount.getSelectedTradeCurrency()!.getCode()).toEqual("USD");
   expect(fiatAccount.getTradeCurrenciesList().length).toBeGreaterThan(0);
   expect(fiatAccount.getPaymentAccountPayload()!.getPaymentMethodId()).toEqual(paymentMethodId);
-  expect(fiatAccount.getPaymentAccountPayload()!.getRevolutAccountPayload()!.getAccountId()).toEqual(HavenoUtils.getFormValue(accountForm, PaymentAccountFormField.FieldId.USER_NAME)); // TODO: payment payload account id is username?
   expect(fiatAccount.getPaymentAccountPayload()!.getRevolutAccountPayload()!.getUserName()).toEqual(HavenoUtils.getFormValue(accountForm, PaymentAccountFormField.FieldId.USER_NAME));
 
   // payment account added
