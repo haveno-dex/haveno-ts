@@ -112,7 +112,7 @@ const TestConfig = {
             walletUrl: "http://127.0.0.1:38092",
         }
     ],
-    maxFee: HavenoUtils.xmrToAtomicUnits(0.1), // local testnet fees can be relatively high
+    maxFee: HavenoUtils.xmrToAtomicUnits(0.2), // local testnet fees can be relatively high
     minSecurityDeposit: MoneroUtils.xmrToAtomicUnits(0.1),
     daemonPollPeriodMs: 5000,
     maxWalletStartupMs: 10000, // TODO (woodser): make shorter by switching to jni
@@ -1352,9 +1352,10 @@ test("Can reserve exact amount needed for offer (CI)", async () => {
 });
 
 test("Cannot post offer exceeding trade limit (CI, sanity check)", async () => {
-  const revolutAccount = await createRevolutPaymentAccount(user1);
+  let assetCode = "USD";
+  const account = await createPaymentAccount(user1, assetCode);
   try {
-    await executeTrade({offerAmount: BigInt("2100000000000"), assetCode: "USD", makerPaymentAccountId: revolutAccount.getId(), takeOffer: false});
+    await executeTrade({offerAmount: BigInt("2100000000000"), assetCode: assetCode, makerPaymentAccountId: account.getId(), takeOffer: false});
     throw new Error("Should have rejected posting offer above trade limit")
   } catch (err) {
     assert(err.message.indexOf("amount is larger than") === 0);
@@ -1362,12 +1363,23 @@ test("Cannot post offer exceeding trade limit (CI, sanity check)", async () => {
 });
 
 test("Can complete a trade within a range", async () => {
+
+  // create payment accounts
+  let paymentMethodId = "f2f";
+  let assetCode = "xau";
+  let makerPaymentAccount = await createPaymentAccount(user1, assetCode, paymentMethodId);
+  let takerPaymentAccount = await createPaymentAccount(user2, assetCode, paymentMethodId);
+
+  // execute trade
   await executeTrade({
-    price: 150,
+    price: 23,
     offerAmount: HavenoUtils.xmrToAtomicUnits(1),
     offerMinAmount: HavenoUtils.xmrToAtomicUnits(.15),
     tradeAmount: HavenoUtils.xmrToAtomicUnits(.18),
     testPayoutUnlocked: true, // override to test unlock
+    makerPaymentAccountId: makerPaymentAccount.getId(),
+    takerPaymentAccountId: takerPaymentAccount.getId(),
+    assetCode: assetCode
   });
 });
 
@@ -1549,7 +1561,7 @@ test("Cannot make or take offer with insufficient unlocked funds (CI, sanity che
     // start user3
     user3 = await initHaveno();
 
-    // user3 creates ethereum payment account
+    // user3 creates payment account
     const paymentAccount = await createPaymentAccount(user3, TestConfig.trade.assetCode);
 
     // user3 cannot make offer with insufficient funds
@@ -3275,10 +3287,6 @@ async function hasPaymentAccount(trader: HavenoClient, assetCode: string): Promi
   return false;
 }
 
-async function createPaymentAccount(trader: HavenoClient, assetCode: string): Promise<PaymentAccount> {
-  return isCrypto(assetCode) ? createCryptoPaymentAccount(trader, assetCode) : createRevolutPaymentAccount(trader);
-}
-
 function isCrypto(assetCode: string) {
   return getCryptoAddress(assetCode) !== undefined;
 }
@@ -3289,12 +3297,13 @@ function getCryptoAddress(currencyCode: string): string|undefined {
   }
 }
 
-async function createRevolutPaymentAccount(trader: HavenoClient): Promise<PaymentAccount> {
-  const accountForm = await trader.getPaymentAccountForm('REVOLUT');
-  HavenoUtils.setFormValue(PaymentAccountFormField.FieldId.TRADE_CURRENCIES, "gbp,eur,usd", accountForm);
-  HavenoUtils.setFormValue(PaymentAccountFormField.FieldId.ACCOUNT_NAME, "Revolut account " + GenUtils.getUUID(), accountForm);
-  HavenoUtils.setFormValue(PaymentAccountFormField.FieldId.USER_NAME, "user123", accountForm);
-  return trader.createPaymentAccount(accountForm);
+async function createPaymentAccount(trader: HavenoClient, assetCodes: string, paymentMethodId?: string) {
+  if (!paymentMethodId) paymentMethodId = isCrypto(assetCodes!) ? "block_chains" : "revolut";
+  paymentMethodId = paymentMethodId.toUpperCase(); // TODO: remove case sensitivity
+  const accountForm = await trader.getPaymentAccountForm(paymentMethodId);
+  for (const field of accountForm.getFieldsList()) field.setValue(getValidFormInput(accountForm, field.getId()));
+  HavenoUtils.setFormValue(PaymentAccountFormField.FieldId.TRADE_CURRENCIES, assetCodes, accountForm);
+  return await trader.createPaymentAccount(accountForm);
 }
 
 async function createCryptoPaymentAccount(trader: HavenoClient, currencyCode = "eth"): Promise<PaymentAccount> {
