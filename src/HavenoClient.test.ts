@@ -613,7 +613,7 @@ test("Can manage Monero daemon connections (CI)", async () => {
     connection = await user3.getMoneroConnection();
     testConnection(connection!, TestConfig.monerod2.url, OnlineStatus.ONLINE, AuthenticationStatus.AUTHENTICATED, 1);
     connections = await user3.getMoneroConnections();
-    testConnection(getConnection(connections, monerodUrl1)!, monerodUrl1, OnlineStatus.UNKNOWN, AuthenticationStatus.NO_AUTHENTICATION, 1);
+    testConnection(getConnection(connections, monerodUrl1)!, monerodUrl1, OnlineStatus.ONLINE, AuthenticationStatus.AUTHENTICATED, 1);
 
     // enable auto switch
     await user3.setAutoSwitch(true);
