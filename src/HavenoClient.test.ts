@@ -3487,6 +3487,7 @@ function getValidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountForm
     case PaymentAccountFormField.FieldId.TRADE_CURRENCIES:
       if (field.getComponent() === PaymentAccountFormField.Component.SELECT_ONE) {
         if (form.getId() === PaymentAccountForm.FormId.F2F) return "XAU";
+        if (form.getId() === PaymentAccountForm.FormId.PAY_BY_MAIL) return "XGB";
         return field.getSupportedCurrenciesList()[0]!.getCode(); // TODO: randomly select?
       }
       else return field.getSupportedCurrenciesList().map(currency => currency.getCode()).join(',');
