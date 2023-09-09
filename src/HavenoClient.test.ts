@@ -112,8 +112,9 @@ const TestConfig = {
             walletUrl: "http://127.0.0.1:38092",
         }
     ],
-    maxFee: HavenoUtils.xmrToAtomicUnits(0.2), // local testnet fees can be relatively high
+    maxFee: HavenoUtils.xmrToAtomicUnits(0.5), // local testnet fees can be relatively high
     minSecurityDeposit: MoneroUtils.xmrToAtomicUnits(0.1),
+    maxAdjustmentPct: 0.2,
     daemonPollPeriodMs: 5000,
     maxWalletStartupMs: 10000, // TODO (woodser): make shorter by switching to jni
     maxCpuPct: 0.25,
@@ -1364,17 +1365,17 @@ test("Cannot post offer exceeding trade limit (CI, sanity check)", async () => {
 test("Can complete a trade within a range", async () => {
 
   // create payment accounts
-  let paymentMethodId = "f2f";
-  let assetCode = "xau";
+  let paymentMethodId = "cash_at_atm";
+  let assetCode = "aud";
   let makerPaymentAccount = await createPaymentAccount(user1, assetCode, paymentMethodId);
   let takerPaymentAccount = await createPaymentAccount(user2, assetCode, paymentMethodId);
 
   // execute trade
   await executeTrade({
-    price: 23,
+    price: 142.23,
     offerAmount: HavenoUtils.xmrToAtomicUnits(1),
     offerMinAmount: HavenoUtils.xmrToAtomicUnits(.15),
-    tradeAmount: HavenoUtils.xmrToAtomicUnits(.18),
+    tradeAmount: HavenoUtils.xmrToAtomicUnits(.578),
     testPayoutUnlocked: true, // override to test unlock
     makerPaymentAccountId: makerPaymentAccount.getId(),
     takerPaymentAccountId: takerPaymentAccount.getId(),
@@ -2346,6 +2347,16 @@ async function makeOffer(ctx?: TradeContext): Promise<OfferInfo> {
   }
   if (getOffer(await ctx.maker!.getOffers(ctx.assetCode!, ctx.direction), offer.getId())) throw new Error("My offer " + offer.getId() + " should not appear in available offers");
 
+  //  market-priced offer amounts are unadjusted, fixed-priced offer amounts are adjusted (e.g. cash at atm is $10 increments)
+  if (!ctx.offerMinAmount) ctx.offerMinAmount = ctx.offerAmount;
+  if (offer.getUseMarketBasedPrice()) {
+    assert.equal(ctx.offerAmount, BigInt(offer.getAmount()));
+    assert.equal(ctx.offerMinAmount, BigInt(offer.getMinAmount()));
+  } else {
+    expect(Math.abs(HavenoUtils.percentageDiff(ctx.offerAmount!, BigInt(offer.getAmount())))).toBeLessThan(TestConfig.maxAdjustmentPct);
+    expect(Math.abs(HavenoUtils.percentageDiff(ctx.offerMinAmount!, BigInt(offer.getMinAmount())))).toBeLessThan(TestConfig.maxAdjustmentPct);
+  }
+
   // unlocked balance has decreased
   let unlockedBalanceAfter = BigInt((await ctx.maker!.getBalances()).getAvailableBalance());
   if (offer.getState() === "SCHEDULED") {
@@ -2418,8 +2429,14 @@ async function takeOffer(ctx: TradeContext): Promise<TradeInfo> {
   // taker can get trade
   let fetchedTrade: TradeInfo = await ctx.taker!.getTrade(trade.getTradeId());
   assert(GenUtils.arrayContains(["DEPOSITS_PUBLISHED", "DEPOSITS_CONFIRMED", "DEPOSITS_UNLOCKED"], fetchedTrade.getPhase()), "Unexpected trade phase: " + fetchedTrade.getPhase());
-  expect(BigInt(fetchedTrade.getAmount())).toEqual(ctx.tradeAmount ? ctx.tradeAmount : ctx.offerAmount);
-  // TODO: test fetched trade
+  // TODO: more fetched trade tests
+  
+  //  market-priced offer amounts are unadjusted, fixed-priced offer amounts are adjusted (e.g. cash at atm is $10 increments)
+  if (fetchedTrade.getOffer()!.getUseMarketBasedPrice()) {
+    assert.equal(ctx.tradeAmount, BigInt(fetchedTrade.getAmount()));
+  } else {
+    expect(Math.abs(HavenoUtils.percentageDiff(ctx.tradeAmount!, BigInt(fetchedTrade.getAmount())))).toBeLessThan(TestConfig.maxAdjustmentPct);
+  }
 
   // taker is notified of balance change
 

@@ -95,6 +95,27 @@ export default class HavenoUtils {
   }
 
   /**
+   * Calculate the difference from a first bigint to a second, as a percentage (float).
+   * 
+   * @param {bigint} a first bigint to get the difference from
+   * @param {bigint} b second bigint to get the difference from
+   * @returns {number} the percentage difference as a float
+   */
+  static percentageDiff(a: bigint, b: bigint): number {
+    return HavenoUtils.divideBI(a - b, a);
+  }
+
+  /**
+   * Return the absolute value of the given bigint.
+   * 
+   * @param {bigint} a the bigint to get the absolute value of
+   * @returns {bigint} the absolute value of the given bigint
+   */
+  static abs(a: bigint): bigint {
+    return a < 0 ? -a : a;
+  }
+
+  /**
    * Convert XMR to atomic units.
    * 
    * @param {number|string} amountXmr - amount in XMR to convert to atomic units
