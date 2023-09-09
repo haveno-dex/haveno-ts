@@ -3718,6 +3718,11 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
         expect(account.getTradeCurrenciesList().length).toEqual(1);
         expect(account.getTradeCurrenciesList()[0].getCode()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.TRADE_CURRENCIES).getValue());
         break;
+      case PaymentAccountForm.FormId.CASH_AT_ATM:
+        expect(account.getPaymentAccountPayload()!.getCashAtAtmAccountPayload()!.getExtraInfo()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.EXTRA_INFO).getValue());
+        expect(account.getTradeCurrenciesList().length).toEqual(1);
+        expect(account.getTradeCurrenciesList()[0].getCode()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.TRADE_CURRENCIES).getValue());
+        break;
       default:
         throw new Error("Unhandled payment method type: " + form.getId());
     }
