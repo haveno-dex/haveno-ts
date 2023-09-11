@@ -16,6 +16,8 @@ RUN set -ex && git clone https://github.com/haveno-dex/haveno.git /home/haveno/h
 
 WORKDIR /home/haveno/haveno
 
+RUN set -ex && git fetch origin && git checkout origin/master
+
 RUN set -ex && make skip-tests
 
 ENTRYPOINT [ "./haveno-daemon" ]
