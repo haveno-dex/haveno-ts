@@ -613,6 +613,9 @@ test("Can manage Monero daemon connections (CI)", async () => {
     // connection is restored, online, and authenticated
     connection = await user3.getMoneroConnection();
     testConnection(connection!, TestConfig.monerod2.url, OnlineStatus.ONLINE, AuthenticationStatus.AUTHENTICATED, 1);
+
+    // priority connections are polled
+    await wait(TestConfig.daemonPollPeriodMs * 2);
     connections = await user3.getMoneroConnections();
     testConnection(getConnection(connections, monerodUrl1)!, monerodUrl1, OnlineStatus.ONLINE, AuthenticationStatus.AUTHENTICATED, 1);
 
