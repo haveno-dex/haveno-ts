@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const assert_1 = __importDefault(require("assert"));
 const console_1 = __importDefault(require("console"));
+const pb_pb_1 = require("../protobuf/pb_pb");
 /**
  * Collection of utilities for working with Haveno.
  */
@@ -67,6 +68,98 @@ class HavenoUtils {
         });
     }
     /**
+     * Wait for the duration.
+     *
+     * @param {number} durationMs - the duration to wait for in milliseconds
+     */
+    static async waitFor(durationMs) {
+        return new Promise(function (resolve) { setTimeout(resolve, durationMs); });
+    }
+    /**
+     * Divide one bigint by another.
+     *
+     * @param {bigint} a dividend
+     * @param {bigint} b divisor
+     * @returns {number} the result
+     */
+    static divideBI(a, b) {
+        return Number(a * 10000000000000n / b) / 10000000000000;
+    }
+    /**
+     * Calculate the difference from a first bigint to a second, as a percentage (float).
+     *
+     * @param {bigint} a first bigint to get the difference from
+     * @param {bigint} b second bigint to get the difference from
+     * @returns {number} the percentage difference as a float
+     */
+    static percentageDiff(a, b) {
+        return HavenoUtils.divideBI(a - b, a);
+    }
+    /**
+     * Return the absolute value of the given bigint.
+     *
+     * @param {bigint} a the bigint to get the absolute value of
+     * @returns {bigint} the absolute value of the given bigint
+     */
+    static abs(a) {
+        return a < 0 ? -a : a;
+    }
+    /**
+     * Convert XMR to atomic units.
+     *
+     * @param {number|string} amountXmr - amount in XMR to convert to atomic units
+     * @return {BigInt} amount in atomic units
+     */
+    static xmrToAtomicUnits(amountXmr) {
+        if (typeof amountXmr === "number")
+            amountXmr = "" + amountXmr;
+        else if (typeof amountXmr !== "string")
+            throw new Error("Must provide XMR amount as a string or js number to convert to atomic units");
+        let decimalDivisor = 1;
+        let decimalIdx = amountXmr.indexOf('.');
+        if (decimalIdx > -1) {
+            decimalDivisor = Math.pow(10, amountXmr.length - decimalIdx - 1);
+            amountXmr = amountXmr.slice(0, decimalIdx) + amountXmr.slice(decimalIdx + 1);
+        }
+        return BigInt(amountXmr) * BigInt(HavenoUtils.AU_PER_XMR) / BigInt(decimalDivisor);
+    }
+    /**
+     * Convert atomic units to XMR.
+     *
+     * @param {BigInt|string} amountAtomicUnits - amount in atomic units to convert to XMR
+     * @return {number} amount in XMR
+     */
+    static atomicUnitsToXmr(amountAtomicUnits) {
+        if (typeof amountAtomicUnits === "string")
+            amountAtomicUnits = BigInt(amountAtomicUnits);
+        else if (typeof amountAtomicUnits !== "bigint")
+            throw new Error("Must provide atomic units as BigInt or string to convert to XMR");
+        const quotient = amountAtomicUnits / HavenoUtils.AU_PER_XMR;
+        const remainder = amountAtomicUnits % HavenoUtils.AU_PER_XMR;
+        return Number(quotient) + Number(remainder) / Number(HavenoUtils.AU_PER_XMR);
+    }
+    // ------------------------- PAYMENT ACCOUNT FORMS --------------------------
+    /**
+     * Get a validated payment method id from a string or form id.
+     *
+     * @param {string |  PaymentAccountForm.FormId} id - identifies the payment method
+     * @returns {string} the payment method id
+     */
+    static getPaymentMethodId(id) {
+        if (typeof id === "string") {
+            id = id.toUpperCase();
+            if (!(id in pb_pb_1.PaymentAccountForm.FormId))
+                throw Error("Invalid payment method: " + id);
+            return id;
+        }
+        else {
+            let keyByValue = getKeyByValue(pb_pb_1.PaymentAccountForm.FormId, id);
+            if (!keyByValue)
+                throw Error("No payment method id with form id " + id);
+            return keyByValue;
+        }
+    }
+    /**
      * Stringify a payment account form.
      *
      * @param form - form to stringify
@@ -111,62 +204,18 @@ class HavenoUtils {
         }
         throw new Error("PaymentAccountForm does not have field " + fieldId);
     }
-    /**
-     * Wait for the duration.
-     *
-     * @param {number} durationMs - the duration to wait for in milliseconds
-     */
-    static async waitFor(durationMs) {
-        return new Promise(function (resolve) { setTimeout(resolve, durationMs); });
-    }
-    /**
-     * Divide one bigint by another.
-     *
-     * @param {bigint} a dividend
-     * @param {bigint} b divisor
-     * @returns {number} the result
-     */
-    static divideBI(a, b) {
-        return Number(a * 10000000000000n / b) / 10000000000000;
-    }
-    /**
-     * Convert XMR to atomic units.
-     *
-     * @param {number|string} amountXmr - amount in XMR to convert to atomic units
-     * @return {BigInt} amount in atomic units
-     */
-    static xmrToAtomicUnits(amountXmr) {
-        if (typeof amountXmr === "number")
-            amountXmr = "" + amountXmr;
-        else if (typeof amountXmr !== "string")
-            throw new Error("Must provide XMR amount as a string or js number to convert to atomic units");
-        let decimalDivisor = 1;
-        let decimalIdx = amountXmr.indexOf('.');
-        if (decimalIdx > -1) {
-            decimalDivisor = Math.pow(10, amountXmr.length - decimalIdx - 1);
-            amountXmr = amountXmr.slice(0, decimalIdx) + amountXmr.slice(decimalIdx + 1);
-        }
-        return BigInt(amountXmr) * BigInt(HavenoUtils.AU_PER_XMR) / BigInt(decimalDivisor);
-    }
-    /**
-     * Convert atomic units to XMR.
-     *
-     * @param {BigInt|string} amountAtomicUnits - amount in atomic units to convert to XMR
-     * @return {number} amount in XMR
-     */
-    static atomicUnitsToXmr(amountAtomicUnits) {
-        if (typeof amountAtomicUnits === "string")
-            amountAtomicUnits = BigInt(amountAtomicUnits);
-        else if (typeof amountAtomicUnits !== "bigint")
-            throw new Error("Must provide atomic units as BigInt or string to convert to XMR");
-        const quotient = amountAtomicUnits / HavenoUtils.AU_PER_XMR;
-        const remainder = amountAtomicUnits % HavenoUtils.AU_PER_XMR;
-        return Number(quotient) + Number(remainder) / Number(HavenoUtils.AU_PER_XMR);
-    }
 }
 exports.default = HavenoUtils;
 HavenoUtils.logLevel = 0;
 HavenoUtils.months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 HavenoUtils.lastLogTimeMs = 0;
 HavenoUtils.AU_PER_XMR = 1000000000000n;
+function getKeyByValue(object, value) {
+    for (const key in object) {
+        if (object.hasOwnProperty(key) && object[key] === value) {
+            return key;
+        }
+    }
+    return undefined;
+}
 //# sourceMappingURL=HavenoUtils.js.map

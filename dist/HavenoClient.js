@@ -729,13 +729,13 @@ class HavenoClient {
         }
     }
     /**
-     * Get all supported assets codes.
+     * Get all asset codes with price information.
      *
      * TODO: replace this with getSupportedAssetCodes(): Promise<TradeCurrency[]>)
      *
      * @return {Promise<string[]>} all supported trade assets
      */
-    async getSupportedAssetCodes() {
+    async getPricedAssetCodes() {
         const assetCodes = [];
         for (const price of await this.getPrices())
             assetCodes.push(price.getCurrencyCode());
@@ -837,11 +837,12 @@ class HavenoClient {
     /**
      * Get a form for the given payment method to complete and create a new payment account.
      *
-     * @param {string} paymentMethodId - the id of the payment method
+     * @param {string | PaymentAccountForm.FormId} paymentMethodId - the id of the payment method
      * @return {PaymentAccountForm} the payment account form
      */
     async getPaymentAccountForm(paymentMethodId) {
         try {
+            paymentMethodId = HavenoUtils_1.default.getPaymentMethodId(paymentMethodId); // validate and normalize
             return (await this._paymentAccountsClient.getPaymentAccountForm(new grpc_pb_1.GetPaymentAccountFormRequest().setPaymentMethodId(paymentMethodId), { password: this._password })).getPaymentAccountForm();
         }
         catch (e) {

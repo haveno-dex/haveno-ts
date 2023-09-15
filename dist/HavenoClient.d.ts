@@ -310,13 +310,13 @@ export default class HavenoClient {
      */
     relayXmrTx(metadata: string): Promise<string>;
     /**
-     * Get all supported assets codes.
+     * Get all asset codes with price information.
      *
      * TODO: replace this with getSupportedAssetCodes(): Promise<TradeCurrency[]>)
      *
      * @return {Promise<string[]>} all supported trade assets
      */
-    getSupportedAssetCodes(): Promise<string[]>;
+    getPricedAssetCodes(): Promise<string[]>;
     /**
      * Get the current market price per 1 XMR in the given currency.
      *
@@ -360,10 +360,10 @@ export default class HavenoClient {
     /**
      * Get a form for the given payment method to complete and create a new payment account.
      *
-     * @param {string} paymentMethodId - the id of the payment method
+     * @param {string | PaymentAccountForm.FormId} paymentMethodId - the id of the payment method
      * @return {PaymentAccountForm} the payment account form
      */
-    getPaymentAccountForm(paymentMethodId: string): Promise<PaymentAccountForm>;
+    getPaymentAccountForm(paymentMethodId: string | PaymentAccountForm.FormId): Promise<PaymentAccountForm>;
     /**
      * Get a form from the given payment account payload.
      *

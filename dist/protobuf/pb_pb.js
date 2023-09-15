@@ -38658,8 +38658,7 @@ proto.io.haveno.protobuffer.RevolutAccountPayload.prototype.toObject = function(
  */
 proto.io.haveno.protobuffer.RevolutAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    accountId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    userName: jspb.Message.getFieldWithDefault(msg, 2, "")
+    userName: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -38698,10 +38697,6 @@ proto.io.haveno.protobuffer.RevolutAccountPayload.deserializeBinaryFromReader = 
     switch (field) {
     case 1:
       var value = /** @type {string} */ (reader.readString());
-      msg.setAccountId(value);
-      break;
-    case 2:
-      var value = /** @type {string} */ (reader.readString());
       msg.setUserName(value);
       break;
     default:
@@ -38733,17 +38728,10 @@ proto.io.haveno.protobuffer.RevolutAccountPayload.prototype.serializeBinary = fu
  */
 proto.io.haveno.protobuffer.RevolutAccountPayload.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getAccountId();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
   f = message.getUserName();
   if (f.length > 0) {
     writer.writeString(
-      2,
+      1,
       f
     );
   }
@@ -38751,10 +38739,10 @@ proto.io.haveno.protobuffer.RevolutAccountPayload.serializeBinaryToWriter = func
 
 
 /**
- * optional string account_id = 1;
+ * optional string user_name = 1;
  * @return {string}
  */
-proto.io.haveno.protobuffer.RevolutAccountPayload.prototype.getAccountId = function() {
+proto.io.haveno.protobuffer.RevolutAccountPayload.prototype.getUserName = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
@@ -38763,26 +38751,8 @@ proto.io.haveno.protobuffer.RevolutAccountPayload.prototype.getAccountId = funct
  * @param {string} value
  * @return {!proto.io.haveno.protobuffer.RevolutAccountPayload} returns this
  */
-proto.io.haveno.protobuffer.RevolutAccountPayload.prototype.setAccountId = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional string user_name = 2;
- * @return {string}
- */
-proto.io.haveno.protobuffer.RevolutAccountPayload.prototype.getUserName = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.io.haveno.protobuffer.RevolutAccountPayload} returns this
- */
 proto.io.haveno.protobuffer.RevolutAccountPayload.prototype.setUserName = function(value) {
-  return jspb.Message.setProto3StringField(this, 2, value);
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
@@ -54376,7 +54346,7 @@ proto.io.haveno.protobuffer.PreferencesPayload.toObject = function(includeInstan
     autoSelectArbitrators: jspb.Message.getBooleanFieldWithDefault(msg, 8, false),
     dontShowAgainMapMap: (f = msg.getDontShowAgainMapMap()) ? f.toObject(includeInstance, undefined) : [],
     tacAccepted: jspb.Message.getBooleanFieldWithDefault(msg, 10, false),
-    useTorForMonero: jspb.Message.getBooleanFieldWithDefault(msg, 11, false),
+    useTorForXmrOrdinal: jspb.Message.getFieldWithDefault(msg, 11, 0),
     showOwnOffersInOfferBook: jspb.Message.getBooleanFieldWithDefault(msg, 12, false),
     preferredTradeCurrency: (f = msg.getPreferredTradeCurrency()) && proto.io.haveno.protobuffer.TradeCurrency.toObject(includeInstance, f),
     withdrawalTxFeeInVbytes: jspb.Message.getFieldWithDefault(msg, 14, 0),
@@ -54513,8 +54483,8 @@ proto.io.haveno.protobuffer.PreferencesPayload.deserializeBinaryFromReader = fun
       msg.setTacAccepted(value);
       break;
     case 11:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setUseTorForMonero(value);
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setUseTorForXmrOrdinal(value);
       break;
     case 12:
       var value = /** @type {boolean} */ (reader.readBool());
@@ -54827,9 +54797,9 @@ proto.io.haveno.protobuffer.PreferencesPayload.serializeBinaryToWriter = functio
       f
     );
   }
-  f = message.getUseTorForMonero();
-  if (f) {
-    writer.writeBool(
+  f = message.getUseTorForXmrOrdinal();
+  if (f !== 0) {
+    writer.writeInt32(
       11,
       f
     );
@@ -55477,20 +55447,20 @@ proto.io.haveno.protobuffer.PreferencesPayload.prototype.setTacAccepted = functi
 
 
 /**
- * optional bool use_tor_for_monero = 11;
- * @return {boolean}
+ * optional int32 use_tor_for_xmr_ordinal = 11;
+ * @return {number}
  */
-proto.io.haveno.protobuffer.PreferencesPayload.prototype.getUseTorForMonero = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 11, false));
+proto.io.haveno.protobuffer.PreferencesPayload.prototype.getUseTorForXmrOrdinal = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 11, 0));
 };
 
 
 /**
- * @param {boolean} value
+ * @param {number} value
  * @return {!proto.io.haveno.protobuffer.PreferencesPayload} returns this
  */
-proto.io.haveno.protobuffer.PreferencesPayload.prototype.setUseTorForMonero = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 11, value);
+proto.io.haveno.protobuffer.PreferencesPayload.prototype.setUseTorForXmrOrdinal = function(value) {
+  return jspb.Message.setProto3IntField(this, 11, value);
 };
 
 
@@ -59334,7 +59304,7 @@ proto.io.haveno.protobuffer.TraditionalCurrency.prototype.toObject = function(op
  */
 proto.io.haveno.protobuffer.TraditionalCurrency.toObject = function(includeInstance, msg) {
   var f, obj = {
-    currency: (f = msg.getCurrency()) && proto.io.haveno.protobuffer.Currency.toObject(includeInstance, f)
+
   };
 
   if (includeInstance) {
@@ -59371,11 +59341,6 @@ proto.io.haveno.protobuffer.TraditionalCurrency.deserializeBinaryFromReader = fu
     }
     var field = reader.getFieldNumber();
     switch (field) {
-    case 1:
-      var value = new proto.io.haveno.protobuffer.Currency;
-      reader.readMessage(value,proto.io.haveno.protobuffer.Currency.deserializeBinaryFromReader);
-      msg.setCurrency(value);
-      break;
     default:
       reader.skipField();
       break;
@@ -59405,51 +59370,6 @@ proto.io.haveno.protobuffer.TraditionalCurrency.prototype.serializeBinary = func
  */
 proto.io.haveno.protobuffer.TraditionalCurrency.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getCurrency();
-  if (f != null) {
-    writer.writeMessage(
-      1,
-      f,
-      proto.io.haveno.protobuffer.Currency.serializeBinaryToWriter
-    );
-  }
-};
-
-
-/**
- * optional Currency currency = 1;
- * @return {?proto.io.haveno.protobuffer.Currency}
- */
-proto.io.haveno.protobuffer.TraditionalCurrency.prototype.getCurrency = function() {
-  return /** @type{?proto.io.haveno.protobuffer.Currency} */ (
-    jspb.Message.getWrapperField(this, proto.io.haveno.protobuffer.Currency, 1));
-};
-
-
-/**
- * @param {?proto.io.haveno.protobuffer.Currency|undefined} value
- * @return {!proto.io.haveno.protobuffer.TraditionalCurrency} returns this
-*/
-proto.io.haveno.protobuffer.TraditionalCurrency.prototype.setCurrency = function(value) {
-  return jspb.Message.setWrapperField(this, 1, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.io.haveno.protobuffer.TraditionalCurrency} returns this
- */
-proto.io.haveno.protobuffer.TraditionalCurrency.prototype.clearCurrency = function() {
-  return this.setCurrency(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.io.haveno.protobuffer.TraditionalCurrency.prototype.hasCurrency = function() {
-  return jspb.Message.getField(this, 1) != null;
 };
 
 
@@ -60802,7 +60722,9 @@ proto.io.haveno.protobuffer.PaymentAccountForm.FormId = {
   MONEY_GRAM: 9,
   FASTER_PAYMENTS: 10,
   UPHOLD: 11,
-  PAXUM: 12
+  PAXUM: 12,
+  PAY_BY_MAIL: 13,
+  CASH_AT_ATM: 14
 };
 
 /**
