@@ -43,6 +43,56 @@ export default class HavenoUtils {
      */
     static kill(process: any, signal?: string): Promise<void>;
     /**
+     * Wait for the duration.
+     *
+     * @param {number} durationMs - the duration to wait for in milliseconds
+     */
+    static waitFor(durationMs: number): Promise<unknown>;
+    /**
+     * Divide one bigint by another.
+     *
+     * @param {bigint} a dividend
+     * @param {bigint} b divisor
+     * @returns {number} the result
+     */
+    static divideBI(a: bigint, b: bigint): number;
+    /**
+     * Calculate the difference from a first bigint to a second, as a percentage (float).
+     *
+     * @param {bigint} a first bigint to get the difference from
+     * @param {bigint} b second bigint to get the difference from
+     * @returns {number} the percentage difference as a float
+     */
+    static percentageDiff(a: bigint, b: bigint): number;
+    /**
+     * Return the absolute value of the given bigint.
+     *
+     * @param {bigint} a the bigint to get the absolute value of
+     * @returns {bigint} the absolute value of the given bigint
+     */
+    static abs(a: bigint): bigint;
+    /**
+     * Convert XMR to atomic units.
+     *
+     * @param {number|string} amountXmr - amount in XMR to convert to atomic units
+     * @return {BigInt} amount in atomic units
+     */
+    static xmrToAtomicUnits(amountXmr: number | string): bigint;
+    /**
+     * Convert atomic units to XMR.
+     *
+     * @param {BigInt|string} amountAtomicUnits - amount in atomic units to convert to XMR
+     * @return {number} amount in XMR
+     */
+    static atomicUnitsToXmr(amountAtomicUnits: BigInt | string): number;
+    /**
+     * Get a validated payment method id from a string or form id.
+     *
+     * @param {string |  PaymentAccountForm.FormId} id - identifies the payment method
+     * @returns {string} the payment method id
+     */
+    static getPaymentMethodId(id: string | PaymentAccountForm.FormId): string;
+    /**
      * Stringify a payment account form.
      *
      * @param form - form to stringify
@@ -66,32 +116,4 @@ export default class HavenoUtils {
      * @return {string} the form field value
      */
     static setFormValue(fieldId: PaymentAccountFormField.FieldId, value: string, form: PaymentAccountForm): void;
-    /**
-     * Wait for the duration.
-     *
-     * @param {number} durationMs - the duration to wait for in milliseconds
-     */
-    static waitFor(durationMs: number): Promise<unknown>;
-    /**
-     * Divide one bigint by another.
-     *
-     * @param {bigint} a dividend
-     * @param {bigint} b divisor
-     * @returns {number} the result
-     */
-    static divideBI(a: bigint, b: bigint): number;
-    /**
-     * Convert XMR to atomic units.
-     *
-     * @param {number|string} amountXmr - amount in XMR to convert to atomic units
-     * @return {BigInt} amount in atomic units
-     */
-    static xmrToAtomicUnits(amountXmr: number | string): bigint;
-    /**
-     * Convert atomic units to XMR.
-     *
-     * @param {BigInt|string} amountAtomicUnits - amount in atomic units to convert to XMR
-     * @return {number} amount in XMR
-     */
-    static atomicUnitsToXmr(amountAtomicUnits: BigInt | string): number;
 }

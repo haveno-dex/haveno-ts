@@ -4552,9 +4552,6 @@ export namespace PopmoneyAccountPayload {
 }
 
 export class RevolutAccountPayload extends jspb.Message {
-  getAccountId(): string;
-  setAccountId(value: string): RevolutAccountPayload;
-
   getUserName(): string;
   setUserName(value: string): RevolutAccountPayload;
 
@@ -4568,7 +4565,6 @@ export class RevolutAccountPayload extends jspb.Message {
 
 export namespace RevolutAccountPayload {
   export type AsObject = {
-    accountId: string,
     userName: string,
   }
 }
@@ -6754,8 +6750,8 @@ export class PreferencesPayload extends jspb.Message {
   getTacAccepted(): boolean;
   setTacAccepted(value: boolean): PreferencesPayload;
 
-  getUseTorForMonero(): boolean;
-  setUseTorForMonero(value: boolean): PreferencesPayload;
+  getUseTorForXmrOrdinal(): number;
+  setUseTorForXmrOrdinal(value: number): PreferencesPayload;
 
   getShowOwnOffersInOfferBook(): boolean;
   setShowOwnOffersInOfferBook(value: boolean): PreferencesPayload;
@@ -6942,7 +6938,7 @@ export namespace PreferencesPayload {
     autoSelectArbitrators: boolean,
     dontShowAgainMapMap: Array<[string, boolean]>,
     tacAccepted: boolean,
-    useTorForMonero: boolean,
+    useTorForXmrOrdinal: number,
     showOwnOffersInOfferBook: boolean,
     preferredTradeCurrency?: TradeCurrency.AsObject,
     withdrawalTxFeeInVbytes: number,
@@ -7354,11 +7350,6 @@ export namespace CryptoCurrency {
 }
 
 export class TraditionalCurrency extends jspb.Message {
-  getCurrency(): Currency | undefined;
-  setCurrency(value?: Currency): TraditionalCurrency;
-  hasCurrency(): boolean;
-  clearCurrency(): TraditionalCurrency;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): TraditionalCurrency.AsObject;
   static toObject(includeInstance: boolean, msg: TraditionalCurrency): TraditionalCurrency.AsObject;
@@ -7369,7 +7360,6 @@ export class TraditionalCurrency extends jspb.Message {
 
 export namespace TraditionalCurrency {
   export type AsObject = {
-    currency?: Currency.AsObject,
   }
 }
 
@@ -7570,6 +7560,8 @@ export namespace PaymentAccountForm {
     FASTER_PAYMENTS = 10,
     UPHOLD = 11,
     PAXUM = 12,
+    PAY_BY_MAIL = 13,
+    CASH_AT_ATM = 14,
   }
 }
 
