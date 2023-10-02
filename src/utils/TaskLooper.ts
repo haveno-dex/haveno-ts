@@ -25,6 +25,7 @@ export default class TaskLooper {
    * @param {int} periodInMs the loop period in milliseconds
    */
   start(periodInMs: number) {
+    if (periodInMs <= 0) throw new Error("Looper period must be greater than 0 ms");
     if (this._isStarted) return;
     this._isStarted = true;
     this._runLoop(periodInMs);

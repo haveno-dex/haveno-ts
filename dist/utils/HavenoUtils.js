@@ -107,14 +107,12 @@ class HavenoUtils {
     /**
      * Convert XMR to atomic units.
      *
-     * @param {number|string} amountXmr - amount in XMR to convert to atomic units
-     * @return {BigInt} amount in atomic units
+     * @param {number | string} amountXmr - amount in XMR to convert to atomic units
+     * @return {bigint} amount in atomic units
      */
     static xmrToAtomicUnits(amountXmr) {
         if (typeof amountXmr === "number")
             amountXmr = "" + amountXmr;
-        else if (typeof amountXmr !== "string")
-            throw new Error("Must provide XMR amount as a string or js number to convert to atomic units");
         let decimalDivisor = 1;
         let decimalIdx = amountXmr.indexOf('.');
         if (decimalIdx > -1) {
@@ -126,14 +124,12 @@ class HavenoUtils {
     /**
      * Convert atomic units to XMR.
      *
-     * @param {BigInt|string} amountAtomicUnits - amount in atomic units to convert to XMR
+     * @param {bigint | string} amountAtomicUnits - amount in atomic units to convert to XMR
      * @return {number} amount in XMR
      */
     static atomicUnitsToXmr(amountAtomicUnits) {
         if (typeof amountAtomicUnits === "string")
             amountAtomicUnits = BigInt(amountAtomicUnits);
-        else if (typeof amountAtomicUnits !== "bigint")
-            throw new Error("Must provide atomic units as BigInt or string to convert to XMR");
         const quotient = amountAtomicUnits / HavenoUtils.AU_PER_XMR;
         const remainder = amountAtomicUnits % HavenoUtils.AU_PER_XMR;
         return Number(quotient) + Number(remainder) / Number(HavenoUtils.AU_PER_XMR);
