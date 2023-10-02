@@ -74,17 +74,17 @@ export default class HavenoUtils {
     /**
      * Convert XMR to atomic units.
      *
-     * @param {number|string} amountXmr - amount in XMR to convert to atomic units
-     * @return {BigInt} amount in atomic units
+     * @param {number | string} amountXmr - amount in XMR to convert to atomic units
+     * @return {bigint} amount in atomic units
      */
     static xmrToAtomicUnits(amountXmr: number | string): bigint;
     /**
      * Convert atomic units to XMR.
      *
-     * @param {BigInt|string} amountAtomicUnits - amount in atomic units to convert to XMR
+     * @param {bigint | string} amountAtomicUnits - amount in atomic units to convert to XMR
      * @return {number} amount in XMR
      */
-    static atomicUnitsToXmr(amountAtomicUnits: BigInt | string): number;
+    static atomicUnitsToXmr(amountAtomicUnits: bigint | string): number;
     /**
      * Get a validated payment method id from a string or form id.
      *
