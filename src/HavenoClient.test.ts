@@ -2601,7 +2601,7 @@ async function resolveDispute(ctx: TradeContext) {
   let trade = await arbitrator.getTrade(ctx.offerId!)
   let makerDepositTx = await monerod.getTx(trade.getMakerDepositTxId());
   let takerDepositTx = await monerod.getTx(trade.getTakerDepositTxId());
-  customWinnerAmount = tradeAmount + BigInt(ctx.offer!.getBuyerSecurityDeposit()) + BigInt(ctx.offer!.getSellerSecurityDeposit()) - BigInt(makerDepositTx.getFee().toString()) - BigInt(takerDepositTx.getFee().toString()) - BigInt("10000");
+  customWinnerAmount = tradeAmount + BigInt(ctx.offer!.getBuyerSecurityDeposit()) + BigInt(ctx.offer!.getSellerSecurityDeposit()) - makerDepositTx.getFee() - takerDepositTx.getFee() - BigInt("10000");
   try {
     await arbitrator.resolveDispute(ctx.offerId!, ctx.disputeWinner!, ctx.disputeReason!, "Loser gets too little", customWinnerAmount);
     throw new Error("Should have failed resolving dispute with insufficient loser payout");
@@ -2656,14 +2656,14 @@ async function resolveDispute(ctx: TradeContext) {
     if (winner) {
       const winnerBalancesAfter = await winner!.getBalances();
       const winnerDifference = BigInt(winnerBalancesAfter.getBalance()) - BigInt(winnerBalancesBefore!.getBalance());
-      const winnerSecurityDeposit = BigInt(ctx.disputeWinner === DisputeResult.Winner.BUYER ? ctx.offer!.getBuyerSecurityDeposit() : ctx.offer!.getSellerSecurityDeposit()) - BigInt(ctx.disputeWinner === DisputeResult.Winner.BUYER ? buyerDepositTx.getFee().toString() : sellerDepositTx.getFee().toString());
+      const winnerSecurityDeposit = BigInt(ctx.disputeWinner === DisputeResult.Winner.BUYER ? ctx.offer!.getBuyerSecurityDeposit() : ctx.offer!.getSellerSecurityDeposit()) - (ctx.disputeWinner === DisputeResult.Winner.BUYER ? buyerDepositTx.getFee() : sellerDepositTx.getFee());
       const winnerPayout = ctx.disputeWinnerAmount ? ctx.disputeWinnerAmount : tradeAmount + winnerSecurityDeposit; // TODO: this assumes security deposit is returned to winner, but won't be the case if payment sent
       expect(winnerDifference).toEqual(winnerPayout);
     }
     if (loser) {
       const loserBalancesAfter = await loser!.getBalances();
       const loserDifference = BigInt(loserBalancesAfter.getBalance()) - BigInt(loserBalancesBefore!.getBalance());
-      const loserSecurityDeposit = BigInt(ctx.disputeWinner === DisputeResult.Winner.BUYER ? ctx.offer!.getSellerSecurityDeposit() : ctx.offer!.getBuyerSecurityDeposit()) - BigInt(ctx.disputeWinner === DisputeResult.Winner.BUYER ? sellerDepositTx.getFee().toString() : buyerDepositTx.getFee().toString());
+      const loserSecurityDeposit = BigInt(ctx.disputeWinner === DisputeResult.Winner.BUYER ? ctx.offer!.getSellerSecurityDeposit() : ctx.offer!.getBuyerSecurityDeposit()) - (ctx.disputeWinner === DisputeResult.Winner.BUYER ? sellerDepositTx.getFee() : buyerDepositTx.getFee());
       const loserPayout = loserSecurityDeposit;
       expect(loserPayout - loserDifference).toBeLessThan(TestConfig.maxFee);
     }
@@ -2958,7 +2958,7 @@ async function prepareForTrading(numTrades: number, ...havenods: HavenoClient[])
 
   // fund wallets
   const tradeAmount = BigInt("250000000000");
-  const wallets: Promise<any>[] = [];
+  const wallets: moneroTs.MoneroWallet[] = [];
   for (const havenod of havenods) wallets.push(await getWallet(havenod));
   await fundOutputs(wallets, tradeAmount * BigInt("2"), numTrades);
 }
@@ -3013,7 +3013,7 @@ async function waitForAvailableBalance(amount: bigint, ...wallets: any[]) {
   // wrap common wallet functionality for tests
   class WalletWrapper {
 
-    _wallet: any;
+    _wallet: moneroTs.MoneroWallet;
 
     constructor(wallet: any) {
       this._wallet = wallet;
@@ -3021,17 +3021,17 @@ async function waitForAvailableBalance(amount: bigint, ...wallets: any[]) {
 
     async getAvailableBalance(): Promise<bigint> {
       if (this._wallet instanceof HavenoClient) return BigInt((await this._wallet.getBalances()).getAvailableBalance());
-      else return BigInt((await this._wallet.getUnlockedBalance()).toString());
+      else return await this._wallet.getUnlockedBalance();
     }
 
     async getPendingBalance(): Promise<bigint> {
       if (this._wallet instanceof HavenoClient) return BigInt((await this._wallet.getBalances()).getPendingBalance());
-      else return BigInt((await this._wallet.getBalance()).toString()) - await this.getAvailableBalance();
+      else return await this._wallet.getBalance() - await this.getAvailableBalance();
     }
 
     async getDepositAddress(): Promise<string> {
       if (this._wallet instanceof HavenoClient) return await this._wallet.getXmrNewSubaddress();
-      else return (await this._wallet.createSubaddress()).getAddress();
+      else return (await this._wallet.createSubaddress(0)).getAddress();
     }
   }
 
@@ -3120,7 +3120,7 @@ async function waitForUnlockedTxs(...txHashes: string[]) {
 async function hasUnspentOutputs(wallets: any[], amt: BigInt, numOutputs?: number, isLocked?: boolean): Promise<boolean> {
   if (numOutputs === undefined) numOutputs = 1;
   for (const wallet of wallets) {
-    const unspentOutputs = await wallet.getOutputs({isSpent: false, isFrozen: false, minAmount: BigInt(amt.toString()), txQuery: {isLocked: isLocked}});
+    const unspentOutputs = await wallet.getOutputs({isSpent: false, isFrozen: false, minAmount: amt, txQuery: {isLocked: isLocked}});
     if (unspentOutputs.length < numOutputs) return false;
   }
   return true;
@@ -3134,7 +3134,7 @@ async function hasUnspentOutputs(wallets: any[], amt: BigInt, numOutputs?: numbe
  * @param {number} [numOutputs] - the number of outputs of the given amount (default 1)
  * @param {boolean} [waitForUnlock] - wait for outputs to unlock (default false)
  */
-async function fundOutputs(wallets: any[], amt: bigint, numOutputs?: number, waitForUnlock?: boolean): Promise<void> {
+async function fundOutputs(wallets: moneroTs.MoneroWallet[], amt: bigint, numOutputs?: number, waitForUnlock?: boolean): Promise<void> {
   if (numOutputs === undefined) numOutputs = 1;
   if (waitForUnlock === undefined) waitForUnlock = true;
 
@@ -3143,7 +3143,7 @@ async function fundOutputs(wallets: any[], amt: bigint, numOutputs?: number, wai
   for (const wallet of wallets) {
     if (await hasUnspentOutputs([wallet], amt, numOutputs, undefined)) continue;
     for (let i = 0; i < numOutputs; i++) {
-      destinations.push(new moneroTs.MoneroDestination((await wallet.createSubaddress()).getAddress(), BigInt(amt.toString())));
+      destinations.push(new moneroTs.MoneroDestination((await wallet.createSubaddress(0)).getAddress(), amt));
     }
   }
   if (!destinations.length) return;
@@ -3156,7 +3156,7 @@ async function fundOutputs(wallets: any[], amt: bigint, numOutputs?: number, wai
     txConfig.addDestination(destinations[i], undefined); // TODO: remove once converted to MoneroTxConfig.ts
     sendAmt = sendAmt + destinations[i].getAmount();
     if (i === destinations.length - 1 || (i > 0 && i % 15 === 0)) {
-      await waitForAvailableBalance(toBigInt(sendAmt), fundingWallet);
+      await waitForAvailableBalance(sendAmt, fundingWallet);
       const txs = await fundingWallet.createTxs(txConfig);
       for (const tx of txs) txHashes.push(tx.getHash());
       txConfig = new moneroTs.MoneroTxConfig().setAccountIndex(0).setRelay(true);
@@ -3184,18 +3184,13 @@ async function fundOutputs(wallets: any[], amt: bigint, numOutputs?: number, wai
   if (miningStarted) await stopMining();
 }
 
-// convert monero-javascript BigInteger to typescript BigInt
-function toBigInt(mjsBigInt: any) {
-    return BigInt(mjsBigInt.toString())
-}
-
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getBalancesStr(balances: XmrBalanceInfo): string {
-    return "Balance: " + balances.getBalance().toString() + ",\n" +
-           "Available balance: " + balances.getAvailableBalance().toString() + ",\n" +
-           "Pending balance: " + balances.getPendingBalance().toString() + ",\n" +
-           "Reserved in offers: " + balances.getReservedOfferBalance().toString() + ",\n" +
-           "Locked in trade: " + balances.getReservedTradeBalance().toString();
+    return "Balance: " + balances.getBalance() + ",\n" +
+           "Available balance: " + balances.getAvailableBalance() + ",\n" +
+           "Pending balance: " + balances.getPendingBalance() + ",\n" +
+           "Reserved in offers: " + balances.getReservedOfferBalance() + ",\n" +
+           "Locked in trade: " + balances.getReservedTradeBalance();
 }
 
 async function wait(durationMs: number) {
