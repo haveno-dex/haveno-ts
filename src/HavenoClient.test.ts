@@ -46,7 +46,7 @@ const TestConfig = {
     testDataDir: "./testdata",
     haveno: {
         path: "../haveno",
-        version: "1.0.11"
+        version: "1.0.12"
     },
     monerod: {
         url: "http://localhost:" + (getBaseCurrencyNetwork() == BaseCurrencyNetwork.XMR_LOCAL ? "4" : getNetworkStartPort()) + "8081", // 18081, 28081, 48081 for mainnet, stagenet, and local testnet, respectively
