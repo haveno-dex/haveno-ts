@@ -110,6 +110,7 @@ const TestConfig = {
     daemonPollPeriodMs: 5000,
     maxWalletStartupMs: 10000, // TODO (woodser): make shorter by switching to jni
     maxCpuPct: 0.25,
+    paymentMethods: Object.keys(PaymentAccountForm.FormId), // all supported payment methods
     assetCodes: ["USD", "GBP", "EUR", "ETH", "BTC", "BCH", "LTC"], // primary asset codes
     cryptoAddresses: [{
             currencyCode: "ETH",
@@ -1036,14 +1037,11 @@ test("Can get payment accounts (CI)", async () => {
 // TODO: FieldId represented as number
 test("Can validate payment account forms (CI, sanity check)", async () => {
 
-  // expected payment methods
-  const expectedPaymentMethods = Object.keys(PaymentAccountForm.FormId);
-
   // get payment methods
   const paymentMethods = await user1.getPaymentMethods();
-  expect(paymentMethods.length).toEqual(expectedPaymentMethods.length);
+  expect(paymentMethods.length).toEqual(TestConfig.paymentMethods.length);
   for (const paymentMethod of paymentMethods) {
-    assert(moneroTs.GenUtils.arrayContains(expectedPaymentMethods, paymentMethod.getId()), "Payment method is not expected: " + paymentMethod.getId());
+    assert(moneroTs.GenUtils.arrayContains(TestConfig.paymentMethods, paymentMethod.getId()), "Payment method is not expected: " + paymentMethod.getId());
   }
 
   // test form for each payment method
@@ -1087,6 +1085,9 @@ test("Can validate payment account forms (CI, sanity check)", async () => {
     // test payment account
     expect(paymentAccount.getPaymentMethod()!.getId()).toEqual(paymentMethod.getId());
     testPaymentAccount(paymentAccount, accountForm);
+
+    // delete payment account
+    // await user1.deletePaymentAccount(paymentAccount.getId()); // TODO: support deleting payment accounts over grpc
   }
 });
 
@@ -2947,12 +2948,21 @@ async function initFundingWallet() {
 
 async function prepareForTrading(numTrades: number, ...havenods: HavenoClient[]) {
 
-  // create payment accounts
+  // create payment account for each payment method
+  for (const havenod of havenods) {
+    for (const paymentMethod of await havenod.getPaymentMethods()) {
+      if (await hasPaymentAccount({trader: havenod, paymentMethod: paymentMethod.getId()})) continue; // skip if exists
+      const accountForm = await user1.getPaymentAccountForm(paymentMethod.getId());
+      for (const field of accountForm.getFieldsList()) field.setValue(getValidFormInput(accountForm, field.getId())); // set all form fields
+      await havenod.createPaymentAccount(accountForm);
+    }
+  }
+
+  // create payment account for each asset code
   for (const havenod of havenods) {
     for (const assetCode of TestConfig.assetCodes) {
-      if (!await hasPaymentAccount(havenod, assetCode)) {
-        await createPaymentAccount(havenod, assetCode);
-      }
+      if (await hasPaymentAccount({trader: havenod, assetCode: assetCode})) continue; // skip if exists
+      await createPaymentAccount(havenod, assetCode);
     }
   }
 
@@ -3286,9 +3296,10 @@ function getRandomAssetCode() {
   return TestConfig.assetCodes[moneroTs.GenUtils.getRandomInt(0, TestConfig.assetCodes.length - 1)];
 }
 
-async function hasPaymentAccount(trader: HavenoClient, assetCode: string): Promise<boolean> {
-  for (const paymentAccount of await trader.getPaymentAccounts()) {
-    if (paymentAccount.getSelectedTradeCurrency()!.getCode() === assetCode.toUpperCase()) return true;
+async function hasPaymentAccount(config: { trader: HavenoClient; assetCode?: string; paymentMethod?: string }): Promise<boolean> {
+  for (const paymentAccount of await config.trader.getPaymentAccounts()) {
+    if (config.assetCode?.toUpperCase() === paymentAccount.getSelectedTradeCurrency()!.getCode()) return true;
+    if (config.paymentMethod?.toUpperCase() === paymentAccount.getPaymentMethod()!.getId()) return true;
   }
   return false;
 }
