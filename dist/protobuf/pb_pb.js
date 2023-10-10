@@ -57918,8 +57918,7 @@ proto.io.haveno.protobuffer.BlockChainExplorer.prototype.toObject = function(opt
 proto.io.haveno.protobuffer.BlockChainExplorer.toObject = function(includeInstance, msg) {
   var f, obj = {
     name: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    txUrl: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    addressUrl: jspb.Message.getFieldWithDefault(msg, 3, "")
+    txUrl: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -57964,10 +57963,6 @@ proto.io.haveno.protobuffer.BlockChainExplorer.deserializeBinaryFromReader = fun
       var value = /** @type {string} */ (reader.readString());
       msg.setTxUrl(value);
       break;
-    case 3:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setAddressUrl(value);
-      break;
     default:
       reader.skipField();
       break;
@@ -58011,13 +58006,6 @@ proto.io.haveno.protobuffer.BlockChainExplorer.serializeBinaryToWriter = functio
       f
     );
   }
-  f = message.getAddressUrl();
-  if (f.length > 0) {
-    writer.writeString(
-      3,
-      f
-    );
-  }
 };
 
 
@@ -58054,24 +58042,6 @@ proto.io.haveno.protobuffer.BlockChainExplorer.prototype.getTxUrl = function() {
  */
 proto.io.haveno.protobuffer.BlockChainExplorer.prototype.setTxUrl = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-/**
- * optional string address_url = 3;
- * @return {string}
- */
-proto.io.haveno.protobuffer.BlockChainExplorer.prototype.getAddressUrl = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.io.haveno.protobuffer.BlockChainExplorer} returns this
- */
-proto.io.haveno.protobuffer.BlockChainExplorer.prototype.setAddressUrl = function(value) {
-  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
