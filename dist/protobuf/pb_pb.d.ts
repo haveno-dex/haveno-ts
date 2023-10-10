@@ -7170,9 +7170,6 @@ export class BlockChainExplorer extends jspb.Message {
   getTxUrl(): string;
   setTxUrl(value: string): BlockChainExplorer;
 
-  getAddressUrl(): string;
-  setAddressUrl(value: string): BlockChainExplorer;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): BlockChainExplorer.AsObject;
   static toObject(includeInstance: boolean, msg: BlockChainExplorer): BlockChainExplorer.AsObject;
@@ -7185,7 +7182,6 @@ export namespace BlockChainExplorer {
   export type AsObject = {
     name: string,
     txUrl: string,
-    addressUrl: string,
   }
 }
 
