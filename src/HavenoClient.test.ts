@@ -371,7 +371,7 @@ async function shutDown() {
   }
   await Promise.all(promises);
 
-  // terminate monero-javascript worker
+  // terminate monero-ts worker
   await moneroTs.LibraryUtils.terminateWorker();
 }
 
@@ -616,7 +616,7 @@ test("Can manage Monero daemon connections (CI)", async () => {
     await user3.setAutoSwitch(true);
 
     // stop monerod
-    //await monerod2.stopProcess(); // TODO (monero-javascript): monerod remains available after await monerod.stopProcess() for up to 40 seconds
+    //await monerod2.stopProcess(); // TODO (monero-ts): monerod remains available after await monerod.stopProcess() for up to 40 seconds
     await moneroTs.GenUtils.killProcess(monerod2.getProcess(), "SIGKILL");
 
     // test auto switch after periodic connection check
