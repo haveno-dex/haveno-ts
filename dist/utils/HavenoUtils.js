@@ -55,7 +55,7 @@ class HavenoUtils {
     /**
      * Kill the given process.
      *
-     * TODO (woodser): move this to monero-javascript GenUtils.js as common utility
+     * TODO (woodser): move this to monero-ts GenUtils.ts as common utility
      *
      * @param {Process} process - the nodejs child process to child
      * @param {String} signal - the kill signal, e.g. SIGTERM, SIGKILL, SIGINT (default)
