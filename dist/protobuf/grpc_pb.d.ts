@@ -1663,6 +1663,12 @@ export class OfferInfo extends jspb.Message {
   getArbitratorSigner(): string;
   setArbitratorSigner(value: string): OfferInfo;
 
+  getSplitOutputTxHash(): string;
+  setSplitOutputTxHash(value: string): OfferInfo;
+
+  getSplitOutputTxFee(): string;
+  setSplitOutputTxFee(value: string): OfferInfo;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): OfferInfo.AsObject;
   static toObject(includeInstance: boolean, msg: OfferInfo): OfferInfo.AsObject;
@@ -1700,6 +1706,8 @@ export namespace OfferInfo {
     versionNr: string,
     protocolVersion: number,
     arbitratorSigner: string,
+    splitOutputTxHash: string,
+    splitOutputTxFee: string,
   }
 }
 

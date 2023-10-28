@@ -37,7 +37,252 @@ let fundingWallet: moneroTs.MoneroWalletRpc;
 let user1Wallet: moneroTs.MoneroWalletRpc;
 let user2Wallet: moneroTs.MoneroWalletRpc;
 
-// default test configuration
+/**
+ * Test context for a single peer in a trade.
+ */
+class PeerContext {
+  havenod: HavenoClient;
+  wallet: moneroTs.MoneroWallet;
+  trade: TradeInfo;
+
+  // context to test balances after trade
+  balancesBeforeOffer: XmrBalanceInfo;
+  splitOutputTxFee: bigint;
+  balancesBeforeTake: XmrBalanceInfo;
+  balancesAfterTake: XmrBalanceInfo;
+  balancesBeforePayout: XmrBalanceInfo;
+  balancesAfterPayout: XmrBalanceInfo;
+  tradeFee: bigint;
+  depositTx: moneroTs.MoneroTx;
+  depositTxFee: bigint;
+  securityDepositActual: bigint;
+  payoutAmount: bigint
+
+  constructor(ctx?: Partial<PeerContext>) {
+    Object.assign(this, ctx);
+  }
+}
+
+/**
+ * Default trade configuration.
+ */
+const defaultTradeConfig: Partial<TradeContext> = {
+  arbitrator: new PeerContext(),
+  maker: new PeerContext(),
+  taker: new PeerContext(),
+  makeOffer: true,
+  takeOffer: true,
+  awaitFundsToMakeOffer: true,
+  direction: "BUY", // buy or sell xmr
+  offerAmount: BigInt("200000000000"), // amount of xmr to trade (0.2 XMR)
+  offerMinAmount: undefined,
+  assetCode: "usd", // counter asset to trade
+  makerPaymentAccountId: undefined,
+  buyerSecurityDepositPct: 0.15,
+  price: undefined, // use market price if undefined
+  triggerPrice: undefined,
+  awaitFundsToTakeOffer: true,
+  offerId: undefined,
+  takerPaymentAccountId: undefined,
+  buyerSendsPayment: true,
+  sellerReceivesPayment: true,
+  resolveDispute: true, // resolve dispute after opening
+  disputeWinner: DisputeResult.Winner.SELLER,
+  disputeReason: DisputeResult.Reason.PEER_WAS_LATE,
+  disputeSummary: "Seller is winner",
+  walletSyncPeriodMs: 5000,
+  maxTimePeerNoticeMs: 5000,
+  maxConcurrency: 14, // max concurrency
+  maxConcurrencyCI: 7, // CI test max concurrency
+  stopOnFailure: true,
+  testPayoutConfirmed: true,
+  testPayoutUnlocked: false
+}
+
+/**
+ * Configuration and context for a single trade.
+ */
+class TradeContext {
+
+  // trade peers
+  arbitrator: Partial<PeerContext>;
+  maker: Partial<PeerContext>;
+  taker: Partial<PeerContext>;
+
+  // trade flow
+  concurrentTrades?: boolean; // testing trades at same time
+  makeOffer?: boolean;
+  takeOffer?: boolean;
+  buyerOfflineAfterTake?: boolean;
+  sellerOfflineAfterTake?: boolean;
+  buyerOfflineAfterPaymentSent?: boolean
+  buyerOfflineAfterDisputeOpened?: boolean;
+  sellerOfflineAfterDisputeOpened?: boolean;
+  sellerDisputeContext?: DisputeContext;
+  buyerDisputeContext?: DisputeContext;
+  buyerSendsPayment?: boolean;
+  sellerReceivesPayment?: boolean
+
+  // make offer
+  awaitFundsToMakeOffer?: boolean
+  direction?: string;
+  assetCode?: string;
+  offerAmount?: bigint; // offer amount or max
+  offerMinAmount?: bigint;
+  tradeAmount?: bigint; // trade amount within offer range
+  makerPaymentAccountId?: string;
+  buyerSecurityDepositPct?: number;
+  price?: number;
+  priceMargin?: number;
+  triggerPrice?: number;
+  reserveExactAmount?: boolean;
+
+  // take offer
+  awaitFundsToTakeOffer?: boolean;
+  offerId?: string;
+  takerPaymentAccountId?: string;
+  testTraderChat?: boolean;
+
+  // resolve dispute
+  resolveDispute?: boolean
+  disputeOpener?: SaleRole;
+  disputeWinner?: DisputeResult.Winner;
+  disputeReason?: DisputeResult.Reason;
+  disputeSummary?: string;
+  disputeWinnerAmount?: bigint;
+
+  // other context
+  offer?: OfferInfo;
+  index?: number;
+  isOfferTaken?: boolean;
+  isPaymentSent?: boolean;
+  isPaymentReceived?: boolean;
+  phase?: string;
+  payoutState?: string[];
+  disputeState?: string;
+  isCompleted?: boolean;
+  isPayoutPublished?: boolean; // TODO: test isDepositsPublished; etc
+  isPayoutConfirmed?: boolean;
+  isPayoutUnlocked?: boolean
+  buyerOpenedDispute?: boolean;
+  sellerOpenedDispute?: boolean;
+  maxConcurrency?: number;
+  maxConcurrencyCI?: number;
+  walletSyncPeriodMs: number;
+  maxTimePeerNoticeMs: number;
+  stopOnFailure?: boolean;
+  buyerAppName?: string;
+  sellerAppName?: string;
+  usedPorts?: string[];
+  testPayoutConfirmed?: boolean;
+  testPayoutUnlocked?: boolean;
+  payoutTxId?: string
+  testBalanceChangeEndToEnd?: boolean;
+
+  constructor(ctx?: Partial<TradeContext>) {
+    Object.assign(this, ctx);
+    if (this.arbitrator) this.arbitrator = new PeerContext(this.arbitrator);
+    if (this.maker) this.maker = new PeerContext(this.maker);
+    if (this.taker) this.taker = new PeerContext(this.taker);
+  }
+
+  getMaker(): PeerContext {
+    return this.maker as PeerContext;
+  }
+
+  getTaker(): PeerContext {
+    return this.taker as PeerContext;
+  }
+
+  getBuyer(): PeerContext {
+    return (this.direction?.toUpperCase() === "BUY" ? this.maker : this.taker) as PeerContext;
+  }
+
+  getSeller(): PeerContext {
+    return (this.direction?.toUpperCase() === "BUY" ? this.taker : this.maker) as PeerContext;
+  }
+
+  isBuyerMaker(): boolean {
+    return this.direction?.toUpperCase() === "BUY";
+  }
+
+  getDisputeOpener(): PeerContext | undefined {
+    if (this.disputeOpener === undefined) return undefined;
+    return this.disputeOpener === SaleRole.BUYER ? this.getBuyer() : this.getSeller();
+  }
+
+  getDisputePeer(): PeerContext | undefined {
+    if (this.disputeOpener === undefined) return undefined;
+    return this.disputeOpener === SaleRole.BUYER ? this.getSeller() : this.getBuyer();
+  }
+
+  getDisputeWinner(): PeerContext | undefined {
+    if (this.disputeWinner === undefined) return undefined;
+    return this.disputeWinner === DisputeResult.Winner.BUYER ? this.getBuyer() : this.getSeller();
+  }
+
+  getDisputeLoser(): PeerContext | undefined {
+    if (this.disputeWinner === undefined) return undefined;
+    return this.disputeWinner === DisputeResult.Winner.BUYER ? this.getSeller() : this.getBuyer();
+  }
+
+  static init(ctxP: Partial<TradeContext> | undefined): TradeContext {
+    let ctx = ctxP instanceof TradeContext ? ctxP : new TradeContext(ctxP);
+    if (!ctx.offerAmount && ctx.tradeAmount) ctx.offerAmount = ctx.tradeAmount;
+    if (!ctx.offerMinAmount && ctx.offerAmount) ctx.offerMinAmount = ctx.offerAmount;
+    Object.assign(ctx, new TradeContext(TestConfig.trade), Object.assign({}, ctx));
+    return ctx;
+  }
+
+  async toSummary(): Promise<string> {
+    let str: string = "";
+    str += "Type: Maker/" + (this.direction!.toUpperCase() === "BUY" ? "Buyer" : "Seller") + ", Taker/" + (this.direction!.toUpperCase() === "BUY" ? "Seller" : "Buyer");
+    str += "\nOffer id: " + this.offerId;
+    if (this.maker.havenod) str += "\nMaker uri: " + this.maker?.havenod?.getUrl();
+    if (this.taker.havenod) str += "\nTaker uri: " + this.taker?.havenod?.getUrl();
+    str += "\nAsset code: " + this.assetCode?.toUpperCase();
+    str += "\nMaker payment account id: " + this.makerPaymentAccountId;
+    str += "\nTaker payment account id: " + this.takerPaymentAccountId;
+    str += "\nTrade amount: " + this.tradeAmount;
+    str += "\nMin amount: " + this.offerMinAmount;
+    str += "\nMax amount: " + this.offerAmount;
+    str += "\nSecurity deposit percent: " + this.buyerSecurityDepositPct;
+    str += "\nMaker balance before offer: " + this.maker.balancesBeforeOffer?.getBalance();
+    str += "\nMaker split output tx fee: " + this.maker.splitOutputTxFee;
+    if (this.offer) str += "\nMaker trade fee: " + this.offer!.getMakerFee();
+    if (this.arbitrator && this.arbitrator!.trade) {
+      str += "\nMaker deposit tx id: " + this.arbitrator!.trade!.getMakerDepositTxId();
+      if (this.arbitrator!.trade!.getMakerDepositTxId()) {
+        let tx = await monerod.getTx(this.arbitrator!.trade!.getMakerDepositTxId());
+        str += "\nMaker deposit tx fee: " + (tx ? tx?.getFee() : undefined);
+      }
+      str += "\nMaker security deposit received: " + (this.direction == "BUY" ? this.arbitrator!.trade!.getBuyerSecurityDeposit() : this.arbitrator!.trade!.getSellerSecurityDeposit());
+    }
+    str += "\nTaker balance before offer: " + this.taker.balancesBeforeOffer?.getBalance();
+    if (this.arbitrator && this.arbitrator!.trade) {
+      str += "\nTaker trade fee: " + this.arbitrator?.trade?.getTakerFee();
+      str += "\nTaker deposit tx id: " + this.arbitrator!.trade!.getTakerDepositTxId();
+      if (this.arbitrator!.trade!.getTakerDepositTxId()) {
+        let tx = await monerod.getTx(this.arbitrator!.trade!.getTakerDepositTxId());
+        str += "\nTaker deposit tx fee: " + (tx ? tx?.getFee() : undefined);
+      }
+      str += "\nTaker security deposit received: " + (this.direction == "BUY" ? this.arbitrator!.trade!.getSellerSecurityDeposit() : this.arbitrator!.trade!.getBuyerSecurityDeposit());
+      if (this.disputeWinner) str += "\nDispute winner: " + (this.disputeWinner == DisputeResult.Winner.BUYER ? "Buyer" : "Seller");
+      str += "\nPayout tx id: " + this.payoutTxId;
+      if (this.payoutTxId) {
+        str += "\nPayout fee: " + (await monerod.getTx(this.payoutTxId!)).getFee()!;
+        if (this.getBuyer().havenod) str += "\nBuyer payout: " + (await this.getBuyer().havenod!.getXmrTx(this.payoutTxId!))?.getIncomingTransfersList()[0].getAmount()!;
+        if (this.getSeller().havenod) str += "\nSeller payout: " + (await this.getSeller().havenod!.getXmrTx(this.payoutTxId!))!.getIncomingTransfersList()[0].getAmount()!;
+      }
+    }
+    str += "\nOffer json: " + JSON.stringify(this.offer?.toObject());
+    return str;
+  }
+}
+
+/**
+ * Default test configuration.
+ */
 const TestConfig = {
     logLevel: 2,
     baseCurrencyNetwork: getBaseCurrencyNetwork(),
@@ -143,38 +388,7 @@ const TestConfig = {
     },
     tradeInitTimeout: 60000,
     testTimeout: getBaseCurrencyNetwork() === BaseCurrencyNetwork.XMR_LOCAL ? 2400000 : 5400000, // timeout in ms for each test to complete (40 minutes for private network, 90 minutes for public network)
-    trade: { // default trade context
-        arbitrator: {} as HavenoClient, // assigned to default arbitrator before all tests. used to set expected arbitrator (cannot select arbitrator)
-        maker: {} as HavenoClient, // assigned to user1 as default before all tests
-        taker: {} as HavenoClient, // assigned to user2 as default before all tests
-        makeOffer: true,
-        takeOffer: true,
-        awaitFundsToMakeOffer: true,
-        direction: "buy",               // buy or sell xmr
-        offerAmount: BigInt("200000000000"), // amount of xmr to trade (0.2 XMR)
-        offerMinAmount: undefined,
-        assetCode: "usd",               // counter asset to trade
-        makerPaymentAccountId: undefined,
-        buyerSecurityDepositPct: 0.15,
-        price: undefined,               // use market price if undefined
-        triggerPrice: undefined,
-        awaitFundsToTakeOffer: true,
-        offerId: undefined,
-        takerPaymentAccountId: undefined,
-        buyerSendsPayment: true,
-        sellerReceivesPayment: true,
-        resolveDispute: true, // resolve dispute after opening
-        disputeWinner: DisputeResult.Winner.SELLER,
-        disputeReason: DisputeResult.Reason.PEER_WAS_LATE,
-        disputeSummary: "Seller is winner",
-        walletSyncPeriodMs: 5000,
-        maxTimePeerNoticeMs: 5000,
-        maxConcurrency: 14,  // max concurrency
-        maxConcurrencyCI: 7, // CI test max concurrency
-        stopOnFailure: true,
-        testPayoutConfirmed: true,
-        testPayoutUnlocked: false
-    }
+    trade: new TradeContext(defaultTradeConfig)
 };
 
 interface HavenodContext {
@@ -190,79 +404,6 @@ interface HavenodContext {
     port?: string,
     excludePorts?: string[],
     walletUrl?: string
-}
-
-interface TradeContext {
-
-    // trade flow
-    concurrentTrades?: boolean, // testing trades at same time
-    makeOffer?: boolean,
-    takeOffer?: boolean,
-    buyerOfflineAfterTake?: boolean,
-    sellerOfflineAfterTake?: boolean,
-    buyerOfflineAfterPaymentSent?: boolean
-    buyerOfflineAfterDisputeOpened?: boolean,
-    sellerOfflineAfterDisputeOpened?: boolean,
-    sellerDisputeContext?: DisputeContext,
-    buyerDisputeContext?: DisputeContext,
-    buyerSendsPayment?: boolean,
-    sellerReceivesPayment?: boolean
-
-    // make offer
-    maker?: HavenoClient,
-    awaitFundsToMakeOffer?: boolean
-    direction?: string,
-    assetCode?: string,
-    offerAmount?: bigint, // offer amount or max
-    offerMinAmount?: bigint,
-    tradeAmount?: bigint, // trade amount within offer range
-    makerPaymentAccountId?: string,
-    buyerSecurityDepositPct?: number,
-    price?: number,
-    priceMargin?: number,
-    triggerPrice?: number,
-    reserveExactAmount?: boolean,
-
-    // take offer
-    taker?: HavenoClient,
-    awaitFundsToTakeOffer?: boolean,
-    offerId?: string,
-    takerPaymentAccountId?: string,
-    testTraderChat?: boolean,
-
-    // resolve dispute
-    resolveDispute?: boolean
-    arbitrator?: HavenoClient,
-    disputeOpener?: SaleRole,
-    disputeWinner?: DisputeResult.Winner,
-    disputeReason?: DisputeResult.Reason,
-    disputeSummary?: string,
-    disputeWinnerAmount?: bigint,
-
-    // other context
-    offer?: OfferInfo,
-    index?: number,
-    isOfferTaken?: boolean,
-    isPaymentSent?: boolean,
-    isPaymentReceived?: boolean,
-    phase?: string,
-    payoutState?: string[],
-    disputeState?: string,
-    isCompleted?: boolean,
-    isPayoutPublished?: boolean, // TODO: test isDepositsPublished, etc
-    isPayoutConfirmed?: boolean,
-    isPayoutUnlocked?: boolean
-    buyerOpenedDispute?: boolean,
-    sellerOpenedDispute?: boolean,
-    maxConcurrency?: number,
-    walletSyncPeriodMs?: number,
-    maxTimePeerNoticeMs?: number,
-    stopOnFailure?: boolean,
-    buyerAppName?: string,
-    sellerAppName?: string,
-    usedPorts?: string[],
-    testPayoutConfirmed?: boolean,
-    testPayoutUnlocked?: boolean,
 }
 
 enum TradeRole {
@@ -335,9 +476,9 @@ beforeAll(async () => {
     arbitrator = startupHavenods[0];
     user1 = startupHavenods[1];
     user2 = startupHavenods[2];
-    TestConfig.trade.arbitrator = arbitrator;
-    TestConfig.trade.maker = user1;
-    TestConfig.trade.taker = user2;
+    TestConfig.trade.arbitrator.havenod = arbitrator;
+    TestConfig.trade.maker.havenod = user1;
+    TestConfig.trade.taker.havenod = user2;
 
     // connect client wallets
     user1Wallet = await moneroTs.connectToWalletRpc(TestConfig.startupHavenods[1].walletUrl!, TestConfig.defaultHavenod.walletUsername, TestConfig.startupHavenods[1].accountPasswordRequired ? TestConfig.startupHavenods[1].accountPassword : TestConfig.defaultHavenod.walletDefaultPassword);
@@ -923,13 +1064,13 @@ test("Can get market depth (CI, sanity check)", async () => {
     expect(marketDepth.getSellDepthList().length).toEqual(0);
 
     // post offers to buy and sell
-    await makeOffer({maker: user1, direction: "buy", offerAmount: BigInt("150000000000"), assetCode: assetCode, price: 17.0});
-    await makeOffer({maker: user1, direction: "buy", offerAmount: BigInt("150000000000"), assetCode: assetCode, price: 17.2});
-    await makeOffer({maker: user1, direction: "buy", offerAmount: BigInt("200000000000"), assetCode: assetCode, price: 17.3});
-    await makeOffer({maker: user1, direction: "buy", offerAmount: BigInt("150000000000"), assetCode: assetCode, price: 17.3});
-    await makeOffer({maker: user1, direction: "sell", offerAmount: BigInt("300000000000"), assetCode: assetCode, priceMargin: 0.00});
-    await makeOffer({maker: user1, direction: "sell", offerAmount: BigInt("300000000000"), assetCode: assetCode, priceMargin: 0.02});
-    await makeOffer({maker: user1, direction: "sell", offerAmount: BigInt("400000000000"), assetCode: assetCode, priceMargin: 0.05});
+    await makeOffer({maker: {havenod: user1}, direction: "BUY", offerAmount: BigInt("150000000000"), assetCode: assetCode, price: 17.0});
+    await makeOffer({maker: {havenod: user1}, direction: "BUY", offerAmount: BigInt("150000000000"), assetCode: assetCode, price: 17.2});
+    await makeOffer({maker: {havenod: user1}, direction: "BUY", offerAmount: BigInt("200000000000"), assetCode: assetCode, price: 17.3});
+    await makeOffer({maker: {havenod: user1}, direction: "BUY", offerAmount: BigInt("150000000000"), assetCode: assetCode, price: 17.3});
+    await makeOffer({maker: {havenod: user1}, direction: "SELL", offerAmount: BigInt("300000000000"), assetCode: assetCode, priceMargin: 0.00});
+    await makeOffer({maker: {havenod: user1}, direction: "SELL", offerAmount: BigInt("300000000000"), assetCode: assetCode, priceMargin: 0.02});
+    await makeOffer({maker: {havenod: user1}, direction: "SELL", offerAmount: BigInt("400000000000"), assetCode: assetCode, priceMargin: 0.05});
 
     // get user2's market depth
     await wait(TestConfig.trade.maxTimePeerNoticeMs);
@@ -942,7 +1083,7 @@ test("Can get market depth (CI, sanity check)", async () => {
     expect(marketDepth.getSellPricesList().length).toEqual(marketDepth.getSellDepthList().length);
 
     // test buy prices and depths
-    const buyOffers = (await user1.getOffers(assetCode, "buy")).concat(await user1.getMyOffers(assetCode, "buy")).sort(function(a, b) { return parseFloat(a.getPrice()) - parseFloat(b.getPrice()) });
+    const buyOffers = (await user1.getOffers(assetCode, "BUY")).concat(await user1.getMyOffers(assetCode, "BUY")).sort(function(a, b) { return parseFloat(a.getPrice()) - parseFloat(b.getPrice()) });
     expect(marketDepth.getBuyPricesList()[0]).toEqual(1 / parseFloat(buyOffers[0].getPrice())); // TODO: price when posting offer is reversed. this assumes crypto counter currency
     expect(marketDepth.getBuyPricesList()[1]).toEqual(1 / parseFloat(buyOffers[1].getPrice()));
     expect(marketDepth.getBuyPricesList()[2]).toEqual(1 / parseFloat(buyOffers[2].getPrice()));
@@ -951,7 +1092,7 @@ test("Can get market depth (CI, sanity check)", async () => {
     expect(marketDepth.getBuyDepthList()[2]).toEqual(0.65);
 
     // test sell prices and depths
-    const sellOffers = (await user1.getOffers(assetCode, "sell")).concat(await user1.getMyOffers(assetCode, "sell")).sort(function(a, b) { return parseFloat(b.getPrice()) - parseFloat(a.getPrice()) });
+    const sellOffers = (await user1.getOffers(assetCode, "SELL")).concat(await user1.getMyOffers(assetCode, "SELL")).sort(function(a, b) { return parseFloat(b.getPrice()) - parseFloat(a.getPrice()) });
     expect(marketDepth.getSellPricesList()[0]).toEqual(1 / parseFloat(sellOffers[0].getPrice()));
     expect(marketDepth.getSellPricesList()[1]).toEqual(1 / parseFloat(sellOffers[1].getPrice()));
     expect(marketDepth.getSellPricesList()[2]).toEqual(1 / parseFloat(sellOffers[2].getPrice()));
@@ -1185,7 +1326,7 @@ test("Can post and remove an offer (CI, sanity check)", async () => {
   let assetCode = "BCH";
   let price = 1 / 17;
   price = 1 / price; // TODO: price in crypto offer is inverted
-  let offer: OfferInfo = await makeOffer({maker: user1, assetCode: assetCode, price: price});
+  let offer: OfferInfo = await makeOffer({maker: {havenod: user1}, assetCode: assetCode, price: price});
   assert.equal(offer.getState(), "AVAILABLE");
   assert.equal(offer.getBaseCurrencyCode(), assetCode); // TODO: base and counter currencies inverted in crypto offer
   assert.equal(offer.getCounterCurrencyCode(), "XMR");
@@ -1203,7 +1344,7 @@ test("Can post and remove an offer (CI, sanity check)", async () => {
   await user1.removeOffer(offer.getId());
 
   // offer is removed from my offers
-  if (getOffer(await user1.getMyOffers(assetCode, "buy"), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in my offers after removal");
+  if (getOffer(await user1.getMyOffers(assetCode, "BUY"), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in my offers after removal");
 
   // reserved balance released
   expect(BigInt((await user1.getBalances()).getAvailableBalance())).toEqual(availableBalanceBefore);
@@ -1211,7 +1352,7 @@ test("Can post and remove an offer (CI, sanity check)", async () => {
   // post fiat offer
   assetCode = "USD";
   price = 180.0;
-  offer = await makeOffer({maker: user1, assetCode: assetCode, price: price});
+  offer = await makeOffer({maker: {havenod: user1}, assetCode: assetCode, price: price});
   assert.equal(offer.getState(), "AVAILABLE");
   assert.equal(offer.getBaseCurrencyCode(), "XMR");
   assert.equal(offer.getCounterCurrencyCode(), "USD");
@@ -1225,7 +1366,7 @@ test("Can post and remove an offer (CI, sanity check)", async () => {
   await user1.removeOffer(offer.getId());
 
   // offer is removed from my offers
-  if (getOffer(await user1.getMyOffers(assetCode, "buy"), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in my offers after removal");
+  if (getOffer(await user1.getMyOffers(assetCode, "BUY"), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in my offers after removal");
 
   // reserved balance released
   expect(BigInt((await user1.getBalances()).getAvailableBalance())).toEqual(availableBalanceBefore);
@@ -1252,7 +1393,7 @@ test("Can schedule offers with locked funds (CI)", async () => {
     // schedule offer
     const assetCode = "BCH";
     const direction = "BUY";
-    const ctx = Object.assign({}, TestConfig.trade, {maker: user3, assetCode: assetCode, direction: direction, awaitFundsToMakeOffer: false});
+    const ctx = new TradeContext({maker: {havenod: user3}, assetCode: assetCode, direction: direction, awaitFundsToMakeOffer: false});
     let offer: OfferInfo = await makeOffer(ctx);
     assert.equal(offer.getState(), "SCHEDULED");
 
@@ -1277,7 +1418,7 @@ test("Can schedule offers with locked funds (CI)", async () => {
     expect(BigInt((await user3.getBalances()).getReservedOfferBalance())).toEqual(BigInt(0));
 
     // schedule offer
-    offer = await makeOffer({maker: user3, assetCode: assetCode, direction: direction, awaitFundsToMakeOffer: false});
+    offer = await makeOffer({maker: {havenod: user3}, assetCode: assetCode, direction: direction, awaitFundsToMakeOffer: false});
     assert.equal(offer.getState(), "SCHEDULED");
 
     // peer does not see offer because it's scheduled
@@ -1293,7 +1434,7 @@ test("Can schedule offers with locked funds (CI)", async () => {
 
     // restart user3
     user3 = await initHaveno(user3Config);
-    ctx.maker = user3;
+    ctx.maker.havenod = user3;
 
     // has offer
     await waitForAvailableBalance(outputAmt, user3);
@@ -1343,7 +1484,8 @@ test("Can reserve exact amount needed for offer (CI)", async () => {
     offerAmount: HavenoUtils.xmrToAtomicUnits(randomOfferAmount),
     offerMinAmount: HavenoUtils.xmrToAtomicUnits(.15),
     tradeAmount: HavenoUtils.xmrToAtomicUnits(.92),
-    reserveExactAmount: true
+    reserveExactAmount: true,
+    testBalanceChangeEndToEnd: true
   });
 });
 
@@ -1375,7 +1517,8 @@ test("Can complete a trade within a range", async () => {
     testPayoutUnlocked: true, // override to test unlock
     makerPaymentAccountId: makerPaymentAccount.getId(),
     takerPaymentAccountId: takerPaymentAccount.getId(),
-    assetCode: assetCode
+    assetCode: assetCode,
+    testBalanceChangeEndToEnd: true
   });
 });
 
@@ -1400,18 +1543,18 @@ test("Can complete all trade combinations (stress)", async () => {
         for (let l = 0; l < SELLER_DISPUTE_OPTS.length; l++) {
           for (let m = 0; m < DISPUTE_WINNER_OPTS.length; m++) {
             if (BUYER_DISPUTE_OPTS[k] !== DisputeContext.NONE && SELLER_DISPUTE_OPTS[l] !== DisputeContext.NONE) continue; // skip both opening a dispute
-            const ctx: TradeContext = {
+            const ctx: Partial<TradeContext> = {
               walletSyncPeriodMs: 8000, // increase for stress test
               maxTimePeerNoticeMs: 8000,
-              maker: MAKER_OPTS[i] === TradeRole.MAKER ? user1 : user2,
-              taker: MAKER_OPTS[i] === TradeRole.MAKER ? user2 : user1,
+              maker: { havenod: MAKER_OPTS[i] === TradeRole.MAKER ? user1 : user2 },
+              taker: { havenod: MAKER_OPTS[i] === TradeRole.MAKER ? user2 : user1 },
               direction: DIRECTION_OPTS[j],
               buyerDisputeContext: BUYER_DISPUTE_OPTS[k],
               sellerDisputeContext: SELLER_DISPUTE_OPTS[l],
               disputeWinner: DISPUTE_WINNER_OPTS[m],
               disputeSummary: "After much deliberation, " + (DISPUTE_WINNER_OPTS[m] === DisputeResult.Winner.BUYER ? "buyer" : "seller") + " is winner"
             };
-            ctxs.push(Object.assign({}, TestConfig.trade, ctx));
+            ctxs.push(Object.assign({}, new TradeContext(TestConfig.trade), ctx));
           }
         }
       }
@@ -1425,7 +1568,7 @@ test("Can complete all trade combinations (stress)", async () => {
 
 test("Can go offline while completing a trade (CI, sanity check)", async () => {
   let traders: HavenoClient[] = [];
-  let ctx: TradeContext = {};
+  let ctx: TradeContext = new TradeContext(TestConfig.trade);
   let err: any;
   try {
 
@@ -1434,9 +1577,8 @@ test("Can go offline while completing a trade (CI, sanity check)", async () => {
     traders = await initHavenos(2);
 
     // create trade config
-    ctx = Object.assign({}, TestConfig.trade);
-    ctx.maker = traders[0];
-    ctx.taker = traders[1];
+    ctx.maker.havenod = traders[0];
+    ctx.taker.havenod = traders[1];
     ctx.buyerOfflineAfterTake = true;
     ctx.sellerOfflineAfterTake = true;
     ctx.buyerOfflineAfterPaymentSent = true;
@@ -1453,62 +1595,62 @@ test("Can go offline while completing a trade (CI, sanity check)", async () => {
   }
 
   // stop traders
-  if (ctx.maker) await releaseHavenoProcess(ctx.maker, true);
-  if (ctx.taker) await releaseHavenoProcess(ctx.taker, true);
+  if (ctx.maker.havenod) await releaseHavenoProcess(ctx.maker.havenod, true);
+  if (ctx.taker.havenod) await releaseHavenoProcess(ctx.taker.havenod, true);
   if (err) throw err;
 });
 
-test("Can go offline while resolving disputes (CI)", async () => {
-  let traders: HavenoClient[] = [];
-  let ctx: TradeContext = {};
-  let err: any;
-  try {
+test("Can resolve a dispute (CI)", async () => {
 
-    // start trader processes
-    HavenoUtils.log(1, "Starting trader processes");
-    traders = await initHavenos(2);
+  // create payment accounts
+  let paymentMethodId = "revolut";
+  let assetCode = "usd";
+  let makerPaymentAccount = await createPaymentAccount(user1, assetCode, paymentMethodId);
+  let takerPaymentAccount = await createPaymentAccount(user2, assetCode, paymentMethodId);
 
-    // create trade config
-    ctx = Object.assign(getTradeContexts(1)[0], {
-      maker: traders[0],
-      taker: traders[1],
-      buyerOfflineAfterTake: true,
-      sellerOfflineAfterDisputeOpened: true,
-      buyerOfflineAfterDisputeOpened: false,
-      sellerDisputeContext: DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK,
-      disputeWinner: DisputeResult.Winner.SELLER,
-      disputeReason: DisputeResult.Reason.NO_REPLY,
-      disputeSummary: "Seller wins dispute because buyer has not replied",
-      testTradePayoutUnlock: true
-    });
+  // execute trade
+  await executeTrade({
+    price: 142.23,
+    offerAmount: HavenoUtils.xmrToAtomicUnits(2),
+    offerMinAmount: HavenoUtils.xmrToAtomicUnits(.15),
+    tradeAmount: HavenoUtils.xmrToAtomicUnits(1),
+    testPayoutUnlocked: true, // override to test unlock
+    makerPaymentAccountId: makerPaymentAccount.getId(),
+    takerPaymentAccountId: takerPaymentAccount.getId(),
+    assetCode: assetCode,
+    buyerDisputeContext: DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK,
+    disputeWinner: DisputeResult.Winner.SELLER,
+    disputeReason: DisputeResult.Reason.OTHER,
+    disputeSummary: "Payment not completed, so returning trade amount to seller.",
+    testBalanceChangeEndToEnd: true
+  });
 
-    // fund traders
-    HavenoUtils.log(1, "Funding traders");
-    const tradeAmount = BigInt("250000000000");
-    await waitForAvailableBalance(tradeAmount * BigInt("2"), ...traders);
-
-    // execute trade
-    await executeTrade(ctx);
-  } catch (e) {
-    err = e;
-  }
-
-  // stop and delete traders
-  if (ctx.maker) await releaseHavenoProcess(ctx.maker!, true);
-  if (ctx.sellerAppName) deleteHavenoInstanceByAppName(ctx.sellerAppName!); // seller is offline
-  if (err) throw err;
+  // TODO: test with fixed price
+  // TODO: test receiver = BUYER
+  // TODO: test with custom amount, or do the big test sequentially
 });
 
 test("Can resolve disputes (CI)", async () => {
+  
+  // execute all configs unless config index given
+  let configIdx = undefined;
+  let testBalancesSequentially = false; // runs each config sequentially to test balances before and after // TODO: this test takes much longer to run in sequence in order to test balances. use test weight config
 
-  // take trades but stop before sending payment
+  // create test configurations which stop before payment sent
   const ctxs = getTradeContexts(4);
   for (const config of ctxs) config.buyerSendsPayment = false;
-  const tradeIds = await executeTrades(ctxs);
+  Object.assign(ctxs[3], {
+    offerAmount: HavenoUtils.xmrToAtomicUnits(1),
+    offerMinAmount: HavenoUtils.xmrToAtomicUnits(.15),
+    tradeAmount: HavenoUtils.xmrToAtomicUnits(.578),
+  });
+
+  // initiate trades
+  const tradeIds = await executeTrades(ctxs.slice(configIdx, configIdx === undefined ? undefined : configIdx + 1));
 
   // open disputes at same time but do not resolve
-  const trade1 = await user1.getTrade(tradeIds[1]);
-  const trade2 = await user1.getTrade(tradeIds[2]);
+  const trade1 = await user1.getTrade(tradeIds[configIdx === undefined ? 1 : 0]);
+  const trade2 = await user1.getTrade(tradeIds[configIdx === undefined ? 2 : 0]);
   Object.assign(ctxs[0], {
     resolveDispute: false,
     sellerDisputeContext: DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK,
@@ -1541,12 +1683,55 @@ test("Can resolve disputes (CI)", async () => {
     disputeSummary: "Buyer wins dispute after sending payment",
   });
   HavenoUtils.log(1, "Opening disputes");
-  await executeTrades(ctxs);
+  await executeTrades(ctxs.slice(configIdx, configIdx === undefined ? undefined : configIdx + 1));
 
   // resolve disputes
-  for (const ctx of ctxs) ctx.resolveDispute = true;
+  for (const ctx of ctxs) {
+    ctx.resolveDispute = true;
+    ctx.testPayoutUnlocked = false;
+  }
   HavenoUtils.log(1, "Resolving disputes");
-  await executeTrades(ctxs, {concurrentTrades: true}); // TODO: running in parallel doesn't test balances before and after, but this test takes ~10 minutes in sequence. use test weight config
+  await executeTrades(ctxs.slice(configIdx, configIdx === undefined ? undefined : configIdx + 1), {concurrentTrades: !testBalancesSequentially});
+});
+
+test("Can go offline while resolving disputes (CI)", async () => {
+  let traders: HavenoClient[] = [];
+  let ctx: Partial<TradeContext> = {};
+  let err: any;
+  try {
+
+    // start trader processes
+    HavenoUtils.log(1, "Starting trader processes");
+    traders = await initHavenos(2);
+
+    // create trade config
+    ctx = new TradeContext({
+      maker: {havenod: traders[0]},
+      taker: {havenod: traders[1]},
+      buyerOfflineAfterTake: true,
+      sellerOfflineAfterDisputeOpened: true,
+      buyerOfflineAfterDisputeOpened: false,
+      sellerDisputeContext: DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK,
+      disputeWinner: DisputeResult.Winner.SELLER,
+      disputeReason: DisputeResult.Reason.NO_REPLY,
+      disputeSummary: "Seller wins dispute because buyer has not replied",
+      testPayoutUnlocked: false
+    });
+
+    // fund traders
+    const tradeAmount = BigInt("250000000000");
+    await waitForAvailableBalance(tradeAmount * BigInt("2"), ...traders);
+
+    // execute trade
+    await executeTrade(ctx);
+  } catch (e) {
+    err = e;
+  }
+
+  // stop and delete traders
+  if (ctx.maker!.havenod) await releaseHavenoProcess(ctx.maker!.havenod!, true);
+  if (ctx.sellerAppName) deleteHavenoInstanceByAppName(ctx.sellerAppName!); // seller is offline
+  if (err) throw err;
 });
 
 test("Cannot make or take offer with insufficient unlocked funds (CI, sanity check)", async () => {
@@ -1558,11 +1743,11 @@ test("Cannot make or take offer with insufficient unlocked funds (CI, sanity che
     user3 = await initHaveno();
 
     // user3 creates payment account
-    const paymentAccount = await createPaymentAccount(user3, TestConfig.trade.assetCode);
+    const paymentAccount = await createPaymentAccount(user3, TestConfig.trade.assetCode!);
 
     // user3 cannot make offer with insufficient funds
     try {
-      await makeOffer({maker: user3, makerPaymentAccountId: paymentAccount.getId(), awaitFundsToMakeOffer: false});
+      await makeOffer({maker: {havenod: user3}, makerPaymentAccountId: paymentAccount.getId(), awaitFundsToMakeOffer: false});
       throw new Error("Should have failed making offer with insufficient funds")
     } catch (err: any) {
       if (!err.message.includes("not enough money")) throw err;
@@ -1577,7 +1762,7 @@ test("Cannot make or take offer with insufficient unlocked funds (CI, sanity che
     else {
       const tradeAmount = BigInt("250000000000");
       await waitForAvailableBalance(tradeAmount * BigInt("2"), user1);
-      offer = await makeOffer({maker: user1, offerAmount: tradeAmount, awaitFundsToMakeOffer: false});
+      offer = await makeOffer({maker: {havenod: user1}, offerAmount: tradeAmount, awaitFundsToMakeOffer: false});
       assert.equal(offer.getState(), "AVAILABLE");
       await wait(TestConfig.trade.walletSyncPeriodMs * 2);
     }
@@ -1628,7 +1813,7 @@ test("Invalidates offers when reserved funds are spent (CI)", async () => {
     // post offer
     await wait(1000);
     const assetCode = getRandomAssetCode();
-    const offer: OfferInfo = await makeOffer({maker: user1, assetCode: assetCode, offerAmount: tradeAmount});
+    const offer: OfferInfo = await makeOffer({maker: {havenod: user1}, assetCode: assetCode, offerAmount: tradeAmount});
 
     // get key images reserved by offer
     const reservedKeyImages: any[] = [];
@@ -1640,7 +1825,7 @@ test("Invalidates offers when reserved funds are spent (CI)", async () => {
 
     // offer is available to peers
     await wait(TestConfig.trade.walletSyncPeriodMs * 2);
-    if (!getOffer(await user2.getOffers(assetCode, "buy"), offer.getId())) throw new Error("Offer " + offer.getId() + " was not found in peer's offers after posting");
+    if (!getOffer(await user2.getOffers(assetCode, "BUY"), offer.getId())) throw new Error("Offer " + offer.getId() + " was not found in peer's offers after posting");
 
     // spend one of offer's reserved outputs
     if (!reservedKeyImages.length) throw new Error("No reserved key images detected");
@@ -1653,10 +1838,10 @@ test("Invalidates offers when reserved funds are spent (CI)", async () => {
 
     // offer is removed from peer offers
     await wait(20000);
-    if (getOffer(await user2.getOffers(assetCode, "buy"), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in peer's offers after reserved funds spent");
+    if (getOffer(await user2.getOffers(assetCode, "BUY"), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in peer's offers after reserved funds spent");
 
     // offer is removed from my offers
-    if (getOffer(await user1.getMyOffers(assetCode, "buy"), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in my offers after reserved funds spent");
+    if (getOffer(await user1.getMyOffers(assetCode, "BUY"), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in my offers after reserved funds spent");
 
     // offer is automatically cancelled
     try {
@@ -1690,7 +1875,7 @@ test("Can handle unexpected errors during trade initialization", async () => {
 
     // trader 0 posts offer
     HavenoUtils.log(1, "Posting offer");
-    let offer = await makeOffer({maker: traders[0], offerAmount: tradeAmount});
+    let offer = await makeOffer({maker: {havenod: traders[0]}, offerAmount: tradeAmount});
     offer = await traders[0].getMyOffer(offer.getId());
     assert.equal(offer.getState(), "AVAILABLE");
 
@@ -1796,7 +1981,7 @@ test("Selects arbitrators which are online, registered, and least used", async (
     let offer1: OfferInfo | undefined;
     let offer2: OfferInfo | undefined;
     while (true) {
-      const offer = await makeOffer({maker: user1});
+      const offer = await makeOffer({maker: {havenod: user1}});
       if (offer.getArbitratorSigner() === arbitrator1ApiUrl && !offer1) offer1 = offer;
       else if (offer.getArbitratorSigner() === arbitrator2ApiUrl && !offer2) offer2 = offer;
       else await user1.removeOffer(offer.getId());
@@ -1806,7 +1991,7 @@ test("Selects arbitrators which are online, registered, and least used", async (
 
     // complete a trade which uses arbitrator2 since it's least used
     HavenoUtils.log(1, "Completing trade using arbitrator2");
-    await executeTrade({maker: user1, taker: user2, arbitrator: arbitrator2, offerId: offer1.getId(), makerPaymentAccountId: offer1.getPaymentAccountId(), testPayoutConfirmed: false});
+    await executeTrade({maker: {havenod: user1}, taker: {havenod: user2}, arbitrator: {havenod: arbitrator2}, offerId: offer1.getId(), makerPaymentAccountId: offer1.getPaymentAccountId(), testPayoutConfirmed: false});
     let trade = await user1.getTrade(offer1.getId());
     assert.equal(trade.getArbitratorNodeAddress(), arbitrator2ApiUrl);
 
@@ -1817,13 +2002,13 @@ test("Selects arbitrators which are online, registered, and least used", async (
 
     // post offer which uses main arbitrator since arbitrator2 is offline
     HavenoUtils.log(1, "Posting offer which uses main arbitrator since arbitrator2 is offline");
-    let offer = await makeOffer({maker: user1});
+    let offer = await makeOffer({maker: {havenod: user1}});
     assert.equal(offer.getArbitratorSigner(), arbitrator1ApiUrl);
     await user1.removeOffer(offer.getId());
 
     // complete a trade which uses main arbitrator since arbitrator2 is offline
     HavenoUtils.log(1, "Completing trade using main arbitrator since arbitrator2 is offline");
-    await executeTrade({maker: user1, taker: user2, offerId: offer2.getId(), makerPaymentAccountId: offer2.getPaymentAccountId(), testPayoutConfirmed: false});
+    await executeTrade({maker: {havenod: user1}, taker: {havenod: user2}, offerId: offer2.getId(), makerPaymentAccountId: offer2.getPaymentAccountId(), testPayoutConfirmed: false});
     trade = await user1.getTrade(offer2.getId());
     assert.equal(trade.getArbitratorNodeAddress(), arbitrator1ApiUrl);
 
@@ -1836,7 +2021,7 @@ test("Selects arbitrators which are online, registered, and least used", async (
     // cannot take offers signed by unregistered arbitrator
     HavenoUtils.log(1, "Taking offer signed by unregistered arbitrator");
     try {
-    await executeTrade({maker: user1, taker: user2, offerId: offer2.getId()});
+    await executeTrade({maker: {havenod: user1}, taker: {havenod: user2}, offerId: offer2.getId()});
       throw new Error("Should have failed taking offer signed by unregistered arbitrator");
     } catch (e2) {
       assert (e2.message.indexOf("not found") > 0);
@@ -1845,13 +2030,13 @@ test("Selects arbitrators which are online, registered, and least used", async (
     // TODO: offer is removed and unreserved or re-signed, ideally keeping the same id
 
     // post offer which uses main arbitrator since arbitrator2 is unregistered
-    offer = await makeOffer({maker: user1});
+    offer = await makeOffer({maker: {havenod: user1}});
     assert.equal(offer.getArbitratorSigner(), arbitrator1ApiUrl);
     await wait(TestConfig.trade.walletSyncPeriodMs * 2);
 
     // complete a trade which uses main arbitrator since arbitrator2 is unregistered
     HavenoUtils.log(1, "Completing trade with main arbitrator since arbitrator2 is unregistered");
-    await executeTrade({maker: user1, taker: user2, offerId: offer.getId(), makerPaymentAccountId: offer.getPaymentAccountId(), testPayoutConfirmed: false});
+    await executeTrade({maker: {havenod: user1}, taker: {havenod: user2}, offerId: offer.getId(), makerPaymentAccountId: offer.getPaymentAccountId(), testPayoutConfirmed: false});
     HavenoUtils.log(1, "Done completing trade with main arbitrator since arbitrator2 is unregistered");
     trade = await user2.getTrade(offer.getId());
     HavenoUtils.log(1, "Done getting trade");
@@ -1875,57 +2060,18 @@ test("Selects arbitrators which are online, registered, and least used", async (
 
 // ----------------------------- TEST HELPERS ---------------------------------
 
-function getBuyer(ctx: TradeContext) {
-  return ctx.direction?.toUpperCase() === "BUY" ? ctx.maker : ctx.taker;
-}
-
-function getSeller(ctx: TradeContext) {
-  return ctx.direction?.toUpperCase() === "SELL" ? ctx.maker : ctx.taker;
-}
-
-function isBuyerMaker(ctx: TradeContext) {
-  return ctx.direction?.toUpperCase() === "BUY";
-}
-
-function getDisputeOpener(ctx: TradeContext) {
-  if (!ctx.disputeOpener) return undefined;
-  return ctx.disputeOpener === SaleRole.BUYER ? getBuyer(ctx) : getSeller(ctx);
-}
-
-function getDisputePeer(ctx: TradeContext) {
-  if (!ctx.disputeOpener) return undefined;
-  return ctx.disputeOpener === SaleRole.BUYER ? getSeller(ctx) : getBuyer(ctx);
-}
-
 function getTradeContexts(numConfigs: number): TradeContext[] {
     const configs: TradeContext[] = [];
-    for (let i = 0; i < numConfigs; i++) configs.push({});
+    for (let i = 0; i < numConfigs; i++) configs.push(new TradeContext(TestConfig.trade));
     return configs;
 }
 
-function tradeContextToString(ctx: TradeContext) {
-  return JSON.stringify(Object.assign({}, ctx, {
-    offerAmount: ctx.offerAmount ? ctx.offerAmount.toString() : undefined,
-    offerMinAmount: ctx.offerMinAmount ? ctx.offerMinAmount.toString() : undefined,
-    tradeAmount: ctx.tradeAmount ? ctx.tradeAmount.toString() : undefined,
-    disputeWinnerAmount: ctx.disputeWinnerAmount ? ctx.disputeWinnerAmount.toString() : undefined,
-    arbitrator: ctx.arbitrator ? ctx.arbitrator.getUrl() : undefined,
-    maker: ctx.maker ? ctx.maker.getUrl() : undefined,
-    taker: ctx.taker ? ctx.taker.getUrl() : undefined,
-    buyer: getBuyer(ctx) ? getBuyer(ctx)?.getUrl() : undefined,
-    seller:  getSeller(ctx) ? getSeller(ctx)?.getUrl() : undefined,
-    disputeOpener: ctx.maker ? getDisputeOpener(ctx)?.getUrl() : undefined,
-    disputePeer: ctx.maker ? getDisputePeer(ctx)?.getUrl() : undefined,
-    disputeWinner: ctx.disputeWinner === DisputeResult.Winner.BUYER ? "buyer" : "seller"
-  }));
-}
-
-async function executeTrades(ctxs: TradeContext[], executionCtx?: TradeContext): Promise<string[]> {
+async function executeTrades(ctxs: Partial<TradeContext>[], executionCtx?: Partial<TradeContext>): Promise<string[]> {
 
   // assign default execution context
   if (!executionCtx) executionCtx = {};
   if (executionCtx.concurrentTrades === undefined) executionCtx.concurrentTrades = ctxs.length > 1;
-  Object.assign(executionCtx, TestConfig.trade, Object.assign({}, executionCtx));
+  Object.assign(executionCtx, new TradeContext(TestConfig.trade), Object.assign({}, executionCtx));
 
   // start mining if executing trades concurrently
   let miningStarted = executionCtx.concurrentTrades && await startMining();
@@ -1936,7 +2082,7 @@ async function executeTrades(ctxs: TradeContext[], executionCtx?: TradeContext):
   try {
 
     // assign default configs
-    for (let i = 0; i < ctxs.length; i++) Object.assign(ctxs[i], TestConfig.trade, Object.assign({index: i}, ctxs[i]));
+    for (let i = 0; i < ctxs.length; i++) Object.assign(ctxs[i], new TradeContext(TestConfig.trade), Object.assign({index: i}, ctxs[i]));
 
     // wait for traders to have unlocked balance for trades
     let tradeAmount: bigint|undefined = undefined;
@@ -1944,12 +2090,12 @@ async function executeTrades(ctxs: TradeContext[], executionCtx?: TradeContext):
     for (const ctx of ctxs) {
       if (!tradeAmount || tradeAmount < ctx.offerAmount!) tradeAmount = ctx.offerAmount; // use max amount
       if (ctx.awaitFundsToMakeOffer && ctx.makeOffer && !ctx.offerId) {
-        const wallet = await getWallet(ctx.maker!);
+        const wallet = await getWallet(ctx.maker!.havenod!);
         if (outputCounts.has(wallet)) outputCounts.set(wallet, outputCounts.get(wallet)! + 1);
         else outputCounts.set(wallet, 1);
       }
       if (ctx.awaitFundsToTakeOffer && ctx.takeOffer && !ctx.isOfferTaken) {
-        const wallet = await getWallet(ctx.taker!);
+        const wallet = await getWallet(ctx.taker!.havenod!);
         if (outputCounts.has(wallet)) outputCounts.set(wallet, outputCounts.get(wallet)! + 1);
         else outputCounts.set(wallet, 1);
       }
@@ -1989,37 +2135,30 @@ async function executeTrades(ctxs: TradeContext[], executionCtx?: TradeContext):
 }
 
 // TODO (woodser): test grpc notifications
-async function executeTrade(ctx?: TradeContext): Promise<string> {
+async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
+  let ctx = TradeContext.init(ctxP);
   try {
-
-    // assign default config
-    if (!ctx) ctx = {};
-    Object.assign(ctx, TestConfig.trade, Object.assign({}, ctx));
 
     // fund maker and taker
     const makingOffer = ctx.makeOffer && !ctx.offerId;
     const clientsToFund: HavenoClient[] = [];
     if (!ctx.concurrentTrades) { // already funded
-      if (ctx.awaitFundsToMakeOffer && makingOffer && !ctx.offerId) clientsToFund.push(ctx.maker!);
-      if (ctx.awaitFundsToTakeOffer && ctx.takeOffer && !ctx.isOfferTaken) clientsToFund.push(ctx.taker!);
+      if (ctx.awaitFundsToMakeOffer && makingOffer && !ctx.offerId) clientsToFund.push(ctx.maker.havenod!);
+      if (ctx.awaitFundsToTakeOffer && ctx.takeOffer && !ctx.isOfferTaken) clientsToFund.push(ctx.taker.havenod!);
       await waitForAvailableBalance(ctx.offerAmount! * BigInt("2"), ...clientsToFund);
     }
-
-    // get info before trade
-    const buyerBalancesBefore = await getBuyer(ctx)!.getBalances();
-    const sellerBalancesBefore = await getSeller(ctx)!.getBalances();
 
     // make offer if configured
     if (makingOffer) {
       ctx.offer = await makeOffer(ctx);
       expect(ctx.offer.getState()).toEqual(ctx.reserveExactAmount ? "SCHEDULED" : "AVAILABLE");
       ctx.offerId = ctx.offer.getId();
-      await wait(ctx.maxTimePeerNoticeMs!);
+      await wait(ctx.maxTimePeerNoticeMs);
     } else {
-      ctx.offer = getOffer(await ctx.maker!.getMyOffers(ctx.assetCode!, ctx.direction), ctx.offerId!);
+      ctx.offer = getOffer(await ctx.maker.havenod!.getMyOffers(ctx.assetCode!, ctx.direction), ctx.offerId!);
       if (!ctx.offer) {
         try {
-          const trade = await ctx.maker!.getTrade(ctx.offerId!);
+          const trade = await ctx.maker.havenod!.getTrade(ctx.offerId!);
           ctx.offer = trade.getOffer();
         } catch (err) { /* ignore */ }
       }
@@ -2035,7 +2174,7 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
 
     // take offer or get existing trade
     let trade: TradeInfo|undefined = undefined;
-    if (ctx.isOfferTaken) trade = await ctx.taker!.getTrade(ctx.offerId!);
+    if (ctx.isOfferTaken) trade = await ctx.taker.havenod!.getTrade(ctx.offerId!);
     else {
       if (!ctx.takeOffer) return ctx.offerId!;
       trade = await takeOffer(ctx);
@@ -2046,30 +2185,36 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
     if (ctx.testTraderChat) await testTradeChat(ctx);
 
     // get expected payment account payloads
-    let expectedBuyerPaymentAccountPayload = (await getBuyer(ctx)?.getPaymentAccount(ctx.maker == getBuyer(ctx) ? ctx.makerPaymentAccountId! : ctx.takerPaymentAccountId!))?.getPaymentAccountPayload();
-    let expectedSellerPaymentAccountPayload = (await getSeller(ctx)?.getPaymentAccount(ctx.maker == getBuyer(ctx) ? ctx.takerPaymentAccountId! : ctx.makerPaymentAccountId!))?.getPaymentAccountPayload();
+    let expectedBuyerPaymentAccountPayload = (await ctx.getBuyer().havenod?.getPaymentAccount(ctx.maker.havenod == ctx.getBuyer().havenod ? ctx.makerPaymentAccountId! : ctx.takerPaymentAccountId!))?.getPaymentAccountPayload();
+    let expectedSellerPaymentAccountPayload = (await ctx.getSeller().havenod?.getPaymentAccount(ctx.maker.havenod == ctx.getBuyer().havenod ? ctx.takerPaymentAccountId! : ctx.makerPaymentAccountId!))?.getPaymentAccountPayload();
 
     // seller does not have buyer's payment account payload until payment sent
-    let fetchedTrade = await getSeller(ctx)!.getTrade(ctx.offerId!);
+    let fetchedTrade = await ctx.getSeller().havenod!.getTrade(ctx.offerId!);
     let contract = fetchedTrade.getContract()!;
     let buyerPaymentAccountPayload = contract.getIsBuyerMakerAndSellerTaker() ? contract.getMakerPaymentAccountPayload() : contract.getTakerPaymentAccountPayload();
     if (ctx.isPaymentSent) expect(buyerPaymentAccountPayload).toEqual(expectedBuyerPaymentAccountPayload);
     else expect(buyerPaymentAccountPayload).toBeUndefined();
 
-    // shut down buyer and seller if configured
-    ctx.usedPorts = [getPort(getBuyer(ctx)!.getUrl()), getPort(getSeller(ctx)!.getUrl())];
-    const promises: Promise<void>[] = [];
-    ctx.buyerAppName = getBuyer(ctx)!.getAppName();
-    if (ctx.buyerOfflineAfterTake) {
-      promises.push(releaseHavenoProcess(getBuyer(ctx)!));
-      if (isBuyerMaker(ctx)) ctx.maker = undefined;
-      else ctx.taker = undefined;
+    // record context before payout
+    if (!ctx.isCompleted) {
+      if (ctx.maker.havenod) ctx.maker.balancesBeforePayout = await ctx.maker.havenod!.getBalances();
+      if (ctx.taker.havenod) ctx.taker.balancesBeforePayout = await ctx.taker.havenod!.getBalances();
     }
-    ctx.sellerAppName = getSeller(ctx)!.getAppName();
+
+    // shut down buyer and seller if configured
+    ctx.usedPorts = [getPort(ctx.getBuyer().havenod!.getUrl()), getPort(ctx.getSeller().havenod!.getUrl())];
+    const promises: Promise<void>[] = [];
+    ctx.buyerAppName = ctx.getBuyer().havenod!.getAppName();
+    if (ctx.buyerOfflineAfterTake) {
+      promises.push(releaseHavenoProcess(ctx.getBuyer().havenod!));
+      if (ctx.isBuyerMaker()) ctx.maker.havenod = undefined;
+      else ctx.taker.havenod = undefined;
+    }
+    ctx.sellerAppName = ctx.getSeller().havenod!.getAppName();
     if (ctx.sellerOfflineAfterTake) {
-      promises.push(releaseHavenoProcess(getSeller(ctx)!));
-      if (isBuyerMaker(ctx)) ctx.taker = undefined;
-      else ctx.maker = undefined;
+      promises.push(releaseHavenoProcess(ctx.getSeller().havenod!));
+      if (ctx.isBuyerMaker()) ctx.taker.havenod = undefined;
+      else ctx.maker.havenod = undefined;
     }
     await Promise.all(promises);
 
@@ -2078,27 +2223,27 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
 
     // buyer comes online if offline and used
     if (ctx.buyerOfflineAfterTake && ((ctx.buyerSendsPayment && !ctx.isPaymentSent && ctx.sellerDisputeContext !== DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK) || (ctx.buyerDisputeContext === DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK && !ctx.buyerOpenedDispute))) {
-      const buyer = await initHaveno({appName: ctx.buyerAppName, excludePorts: ctx.usedPorts});
-      if (isBuyerMaker(ctx)) ctx.maker = buyer;
-      else ctx.taker = buyer;
+      const buyer = await initHaveno({appName: ctx.buyerAppName, excludePorts: ctx.usedPorts}); // change buyer's node address
+      if (ctx.isBuyerMaker()) ctx.maker.havenod = buyer;
+      else ctx.taker.havenod = buyer;
       ctx.usedPorts.push(getPort(buyer.getUrl()));
     }
 
     // wait for traders to observe
-    await wait(TestConfig.maxWalletStartupMs + ctx.walletSyncPeriodMs! * 2);
+    await wait(TestConfig.maxWalletStartupMs + ctx.walletSyncPeriodMs * 2);
 
     // test buyer trade state if online
     const expectedState = ctx.isPaymentSent ? "PAYMENT_SENT" : "DEPOSITS_UNLOCKED" // TODO: test COMPLETED, PAYMENT_RECEIVED states?
-    if (getBuyer(ctx)) {
-      expect((await getBuyer(ctx)!.getTrade(ctx.offer!.getId())).getPhase()).toEqual(expectedState);
-      fetchedTrade = await getBuyer(ctx)!.getTrade(ctx.offerId!);
+    if (ctx.getBuyer().havenod) {
+      expect((await ctx.getBuyer().havenod!.getTrade(ctx.offer!.getId())).getPhase()).toEqual(expectedState);
+      fetchedTrade = await ctx.getBuyer().havenod!.getTrade(ctx.offerId!);
       expect(fetchedTrade.getIsDepositsUnlocked()).toBe(true);
       expect(fetchedTrade.getPhase()).toEqual(expectedState);
     }
 
     // test seller trade state if online
-    if (getSeller(ctx)) {
-      fetchedTrade = await getSeller(ctx)!.getTrade(trade.getTradeId());
+    if (ctx.getSeller().havenod) {
+      fetchedTrade = await ctx.getSeller().havenod!.getTrade(trade.getTradeId());
       expect(fetchedTrade.getIsDepositsUnlocked()).toBe(true);
       expect(fetchedTrade.getPhase()).toEqual(expectedState);
     }
@@ -2107,13 +2252,13 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
     let sellerPaymentAccountPayload;
     let form;
     let expectedForm;
-    if (getBuyer(ctx)) {
-      fetchedTrade = await getBuyer(ctx)!.getTrade(ctx.offerId!);
+    if (ctx.getBuyer().havenod) {
+      fetchedTrade = await ctx.getBuyer().havenod!.getTrade(ctx.offerId!);
       contract = fetchedTrade.getContract()!;
       sellerPaymentAccountPayload = contract.getIsBuyerMakerAndSellerTaker() ? contract.getTakerPaymentAccountPayload() : contract.getMakerPaymentAccountPayload();
       expect(sellerPaymentAccountPayload).toEqual(expectedSellerPaymentAccountPayload);
-      form = await getBuyer(ctx)!.getPaymentAccountPayloadForm(sellerPaymentAccountPayload!);
-      expectedForm = await getBuyer(ctx)!.getPaymentAccountPayloadForm(expectedSellerPaymentAccountPayload!);
+      form = await ctx.getBuyer().havenod!.getPaymentAccountPayloadForm(sellerPaymentAccountPayload!);
+      expectedForm = await ctx.getBuyer().havenod!.getPaymentAccountPayloadForm(expectedSellerPaymentAccountPayload!);
       expect(HavenoUtils.formToString(form)).toEqual(HavenoUtils.formToString(expectedForm));
     }
 
@@ -2121,12 +2266,12 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
 
     // open dispute(s) if configured
     if (ctx.buyerDisputeContext === DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK && !ctx.buyerOpenedDispute) {
-      await getBuyer(ctx)!.openDispute(ctx.offerId!);
+      await ctx.getBuyer().havenod!.openDispute(ctx.offerId!);
       ctx.buyerOpenedDispute = true;
       ctx.disputeOpener = SaleRole.BUYER;
     }
     if (ctx.sellerDisputeContext === DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK && !ctx.sellerOpenedDispute) {
-      await getSeller(ctx)!.openDispute(ctx.offerId!);
+      await ctx.getSeller().havenod!.openDispute(ctx.offerId!);
       ctx.sellerOpenedDispute = true;
       if (!ctx.disputeOpener) ctx.disputeOpener = SaleRole.SELLER;
     }
@@ -2148,51 +2293,51 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
     if (!ctx.buyerSendsPayment) return ctx.offer!.getId();
     else if (!ctx.isPaymentSent) {
       HavenoUtils.log(1, "Buyer confirming payment sent");
-      await getBuyer(ctx)!.confirmPaymentSent(trade.getTradeId());
+      await ctx.getBuyer().havenod!.confirmPaymentSent(trade.getTradeId());
       ctx.isPaymentSent = true;
-      fetchedTrade = await getBuyer(ctx)!.getTrade(trade.getTradeId());
+      fetchedTrade = await ctx.getBuyer().havenod!.getTrade(trade.getTradeId());
       expect(fetchedTrade.getPhase()).toEqual("PAYMENT_SENT");
     }
 
     // buyer goes offline if configured
     if (ctx.buyerOfflineAfterPaymentSent) {
-      await releaseHavenoProcess(getBuyer(ctx)!);
-      if (isBuyerMaker(ctx)) ctx.maker = undefined;
-      else ctx.taker = undefined;
+      await releaseHavenoProcess(ctx.getBuyer().havenod!);
+      if (ctx.isBuyerMaker()) ctx.maker.havenod = undefined;
+      else ctx.taker.havenod = undefined;
     }
 
     // seller comes online if offline
-    if (!getSeller(ctx)) {
+    if (!ctx.getSeller().havenod) {
       const seller = await initHaveno({appName: ctx.sellerAppName, excludePorts: ctx.usedPorts});
-      if (isBuyerMaker(ctx)) ctx.taker = seller;
-      else ctx.maker = seller;
-      ctx.usedPorts.push(getPort(getSeller(ctx)!.getUrl()))
+      if (ctx.isBuyerMaker()) ctx.taker.havenod = seller;
+      else ctx.maker.havenod = seller;
+      ctx.usedPorts.push(getPort(ctx.getSeller().havenod!.getUrl()))
     }
 
     // seller notified payment is sent
-    await wait(ctx.maxTimePeerNoticeMs! + TestConfig.maxWalletStartupMs); // TODO: test notification
-    if (ctx.sellerOfflineAfterTake) await wait(ctx.walletSyncPeriodMs!); // wait to process mailbox messages
-    fetchedTrade = await getSeller(ctx)!.getTrade(trade.getTradeId());
+    await wait(ctx.maxTimePeerNoticeMs + TestConfig.maxWalletStartupMs); // TODO: test notification
+    if (ctx.sellerOfflineAfterTake) await wait(ctx.walletSyncPeriodMs); // wait to process mailbox messages
+    fetchedTrade = await ctx.getSeller().havenod!.getTrade(trade.getTradeId());
     expect(fetchedTrade.getPhase()).toEqual("PAYMENT_SENT");
     expect(fetchedTrade.getPayoutState()).toEqual("PAYOUT_UNPUBLISHED");
 
     // seller has buyer's payment account payload after payment sent
-    fetchedTrade = await getSeller(ctx)!.getTrade(ctx.offerId!);
+    fetchedTrade = await ctx.getSeller().havenod!.getTrade(ctx.offerId!);
     contract = fetchedTrade.getContract()!;
     buyerPaymentAccountPayload = contract.getIsBuyerMakerAndSellerTaker() ? contract.getMakerPaymentAccountPayload() : contract.getTakerPaymentAccountPayload();
     expect(buyerPaymentAccountPayload).toEqual(expectedBuyerPaymentAccountPayload);
-    form = await getSeller(ctx)!.getPaymentAccountPayloadForm(sellerPaymentAccountPayload!);
-    expectedForm = await getSeller(ctx)!.getPaymentAccountPayloadForm(expectedSellerPaymentAccountPayload!);
+    form = await ctx.getSeller().havenod!.getPaymentAccountPayloadForm(sellerPaymentAccountPayload!);
+    expectedForm = await ctx.getSeller().havenod!.getPaymentAccountPayloadForm(expectedSellerPaymentAccountPayload!);
     expect(HavenoUtils.formToString(form)).toEqual(HavenoUtils.formToString(expectedForm));
 
     // open dispute(s) if configured
     if (ctx.buyerDisputeContext === DisputeContext.OPEN_AFTER_PAYMENT_SENT && !ctx.buyerOpenedDispute) {
-      await getBuyer(ctx)!.openDispute(ctx.offerId!);
+      await ctx.getBuyer().havenod!.openDispute(ctx.offerId!);
       ctx.buyerOpenedDispute = true;
       if (!ctx.disputeOpener) ctx.disputeOpener = SaleRole.BUYER;
     }
     if (ctx.sellerDisputeContext === DisputeContext.OPEN_AFTER_PAYMENT_SENT && !ctx.sellerOpenedDispute) {
-      await getSeller(ctx)!.openDispute(ctx.offerId!);
+      await ctx.getSeller().havenod!.openDispute(ctx.offerId!);
       ctx.sellerOpenedDispute = true;
       if (!ctx.disputeOpener) ctx.disputeOpener = SaleRole.SELLER;
     }
@@ -2210,46 +2355,48 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
     if (!ctx.sellerReceivesPayment) return ctx.offer!.getId();
     else if (!ctx.isPaymentReceived) {
       HavenoUtils.log(1, "Seller confirming payment received");
-      await getSeller(ctx)!.confirmPaymentReceived(trade.getTradeId());
+      await ctx.getSeller().havenod!.confirmPaymentReceived(trade.getTradeId());
       ctx.isPaymentReceived = true;
-      fetchedTrade = await getSeller(ctx)!.getTrade(trade.getTradeId());
+      fetchedTrade = await ctx.getSeller().havenod!.getTrade(trade.getTradeId());
       expect(fetchedTrade.getPhase()).toEqual("PAYMENT_RECEIVED");
-      await wait(ctx.walletSyncPeriodMs! * 2); // buyer or arbitrator will sign and publish payout tx
-      await testTradeState(await getSeller(ctx)!.getTrade(trade.getTradeId()), {phase: "PAYMENT_RECEIVED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"], isCompleted: false, isPayoutPublished: true});
+      await wait(ctx.walletSyncPeriodMs * 2); // buyer or arbitrator will sign and publish payout tx
+      await testTradeState(await ctx.getSeller().havenod!.getTrade(trade.getTradeId()), {phase: "PAYMENT_RECEIVED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"], isCompleted: false, isPayoutPublished: true});
     }
 
     // payout tx is published by buyer (priority) or arbitrator
-    await wait(ctx.walletSyncPeriodMs!);
-    await testTradeState(await getSeller(ctx)!.getTrade(trade.getTradeId()), {phase: "PAYMENT_RECEIVED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"], isCompleted: false, isPayoutPublished: true});
-    await testTradeState(await ctx.arbitrator!.getTrade(trade.getTradeId()), {phase: "COMPLETED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"], isCompleted: true, isPayoutPublished: true}); // arbitrator trade auto completes
+    await wait(ctx.walletSyncPeriodMs);
+    await testTradeState(await ctx.getSeller().havenod!.getTrade(trade.getTradeId()), {phase: "PAYMENT_RECEIVED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"], isCompleted: false, isPayoutPublished: true});
+    await testTradeState(await ctx.arbitrator.havenod!.getTrade(trade.getTradeId()), {phase: "COMPLETED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"], isCompleted: true, isPayoutPublished: true}); // arbitrator trade auto completes
 
     // buyer comes online if offline
     if (ctx.buyerOfflineAfterPaymentSent) {
       const buyer = await initHaveno({appName: ctx.buyerAppName, excludePorts: ctx.usedPorts});
-      if (isBuyerMaker(ctx)) ctx.maker = buyer;
-      else ctx.taker = buyer;
+      if (ctx.isBuyerMaker()) ctx.maker.havenod = buyer;
+      else ctx.taker.havenod = buyer;
       ctx.usedPorts.push(getPort(buyer.getUrl()));
       HavenoUtils.log(1, "Done starting buyer");
-      await wait(TestConfig.maxWalletStartupMs + ctx.walletSyncPeriodMs!);
+      await wait(TestConfig.maxWalletStartupMs + ctx.walletSyncPeriodMs);
     }
-    await testTradeState(await getBuyer(ctx)!.getTrade(trade.getTradeId()), {phase: "PAYMENT_RECEIVED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"], isCompleted: false, isPayoutPublished: true});
+    await testTradeState(await ctx.getBuyer().havenod!.getTrade(trade.getTradeId()), {phase: "PAYMENT_RECEIVED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"], isCompleted: false, isPayoutPublished: true});
 
     // test trade completion
-    await getBuyer(ctx)!.completeTrade(trade.getTradeId());
-    await testTradeState(await getBuyer(ctx)!.getTrade(trade.getTradeId()), {phase: "COMPLETED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"], isCompleted: true, isPayoutPublished: true});
-    await getSeller(ctx)!.completeTrade(trade.getTradeId());
-    await testTradeState(await getSeller(ctx)!.getTrade(trade.getTradeId()), {phase: "COMPLETED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"], isCompleted: true, isPayoutPublished: true});
+    await ctx.getBuyer().havenod!.completeTrade(trade.getTradeId());
+    await testTradeState(await ctx.getBuyer().havenod!.getTrade(trade.getTradeId()), {phase: "COMPLETED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"], isCompleted: true, isPayoutPublished: true});
+    await ctx.getSeller().havenod!.completeTrade(trade.getTradeId());
+    await testTradeState(await ctx.getSeller().havenod!.getTrade(trade.getTradeId()), {phase: "COMPLETED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"], isCompleted: true, isPayoutPublished: true});
+
+    // record balances on completion
+    if (!ctx.maker.balancesAfterPayout) {
+      ctx.payoutTxId = (await ctx.getBuyer().havenod!.getTrade(ctx.offerId!)).getPayoutTxId();
+      if (!ctx.payoutTxId) ctx.payoutTxId = (await ctx.arbitrator.havenod!.getTrade(ctx.offerId!)).getPayoutTxId(); // TODO: arbitrator will sign and publish payout tx id if buyer is offline; detect payout tx id on 0 conf
+      ctx.maker.balancesAfterPayout = await ctx.maker.havenod?.getBalances();
+      ctx.taker.balancesAfterPayout = await ctx.taker.havenod?.getBalances();
+    }
 
     // test balances after payout tx unless other trades can interfere
     if (!ctx.concurrentTrades) {
-      const buyerBalancesAfter = await getBuyer(ctx)!.getBalances();
-      const sellerBalancesAfter = await getSeller(ctx)!.getBalances();
-      const buyerFee = BigInt(buyerBalancesBefore.getBalance()) + BigInt(buyerBalancesBefore.getReservedOfferBalance()) + BigInt(ctx.tradeAmount!) - (BigInt(buyerBalancesAfter.getBalance()) + BigInt(buyerBalancesAfter.getReservedOfferBalance())); // buyer fee = total balance before + trade amount - total balance after
-      const sellerFee = BigInt(sellerBalancesBefore.getBalance()) + BigInt(sellerBalancesBefore.getReservedOfferBalance()) - BigInt(ctx.tradeAmount!) - (BigInt(sellerBalancesAfter.getBalance()) + BigInt(sellerBalancesAfter.getReservedOfferBalance())); // seller fee = total balance before - trade amount - total balance after
-      expect(buyerFee).toBeLessThanOrEqual(TestConfig.maxFee);
-      expect(buyerFee).toBeGreaterThan(BigInt("0"));
-      expect(sellerFee).toBeLessThanOrEqual(TestConfig.maxFee);
-      expect(sellerFee).toBeGreaterThan(BigInt("0"));
+      await testBalancesAfterComplete(ctx, ctx.getMaker());
+      await testBalancesAfterComplete(ctx, ctx.getTaker());
     }
 
     // test payout unlock
@@ -2258,39 +2405,40 @@ async function executeTrade(ctx?: TradeContext): Promise<string> {
     return ctx.offer!.getId();
   } catch (err) {
     HavenoUtils.log(0, "Error executing trade " + ctx!.offerId + (ctx!.index === undefined ? "" : " at index " + ctx!.index) + ": " + err.message);
-    HavenoUtils.log(0, tradeContextToString(ctx!));
+    HavenoUtils.log(0, await ctx.toSummary());
     throw err;
   }
 }
 
-async function testTradePayoutUnlock(ctx: TradeContext) {
+async function testTradePayoutUnlock(ctxP: Partial<TradeContext>) {
+  let ctx = TradeContext.init(ctxP);
 
   // test after payout confirmed
   if (!ctx.testPayoutConfirmed) return;
   const height = await monerod.getHeight();
-  const payoutTxId = (await ctx.arbitrator!.getTrade(ctx.offerId!)).getPayoutTxId();
-  let trade = await ctx.arbitrator!.getTrade(ctx.offerId!);
+  const payoutTxId = (await ctx.arbitrator.havenod!.getTrade(ctx.offerId!)).getPayoutTxId();
+  let trade = await ctx.arbitrator.havenod!.getTrade(ctx.offerId!);
   if (trade.getPayoutState() !== "PAYOUT_CONFIRMED") await mineToHeight(height + 1);
-  await wait(TestConfig.maxWalletStartupMs + ctx.walletSyncPeriodMs! * 2);
-  if (getBuyer(ctx)) await testTradeState(await getBuyer(ctx)!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"]});
-  if (getSeller(ctx)) await testTradeState(await getSeller(ctx)!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"]});
-  await testTradeState(await ctx.arbitrator!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"]});
-  let payoutTx = getBuyer(ctx) ? await getBuyer(ctx)?.getXmrTx(payoutTxId) : await getSeller(ctx)?.getXmrTx(payoutTxId);
+  await wait(TestConfig.maxWalletStartupMs + ctx.walletSyncPeriodMs * 2);
+  if (ctx.getBuyer().havenod) await testTradeState(await ctx.getBuyer().havenod!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"]});
+  if (ctx.getSeller().havenod) await testTradeState(await ctx.getSeller().havenod!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"]});
+  await testTradeState(await ctx.arbitrator.havenod!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"]});
+  let payoutTx = ctx.getBuyer().havenod ? await ctx.getBuyer().havenod?.getXmrTx(payoutTxId) : await ctx.getSeller().havenod?.getXmrTx(payoutTxId);
   expect(payoutTx?.getIsConfirmed());
 
   // test after payout unlocked
   if (!ctx.testPayoutUnlocked) return;
-  trade = await ctx.arbitrator!.getTrade(ctx.offerId!);
+  trade = await ctx.arbitrator.havenod!.getTrade(ctx.offerId!);
   if (trade.getPayoutState() !== "PAYOUT_UNLOCKED") await mineToHeight(height + 10);
-  await wait(TestConfig.maxWalletStartupMs + ctx.walletSyncPeriodMs! * 2);
-  if (await getBuyer(ctx)) await testTradeState(await getBuyer(ctx)!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_UNLOCKED"]});
-  if (await getSeller(ctx)) await testTradeState(await getSeller(ctx)!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_UNLOCKED"]});
-  await testTradeState(await ctx.arbitrator!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_UNLOCKED"]});
-  payoutTx = getBuyer(ctx) ? await getBuyer(ctx)?.getXmrTx(payoutTxId) : await getSeller(ctx)?.getXmrTx(payoutTxId);
+  await wait(TestConfig.maxWalletStartupMs + ctx.walletSyncPeriodMs * 2);
+  if (await ctx.getBuyer().havenod) await testTradeState(await ctx.getBuyer().havenod!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_UNLOCKED"]});
+  if (await ctx.getSeller().havenod) await testTradeState(await ctx.getSeller().havenod!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_UNLOCKED"]});
+  await testTradeState(await ctx.arbitrator.havenod!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_UNLOCKED"]});
+  payoutTx = ctx.getBuyer().havenod ? await ctx.getBuyer().havenod?.getXmrTx(payoutTxId) : await ctx.getSeller().havenod?.getXmrTx(payoutTxId);
   expect(!payoutTx?.getIsLocked());
 }
 
-async function testTradeState(trade: TradeInfo, ctx: TradeContext) {
+async function testTradeState(trade: TradeInfo, ctx: Partial<TradeContext>) {
   assert.equal(trade.getPhase(), ctx.phase, "expected trade phase to be " + ctx.phase + " but was " + trade.getPhase() + " for trade " + trade.getTradeId());
   assert(moneroTs.GenUtils.arrayContains(ctx.payoutState, trade.getPayoutState()), "expected one of payout state " + ctx.payoutState + " but was " + trade.getPayoutState() + " for trade " + trade.getTradeId());
   if (ctx.disputeState) expect(trade.getDisputeState()).toEqual(ctx.disputeState);
@@ -2300,29 +2448,32 @@ async function testTradeState(trade: TradeInfo, ctx: TradeContext) {
   if (ctx.isPayoutUnlocked !== undefined) expect(trade.getIsPayoutUnlocked()).toEqual(ctx.isPayoutUnlocked);
 }
 
-async function makeOffer(ctx?: TradeContext): Promise<OfferInfo> {
-
-  // assign default config
-  if (!ctx) ctx = {};
-  Object.assign(ctx, TestConfig.trade, Object.assign({}, ctx));
+async function makeOffer(ctxP?: Partial<TradeContext>): Promise<OfferInfo> {
+  let ctx = TradeContext.init(ctxP);
 
   // wait for unlocked balance
-  if (!ctx.concurrentTrades && ctx.awaitFundsToMakeOffer) await waitForAvailableBalance(ctx.offerAmount! * BigInt("2"), ctx.maker);
+  if (!ctx.concurrentTrades && ctx.awaitFundsToMakeOffer) await waitForAvailableBalance(ctx.offerAmount! * BigInt("2"), ctx.maker.havenod);
 
   // create payment account if not given // TODO: re-use existing payment account
-  if (!ctx.makerPaymentAccountId) ctx.makerPaymentAccountId = (await createPaymentAccount(ctx.maker!, ctx.assetCode!)).getId();
+  if (!ctx.makerPaymentAccountId) ctx.makerPaymentAccountId = (await createPaymentAccount(ctx.maker.havenod!, ctx.assetCode!)).getId();
 
   // get unlocked balance before reserving offer
-  let unlockedBalanceBefore = BigInt((await ctx.maker!.getBalances()).getAvailableBalance());
+  let unlockedBalanceBefore = BigInt((await ctx.maker.havenod!.getBalances()).getAvailableBalance());
   if (ctx.awaitFundsToMakeOffer && unlockedBalanceBefore === BigInt(0)) {
     HavenoUtils.log(0, "WARNING: unlocked balance before posting offer is 0, waiting...");
     await wait(5000);
-    unlockedBalanceBefore = BigInt((await ctx.maker!.getBalances()).getAvailableBalance());
+    unlockedBalanceBefore = BigInt((await ctx.maker.havenod!.getBalances()).getAvailableBalance());
     if (unlockedBalanceBefore === BigInt(0)) throw new Error("Unlocked balance before posting offer was 0, even after waiting");
   }
 
+  // initialize balances before offer, once
+  if (!ctx.maker.balancesBeforeOffer) {
+    ctx.maker.balancesBeforeOffer = await ctx.maker.havenod?.getBalances();
+    ctx.taker.balancesBeforeOffer = await ctx.taker.havenod?.getBalances();
+  }
+
   // post offer
-  const offer: OfferInfo = await ctx.maker!.postOffer(
+  const offer: OfferInfo = await ctx.maker.havenod!.postOffer(
         ctx.direction!,
         ctx.offerAmount!,
         ctx.assetCode!,
@@ -2336,32 +2487,37 @@ async function makeOffer(ctx?: TradeContext): Promise<OfferInfo> {
   testOffer(offer, ctx);
 
   // offer is included in my offers only
-  if (!getOffer(await ctx.maker!.getMyOffers(ctx.assetCode!, ctx.direction), offer.getId())) {
+  if (!getOffer(await ctx.maker.havenod!.getMyOffers(ctx.assetCode!, ctx.direction), offer.getId())) {
     console.warn("Offer is not included in my offers after posting, waiting up to 10 seconds");
     await wait(10000); // TODO: remove this wait time
-    if (!getOffer(await ctx.maker!.getMyOffers(ctx.assetCode!, ctx.direction), offer.getId())) throw new Error("Offer " + offer.getId() + " was not found in my offers");
+    if (!getOffer(await ctx.maker.havenod!.getMyOffers(ctx.assetCode!, ctx.direction), offer.getId())) throw new Error("Offer " + offer.getId() + " was not found in my offers");
   }
-  if (getOffer(await ctx.maker!.getOffers(ctx.assetCode!, ctx.direction), offer.getId())) throw new Error("My offer " + offer.getId() + " should not appear in available offers");
+  if (getOffer(await ctx.maker.havenod!.getOffers(ctx.assetCode!, ctx.direction), offer.getId())) throw new Error("My offer " + offer.getId() + " should not appear in available offers");
 
-  //  market-priced offer amounts are unadjusted, fixed-priced offer amounts are adjusted (e.g. cash at atm is $10 increments)
+  // collect context
+  ctx.maker.splitOutputTxFee = BigInt(offer.getSplitOutputTxFee());
+  ctx.taker.splitOutputTxFee = 0n;
+
+  // market-priced offer amounts are unadjusted, fixed-priced offer amounts are adjusted (e.g. cash at atm is $10 increments)
+  // TODO: adjustments should be based on currency and payment method, not fixed-price
   if (!ctx.offerMinAmount) ctx.offerMinAmount = ctx.offerAmount;
   if (offer.getUseMarketBasedPrice()) {
-    assert.equal(ctx.offerAmount, BigInt(offer.getAmount()));
-    assert.equal(ctx.offerMinAmount, BigInt(offer.getMinAmount()));
+    expect(BigInt(offer.getAmount())).toEqual(ctx.offerAmount!);
+    expect(BigInt(offer.getMinAmount())).toEqual(ctx.offerMinAmount!);
   } else {
     expect(Math.abs(HavenoUtils.percentageDiff(ctx.offerAmount!, BigInt(offer.getAmount())))).toBeLessThan(TestConfig.maxAdjustmentPct);
     expect(Math.abs(HavenoUtils.percentageDiff(ctx.offerMinAmount!, BigInt(offer.getMinAmount())))).toBeLessThan(TestConfig.maxAdjustmentPct);
   }
 
   // unlocked balance has decreased
-  let unlockedBalanceAfter = BigInt((await ctx.maker!.getBalances()).getAvailableBalance());
+  let unlockedBalanceAfter = BigInt((await ctx.maker.havenod!.getBalances()).getAvailableBalance());
   if (offer.getState() === "SCHEDULED") {
     if (!ctx.reserveExactAmount && unlockedBalanceAfter !== unlockedBalanceBefore) throw new Error("Unlocked balance should not change for scheduled offer " + offer.getId());
   } else if (offer.getState() === "AVAILABLE") {
     if (unlockedBalanceAfter === unlockedBalanceBefore) {
       console.warn("Unlocked balance did not change after posting offer, waiting a sync period");
-      await wait(ctx.walletSyncPeriodMs!);
-      unlockedBalanceAfter = BigInt((await ctx.maker!.getBalances()).getAvailableBalance());
+      await wait(ctx.walletSyncPeriodMs);
+      unlockedBalanceAfter = BigInt((await ctx.maker.havenod!.getBalances()).getAvailableBalance());
       if (unlockedBalanceAfter === unlockedBalanceBefore) throw new Error("Unlocked balance did not change after posting offer " + offer.getId() + ", before=" + unlockedBalanceBefore + ", after=" + unlockedBalanceAfter);
     }
   } else {
@@ -2371,63 +2527,108 @@ async function makeOffer(ctx?: TradeContext): Promise<OfferInfo> {
   return offer;
 }
 
-async function takeOffer(ctx: TradeContext): Promise<TradeInfo> {
+async function takeOffer(ctxP: Partial<TradeContext>): Promise<TradeInfo> {
+  let ctx = TradeContext.init(ctxP);
 
   // assign default config
-  if (!ctx) ctx = {};
-  Object.assign(ctx, TestConfig.trade, Object.assign({}, ctx));
+  Object.assign(ctx,  new TradeContext(TestConfig.trade), Object.assign({}, ctx));
 
   // taker sees offer
   if (!ctx.offerId) throw new Error("Must provide offer id");
-  const takerOffer = getOffer(await ctx.taker!.getOffers(ctx.assetCode!, ctx.direction), ctx.offerId);
+  const takerOffer = getOffer(await ctx.taker.havenod!.getOffers(ctx.assetCode!, ctx.direction), ctx.offerId);
   if (!takerOffer) throw new Error("Offer " + ctx.offerId + " was not found in taker's offers");
   expect(takerOffer.getState()).toEqual("UNKNOWN"); // TODO: offer state should be known
 
   // wait for unlocked balance
-  if (ctx.awaitFundsToTakeOffer) await waitForAvailableBalance(ctx.offerAmount! * BigInt("2"), ctx.taker);
+  if (ctx.awaitFundsToTakeOffer) await waitForAvailableBalance(ctx.offerAmount! * BigInt("2"), ctx.taker.havenod);
 
   // create payment account if not given // TODO: re-use existing payment account
-  if (!ctx.takerPaymentAccountId) ctx.takerPaymentAccountId = (await createPaymentAccount(ctx.taker!, ctx.assetCode!)).getId();
+  if (!ctx.takerPaymentAccountId) ctx.takerPaymentAccountId = (await createPaymentAccount(ctx.taker.havenod!, ctx.assetCode!)).getId();
 
   // register to receive notifications
   const makerNotifications: NotificationMessage[] = [];
   const takerNotifications: NotificationMessage[] = [];
-  await ctx.maker!.addNotificationListener(notification => { makerNotifications.push(notification); });
-  await ctx.taker!.addNotificationListener(notification => { takerNotifications.push(notification); });
+  await ctx.maker.havenod!.addNotificationListener(notification => { makerNotifications.push(notification); });
+  await ctx.taker.havenod!.addNotificationListener(notification => { takerNotifications.push(notification); });
 
-  // take offer
-  const takerBalancesBefore: XmrBalanceInfo = await ctx.taker!.getBalances();
-  const startTime = Date.now();
-  HavenoUtils.log(1, "Taking offer " + ctx.offerId);
-  const trade = await ctx.taker!.takeOffer(ctx.offerId, ctx.takerPaymentAccountId!, ctx.tradeAmount);
-  HavenoUtils.log(1, "Done taking offer " + ctx.offerId + " in " + (Date.now() - startTime) + " ms");
-
-  // assign expected trade amount
-  if (!ctx.tradeAmount) ctx.tradeAmount = ctx.offerAmount;
-
-  // test taker's balances after taking trade
-  if (!ctx.concurrentTrades) {
-    const takerBalancesAfter: XmrBalanceInfo = await ctx.taker!.getBalances();
-    expect(BigInt(takerBalancesAfter.getAvailableBalance())).toBeLessThan(BigInt(takerBalancesBefore.getAvailableBalance()));
-    expect(BigInt(takerBalancesAfter.getReservedOfferBalance()) + BigInt(takerBalancesAfter.getReservedTradeBalance())).toBeGreaterThan(BigInt(takerBalancesBefore.getReservedOfferBalance()) + BigInt(takerBalancesBefore.getReservedTradeBalance()));
+  // record balances before offer taken, once
+  if (!ctx.taker.balancesBeforeTake) {
+    ctx.maker.balancesBeforeTake = await ctx.maker.havenod?.getBalances();
+    ctx.taker.balancesBeforeTake = await ctx.taker.havenod?.getBalances();
   }
 
+  // take offer
+  const takerBalancesBefore: XmrBalanceInfo = await ctx.taker.havenod!.getBalances();
+  const startTime = Date.now();
+  HavenoUtils.log(1, "Taking offer " + ctx.offerId);
+  const trade = await ctx.taker.havenod!.takeOffer(ctx.offerId, ctx.takerPaymentAccountId!, ctx.tradeAmount);
+  HavenoUtils.log(1, "Done taking offer " + ctx.offerId + " in " + (Date.now() - startTime) + " ms");
+
+  // test trade model
+  await testTrade(trade);
+
   // maker is notified that offer is taken
-  await wait(ctx.maxTimePeerNoticeMs!);
+  await wait(ctx.maxTimePeerNoticeMs);
   const tradeNotifications = getNotifications(makerNotifications, NotificationMessage.NotificationType.TRADE_UPDATE, trade.getTradeId());
   expect(tradeNotifications.length).toBe(1);
   assert(moneroTs.GenUtils.arrayContains(["DEPOSITS_PUBLISHED", "DEPOSITS_CONFIRMED", "DEPOSITS_UNLOCKED"], tradeNotifications[0].getTrade()!.getPhase()), "Unexpected trade phase: " + tradeNotifications[0].getTrade()!.getPhase());
   expect(tradeNotifications[0].getTitle()).toEqual("Offer Taken");
   expect(tradeNotifications[0].getMessage()).toEqual("Your offer " + ctx.offerId + " has been accepted");
 
+  // record context after offer taken, once
+  if (!ctx.getBuyer().balancesAfterTake) {
+    ctx.tradeAmount = BigInt(trade.getAmount()); // re-assign trade amount which could be adjusted
+    ctx.arbitrator.trade = await ctx.arbitrator.havenod!.getTrade(ctx.offerId!);
+    ctx.maker.trade = await ctx.maker.havenod!.getTrade(ctx.offerId!);
+    ctx.taker.trade = await ctx.taker.havenod!.getTrade(ctx.offerId!);
+    ctx.maker.balancesAfterTake = await ctx.maker.havenod!.getBalances();
+    ctx.taker.balancesAfterTake = await ctx.taker.havenod!.getBalances();
+    ctx.maker.depositTx = await monerod.getTx(ctx.arbitrator.trade!.getMakerDepositTxId())
+    ctx.taker.depositTx = await monerod.getTx(ctx.arbitrator.trade!.getTakerDepositTxId())
+    ctx.maker.depositTxFee = BigInt(ctx.maker.depositTx!.getFee());
+    ctx.taker.depositTxFee = BigInt(ctx.taker.depositTx!.getFee());
+    ctx.maker.tradeFee = BigInt(trade.getOffer()!.getMakerFee());
+    ctx.taker.tradeFee = BigInt(trade.getTakerFee());
+    ctx.getBuyer().securityDepositActual = BigInt(trade.getBuyerSecurityDeposit()!);
+    ctx.getSeller().securityDepositActual = BigInt(trade.getSellerSecurityDeposit()!);
+  }
+
+  // test buyer and seller balances after offer taken
+  if (!ctx.concurrentTrades) {
+    ctx.arbitrator!.trade = await ctx.arbitrator.havenod!.getTrade(ctx.offerId!);
+
+    // test buyer balances after offer taken
+    const buyerBalanceDiff = BigInt(ctx.getBuyer().balancesAfterTake!.getBalance()) - BigInt(ctx.getBuyer().balancesBeforeTake!.getBalance());
+    const buyerBalanceDiffReservedTrade = BigInt(ctx.getBuyer().balancesAfterTake!.getReservedTradeBalance()) - BigInt(ctx.getBuyer().balancesBeforeTake!.getReservedTradeBalance());
+    const buyerBalanceDiffReservedOffer = BigInt(ctx.getBuyer().balancesAfterTake!.getReservedOfferBalance()) - BigInt(ctx.getBuyer().balancesBeforeTake!.getReservedOfferBalance());
+    expect(buyerBalanceDiffReservedTrade).toEqual(BigInt(trade.getBuyerSecurityDeposit()!));
+    expect(buyerBalanceDiff).toEqual(-1n * buyerBalanceDiffReservedOffer - buyerBalanceDiffReservedTrade - ctx.getBuyer().depositTxFee - ctx.getBuyer().tradeFee);
+
+    // test seller balances after offer taken
+    const sellerBalanceDiff = BigInt(ctx.getSeller().balancesAfterTake!.getBalance()) - BigInt(ctx.getSeller().balancesBeforeTake!.getBalance());
+    const sellerBalanceDiffReservedTrade = BigInt(ctx.getSeller().balancesAfterTake!.getReservedTradeBalance()) - BigInt(ctx.getSeller().balancesBeforeTake!.getReservedTradeBalance());
+    expect(sellerBalanceDiffReservedTrade).toEqual(BigInt(trade.getAmount()) + BigInt(trade.getSellerSecurityDeposit()!));
+    expect(sellerBalanceDiff).toEqual(0n - ctx.getSeller().depositTxFee - ctx.getSeller().tradeFee! - ctx.getSeller().securityDepositActual - ctx.tradeAmount!);
+
+    // test maker balances after offer taken
+    const makerBalanceDiffReservedOffer = BigInt(ctx.getMaker().balancesAfterTake!.getReservedOfferBalance()) - BigInt(ctx.getMaker().balancesBeforeTake!.getReservedOfferBalance());
+    expect(makerBalanceDiffReservedOffer).toBeLessThan(0n); // TODO: more precise?
+
+    // test taker balances after offer taken
+    const takerBalanceDiffReservedOffer = BigInt(ctx.getTaker().balancesAfterTake!.getReservedOfferBalance()) - BigInt(ctx.getTaker().balancesBeforeTake!.getReservedOfferBalance());
+    expect(takerBalanceDiffReservedOffer).toEqual(0n);
+  }
+
   // maker is notified of balance change
 
   // taker can get trade
-  let fetchedTrade: TradeInfo = await ctx.taker!.getTrade(trade.getTradeId());
+  let fetchedTrade: TradeInfo = await ctx.taker.havenod!.getTrade(trade.getTradeId());
+  await testTrade(fetchedTrade);
   assert(moneroTs.GenUtils.arrayContains(["DEPOSITS_PUBLISHED", "DEPOSITS_CONFIRMED", "DEPOSITS_UNLOCKED"], fetchedTrade.getPhase()), "Unexpected trade phase: " + fetchedTrade.getPhase());
   // TODO: more fetched trade tests
   
-  //  market-priced offer amounts are unadjusted, fixed-priced offer amounts are adjusted (e.g. cash at atm is $10 increments)
+  // market-priced offer amounts are unadjusted, fixed-priced offer amounts are adjusted (e.g. cash at atm is $10 increments)
+  // TODO: adjustments are based on payment method, not fixed-price
   if (fetchedTrade.getOffer()!.getUseMarketBasedPrice()) {
     assert.equal(ctx.tradeAmount, BigInt(fetchedTrade.getAmount()));
   } else {
@@ -2437,41 +2638,49 @@ async function takeOffer(ctx: TradeContext): Promise<TradeInfo> {
   // taker is notified of balance change
 
   // maker can get trade
-  fetchedTrade = await ctx.maker!.getTrade(trade.getTradeId());
+  fetchedTrade = await ctx.maker.havenod!.getTrade(trade.getTradeId());
+  await testTrade(fetchedTrade);
   assert(moneroTs.GenUtils.arrayContains(["DEPOSITS_PUBLISHED", "DEPOSITS_CONFIRMED", "DEPOSITS_UNLOCKED"], fetchedTrade.getPhase()), "Unexpected trade phase: " + fetchedTrade.getPhase());
   return trade;
 }
 
-async function testOpenDispute(ctx: TradeContext) {
+async function testTrade(trade: TradeInfo) {
+    assert(BigInt(trade.getBuyerSecurityDeposit()) > 0n);
+    assert(BigInt(trade.getSellerSecurityDeposit()) > 0n);
+    // TODO: test more fields
+}
+
+async function testOpenDispute(ctxP: Partial<TradeContext>) {
+  let ctx = TradeContext.init(ctxP);
 
   // TODO: test open dispute when buyer or seller offline
-  if (!getBuyer(ctx) || !getSeller(ctx)) {
+  if (!ctx.getBuyer().havenod || !ctx.getSeller().havenod) {
     HavenoUtils.log(0, "WARNING: skipping test open dispute tests because a trader is offline"); // TODO: update tests for offline trader
     return;
   }
 
   // test dispute state
-  const openerDispute = await getDisputeOpener(ctx)!.getDispute(ctx.offerId!);
+  const openerDispute = await ctx.getDisputeOpener()!.havenod!.getDispute(ctx.offerId!);
   expect(openerDispute.getTradeId()).toEqual(ctx.offerId);
   expect(openerDispute.getIsOpener()).toBe(true);
-  expect(openerDispute.getDisputeOpenerIsBuyer()).toBe(getDisputeOpener(ctx) === getBuyer(ctx));
+  expect(openerDispute.getDisputeOpenerIsBuyer()).toBe(ctx.getDisputeOpener()!.havenod === ctx.getBuyer().havenod);
 
   // get non-existing dispute should fail
   try {
-    await getDisputeOpener(ctx)!.getDispute("invalid");
+    await ctx.getDisputeOpener()!.havenod!.getDispute("invalid");
     throw new Error("get dispute with invalid id should fail");
   } catch (err: any) {
     assert.equal(err.message, "dispute for trade id 'invalid' not found");
   }
 
   // peer sees the dispute
-  await wait(ctx.maxTimePeerNoticeMs! + TestConfig.maxWalletStartupMs);
-  const peerDispute = await getDisputePeer(ctx)!.getDispute(ctx.offerId!);
+  await wait(ctx.maxTimePeerNoticeMs + TestConfig.maxWalletStartupMs);
+  const peerDispute = await ctx.getDisputePeer()!.havenod!.getDispute(ctx.offerId!);
   expect(peerDispute.getTradeId()).toEqual(ctx.offerId);
   expect(peerDispute.getIsOpener()).toBe(false || ctx.buyerDisputeContext === ctx.sellerDisputeContext); // TODO: both peers think they're the opener if disputes opened at same time since not waiting for ack
 
   // arbitrator sees both disputes
-  const disputes = await ctx.arbitrator!.getDisputes();
+  const disputes = await ctx.arbitrator.havenod!.getDisputes();
   expect(disputes.length).toBeGreaterThanOrEqual(2);
   const arbDisputePeer = disputes.find(d => d.getId() === peerDispute.getId());
   assert(arbDisputePeer);
@@ -2480,44 +2689,44 @@ async function testOpenDispute(ctx: TradeContext) {
 
   // arbitrator has seller's payment account info
   let sellerPaymentAccountPayload = arbDisputeOpener.getContract()!.getIsBuyerMakerAndSellerTaker() ? arbDisputeOpener.getTakerPaymentAccountPayload() : arbDisputeOpener.getMakerPaymentAccountPayload();
-  let expectedSellerPaymentAccountPayload = (await getSeller(ctx)?.getPaymentAccount(sellerPaymentAccountPayload?.getId()!))?.getPaymentAccountPayload();
+  let expectedSellerPaymentAccountPayload = (await ctx.getSeller().havenod?.getPaymentAccount(sellerPaymentAccountPayload?.getId()!))?.getPaymentAccountPayload();
   expect(sellerPaymentAccountPayload).toEqual(expectedSellerPaymentAccountPayload);
-  expect(await ctx.arbitrator?.getPaymentAccountPayloadForm(sellerPaymentAccountPayload!)).toEqual(await ctx.arbitrator?.getPaymentAccountPayloadForm(expectedSellerPaymentAccountPayload!));
+  expect(await ctx.arbitrator.havenod?.getPaymentAccountPayloadForm(sellerPaymentAccountPayload!)).toEqual(await ctx.arbitrator.havenod?.getPaymentAccountPayloadForm(expectedSellerPaymentAccountPayload!));
   sellerPaymentAccountPayload = arbDisputePeer.getContract()!.getIsBuyerMakerAndSellerTaker() ? arbDisputePeer.getTakerPaymentAccountPayload() : arbDisputeOpener.getMakerPaymentAccountPayload();
   expect(sellerPaymentAccountPayload).toEqual(expectedSellerPaymentAccountPayload);
-  expect(await ctx.arbitrator?.getPaymentAccountPayloadForm(sellerPaymentAccountPayload!)).toEqual(await ctx.arbitrator?.getPaymentAccountPayloadForm(expectedSellerPaymentAccountPayload!));
+  expect(await ctx.arbitrator.havenod?.getPaymentAccountPayloadForm(sellerPaymentAccountPayload!)).toEqual(await ctx.arbitrator.havenod?.getPaymentAccountPayloadForm(expectedSellerPaymentAccountPayload!));
 
   // arbitrator has buyer's payment account info unless opener is seller and payment not sent
   let buyerPaymentAccountPayload = arbDisputeOpener.getContract()!.getIsBuyerMakerAndSellerTaker() ? arbDisputeOpener.getMakerPaymentAccountPayload() : arbDisputeOpener.getTakerPaymentAccountPayload();
-  if (getDisputeOpener(ctx) === getSeller(ctx) && !ctx.isPaymentSent) expect(buyerPaymentAccountPayload).toBeUndefined();
+  if (ctx.getDisputeOpener()!.havenod === ctx.getSeller().havenod && !ctx.isPaymentSent) expect(buyerPaymentAccountPayload).toBeUndefined();
   else {
-    let expectedBuyerPaymentAccountPayload = (await getBuyer(ctx)?.getPaymentAccount(buyerPaymentAccountPayload?.getId()!))?.getPaymentAccountPayload();
+    let expectedBuyerPaymentAccountPayload = (await ctx.getBuyer().havenod?.getPaymentAccount(buyerPaymentAccountPayload?.getId()!))?.getPaymentAccountPayload();
     expect(buyerPaymentAccountPayload).toEqual(expectedBuyerPaymentAccountPayload);
-    expect(await ctx.arbitrator?.getPaymentAccountPayloadForm(buyerPaymentAccountPayload!)).toEqual(await ctx.arbitrator?.getPaymentAccountPayloadForm(expectedBuyerPaymentAccountPayload!));
+    expect(await ctx.arbitrator.havenod?.getPaymentAccountPayloadForm(buyerPaymentAccountPayload!)).toEqual(await ctx.arbitrator.havenod?.getPaymentAccountPayloadForm(expectedBuyerPaymentAccountPayload!));
   }
   buyerPaymentAccountPayload = arbDisputePeer.getContract()!.getIsBuyerMakerAndSellerTaker() ? arbDisputePeer.getMakerPaymentAccountPayload() : arbDisputePeer.getTakerPaymentAccountPayload();
-  if (getDisputeOpener(ctx) === getSeller(ctx) && !ctx.isPaymentSent) expect(buyerPaymentAccountPayload).toBeUndefined();
+  if (ctx.getDisputeOpener()!.havenod === ctx.getSeller().havenod && !ctx.isPaymentSent) expect(buyerPaymentAccountPayload).toBeUndefined();
   else {
-    let expectedBuyerPaymentAccountPayload = (await getBuyer(ctx)?.getPaymentAccount(buyerPaymentAccountPayload?.getId()!))?.getPaymentAccountPayload();
+    let expectedBuyerPaymentAccountPayload = (await ctx.getBuyer().havenod?.getPaymentAccount(buyerPaymentAccountPayload?.getId()!))?.getPaymentAccountPayload();
     expect(buyerPaymentAccountPayload).toEqual(expectedBuyerPaymentAccountPayload);
-    expect(await ctx.arbitrator?.getPaymentAccountPayloadForm(buyerPaymentAccountPayload!)).toEqual(await ctx.arbitrator?.getPaymentAccountPayloadForm(expectedBuyerPaymentAccountPayload!));
+    expect(await ctx.arbitrator.havenod?.getPaymentAccountPayloadForm(buyerPaymentAccountPayload!)).toEqual(await ctx.arbitrator.havenod?.getPaymentAccountPayloadForm(expectedBuyerPaymentAccountPayload!));
   }
 
   // register to receive notifications
   const disputeOpenerNotifications: NotificationMessage[] = [];
   const disputePeerNotifications: NotificationMessage[] = [];
   const arbitratorNotifications: NotificationMessage[] = [];
-  await getDisputeOpener(ctx)!.addNotificationListener(notification => { HavenoUtils.log(3, "Dispute opener received notification " + notification.getType() + " " + (notification.getChatMessage() ? notification.getChatMessage()?.getMessage() : "")); disputeOpenerNotifications.push(notification); });
-  await getDisputePeer(ctx)!.addNotificationListener(notification => { HavenoUtils.log(3, "Dispute peer received notification " + notification.getType() + " " + (notification.getChatMessage() ? notification.getChatMessage()?.getMessage() : "")); disputePeerNotifications.push(notification); });
+  await ctx.getDisputeOpener()!.havenod!.addNotificationListener(notification => { HavenoUtils.log(3, "Dispute opener received notification " + notification.getType() + " " + (notification.getChatMessage() ? notification.getChatMessage()?.getMessage() : "")); disputeOpenerNotifications.push(notification); });
+  await ctx.getDisputePeer()!.havenod!.addNotificationListener(notification => { HavenoUtils.log(3, "Dispute peer received notification " + notification.getType() + " " + (notification.getChatMessage() ? notification.getChatMessage()?.getMessage() : "")); disputePeerNotifications.push(notification); });
   await arbitrator.addNotificationListener(notification => { HavenoUtils.log(3, "Arbitrator received notification " + notification.getType() + " " + (notification.getChatMessage() ? notification.getChatMessage()?.getMessage() : "")); arbitratorNotifications.push(notification); });
 
   // arbitrator sends chat messages to traders
   HavenoUtils.log(1, "Testing chat messages");
-  await ctx.arbitrator!.sendDisputeChatMessage(arbDisputeOpener!.getId(), "Arbitrator chat message to dispute opener", []);
-  await ctx.arbitrator!.sendDisputeChatMessage(arbDisputePeer!.getId(), "Arbitrator chat message to dispute peer", []);
+  await ctx.arbitrator.havenod!.sendDisputeChatMessage(arbDisputeOpener!.getId(), "Arbitrator chat message to dispute opener", []);
+  await ctx.arbitrator.havenod!.sendDisputeChatMessage(arbDisputePeer!.getId(), "Arbitrator chat message to dispute peer", []);
 
   // traders reply to arbitrator chat messages
-  await wait(ctx.maxTimePeerNoticeMs!); // wait for arbitrator's message to arrive
+  await wait(ctx.maxTimePeerNoticeMs); // wait for arbitrator's message to arrive
   const attachment = new Attachment();
   const bytes = new Uint8Array(Buffer.from("Proof dispute opener was scammed", "utf8"));
   attachment.setBytes(bytes);
@@ -2527,14 +2736,14 @@ async function testOpenDispute(ctx: TradeContext) {
   attachment2.setBytes(bytes2);
   attachment2.setFileName("proof.png");
   HavenoUtils.log(2, "Dispute opener sending chat message to arbitrator. tradeId=" + ctx.offerId + ", disputeId=" + openerDispute.getId());
-  await getDisputeOpener(ctx)!.sendDisputeChatMessage(openerDispute.getId(), "Dispute opener chat message", [attachment, attachment2]);
-  await wait(ctx.maxTimePeerNoticeMs!); // wait for user2's message to arrive
+  await ctx.getDisputeOpener()!.havenod!.sendDisputeChatMessage(openerDispute.getId(), "Dispute opener chat message", [attachment, attachment2]);
+  await wait(ctx.maxTimePeerNoticeMs); // wait for user2's message to arrive
   HavenoUtils.log(2, "Dispute peer sending chat message to arbitrator. tradeId=" + ctx.offerId + ", disputeId=" + peerDispute.getId());
-  await getDisputePeer(ctx)!.sendDisputeChatMessage(peerDispute.getId(), "Dispute peer chat message", []);
+  await ctx.getDisputePeer()!.havenod!.sendDisputeChatMessage(peerDispute.getId(), "Dispute peer chat message", []);
 
   // test trader chat messages
-  await wait(ctx.maxTimePeerNoticeMs!);
-  let dispute = await getDisputeOpener(ctx)!.getDispute(ctx.offerId!);
+  await wait(ctx.maxTimePeerNoticeMs);
+  let dispute = await ctx.getDisputeOpener()!.havenod!.getDispute(ctx.offerId!);
   let messages = dispute.getChatMessageList();
   expect(messages.length).toBeGreaterThanOrEqual(3); // last messages are chat, first messages are system message and possibly DisputeOpenedMessage acks
   expect(messages[messages.length - 2].getMessage()).toEqual("Arbitrator chat message to dispute opener");
@@ -2545,7 +2754,7 @@ async function testOpenDispute(ctx: TradeContext) {
   expect(attachments[0].getBytes()).toEqual(bytes);
   expect(attachments[1].getFileName()).toEqual("proof.png");
   expect(attachments[1].getBytes()).toEqual(bytes2);
-  dispute = await getDisputePeer(ctx)!.getDispute(ctx.offerId!);
+  dispute = await ctx.getDisputePeer()!.havenod!.getDispute(ctx.offerId!);
   messages = dispute.getChatMessageList();
   expect(messages.length).toBeGreaterThanOrEqual(3);
   expect(messages[messages.length - 2].getMessage()).toEqual("Arbitrator chat message to dispute peer");
@@ -2572,25 +2781,27 @@ async function testOpenDispute(ctx: TradeContext) {
   expect(chatNotifications[1].getChatMessage()?.getMessage()).toEqual("Dispute peer chat message");
 }
 
-async function resolveDispute(ctx: TradeContext) {
+async function resolveDispute(ctxP: Partial<TradeContext>) {
+  let ctx = TradeContext.init(ctxP);
 
   // stop buyer or seller depending on configuration
   const promises: Promise<void>[] = [];
-  if (getBuyer(ctx) && ctx.buyerOfflineAfterDisputeOpened) {
-    promises.push(releaseHavenoProcess(getBuyer(ctx)!)); // stop buyer
-    if (isBuyerMaker(ctx)) ctx.maker = undefined;
-    else ctx.taker = undefined;
+  if (ctx.getBuyer().havenod && ctx.buyerOfflineAfterDisputeOpened) {
+    promises.push(releaseHavenoProcess(ctx.getBuyer().havenod!)); // stop buyer
+    if (ctx.isBuyerMaker()) ctx.maker.havenod = undefined;
+    else ctx.taker.havenod = undefined;
   }
-  if (getSeller(ctx) && ctx.sellerOfflineAfterDisputeOpened) {
-    promises.push(releaseHavenoProcess(getSeller(ctx)!)); // stop seller
-    if (isBuyerMaker(ctx)) ctx.taker = undefined;
-    else ctx.maker = undefined;
+  if (ctx.getSeller().havenod && ctx.sellerOfflineAfterDisputeOpened) {
+    promises.push(releaseHavenoProcess(ctx.getSeller().havenod!)); // stop seller
+    if (ctx.isBuyerMaker()) ctx.taker.havenod = undefined;
+    else ctx.maker.havenod = undefined;
   }
   await Promise.all(promises);
 
-  // award too much to winner
-  const tradeAmount: bigint = BigInt(ctx.offer!.getAmount());
-  let customWinnerAmount = tradeAmount + BigInt(ctx.offer!.getBuyerSecurityDeposit()) + BigInt(ctx.offer!.getSellerSecurityDeposit()); // mining fee is subtracted from security deposits
+  // award too much to winner (majority receiver)
+  let trade = await arbitrator.getTrade(ctx.offerId!)
+  const tradeAmount: bigint = BigInt(trade!.getAmount());
+  let customWinnerAmount = tradeAmount + BigInt(trade.getBuyerSecurityDeposit()) + BigInt(trade.getSellerSecurityDeposit() + 1n); // mining fee is subtracted from security deposits
   try {
     await arbitrator.resolveDispute(ctx.offerId!, ctx.disputeWinner!, ctx.disputeReason!, "Winner gets too much", customWinnerAmount);
     throw new Error("Should have failed resolving dispute with too much winner payout");
@@ -2598,11 +2809,10 @@ async function resolveDispute(ctx: TradeContext) {
     assert.equal(err.message, "Winner payout is more than the trade wallet's balance");
   }
 
-  // award too little to loser
-  let trade = await arbitrator.getTrade(ctx.offerId!)
+  // award too little to loser (minority receiver)
   let makerDepositTx = await monerod.getTx(trade.getMakerDepositTxId());
   let takerDepositTx = await monerod.getTx(trade.getTakerDepositTxId());
-  customWinnerAmount = tradeAmount + BigInt(ctx.offer!.getBuyerSecurityDeposit()) + BigInt(ctx.offer!.getSellerSecurityDeposit()) - makerDepositTx.getFee() - takerDepositTx.getFee() - BigInt("10000");
+  customWinnerAmount = tradeAmount + BigInt(trade.getBuyerSecurityDeposit()) + BigInt(trade.getSellerSecurityDeposit()) - BigInt("10000");
   try {
     await arbitrator.resolveDispute(ctx.offerId!, ctx.disputeWinner!, ctx.disputeReason!, "Loser gets too little", customWinnerAmount);
     throw new Error("Should have failed resolving dispute with insufficient loser payout");
@@ -2611,70 +2821,116 @@ async function resolveDispute(ctx: TradeContext) {
   }
 
   // resolve dispute according to configuration
-  const winner = ctx.disputeWinner === DisputeResult.Winner.BUYER ? getBuyer(ctx) : getSeller(ctx);
-  const loser = ctx.disputeWinner === DisputeResult.Winner.BUYER ? getSeller(ctx) : getBuyer(ctx);
-  const winnerBalancesBefore = winner ? await winner!.getBalances() : undefined;
-  const loserBalancesBefore = loser ? await loser!.getBalances() : undefined;
+  const winnerd = ctx.disputeWinner === DisputeResult.Winner.BUYER ? ctx.getBuyer().havenod : ctx.getSeller().havenod;
+  const loserd = ctx.disputeWinner === DisputeResult.Winner.BUYER ? ctx.getSeller().havenod : ctx.getBuyer().havenod;
   HavenoUtils.log(1, "Resolving dispute for trade " + ctx.offerId);
   const startTime = Date.now();
   await arbitrator.resolveDispute(ctx.offerId!, ctx.disputeWinner!, ctx.disputeReason!, ctx.disputeSummary!, ctx.disputeWinnerAmount);
   HavenoUtils.log(1, "Done resolving dispute (" + (Date.now() - startTime) + ")");
 
   // start buyer or seller depending on configuration
-  if (!getBuyer(ctx) && ctx.buyerOfflineAfterDisputeOpened === false) {
+  if (!ctx.getBuyer().havenod && ctx.buyerOfflineAfterDisputeOpened === false) {
+    // TODO: wait additional time before starting to avoid 503? need to wait after shut down?
     const buyer = await initHaveno({appName: ctx.buyerAppName, excludePorts: ctx.usedPorts}); // start buyer
-    if (isBuyerMaker(ctx)) ctx.maker = buyer;
-    else ctx.taker = buyer;
+    if (ctx.isBuyerMaker()) ctx.maker.havenod = buyer;
+    else ctx.taker.havenod = buyer;
     ctx.usedPorts!.push(getPort(buyer.getUrl()));
   }
-  if (!getSeller(ctx) && ctx.sellerOfflineAfterDisputeOpened === false) {
+  if (!ctx.getSeller().havenod && ctx.sellerOfflineAfterDisputeOpened === false) {
     const seller = await initHaveno({appName: ctx.sellerAppName, excludePorts: ctx.usedPorts}); // start seller
-    if (isBuyerMaker(ctx)) ctx.taker = seller;
-    else ctx.maker = seller;
-    ctx.usedPorts!.push(getPort(getSeller(ctx)!.getUrl()))
+    if (ctx.isBuyerMaker()) ctx.taker.havenod = seller;
+    else ctx.maker.havenod = seller;
+    ctx.usedPorts!.push(getPort(ctx.getSeller().havenod!.getUrl()))
   }
 
   // test resolved dispute
-  await wait(TestConfig.maxWalletStartupMs + ctx.walletSyncPeriodMs! * 2);
-  if (getDisputeOpener(ctx)) {
-    const dispute = await getDisputeOpener(ctx)!.getDispute(ctx.offerId!);
+  await wait(TestConfig.maxWalletStartupMs + ctx.walletSyncPeriodMs * 2);
+  if (ctx.getDisputeOpener()!.havenod) {
+    const dispute = await ctx.getDisputeOpener()!.havenod!.getDispute(ctx.offerId!);
     assert(dispute.getIsClosed(), "Dispute is not closed for opener, trade " + ctx.offerId);
   }
-  if (getDisputePeer(ctx)) {
-    const dispute = await getDisputePeer(ctx)!.getDispute(ctx.offerId!);
+  if (ctx.getDisputePeer()!.havenod) {
+    const dispute = await ctx.getDisputePeer()!.havenod!.getDispute(ctx.offerId!);
     assert(dispute.getIsClosed(), "Dispute is not closed for opener's peer, trade " + ctx.offerId);
   }
 
   // test trade state
-  if (getBuyer(ctx)) await testTradeState(await getBuyer(ctx)!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"], disputeState: "DISPUTE_CLOSED", isCompleted: true, isPayoutPublished: true});
-  if (getSeller(ctx))  await testTradeState(await getSeller(ctx)!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"], disputeState: "DISPUTE_CLOSED", isCompleted: true, isPayoutPublished: true});
-  await testTradeState(await ctx.arbitrator!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"], disputeState: "DISPUTE_CLOSED", isCompleted: true, isPayoutPublished: true});
+  if (ctx.getBuyer().havenod) await testTradeState(await ctx.getBuyer().havenod!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"], disputeState: "DISPUTE_CLOSED", isCompleted: true, isPayoutPublished: true});
+  if (ctx.getSeller().havenod) await testTradeState(await ctx.getSeller().havenod!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"], disputeState: "DISPUTE_CLOSED", isCompleted: true, isPayoutPublished: true});
+  await testTradeState(await ctx.arbitrator.havenod!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"], disputeState: "DISPUTE_CLOSED", isCompleted: true, isPayoutPublished: true});
+
+  // signing peer has payout tx id on 0 conf (peers must wait for confirmation to see outgoing tx)
+  if (winnerd) ctx.payoutTxId = (await winnerd!.getTrade(ctx.offerId!)).getPayoutTxId()
+
+  // record balances on completion
+  if (!ctx.maker.balancesAfterPayout) {
+    ctx.maker.balancesAfterPayout = await ctx.maker.havenod?.getBalances();
+    ctx.taker.balancesAfterPayout = await ctx.taker.havenod?.getBalances();
+  }
 
   // test balances after payout tx unless concurrent trades
-  let buyerDepositTx = getBuyer(ctx) === ctx.maker ? makerDepositTx : takerDepositTx;
-  let sellerDepositTx = getBuyer(ctx) === ctx.maker ? takerDepositTx : makerDepositTx;
   if (!ctx.concurrentTrades) {
-    if (winner) {
-      const winnerBalancesAfter = await winner!.getBalances();
-      const winnerDifference = BigInt(winnerBalancesAfter.getBalance()) - BigInt(winnerBalancesBefore!.getBalance());
-      const winnerSecurityDeposit = BigInt(ctx.disputeWinner === DisputeResult.Winner.BUYER ? ctx.offer!.getBuyerSecurityDeposit() : ctx.offer!.getSellerSecurityDeposit()) - (ctx.disputeWinner === DisputeResult.Winner.BUYER ? buyerDepositTx.getFee() : sellerDepositTx.getFee());
-      const winnerPayout = ctx.disputeWinnerAmount ? ctx.disputeWinnerAmount : tradeAmount + winnerSecurityDeposit; // TODO: this assumes security deposit is returned to winner, but won't be the case if payment sent
-      expect(winnerDifference).toEqual(winnerPayout);
-    }
-    if (loser) {
-      const loserBalancesAfter = await loser!.getBalances();
-      const loserDifference = BigInt(loserBalancesAfter.getBalance()) - BigInt(loserBalancesBefore!.getBalance());
-      const loserSecurityDeposit = BigInt(ctx.disputeWinner === DisputeResult.Winner.BUYER ? ctx.offer!.getSellerSecurityDeposit() : ctx.offer!.getBuyerSecurityDeposit()) - (ctx.disputeWinner === DisputeResult.Winner.BUYER ? sellerDepositTx.getFee() : buyerDepositTx.getFee());
-      const loserPayout = loserSecurityDeposit;
-      expect(loserPayout - loserDifference).toBeLessThan(TestConfig.maxFee);
-    }
-  }
+    if (winnerd) await testBalancesAfterComplete(ctx, ctx.getDisputeWinner()!);
+    if (loserd) await testBalancesAfterComplete(ctx, ctx.getDisputeLoser()!);
+ }
 
   // test payout unlock
   await testTradePayoutUnlock(ctx);
 }
 
-async function testTradeChat(ctx: TradeContext) {
+async function testBalancesAfterComplete(tradeCtx: TradeContext, peerCtx: PeerContext) {
+
+  // update context
+  const trade = await peerCtx.havenod?.getTrade(tradeCtx.offerId!)!;
+  peerCtx.trade = trade;
+  if (!tradeCtx.payoutTxId) throw new Error("Missing payout tx id");
+  const payoutTx = await monerod.getTx(tradeCtx.payoutTxId);
+  const payoutTxFee = BigInt(payoutTx!.getFee());
+
+  // calculate expected payout amount for normal trade
+  if (tradeCtx.getDisputeOpener() === undefined) {
+    let receiveAmount: bigint = tradeCtx.getBuyer() == peerCtx ? BigInt(trade.getAmount()) : 0n;
+    peerCtx.payoutAmount = peerCtx.securityDepositActual + receiveAmount - (payoutTxFee / 2n);
+  }
+
+  // calculate expected payout amount for dispute trade
+  else {
+    const winnerGetsAll = tradeCtx.disputeWinnerAmount === tradeCtx.maker.securityDepositActual! + tradeCtx.taker.securityDepositActual! + tradeCtx.tradeAmount!;
+    if (tradeCtx.getDisputeWinner() === peerCtx) {
+      if (tradeCtx.disputeWinnerAmount) peerCtx.payoutAmount = tradeCtx.disputeWinnerAmount - (winnerGetsAll ? payoutTxFee : 0n);
+      else peerCtx.payoutAmount = tradeCtx.tradeAmount! + peerCtx.securityDepositActual - (payoutTxFee / 2n);
+    } else {
+      if (tradeCtx.disputeWinnerAmount) {
+        const multisigBalance = tradeCtx.maker.securityDepositActual! + tradeCtx.taker.securityDepositActual! + tradeCtx.tradeAmount!;
+        peerCtx.payoutAmount = multisigBalance - tradeCtx.disputeWinnerAmount - (winnerGetsAll ? 0n : payoutTxFee);
+      }
+      else peerCtx.payoutAmount = peerCtx.securityDepositActual - (payoutTxFee / 2n);
+    }
+  }
+
+  // test balance change after payout tx
+  const differenceAfterPayout = BigInt(peerCtx.balancesAfterPayout?.getBalance()!) - BigInt(peerCtx.balancesBeforePayout?.getBalance()!);
+  expect(differenceAfterPayout).toEqual(peerCtx.payoutAmount);
+
+  // test balance change since before offer
+  if (tradeCtx.testBalanceChangeEndToEnd) {
+
+    // calculate expected balance from before offer
+    const sendTradeAmount = tradeCtx.getBuyer() === peerCtx ? 0n : BigInt(trade.getAmount());
+    const expectedBalanceAfterComplete = BigInt(peerCtx.balancesBeforeOffer?.getBalance()!) - peerCtx.splitOutputTxFee - peerCtx.tradeFee! - sendTradeAmount - peerCtx.depositTxFee - peerCtx.securityDepositActual + peerCtx.payoutAmount;
+
+    // log the math
+    HavenoUtils.log(1, "Testing end-to-end balance change:");
+    HavenoUtils.log(1, "Expected balance after = balance before - split output tx fee if maker and exact amount reserved - trade fee - trade amount if seller - deposit tx fee - security deposit received + (trade amount if seller + security deposit received - (payout tx fee / 2))");
+    HavenoUtils.log(1, expectedBalanceAfterComplete + " = " + BigInt(peerCtx.balancesBeforeOffer?.getBalance()!) + " - " + peerCtx.splitOutputTxFee + " - " + peerCtx.tradeFee! + " - " + sendTradeAmount + " - " + peerCtx.depositTxFee + " - " + peerCtx.securityDepositActual + " + " + peerCtx.payoutAmount);
+
+    // test the expected balance
+    expect(BigInt(peerCtx.balancesAfterPayout?.getBalance()!)).toEqual(expectedBalanceAfterComplete);
+  }
+}
+
+async function testTradeChat(ctxP: Partial<TradeContext>) {
+  const ctx = TradeContext.init(ctxP);
   HavenoUtils.log(1, "Testing trade chat");
 
   // invalid trade should throw error
@@ -2700,7 +2956,7 @@ async function testTradeChat(ctx: TradeContext) {
   // send simple conversation and verify the list of messages
   const user1Msg = "Hi I'm user1";
   await user1.sendChatMessage(ctx.offerId!, user1Msg);
-  await wait(ctx.maxTimePeerNoticeMs!);
+  await wait(ctx.maxTimePeerNoticeMs);
   messages = await user2.getChatMessages(ctx.offerId!);
   expect(messages.length).toEqual(2);
   expect(messages[0].getIsSystemMessage()).toEqual(true); // first message is system
@@ -2708,7 +2964,7 @@ async function testTradeChat(ctx: TradeContext) {
 
   const user2Msg = "Hello I'm user2";
   await user2.sendChatMessage(ctx.offerId!, user2Msg);
-  await wait(ctx.maxTimePeerNoticeMs!);
+  await wait(ctx.maxTimePeerNoticeMs);
   messages = await user1.getChatMessages(ctx.offerId!);
   expect(messages.length).toEqual(3);
   expect(messages[0].getIsSystemMessage()).toEqual(true);
@@ -2729,7 +2985,7 @@ async function testTradeChat(ctx: TradeContext) {
     await user1.sendChatMessage(ctx.offerId!, msg);
     await wait(1000); // the async operation can result in out of order messages
   }
-  await wait(ctx.maxTimePeerNoticeMs!);
+  await wait(ctx.maxTimePeerNoticeMs);
   messages = await user2.getChatMessages(ctx.offerId!);
   let offset = 3; // 3 existing messages
   expect(messages.length).toEqual(offset + msgs.length);
@@ -3355,8 +3611,9 @@ function testCryptoPaymentAccountsEqual(acct1: PaymentAccount, acct2: PaymentAcc
   expect(acct1.getPaymentAccountPayload()!.getCryptoCurrencyAccountPayload()!.getAddress()).toEqual(acct2.getPaymentAccountPayload()!.getCryptoCurrencyAccountPayload()!.getAddress());
 }
 
-function testOffer(offer: OfferInfo, ctx?: TradeContext) {
-  expect(offer.getId().length).toBeGreaterThan(0);
+function testOffer(offer: OfferInfo, ctx?: Partial<TradeContext>) {
+  expect(offer.getId().length).toBeGreaterThan(0); 
+  // TODO: test that trade amount * pct = security deposit
   if (ctx) {
     if (BigInt(offer.getBuyerSecurityDeposit()) == TestConfig.minSecurityDeposit) {
       expect(BigInt(offer.getSellerSecurityDeposit())).toEqual(BigInt(offer.getBuyerSecurityDeposit()));
