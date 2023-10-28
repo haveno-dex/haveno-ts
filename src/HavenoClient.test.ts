@@ -357,6 +357,7 @@ const TestConfig = {
     maxCpuPct: 0.25,
     paymentMethods: Object.keys(PaymentAccountForm.FormId), // all supported payment methods
     assetCodes: ["USD", "GBP", "EUR", "ETH", "BTC", "BCH", "LTC"], // primary asset codes
+    fixedPriceAssetCodes: ["XAG", "XAU", "XGB"],
     cryptoAddresses: [{
             currencyCode: "ETH",
             address: "0xdBdAb835Acd6fC84cF5F9aDD3c0B5a1E25fbd99f"
@@ -1493,7 +1494,7 @@ test("Cannot post offer exceeding trade limit (CI, sanity check)", async () => {
   let assetCode = "USD";
   const account = await createPaymentAccount(user1, assetCode);
   try {
-    await executeTrade({offerAmount: BigInt("2100000000000"), assetCode: assetCode, makerPaymentAccountId: account.getId(), takeOffer: false});
+    await executeTrade({offerAmount: BigInt("2600000000000"), assetCode: assetCode, makerPaymentAccountId: account.getId(), takeOffer: false});
     throw new Error("Should have rejected posting offer above trade limit")
   } catch (err) {
     assert(err.message.indexOf("amount is larger than") === 0);
@@ -3216,7 +3217,7 @@ async function prepareForTrading(numTrades: number, ...havenods: HavenoClient[])
 
   // create payment account for each asset code
   for (const havenod of havenods) {
-    for (const assetCode of TestConfig.assetCodes) {
+    for (const assetCode of TestConfig.assetCodes.concat(TestConfig.fixedPriceAssetCodes)) {
       if (await hasPaymentAccount({trader: havenod, assetCode: assetCode})) continue; // skip if exists
       await createPaymentAccount(havenod, assetCode);
     }
@@ -3571,7 +3572,7 @@ function getCryptoAddress(currencyCode: string): string|undefined {
 }
 
 async function createPaymentAccount(trader: HavenoClient, assetCodes: string, paymentMethodId?: string | PaymentAccountForm.FormId) {
-  if (!paymentMethodId) paymentMethodId = isCrypto(assetCodes!) ? PaymentAccountForm.FormId.BLOCK_CHAINS : PaymentAccountForm.FormId.REVOLUT;
+  if (!paymentMethodId) paymentMethodId = isCrypto(assetCodes!) ? PaymentAccountForm.FormId.BLOCK_CHAINS : PaymentAccountForm.FormId.PAY_BY_MAIL;
   const accountForm = await trader.getPaymentAccountForm(paymentMethodId);
   for (const field of accountForm.getFieldsList()) field.setValue(getValidFormInput(accountForm, field.getId()));
   HavenoUtils.setFormValue(PaymentAccountFormField.FieldId.TRADE_CURRENCIES, assetCodes, accountForm);
