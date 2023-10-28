@@ -15339,7 +15339,9 @@ proto.io.haveno.protobuffer.OfferInfo.toObject = function(includeInstance, msg) 
     pubKeyRing: jspb.Message.getFieldWithDefault(msg, 24, ""),
     versionNr: jspb.Message.getFieldWithDefault(msg, 25, ""),
     protocolVersion: jspb.Message.getFieldWithDefault(msg, 26, 0),
-    arbitratorSigner: jspb.Message.getFieldWithDefault(msg, 27, "")
+    arbitratorSigner: jspb.Message.getFieldWithDefault(msg, 27, ""),
+    splitOutputTxHash: jspb.Message.getFieldWithDefault(msg, 28, ""),
+    splitOutputTxFee: jspb.Message.getFieldWithDefault(msg, 29, "0")
   };
 
   if (includeInstance) {
@@ -15483,6 +15485,14 @@ proto.io.haveno.protobuffer.OfferInfo.deserializeBinaryFromReader = function(msg
     case 27:
       var value = /** @type {string} */ (reader.readString());
       msg.setArbitratorSigner(value);
+      break;
+    case 28:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setSplitOutputTxHash(value);
+      break;
+    case 29:
+      var value = /** @type {string} */ (reader.readUint64String());
+      msg.setSplitOutputTxFee(value);
       break;
     default:
       reader.skipField();
@@ -15699,6 +15709,20 @@ proto.io.haveno.protobuffer.OfferInfo.serializeBinaryToWriter = function(message
   if (f.length > 0) {
     writer.writeString(
       27,
+      f
+    );
+  }
+  f = message.getSplitOutputTxHash();
+  if (f.length > 0) {
+    writer.writeString(
+      28,
+      f
+    );
+  }
+  f = message.getSplitOutputTxFee();
+  if (parseInt(f, 10) !== 0) {
+    writer.writeUint64String(
+      29,
       f
     );
   }
@@ -16188,6 +16212,42 @@ proto.io.haveno.protobuffer.OfferInfo.prototype.getArbitratorSigner = function()
  */
 proto.io.haveno.protobuffer.OfferInfo.prototype.setArbitratorSigner = function(value) {
   return jspb.Message.setProto3StringField(this, 27, value);
+};
+
+
+/**
+ * optional string split_output_tx_hash = 28;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.OfferInfo.prototype.getSplitOutputTxHash = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 28, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.OfferInfo} returns this
+ */
+proto.io.haveno.protobuffer.OfferInfo.prototype.setSplitOutputTxHash = function(value) {
+  return jspb.Message.setProto3StringField(this, 28, value);
+};
+
+
+/**
+ * optional uint64 split_output_tx_fee = 29;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.OfferInfo.prototype.getSplitOutputTxFee = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 29, "0"));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.OfferInfo} returns this
+ */
+proto.io.haveno.protobuffer.OfferInfo.prototype.setSplitOutputTxFee = function(value) {
+  return jspb.Message.setProto3StringIntField(this, 29, value);
 };
 
 

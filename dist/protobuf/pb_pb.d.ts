@@ -1258,6 +1258,12 @@ export class DepositResponse extends jspb.Message {
   getErrorMessage(): string;
   setErrorMessage(value: string): DepositResponse;
 
+  getBuyersecuritydeposit(): number;
+  setBuyersecuritydeposit(value: number): DepositResponse;
+
+  getSellersecuritydeposit(): number;
+  setSellersecuritydeposit(value: number): DepositResponse;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): DepositResponse.AsObject;
   static toObject(includeInstance: boolean, msg: DepositResponse): DepositResponse.AsObject;
@@ -1272,6 +1278,8 @@ export namespace DepositResponse {
     uid: string,
     currentDate: number,
     errorMessage: string,
+    buyersecuritydeposit: number,
+    sellersecuritydeposit: number,
   }
 }
 
@@ -3178,6 +3186,9 @@ export class DisputeResult extends jspb.Message {
   getSellerPayoutAmount(): number;
   setSellerPayoutAmount(value: number): DisputeResult;
 
+  getSubtractFeeFrom(): DisputeResult.SubtractFeeFrom;
+  setSubtractFeeFrom(value: DisputeResult.SubtractFeeFrom): DisputeResult;
+
   getArbitratorPubKey(): Uint8Array | string;
   getArbitratorPubKey_asU8(): Uint8Array;
   getArbitratorPubKey_asB64(): string;
@@ -3211,6 +3222,7 @@ export namespace DisputeResult {
     arbitratorSignature: Uint8Array | string,
     buyerPayoutAmount: number,
     sellerPayoutAmount: number,
+    subtractFeeFrom: DisputeResult.SubtractFeeFrom,
     arbitratorPubKey: Uint8Array | string,
     closeDate: number,
     isLoserPublisher: boolean,
@@ -3236,6 +3248,12 @@ export namespace DisputeResult {
     WRONG_SENDER_ACCOUNT = 10,
     TRADE_ALREADY_SETTLED = 11,
     PEER_WAS_LATE = 12,
+  }
+
+  export enum SubtractFeeFrom { 
+    BUYER_ONLY = 0,
+    SELLER_ONLY = 1,
+    BUYER_AND_SELLER = 2,
   }
 }
 
@@ -5860,6 +5878,12 @@ export class OpenOffer extends jspb.Message {
   getReserveExactAmount(): boolean;
   setReserveExactAmount(value: boolean): OpenOffer;
 
+  getSplitOutputTxHash(): string;
+  setSplitOutputTxHash(value: string): OpenOffer;
+
+  getSplitOutputTxFee(): number;
+  setSplitOutputTxFee(value: number): OpenOffer;
+
   getScheduledTxHashesList(): Array<string>;
   setScheduledTxHashesList(value: Array<string>): OpenOffer;
   clearScheduledTxHashesList(): OpenOffer;
@@ -5867,9 +5891,6 @@ export class OpenOffer extends jspb.Message {
 
   getScheduledAmount(): string;
   setScheduledAmount(value: string): OpenOffer;
-
-  getSplitOutputTxHash(): string;
-  setSplitOutputTxHash(value: string): OpenOffer;
 
   getReserveTxHash(): string;
   setReserveTxHash(value: string): OpenOffer;
@@ -5894,9 +5915,10 @@ export namespace OpenOffer {
     state: OpenOffer.State,
     triggerPrice: number,
     reserveExactAmount: boolean,
+    splitOutputTxHash: string,
+    splitOutputTxFee: number,
     scheduledTxHashesList: Array<string>,
     scheduledAmount: string,
-    splitOutputTxHash: string,
     reserveTxHash: string,
     reserveTxHex: string,
     reserveTxKey: string,
@@ -6521,6 +6543,9 @@ export class TradePeer extends jspb.Message {
   getDepositTxKey(): string;
   setDepositTxKey(value: string): TradePeer;
 
+  getDepositTxFee(): number;
+  setDepositTxFee(value: number): TradePeer;
+
   getSecurityDeposit(): number;
   setSecurityDeposit(value: number): TradePeer;
 
@@ -6567,6 +6592,7 @@ export namespace TradePeer {
     depositTxHash: string,
     depositTxHex: string,
     depositTxKey: string,
+    depositTxFee: number,
     securityDeposit: number,
     updatedMultisigHex: string,
     depositsConfirmedMessageAcked: boolean,
