@@ -78,7 +78,7 @@ const defaultTradeConfig: Partial<TradeContext> = {
   offerMinAmount: undefined,
   assetCode: "usd", // counter asset to trade
   makerPaymentAccountId: undefined,
-  buyerSecurityDepositPct: 0.15,
+  securityDepositPct: 0.15,
   price: undefined, // use market price if undefined
   triggerPrice: undefined,
   awaitFundsToTakeOffer: true,
@@ -131,7 +131,7 @@ class TradeContext {
   offerMinAmount?: bigint;
   tradeAmount?: bigint; // trade amount within offer range
   makerPaymentAccountId?: string;
-  buyerSecurityDepositPct?: number;
+  securityDepositPct?: number;
   price?: number;
   priceMargin?: number;
   triggerPrice?: number;
@@ -246,7 +246,7 @@ class TradeContext {
     str += "\nTrade amount: " + this.tradeAmount;
     str += "\nMin amount: " + this.offerMinAmount;
     str += "\nMax amount: " + this.offerAmount;
-    str += "\nSecurity deposit percent: " + this.buyerSecurityDepositPct;
+    str += "\nSecurity deposit percent: " + this.securityDepositPct;
     str += "\nMaker balance before offer: " + this.maker.balancesBeforeOffer?.getBalance();
     str += "\nMaker split output tx fee: " + this.maker.splitOutputTxFee;
     if (this.offer) str += "\nMaker trade fee: " + this.offer!.getMakerFee();
@@ -1512,9 +1512,9 @@ test("Can complete a trade within a range", async () => {
   // execute trade
   await executeTrade({
     price: 142.23,
-    offerAmount: HavenoUtils.xmrToAtomicUnits(1),
+    offerAmount: HavenoUtils.xmrToAtomicUnits(2),
     offerMinAmount: HavenoUtils.xmrToAtomicUnits(.15),
-    tradeAmount: HavenoUtils.xmrToAtomicUnits(.578),
+    tradeAmount: HavenoUtils.xmrToAtomicUnits(1),
     testPayoutUnlocked: true, // override to test unlock
     makerPaymentAccountId: makerPaymentAccount.getId(),
     takerPaymentAccountId: takerPaymentAccount.getId(),
@@ -2479,7 +2479,7 @@ async function makeOffer(ctxP?: Partial<TradeContext>): Promise<OfferInfo> {
         ctx.offerAmount!,
         ctx.assetCode!,
         ctx.makerPaymentAccountId!,
-        ctx.buyerSecurityDepositPct!,
+        ctx.securityDepositPct!,
         ctx.price,
         ctx.priceMargin,
         ctx.triggerPrice,
@@ -2565,9 +2565,6 @@ async function takeOffer(ctxP: Partial<TradeContext>): Promise<TradeInfo> {
   const trade = await ctx.taker.havenod!.takeOffer(ctx.offerId, ctx.takerPaymentAccountId!, ctx.tradeAmount);
   HavenoUtils.log(1, "Done taking offer " + ctx.offerId + " in " + (Date.now() - startTime) + " ms");
 
-  // test trade model
-  await testTrade(trade);
-
   // maker is notified that offer is taken
   await wait(ctx.maxTimePeerNoticeMs);
   const tradeNotifications = getNotifications(makerNotifications, NotificationMessage.NotificationType.TRADE_UPDATE, trade.getTradeId());
@@ -2593,6 +2590,9 @@ async function takeOffer(ctxP: Partial<TradeContext>): Promise<TradeInfo> {
     ctx.getBuyer().securityDepositActual = BigInt(trade.getBuyerSecurityDeposit()!);
     ctx.getSeller().securityDepositActual = BigInt(trade.getSellerSecurityDeposit()!);
   }
+
+  // test trade model
+  await testTrade(trade, ctx);
 
   // test buyer and seller balances after offer taken
   if (!ctx.concurrentTrades) {
@@ -2624,7 +2624,7 @@ async function takeOffer(ctxP: Partial<TradeContext>): Promise<TradeInfo> {
 
   // taker can get trade
   let fetchedTrade: TradeInfo = await ctx.taker.havenod!.getTrade(trade.getTradeId());
-  await testTrade(fetchedTrade);
+  await testTrade(fetchedTrade, ctx);
   assert(moneroTs.GenUtils.arrayContains(["DEPOSITS_PUBLISHED", "DEPOSITS_CONFIRMED", "DEPOSITS_UNLOCKED"], fetchedTrade.getPhase()), "Unexpected trade phase: " + fetchedTrade.getPhase());
   // TODO: more fetched trade tests
   
@@ -2640,15 +2640,20 @@ async function takeOffer(ctxP: Partial<TradeContext>): Promise<TradeInfo> {
 
   // maker can get trade
   fetchedTrade = await ctx.maker.havenod!.getTrade(trade.getTradeId());
-  await testTrade(fetchedTrade);
+  await testTrade(fetchedTrade, ctx);
   assert(moneroTs.GenUtils.arrayContains(["DEPOSITS_PUBLISHED", "DEPOSITS_CONFIRMED", "DEPOSITS_UNLOCKED"], fetchedTrade.getPhase()), "Unexpected trade phase: " + fetchedTrade.getPhase());
   return trade;
 }
 
-async function testTrade(trade: TradeInfo) {
-    assert(BigInt(trade.getBuyerSecurityDeposit()) > 0n);
-    assert(BigInt(trade.getSellerSecurityDeposit()) > 0n);
-    // TODO: test more fields
+async function testTrade(trade: TradeInfo, ctx: TradeContext) {
+  expect(BigInt(trade.getAmount())).toEqual(ctx!.tradeAmount);
+
+  // test security deposit = max(.1, trade amount * security deposit pct)
+  const expectedSecurityDeposit = HavenoUtils.xmrToAtomicUnits(Math.max(.1, HavenoUtils.atomicUnitsToXmr(ctx.tradeAmount!) * ctx.securityDepositPct!));
+  expect(BigInt(trade.getBuyerSecurityDeposit())).toEqual(expectedSecurityDeposit - ctx.getBuyer().depositTxFee);
+  expect(BigInt(trade.getSellerSecurityDeposit())).toEqual(expectedSecurityDeposit - ctx.getSeller().depositTxFee);
+
+  // TODO: test more fields
 }
 
 async function testOpenDispute(ctxP: Partial<TradeContext>) {
@@ -3613,25 +3618,13 @@ function testCryptoPaymentAccountsEqual(acct1: PaymentAccount, acct2: PaymentAcc
 }
 
 function testOffer(offer: OfferInfo, ctx?: Partial<TradeContext>) {
-  expect(offer.getId().length).toBeGreaterThan(0); 
-  // TODO: test that trade amount * pct = security deposit
+  expect(offer.getId().length).toBeGreaterThan(0);
   if (ctx) {
-    if (BigInt(offer.getBuyerSecurityDeposit()) == TestConfig.minSecurityDeposit) {
-      expect(BigInt(offer.getSellerSecurityDeposit())).toEqual(BigInt(offer.getBuyerSecurityDeposit()));
-    } else {
-      let buyerSecurityDepositPct = HavenoUtils.divideBI(BigInt(offer.getBuyerSecurityDeposit()), BigInt(offer.getAmount()));
-      let sellerSecurityDepositPct = HavenoUtils.divideBI(BigInt(offer.getSellerSecurityDeposit()), BigInt(offer.getAmount()));
-      if (ctx.reserveExactAmount) {
-        const tolerance = 0.000001;
-        assert(ctx.buyerSecurityDepositPct! - buyerSecurityDepositPct < tolerance);
-        assert(ctx.buyerSecurityDepositPct! - sellerSecurityDepositPct < tolerance);
-      } else {
-        expect(buyerSecurityDepositPct).toEqual(ctx.buyerSecurityDepositPct);
-        expect(sellerSecurityDepositPct).toEqual(ctx.buyerSecurityDepositPct); // TODO: using same security deposit config for buyer and seller
-      }
-    }
+    expect(offer.getBuyerSecurityDepositPct()).toEqual(ctx?.securityDepositPct);
+    expect(offer.getSellerSecurityDepositPct()).toEqual(ctx?.securityDepositPct);
     expect(offer.getUseMarketBasedPrice()).toEqual(!ctx?.price);
     expect(offer.getMarketPriceMarginPct()).toEqual(ctx?.priceMargin ? ctx?.priceMargin : 0);
+
     // TODO: test rest of offer
   }
 }

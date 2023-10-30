@@ -15322,16 +15322,16 @@ proto.io.haveno.protobuffer.OfferInfo.toObject = function(includeInstance, msg) 
     minAmount: jspb.Message.getFieldWithDefault(msg, 7, "0"),
     volume: jspb.Message.getFieldWithDefault(msg, 8, ""),
     minVolume: jspb.Message.getFieldWithDefault(msg, 9, ""),
-    buyerSecurityDeposit: jspb.Message.getFieldWithDefault(msg, 10, "0"),
-    triggerPrice: jspb.Message.getFieldWithDefault(msg, 11, ""),
-    paymentAccountId: jspb.Message.getFieldWithDefault(msg, 12, ""),
-    paymentMethodId: jspb.Message.getFieldWithDefault(msg, 13, ""),
-    paymentMethodShortName: jspb.Message.getFieldWithDefault(msg, 14, ""),
-    baseCurrencyCode: jspb.Message.getFieldWithDefault(msg, 15, ""),
-    counterCurrencyCode: jspb.Message.getFieldWithDefault(msg, 16, ""),
-    date: jspb.Message.getFieldWithDefault(msg, 17, 0),
-    state: jspb.Message.getFieldWithDefault(msg, 18, ""),
-    sellerSecurityDeposit: jspb.Message.getFieldWithDefault(msg, 19, "0"),
+    buyerSecurityDepositPct: jspb.Message.getFloatingPointFieldWithDefault(msg, 10, 0.0),
+    sellerSecurityDepositPct: jspb.Message.getFloatingPointFieldWithDefault(msg, 11, 0.0),
+    triggerPrice: jspb.Message.getFieldWithDefault(msg, 12, ""),
+    paymentAccountId: jspb.Message.getFieldWithDefault(msg, 13, ""),
+    paymentMethodId: jspb.Message.getFieldWithDefault(msg, 14, ""),
+    paymentMethodShortName: jspb.Message.getFieldWithDefault(msg, 15, ""),
+    baseCurrencyCode: jspb.Message.getFieldWithDefault(msg, 16, ""),
+    counterCurrencyCode: jspb.Message.getFieldWithDefault(msg, 17, ""),
+    date: jspb.Message.getFieldWithDefault(msg, 18, 0),
+    state: jspb.Message.getFieldWithDefault(msg, 19, ""),
     makerFee: jspb.Message.getFieldWithDefault(msg, 20, "0"),
     isActivated: jspb.Message.getBooleanFieldWithDefault(msg, 21, false),
     isMyOffer: jspb.Message.getBooleanFieldWithDefault(msg, 22, false),
@@ -15415,44 +15415,44 @@ proto.io.haveno.protobuffer.OfferInfo.deserializeBinaryFromReader = function(msg
       msg.setMinVolume(value);
       break;
     case 10:
-      var value = /** @type {string} */ (reader.readUint64String());
-      msg.setBuyerSecurityDeposit(value);
+      var value = /** @type {number} */ (reader.readDouble());
+      msg.setBuyerSecurityDepositPct(value);
       break;
     case 11:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setTriggerPrice(value);
+      var value = /** @type {number} */ (reader.readDouble());
+      msg.setSellerSecurityDepositPct(value);
       break;
     case 12:
       var value = /** @type {string} */ (reader.readString());
-      msg.setPaymentAccountId(value);
+      msg.setTriggerPrice(value);
       break;
     case 13:
       var value = /** @type {string} */ (reader.readString());
-      msg.setPaymentMethodId(value);
+      msg.setPaymentAccountId(value);
       break;
     case 14:
       var value = /** @type {string} */ (reader.readString());
-      msg.setPaymentMethodShortName(value);
+      msg.setPaymentMethodId(value);
       break;
     case 15:
       var value = /** @type {string} */ (reader.readString());
-      msg.setBaseCurrencyCode(value);
+      msg.setPaymentMethodShortName(value);
       break;
     case 16:
       var value = /** @type {string} */ (reader.readString());
-      msg.setCounterCurrencyCode(value);
+      msg.setBaseCurrencyCode(value);
       break;
     case 17:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setCounterCurrencyCode(value);
+      break;
+    case 18:
       var value = /** @type {number} */ (reader.readUint64());
       msg.setDate(value);
       break;
-    case 18:
+    case 19:
       var value = /** @type {string} */ (reader.readString());
       msg.setState(value);
-      break;
-    case 19:
-      var value = /** @type {string} */ (reader.readUint64String());
-      msg.setSellerSecurityDeposit(value);
       break;
     case 20:
       var value = /** @type {string} */ (reader.readUint64String());
@@ -15586,72 +15586,72 @@ proto.io.haveno.protobuffer.OfferInfo.serializeBinaryToWriter = function(message
       f
     );
   }
-  f = message.getBuyerSecurityDeposit();
-  if (parseInt(f, 10) !== 0) {
-    writer.writeUint64String(
+  f = message.getBuyerSecurityDepositPct();
+  if (f !== 0.0) {
+    writer.writeDouble(
       10,
+      f
+    );
+  }
+  f = message.getSellerSecurityDepositPct();
+  if (f !== 0.0) {
+    writer.writeDouble(
+      11,
       f
     );
   }
   f = message.getTriggerPrice();
   if (f.length > 0) {
     writer.writeString(
-      11,
+      12,
       f
     );
   }
   f = message.getPaymentAccountId();
   if (f.length > 0) {
     writer.writeString(
-      12,
+      13,
       f
     );
   }
   f = message.getPaymentMethodId();
   if (f.length > 0) {
     writer.writeString(
-      13,
+      14,
       f
     );
   }
   f = message.getPaymentMethodShortName();
   if (f.length > 0) {
     writer.writeString(
-      14,
+      15,
       f
     );
   }
   f = message.getBaseCurrencyCode();
   if (f.length > 0) {
     writer.writeString(
-      15,
+      16,
       f
     );
   }
   f = message.getCounterCurrencyCode();
   if (f.length > 0) {
     writer.writeString(
-      16,
+      17,
       f
     );
   }
   f = message.getDate();
   if (f !== 0) {
     writer.writeUint64(
-      17,
+      18,
       f
     );
   }
   f = message.getState();
   if (f.length > 0) {
     writer.writeString(
-      18,
-      f
-    );
-  }
-  f = message.getSellerSecurityDeposit();
-  if (parseInt(f, 10) !== 0) {
-    writer.writeUint64String(
       19,
       f
     );
@@ -15892,46 +15892,46 @@ proto.io.haveno.protobuffer.OfferInfo.prototype.setMinVolume = function(value) {
 
 
 /**
- * optional uint64 buyer_security_deposit = 10;
- * @return {string}
+ * optional double buyer_security_deposit_pct = 10;
+ * @return {number}
  */
-proto.io.haveno.protobuffer.OfferInfo.prototype.getBuyerSecurityDeposit = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 10, "0"));
+proto.io.haveno.protobuffer.OfferInfo.prototype.getBuyerSecurityDepositPct = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 10, 0.0));
 };
 
 
 /**
- * @param {string} value
+ * @param {number} value
  * @return {!proto.io.haveno.protobuffer.OfferInfo} returns this
  */
-proto.io.haveno.protobuffer.OfferInfo.prototype.setBuyerSecurityDeposit = function(value) {
-  return jspb.Message.setProto3StringIntField(this, 10, value);
+proto.io.haveno.protobuffer.OfferInfo.prototype.setBuyerSecurityDepositPct = function(value) {
+  return jspb.Message.setProto3FloatField(this, 10, value);
 };
 
 
 /**
- * optional string trigger_price = 11;
+ * optional double seller_security_deposit_pct = 11;
+ * @return {number}
+ */
+proto.io.haveno.protobuffer.OfferInfo.prototype.getSellerSecurityDepositPct = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 11, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.io.haveno.protobuffer.OfferInfo} returns this
+ */
+proto.io.haveno.protobuffer.OfferInfo.prototype.setSellerSecurityDepositPct = function(value) {
+  return jspb.Message.setProto3FloatField(this, 11, value);
+};
+
+
+/**
+ * optional string trigger_price = 12;
  * @return {string}
  */
 proto.io.haveno.protobuffer.OfferInfo.prototype.getTriggerPrice = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 11, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.io.haveno.protobuffer.OfferInfo} returns this
- */
-proto.io.haveno.protobuffer.OfferInfo.prototype.setTriggerPrice = function(value) {
-  return jspb.Message.setProto3StringField(this, 11, value);
-};
-
-
-/**
- * optional string payment_account_id = 12;
- * @return {string}
- */
-proto.io.haveno.protobuffer.OfferInfo.prototype.getPaymentAccountId = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 12, ""));
 };
 
@@ -15940,16 +15940,16 @@ proto.io.haveno.protobuffer.OfferInfo.prototype.getPaymentAccountId = function()
  * @param {string} value
  * @return {!proto.io.haveno.protobuffer.OfferInfo} returns this
  */
-proto.io.haveno.protobuffer.OfferInfo.prototype.setPaymentAccountId = function(value) {
+proto.io.haveno.protobuffer.OfferInfo.prototype.setTriggerPrice = function(value) {
   return jspb.Message.setProto3StringField(this, 12, value);
 };
 
 
 /**
- * optional string payment_method_id = 13;
+ * optional string payment_account_id = 13;
  * @return {string}
  */
-proto.io.haveno.protobuffer.OfferInfo.prototype.getPaymentMethodId = function() {
+proto.io.haveno.protobuffer.OfferInfo.prototype.getPaymentAccountId = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 13, ""));
 };
 
@@ -15958,16 +15958,16 @@ proto.io.haveno.protobuffer.OfferInfo.prototype.getPaymentMethodId = function() 
  * @param {string} value
  * @return {!proto.io.haveno.protobuffer.OfferInfo} returns this
  */
-proto.io.haveno.protobuffer.OfferInfo.prototype.setPaymentMethodId = function(value) {
+proto.io.haveno.protobuffer.OfferInfo.prototype.setPaymentAccountId = function(value) {
   return jspb.Message.setProto3StringField(this, 13, value);
 };
 
 
 /**
- * optional string payment_method_short_name = 14;
+ * optional string payment_method_id = 14;
  * @return {string}
  */
-proto.io.haveno.protobuffer.OfferInfo.prototype.getPaymentMethodShortName = function() {
+proto.io.haveno.protobuffer.OfferInfo.prototype.getPaymentMethodId = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 14, ""));
 };
 
@@ -15976,16 +15976,16 @@ proto.io.haveno.protobuffer.OfferInfo.prototype.getPaymentMethodShortName = func
  * @param {string} value
  * @return {!proto.io.haveno.protobuffer.OfferInfo} returns this
  */
-proto.io.haveno.protobuffer.OfferInfo.prototype.setPaymentMethodShortName = function(value) {
+proto.io.haveno.protobuffer.OfferInfo.prototype.setPaymentMethodId = function(value) {
   return jspb.Message.setProto3StringField(this, 14, value);
 };
 
 
 /**
- * optional string base_currency_code = 15;
+ * optional string payment_method_short_name = 15;
  * @return {string}
  */
-proto.io.haveno.protobuffer.OfferInfo.prototype.getBaseCurrencyCode = function() {
+proto.io.haveno.protobuffer.OfferInfo.prototype.getPaymentMethodShortName = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 15, ""));
 };
 
@@ -15994,16 +15994,16 @@ proto.io.haveno.protobuffer.OfferInfo.prototype.getBaseCurrencyCode = function()
  * @param {string} value
  * @return {!proto.io.haveno.protobuffer.OfferInfo} returns this
  */
-proto.io.haveno.protobuffer.OfferInfo.prototype.setBaseCurrencyCode = function(value) {
+proto.io.haveno.protobuffer.OfferInfo.prototype.setPaymentMethodShortName = function(value) {
   return jspb.Message.setProto3StringField(this, 15, value);
 };
 
 
 /**
- * optional string counter_currency_code = 16;
+ * optional string base_currency_code = 16;
  * @return {string}
  */
-proto.io.haveno.protobuffer.OfferInfo.prototype.getCounterCurrencyCode = function() {
+proto.io.haveno.protobuffer.OfferInfo.prototype.getBaseCurrencyCode = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 16, ""));
 };
 
@@ -16012,17 +16012,35 @@ proto.io.haveno.protobuffer.OfferInfo.prototype.getCounterCurrencyCode = functio
  * @param {string} value
  * @return {!proto.io.haveno.protobuffer.OfferInfo} returns this
  */
-proto.io.haveno.protobuffer.OfferInfo.prototype.setCounterCurrencyCode = function(value) {
+proto.io.haveno.protobuffer.OfferInfo.prototype.setBaseCurrencyCode = function(value) {
   return jspb.Message.setProto3StringField(this, 16, value);
 };
 
 
 /**
- * optional uint64 date = 17;
+ * optional string counter_currency_code = 17;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.OfferInfo.prototype.getCounterCurrencyCode = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 17, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.OfferInfo} returns this
+ */
+proto.io.haveno.protobuffer.OfferInfo.prototype.setCounterCurrencyCode = function(value) {
+  return jspb.Message.setProto3StringField(this, 17, value);
+};
+
+
+/**
+ * optional uint64 date = 18;
  * @return {number}
  */
 proto.io.haveno.protobuffer.OfferInfo.prototype.getDate = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 17, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 18, 0));
 };
 
 
@@ -16031,16 +16049,16 @@ proto.io.haveno.protobuffer.OfferInfo.prototype.getDate = function() {
  * @return {!proto.io.haveno.protobuffer.OfferInfo} returns this
  */
 proto.io.haveno.protobuffer.OfferInfo.prototype.setDate = function(value) {
-  return jspb.Message.setProto3IntField(this, 17, value);
+  return jspb.Message.setProto3IntField(this, 18, value);
 };
 
 
 /**
- * optional string state = 18;
+ * optional string state = 19;
  * @return {string}
  */
 proto.io.haveno.protobuffer.OfferInfo.prototype.getState = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 18, ""));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 19, ""));
 };
 
 
@@ -16049,25 +16067,7 @@ proto.io.haveno.protobuffer.OfferInfo.prototype.getState = function() {
  * @return {!proto.io.haveno.protobuffer.OfferInfo} returns this
  */
 proto.io.haveno.protobuffer.OfferInfo.prototype.setState = function(value) {
-  return jspb.Message.setProto3StringField(this, 18, value);
-};
-
-
-/**
- * optional uint64 seller_security_deposit = 19;
- * @return {string}
- */
-proto.io.haveno.protobuffer.OfferInfo.prototype.getSellerSecurityDeposit = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 19, "0"));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.io.haveno.protobuffer.OfferInfo} returns this
- */
-proto.io.haveno.protobuffer.OfferInfo.prototype.setSellerSecurityDeposit = function(value) {
-  return jspb.Message.setProto3StringIntField(this, 19, value);
+  return jspb.Message.setProto3StringField(this, 19, value);
 };
 
 
