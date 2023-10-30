@@ -2773,11 +2773,11 @@ export class OfferPayload extends jspb.Message {
   getMakerFee(): number;
   setMakerFee(value: number): OfferPayload;
 
-  getBuyerSecurityDeposit(): number;
-  setBuyerSecurityDeposit(value: number): OfferPayload;
+  getBuyerSecurityDepositPct(): number;
+  setBuyerSecurityDepositPct(value: number): OfferPayload;
 
-  getSellerSecurityDeposit(): number;
-  setSellerSecurityDeposit(value: number): OfferPayload;
+  getSellerSecurityDepositPct(): number;
+  setSellerSecurityDepositPct(value: number): OfferPayload;
 
   getMaxTradeLimit(): number;
   setMaxTradeLimit(value: number): OfferPayload;
@@ -2855,8 +2855,8 @@ export namespace OfferPayload {
     versionNr: string,
     blockHeightAtOfferCreation: number,
     makerFee: number,
-    buyerSecurityDeposit: number,
-    sellerSecurityDeposit: number,
+    buyerSecurityDepositPct: number,
+    sellerSecurityDepositPct: number,
     maxTradeLimit: number,
     maxTradePeriod: number,
     useAutoClose: boolean,

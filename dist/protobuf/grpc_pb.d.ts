@@ -1609,8 +1609,11 @@ export class OfferInfo extends jspb.Message {
   getMinVolume(): string;
   setMinVolume(value: string): OfferInfo;
 
-  getBuyerSecurityDeposit(): string;
-  setBuyerSecurityDeposit(value: string): OfferInfo;
+  getBuyerSecurityDepositPct(): number;
+  setBuyerSecurityDepositPct(value: number): OfferInfo;
+
+  getSellerSecurityDepositPct(): number;
+  setSellerSecurityDepositPct(value: number): OfferInfo;
 
   getTriggerPrice(): string;
   setTriggerPrice(value: string): OfferInfo;
@@ -1635,9 +1638,6 @@ export class OfferInfo extends jspb.Message {
 
   getState(): string;
   setState(value: string): OfferInfo;
-
-  getSellerSecurityDeposit(): string;
-  setSellerSecurityDeposit(value: string): OfferInfo;
 
   getMakerFee(): string;
   setMakerFee(value: string): OfferInfo;
@@ -1688,7 +1688,8 @@ export namespace OfferInfo {
     minAmount: string,
     volume: string,
     minVolume: string,
-    buyerSecurityDeposit: string,
+    buyerSecurityDepositPct: number,
+    sellerSecurityDepositPct: number,
     triggerPrice: string,
     paymentAccountId: string,
     paymentMethodId: string,
@@ -1697,7 +1698,6 @@ export namespace OfferInfo {
     counterCurrencyCode: string,
     date: number,
     state: string,
-    sellerSecurityDeposit: string,
     makerFee: string,
     isActivated: boolean,
     isMyOffer: boolean,

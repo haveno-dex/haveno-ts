@@ -25014,8 +25014,8 @@ proto.io.haveno.protobuffer.OfferPayload.toObject = function(includeInstance, ms
     versionNr: jspb.Message.getFieldWithDefault(msg, 19, ""),
     blockHeightAtOfferCreation: jspb.Message.getFieldWithDefault(msg, 20, 0),
     makerFee: jspb.Message.getFieldWithDefault(msg, 21, 0),
-    buyerSecurityDeposit: jspb.Message.getFieldWithDefault(msg, 22, 0),
-    sellerSecurityDeposit: jspb.Message.getFieldWithDefault(msg, 23, 0),
+    buyerSecurityDepositPct: jspb.Message.getFloatingPointFieldWithDefault(msg, 22, 0.0),
+    sellerSecurityDepositPct: jspb.Message.getFloatingPointFieldWithDefault(msg, 23, 0.0),
     maxTradeLimit: jspb.Message.getFieldWithDefault(msg, 24, 0),
     maxTradePeriod: jspb.Message.getFieldWithDefault(msg, 25, 0),
     useAutoClose: jspb.Message.getBooleanFieldWithDefault(msg, 26, false),
@@ -25152,12 +25152,12 @@ proto.io.haveno.protobuffer.OfferPayload.deserializeBinaryFromReader = function(
       msg.setMakerFee(value);
       break;
     case 22:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setBuyerSecurityDeposit(value);
+      var value = /** @type {number} */ (reader.readDouble());
+      msg.setBuyerSecurityDepositPct(value);
       break;
     case 23:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setSellerSecurityDeposit(value);
+      var value = /** @type {number} */ (reader.readDouble());
+      msg.setSellerSecurityDepositPct(value);
       break;
     case 24:
       var value = /** @type {number} */ (reader.readInt64());
@@ -25392,16 +25392,16 @@ proto.io.haveno.protobuffer.OfferPayload.serializeBinaryToWriter = function(mess
       f
     );
   }
-  f = message.getBuyerSecurityDeposit();
-  if (f !== 0) {
-    writer.writeInt64(
+  f = message.getBuyerSecurityDepositPct();
+  if (f !== 0.0) {
+    writer.writeDouble(
       22,
       f
     );
   }
-  f = message.getSellerSecurityDeposit();
-  if (f !== 0) {
-    writer.writeInt64(
+  f = message.getSellerSecurityDepositPct();
+  if (f !== 0.0) {
+    writer.writeDouble(
       23,
       f
     );
@@ -25953,11 +25953,11 @@ proto.io.haveno.protobuffer.OfferPayload.prototype.setMakerFee = function(value)
 
 
 /**
- * optional int64 buyer_security_deposit = 22;
+ * optional double buyer_security_deposit_pct = 22;
  * @return {number}
  */
-proto.io.haveno.protobuffer.OfferPayload.prototype.getBuyerSecurityDeposit = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 22, 0));
+proto.io.haveno.protobuffer.OfferPayload.prototype.getBuyerSecurityDepositPct = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 22, 0.0));
 };
 
 
@@ -25965,17 +25965,17 @@ proto.io.haveno.protobuffer.OfferPayload.prototype.getBuyerSecurityDeposit = fun
  * @param {number} value
  * @return {!proto.io.haveno.protobuffer.OfferPayload} returns this
  */
-proto.io.haveno.protobuffer.OfferPayload.prototype.setBuyerSecurityDeposit = function(value) {
-  return jspb.Message.setProto3IntField(this, 22, value);
+proto.io.haveno.protobuffer.OfferPayload.prototype.setBuyerSecurityDepositPct = function(value) {
+  return jspb.Message.setProto3FloatField(this, 22, value);
 };
 
 
 /**
- * optional int64 seller_security_deposit = 23;
+ * optional double seller_security_deposit_pct = 23;
  * @return {number}
  */
-proto.io.haveno.protobuffer.OfferPayload.prototype.getSellerSecurityDeposit = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 23, 0));
+proto.io.haveno.protobuffer.OfferPayload.prototype.getSellerSecurityDepositPct = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 23, 0.0));
 };
 
 
@@ -25983,8 +25983,8 @@ proto.io.haveno.protobuffer.OfferPayload.prototype.getSellerSecurityDeposit = fu
  * @param {number} value
  * @return {!proto.io.haveno.protobuffer.OfferPayload} returns this
  */
-proto.io.haveno.protobuffer.OfferPayload.prototype.setSellerSecurityDeposit = function(value) {
-  return jspb.Message.setProto3IntField(this, 23, value);
+proto.io.haveno.protobuffer.OfferPayload.prototype.setSellerSecurityDepositPct = function(value) {
+  return jspb.Message.setProto3FloatField(this, 23, value);
 };
 
 

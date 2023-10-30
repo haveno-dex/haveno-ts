@@ -975,7 +975,7 @@ class HavenoClient {
      * @param {bigint} amount - amount of XMR to trade
      * @param {string} assetCode - asset code to trade for XMR
      * @param {string} paymentAccountId - payment account id
-     * @param {number} buyerSecurityDepositPct - buyer security deposit as % of trade amount
+     * @param {number} securityDepositPct - security deposit as % of trade amount for buyer and seller
      * @param {number} price - trade price (optional, default to market price)
      * @param {number} marketPriceMarginPct - if using market price, % from market price to accept (optional, default 0%)
      * @param {number} triggerPrice - price to remove offer (optional)
@@ -983,14 +983,15 @@ class HavenoClient {
      * @param {number} reserveExactAmount - reserve exact amount needed for offer, incurring on-chain transaction and 10 confirmations before the offer goes live (default = false)
      * @return {OfferInfo} the posted offer
      */
-    async postOffer(direction, amount, assetCode, paymentAccountId, buyerSecurityDepositPct, price, marketPriceMarginPct, triggerPrice, minAmount, reserveExactAmount) {
+    async postOffer(direction, amount, assetCode, paymentAccountId, securityDepositPct, price, marketPriceMarginPct, triggerPrice, minAmount, reserveExactAmount) {
+        console_1.default.log("Posting offer with security deposit %: " + securityDepositPct);
         try {
             const request = new grpc_pb_1.PostOfferRequest()
                 .setDirection(direction)
                 .setAmount(amount.toString())
                 .setCurrencyCode(assetCode)
                 .setPaymentAccountId(paymentAccountId)
-                .setBuyerSecurityDepositPct(buyerSecurityDepositPct)
+                .setBuyerSecurityDepositPct(securityDepositPct)
                 .setUseMarketBasedPrice(price === undefined)
                 .setMinAmount(minAmount ? minAmount.toString() : amount.toString());
             if (price)

@@ -418,7 +418,7 @@ export default class HavenoClient {
      * @param {bigint} amount - amount of XMR to trade
      * @param {string} assetCode - asset code to trade for XMR
      * @param {string} paymentAccountId - payment account id
-     * @param {number} buyerSecurityDepositPct - buyer security deposit as % of trade amount
+     * @param {number} securityDepositPct - security deposit as % of trade amount for buyer and seller
      * @param {number} price - trade price (optional, default to market price)
      * @param {number} marketPriceMarginPct - if using market price, % from market price to accept (optional, default 0%)
      * @param {number} triggerPrice - price to remove offer (optional)
@@ -426,7 +426,7 @@ export default class HavenoClient {
      * @param {number} reserveExactAmount - reserve exact amount needed for offer, incurring on-chain transaction and 10 confirmations before the offer goes live (default = false)
      * @return {OfferInfo} the posted offer
      */
-    postOffer(direction: string, amount: bigint, assetCode: string, paymentAccountId: string, buyerSecurityDepositPct: number, price?: number, marketPriceMarginPct?: number, triggerPrice?: number, minAmount?: bigint, reserveExactAmount?: boolean): Promise<OfferInfo>;
+    postOffer(direction: string, amount: bigint, assetCode: string, paymentAccountId: string, securityDepositPct: number, price?: number, marketPriceMarginPct?: number, triggerPrice?: number, minAmount?: bigint, reserveExactAmount?: boolean): Promise<OfferInfo>;
     /**
      * Remove a posted offer, releasing its reserved funds.
      *
