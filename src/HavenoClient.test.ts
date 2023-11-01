@@ -3261,7 +3261,7 @@ async function prepareForTrading(numTrades: number, ...havenods: HavenoClient[])
   }
 
   // fund wallets
-  const tradeAmount = BigInt("250000000000");
+  const tradeAmount = BigInt("500000000000");
   const wallets: moneroTs.MoneroWallet[] = [];
   for (const havenod of havenods) wallets.push(await getWallet(havenod));
   await fundOutputs(wallets, tradeAmount * BigInt("2"), numTrades);
