@@ -1240,9 +1240,9 @@ test("Can create fiat payment accounts (CI)", async () => {
   const accountForm = await user1.getPaymentAccountForm(paymentMethodId);
 
   // edit form
-  HavenoUtils.setFormValue(PaymentAccountFormField.FieldId.ACCOUNT_NAME, "Revolut account " + moneroTs.GenUtils.getUUID(), accountForm);
-  HavenoUtils.setFormValue(PaymentAccountFormField.FieldId.USER_NAME, "user123", accountForm);
-  HavenoUtils.setFormValue(PaymentAccountFormField.FieldId.TRADE_CURRENCIES, "gbp,eur,usd", accountForm);
+  HavenoUtils.setFormValue(accountForm, PaymentAccountFormField.FieldId.ACCOUNT_NAME, "Revolut account " + moneroTs.GenUtils.getUUID());
+  HavenoUtils.setFormValue(accountForm, PaymentAccountFormField.FieldId.USER_NAME, "user123");
+  HavenoUtils.setFormValue(accountForm, PaymentAccountFormField.FieldId.TRADE_CURRENCIES, "gbp,eur,usd");
 
   // create payment account
   const fiatAccount = await user1.createPaymentAccount(accountForm);
@@ -1492,13 +1492,45 @@ test("Can reserve exact amount needed for offer (CI)", async () => {
 
 test("Cannot post offer exceeding trade limit (CI, sanity check)", async () => {
   let assetCode = "USD";
-  const account = await createPaymentAccount(user1, assetCode);
+  const account = await createPaymentAccount(user1, assetCode, "zelle");
+
+  // test posting buy offer above limit
   try {
-    await executeTrade({offerAmount: BigInt("2600000000000"), assetCode: assetCode, makerPaymentAccountId: account.getId(), takeOffer: false});
+    await executeTrade({
+      offerAmount: BigInt("2100000000000"),
+      direction: "BUY",
+      assetCode: assetCode,
+      makerPaymentAccountId: account.getId(),
+      takeOffer: false
+    });
     throw new Error("Should have rejected posting offer above trade limit")
   } catch (err) {
     assert(err.message.indexOf("amount is larger than") === 0);
   }
+
+  // test posting sell offer above limit
+  try {
+    await executeTrade({
+      offerAmount: BigInt("2600000000000"),
+      direction: "SELL",
+      assetCode: assetCode,
+      makerPaymentAccountId: account.getId(),
+      takeOffer: false
+    });
+    throw new Error("Should have rejected posting offer above trade limit")
+  } catch (err) {
+    assert(err.message.indexOf("amount is larger than") === 0);
+  }
+
+  // test that sell limit is higher than buy limit
+  let offerId = await executeTrade({
+    offerAmount: BigInt("2100000000000"),
+    direction: "SELL",
+    assetCode: assetCode,
+    makerPaymentAccountId: account.getId(),
+    takeOffer: false
+  });
+  await user1.removeOffer(offerId);
 });
 
 test("Can complete a trade within a range", async () => {
@@ -3580,7 +3612,7 @@ async function createPaymentAccount(trader: HavenoClient, assetCodes: string, pa
   if (!paymentMethodId) paymentMethodId = isCrypto(assetCodes!) ? PaymentAccountForm.FormId.BLOCK_CHAINS : PaymentAccountForm.FormId.PAY_BY_MAIL;
   const accountForm = await trader.getPaymentAccountForm(paymentMethodId);
   for (const field of accountForm.getFieldsList()) field.setValue(getValidFormInput(accountForm, field.getId()));
-  HavenoUtils.setFormValue(PaymentAccountFormField.FieldId.TRADE_CURRENCIES, assetCodes, accountForm);
+  if (HavenoUtils.hasFormField(accountForm, PaymentAccountFormField.FieldId.TRADE_CURRENCIES)) HavenoUtils.setFormValue(accountForm, PaymentAccountFormField.FieldId.TRADE_CURRENCIES, assetCodes);
   return await trader.createPaymentAccount(accountForm);
 }
 
