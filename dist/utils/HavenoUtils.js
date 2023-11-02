@@ -169,6 +169,20 @@ class HavenoUtils {
         return str.trim();
     }
     /**
+     * Determine if a form has a field.
+     *
+     * @param {PaymentAccountForm} form - form to check
+     * @param {PaymentAccountFormField.FieldId} fieldId - id of the field to check for
+     * @return {boolean} true if the form has the field, false otherwise
+     */
+    static hasFormField(form, fieldId) {
+        for (const field of form.getFieldsList()) {
+            if (field.getId() === fieldId)
+                return true;
+        }
+        return false;
+    }
+    /**
      * Get a form field value.
      *
      * @param {PaymentAccountForm} form - form to get the field value from
@@ -186,12 +200,12 @@ class HavenoUtils {
     /**
      * Set a form field value.
      *
+     * @param {PaymentAccountForm} form - form to get the field from
      * @param {PaymentAccountFormField.FieldId} fieldId - id of the field to set the value of
      * @param {string} value - field value to set
-     * @param {PaymentAccountForm} form - form to get the field from
      * @return {string} the form field value
      */
-    static setFormValue(fieldId, value, form) {
+    static setFormValue(form, fieldId, value) {
         for (const field of form.getFieldsList()) {
             if (field.getId() === fieldId) {
                 field.setValue(value);
