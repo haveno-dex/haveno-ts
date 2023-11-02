@@ -100,6 +100,14 @@ export default class HavenoUtils {
      */
     static formToString(form: PaymentAccountForm): string;
     /**
+     * Determine if a form has a field.
+     *
+     * @param {PaymentAccountForm} form - form to check
+     * @param {PaymentAccountFormField.FieldId} fieldId - id of the field to check for
+     * @return {boolean} true if the form has the field, false otherwise
+     */
+    static hasFormField(form: PaymentAccountForm, fieldId: PaymentAccountFormField.FieldId): boolean;
+    /**
      * Get a form field value.
      *
      * @param {PaymentAccountForm} form - form to get the field value from
@@ -110,10 +118,10 @@ export default class HavenoUtils {
     /**
      * Set a form field value.
      *
+     * @param {PaymentAccountForm} form - form to get the field from
      * @param {PaymentAccountFormField.FieldId} fieldId - id of the field to set the value of
      * @param {string} value - field value to set
-     * @param {PaymentAccountForm} form - form to get the field from
      * @return {string} the form field value
      */
-    static setFormValue(fieldId: PaymentAccountFormField.FieldId, value: string, form: PaymentAccountForm): void;
+    static setFormValue(form: PaymentAccountForm, fieldId: PaymentAccountFormField.FieldId, value: string): void;
 }
