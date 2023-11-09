@@ -1,11 +1,11 @@
 import console from "console";
-import HavenoError from "./utils/HavenoError";
+import HavenoError from "./types/HavenoError";
 import HavenoUtils from "./utils/HavenoUtils";
 import TaskLooper from "./utils/TaskLooper";
 import type * as grpcWeb from "grpc-web";
 import { GetVersionClient, AccountClient, MoneroConnectionsClient, DisputesClient, DisputeAgentsClient, NotificationsClient, WalletsClient, PriceClient, OffersClient, PaymentAccountsClient, TradesClient, ShutdownServerClient, MoneroNodeClient } from './protobuf/GrpcServiceClientPb';
 import { GetVersionRequest, GetVersionReply, IsAppInitializedRequest, IsAppInitializedReply, RegisterDisputeAgentRequest, UnregisterDisputeAgentRequest, MarketPriceRequest, MarketPriceReply, MarketPricesRequest, MarketPricesReply, MarketPriceInfo, MarketDepthRequest, MarketDepthReply, MarketDepthInfo, GetBalancesRequest, GetBalancesReply, XmrBalanceInfo, GetMyOfferRequest, GetMyOfferReply, GetOffersRequest, GetOffersReply, OfferInfo, GetPaymentMethodsRequest, GetPaymentMethodsReply, GetPaymentAccountFormRequest, CreatePaymentAccountRequest, ValidateFormFieldRequest, CreatePaymentAccountReply, GetPaymentAccountFormReply, GetPaymentAccountsRequest, GetPaymentAccountsReply, CreateCryptoCurrencyPaymentAccountRequest, CreateCryptoCurrencyPaymentAccountReply, PostOfferRequest, PostOfferReply, CancelOfferRequest, TakeOfferRequest, TakeOfferReply, TradeInfo, GetTradeRequest, GetTradeReply, GetTradesRequest, GetTradesReply, GetXmrSeedRequest, GetXmrSeedReply, GetXmrPrimaryAddressRequest, GetXmrPrimaryAddressReply, GetXmrNewSubaddressRequest, GetXmrNewSubaddressReply, ConfirmPaymentSentRequest, ConfirmPaymentReceivedRequest, CompleteTradeRequest, XmrTx, GetXmrTxsRequest, GetXmrTxsReply, XmrDestination, CreateXmrTxRequest, CreateXmrTxReply, RelayXmrTxRequest, RelayXmrTxReply, CreateAccountRequest, AccountExistsRequest, AccountExistsReply, DeleteAccountRequest, OpenAccountRequest, IsAccountOpenRequest, IsAccountOpenReply, CloseAccountRequest, ChangePasswordRequest, BackupAccountRequest, BackupAccountReply, RestoreAccountRequest, StopRequest, NotificationMessage, RegisterNotificationListenerRequest, SendNotificationRequest, UrlConnection, AddConnectionRequest, RemoveConnectionRequest, GetConnectionRequest, GetConnectionsRequest, SetConnectionRequest, CheckConnectionRequest, CheckConnectionsReply, CheckConnectionsRequest, StartCheckingConnectionsRequest, StopCheckingConnectionsRequest, GetBestAvailableConnectionRequest, SetAutoSwitchRequest, CheckConnectionReply, GetConnectionsReply, GetConnectionReply, GetBestAvailableConnectionReply, GetDisputeRequest, GetDisputeReply, GetDisputesRequest, GetDisputesReply, OpenDisputeRequest, ResolveDisputeRequest, SendDisputeChatMessageRequest, SendChatMessageRequest, GetChatMessagesRequest, GetChatMessagesReply, StartMoneroNodeRequest, StopMoneroNodeRequest, IsMoneroNodeOnlineRequest, IsMoneroNodeOnlineReply, GetMoneroNodeSettingsRequest, GetMoneroNodeSettingsReply } from "./protobuf/grpc_pb";
-import { PaymentMethod, PaymentAccountForm, PaymentAccountFormField, PaymentAccount, PaymentAccountPayload, AvailabilityResult, Attachment, DisputeResult, Dispute, ChatMessage, MoneroNodeSettings } from "./protobuf/pb_pb";
+import { OfferDirection, PaymentMethod, PaymentAccountForm, PaymentAccountFormField, PaymentAccount, PaymentAccountPayload, AvailabilityResult, Attachment, DisputeResult, Dispute, ChatMessage, MoneroNodeSettings } from "./protobuf/pb_pb";
 
 /**
  * Haveno daemon client.
@@ -944,13 +944,13 @@ export default class HavenoClient {
    * Get available offers to buy or sell XMR.
    * 
    * @param {string} assetCode - traded asset code
-   * @param {string|undefined} direction - "buy" or "sell" (default all)
+   * @param {OfferDirection|undefined} direction - "buy" or "sell" (default all)
    * @return {OfferInfo[]} the available offers
    */
-  async getOffers(assetCode: string, direction?: string): Promise<OfferInfo[]> {
+  async getOffers(assetCode: string, direction?: OfferDirection): Promise<OfferInfo[]> {
     try {
-      if (!direction) return (await this.getOffers(assetCode, "buy")).concat(await this.getOffers(assetCode, "sell")); // TODO: implement in backend
-      return (await this._offersClient.getOffers(new GetOffersRequest().setDirection(direction).setCurrencyCode(assetCode), {password: this._password})).getOffersList();
+      if (direction === undefined) return (await this.getOffers(assetCode, OfferDirection.BUY)).concat(await this.getOffers(assetCode, OfferDirection.SELL)); // TODO: implement in backend
+      return (await this._offersClient.getOffers(new GetOffersRequest().setDirection(direction === OfferDirection.BUY ? "buy" : "sell").setCurrencyCode(assetCode), {password: this._password})).getOffersList();
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);
     }
@@ -960,14 +960,14 @@ export default class HavenoClient {
    * Get the user's posted offers to buy or sell XMR.
    * 
    * @param {string|undefined} assetCode - traded asset code
-   * @param {string|undefined} direction - "buy" or "sell" XMR (default all)
+   * @param {OfferDirection|undefined} direction - get offers to buy or sell XMR (default all)
    * @return {OfferInfo[]} the user's created offers
    */
-  async getMyOffers(assetCode?: string, direction?: string): Promise<OfferInfo[]> {
+  async getMyOffers(assetCode?: string, direction?: OfferDirection): Promise<OfferInfo[]> {
     try {
       const req = new GetOffersRequest();
       if (assetCode) req.setCurrencyCode(assetCode);
-      if (direction) req.setDirection(direction);
+      if (direction !== undefined) req.setDirection(direction === OfferDirection.BUY ? "buy" : "sell"); // TODO: request should use OfferDirection too?
       return (await this._offersClient.getMyOffers(req, {password: this._password})).getOffersList();
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);
@@ -991,7 +991,7 @@ export default class HavenoClient {
   /**
    * Post an offer.
    * 
-   * @param {string} direction - "buy" or "sell" XMR
+   * @param {OfferDirection} direction - "buy" or "sell" XMR
    * @param {bigint} amount - amount of XMR to trade
    * @param {string} assetCode - asset code to trade for XMR
    * @param {string} paymentAccountId - payment account id
@@ -1003,7 +1003,7 @@ export default class HavenoClient {
    * @param {number} reserveExactAmount - reserve exact amount needed for offer, incurring on-chain transaction and 10 confirmations before the offer goes live (default = false)
    * @return {OfferInfo} the posted offer
    */
-  async postOffer(direction: string,
+  async postOffer(direction: OfferDirection,
                   amount: bigint,
                   assetCode: string,
                   paymentAccountId: string,
@@ -1016,7 +1016,7 @@ export default class HavenoClient {
     console.log("Posting offer with security deposit %: " + securityDepositPct)
     try {
       const request = new PostOfferRequest()
-          .setDirection(direction)
+          .setDirection(direction === OfferDirection.BUY ? "buy" : "sell")
           .setAmount(amount.toString())
           .setCurrencyCode(assetCode)
           .setPaymentAccountId(paymentAccountId)
