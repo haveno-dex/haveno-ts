@@ -1,12 +1,29 @@
 // --------------------------------- IMPORTS ----------------------------------
 
 // haveno imports
-import HavenoClient from "./HavenoClient";
-import HavenoError from "./utils/HavenoError";
-import HavenoUtils from "./utils/HavenoUtils";
-import { MarketPriceInfo, NotificationMessage, OfferInfo, TradeInfo, UrlConnection, XmrBalanceInfo } from "./protobuf/grpc_pb"; // TODO (woodser): better names; haveno_grpc_pb, haveno_pb
-import { Attachment, DisputeResult, PaymentMethod, PaymentAccountForm, PaymentAccountFormField, PaymentAccount, MoneroNodeSettings} from "./protobuf/pb_pb";
-import { XmrDestination, XmrTx, XmrIncomingTransfer, XmrOutgoingTransfer } from "./protobuf/grpc_pb";
+import {
+  HavenoClient,
+  HavenoError,
+  HavenoUtils,
+  OfferDirection,
+  MarketPriceInfo,
+  NotificationMessage,
+  OfferInfo,
+  TradeInfo,
+  UrlConnection,
+  XmrBalanceInfo,
+  Attachment,
+  DisputeResult,
+  PaymentMethod,
+  PaymentAccountForm,
+  PaymentAccountFormField,
+  PaymentAccount,
+  MoneroNodeSettings,
+  XmrDestination,
+  XmrTx,
+  XmrIncomingTransfer,
+  XmrOutgoingTransfer,
+} from "./index";
 import AuthenticationStatus = UrlConnection.AuthenticationStatus;
 import OnlineStatus = UrlConnection.OnlineStatus;
 
@@ -36,6 +53,22 @@ let monerod: moneroTs.MoneroDaemon;
 let fundingWallet: moneroTs.MoneroWalletRpc;
 let user1Wallet: moneroTs.MoneroWalletRpc;
 let user2Wallet: moneroTs.MoneroWalletRpc;
+
+enum TradeRole {
+  MAKER = "MAKER",
+  TAKER = "TAKER",
+}
+
+enum SaleRole {
+  BUYER = "BUYER",
+  SELLER = "SELLER"
+}
+
+enum DisputeContext {
+    NONE = "NONE",
+    OPEN_AFTER_DEPOSITS_UNLOCK = "OPEN_AFTER_DEPOSITS_UNLOCK",
+    OPEN_AFTER_PAYMENT_SENT = "OPEN_AFTER_PAYMENT_SENT"
+}
 
 /**
  * Test context for a single peer in a trade.
@@ -73,7 +106,7 @@ const defaultTradeConfig: Partial<TradeContext> = {
   makeOffer: true,
   takeOffer: true,
   awaitFundsToMakeOffer: true,
-  direction: "BUY", // buy or sell xmr
+  direction: OfferDirection.BUY, // buy or sell xmr
   offerAmount: BigInt("200000000000"), // amount of xmr to trade (0.2 XMR)
   offerMinAmount: undefined,
   assetCode: "usd", // counter asset to trade
@@ -125,7 +158,7 @@ class TradeContext {
 
   // make offer
   awaitFundsToMakeOffer?: boolean
-  direction?: string;
+  direction?: OfferDirection;
   assetCode?: string;
   offerAmount?: bigint; // offer amount or max
   offerMinAmount?: bigint;
@@ -195,15 +228,15 @@ class TradeContext {
   }
 
   getBuyer(): PeerContext {
-    return (this.direction?.toUpperCase() === "BUY" ? this.maker : this.taker) as PeerContext;
+    return (this.direction === OfferDirection.BUY ? this.maker : this.taker) as PeerContext;
   }
 
   getSeller(): PeerContext {
-    return (this.direction?.toUpperCase() === "BUY" ? this.taker : this.maker) as PeerContext;
+    return (this.direction === OfferDirection.BUY ? this.taker : this.maker) as PeerContext;
   }
 
   isBuyerMaker(): boolean {
-    return this.direction?.toUpperCase() === "BUY";
+    return this.direction === OfferDirection.BUY;
   }
 
   getDisputeOpener(): PeerContext | undefined {
@@ -236,7 +269,7 @@ class TradeContext {
 
   async toSummary(): Promise<string> {
     let str: string = "";
-    str += "Type: Maker/" + (this.direction!.toUpperCase() === "BUY" ? "Buyer" : "Seller") + ", Taker/" + (this.direction!.toUpperCase() === "BUY" ? "Seller" : "Buyer");
+    str += "Type: Maker/" + (this.direction === OfferDirection.BUY ? "Buyer" : "Seller") + ", Taker/" + (this.direction === OfferDirection.BUY ? "Seller" : "Buyer");
     str += "\nOffer id: " + this.offerId;
     if (this.maker.havenod) str += "\nMaker uri: " + this.maker?.havenod?.getUrl();
     if (this.taker.havenod) str += "\nTaker uri: " + this.taker?.havenod?.getUrl();
@@ -256,7 +289,7 @@ class TradeContext {
         let tx = await monerod.getTx(this.arbitrator!.trade!.getMakerDepositTxId());
         str += "\nMaker deposit tx fee: " + (tx ? tx?.getFee() : undefined);
       }
-      str += "\nMaker security deposit received: " + (this.direction == "BUY" ? this.arbitrator!.trade!.getBuyerSecurityDeposit() : this.arbitrator!.trade!.getSellerSecurityDeposit());
+      str += "\nMaker security deposit received: " + (this.direction == OfferDirection.BUY ? this.arbitrator!.trade!.getBuyerSecurityDeposit() : this.arbitrator!.trade!.getSellerSecurityDeposit());
     }
     str += "\nTaker balance before offer: " + this.taker.balancesBeforeOffer?.getBalance();
     if (this.arbitrator && this.arbitrator!.trade) {
@@ -266,7 +299,7 @@ class TradeContext {
         let tx = await monerod.getTx(this.arbitrator!.trade!.getTakerDepositTxId());
         str += "\nTaker deposit tx fee: " + (tx ? tx?.getFee() : undefined);
       }
-      str += "\nTaker security deposit received: " + (this.direction == "BUY" ? this.arbitrator!.trade!.getSellerSecurityDeposit() : this.arbitrator!.trade!.getBuyerSecurityDeposit());
+      str += "\nTaker security deposit received: " + (this.direction == OfferDirection.BUY ? this.arbitrator!.trade!.getSellerSecurityDeposit() : this.arbitrator!.trade!.getBuyerSecurityDeposit());
       if (this.disputeWinner) str += "\nDispute winner: " + (this.disputeWinner == DisputeResult.Winner.BUYER ? "Buyer" : "Seller");
       str += "\nPayout tx id: " + this.payoutTxId;
       if (this.payoutTxId) {
@@ -405,22 +438,6 @@ interface HavenodContext {
     port?: string,
     excludePorts?: string[],
     walletUrl?: string
-}
-
-enum TradeRole {
-  MAKER = "MAKER",
-  TAKER = "TAKER",
-}
-
-enum SaleRole {
-  BUYER = "BUYER",
-  SELLER = "SELLER"
-}
-
-enum DisputeContext {
-    NONE = "NONE",
-    OPEN_AFTER_DEPOSITS_UNLOCK = "OPEN_AFTER_DEPOSITS_UNLOCK",
-    OPEN_AFTER_PAYMENT_SENT = "OPEN_AFTER_PAYMENT_SENT"
 }
 
 interface TxContext {
@@ -1065,13 +1082,13 @@ test("Can get market depth (CI, sanity check)", async () => {
     expect(marketDepth.getSellDepthList().length).toEqual(0);
 
     // post offers to buy and sell
-    await makeOffer({maker: {havenod: user1}, direction: "BUY", offerAmount: BigInt("150000000000"), assetCode: assetCode, price: 17.0});
-    await makeOffer({maker: {havenod: user1}, direction: "BUY", offerAmount: BigInt("150000000000"), assetCode: assetCode, price: 17.2});
-    await makeOffer({maker: {havenod: user1}, direction: "BUY", offerAmount: BigInt("200000000000"), assetCode: assetCode, price: 17.3});
-    await makeOffer({maker: {havenod: user1}, direction: "BUY", offerAmount: BigInt("150000000000"), assetCode: assetCode, price: 17.3});
-    await makeOffer({maker: {havenod: user1}, direction: "SELL", offerAmount: BigInt("300000000000"), assetCode: assetCode, priceMargin: 0.00});
-    await makeOffer({maker: {havenod: user1}, direction: "SELL", offerAmount: BigInt("300000000000"), assetCode: assetCode, priceMargin: 0.02});
-    await makeOffer({maker: {havenod: user1}, direction: "SELL", offerAmount: BigInt("400000000000"), assetCode: assetCode, priceMargin: 0.05});
+    await makeOffer({maker: {havenod: user1}, direction: OfferDirection.BUY, offerAmount: BigInt("150000000000"), assetCode: assetCode, price: 17.0});
+    await makeOffer({maker: {havenod: user1}, direction: OfferDirection.BUY, offerAmount: BigInt("150000000000"), assetCode: assetCode, price: 17.2});
+    await makeOffer({maker: {havenod: user1}, direction: OfferDirection.BUY, offerAmount: BigInt("200000000000"), assetCode: assetCode, price: 17.3});
+    await makeOffer({maker: {havenod: user1}, direction: OfferDirection.BUY, offerAmount: BigInt("150000000000"), assetCode: assetCode, price: 17.3});
+    await makeOffer({maker: {havenod: user1}, direction: OfferDirection.SELL, offerAmount: BigInt("300000000000"), assetCode: assetCode, priceMargin: 0.00});
+    await makeOffer({maker: {havenod: user1}, direction: OfferDirection.SELL, offerAmount: BigInt("300000000000"), assetCode: assetCode, priceMargin: 0.02});
+    await makeOffer({maker: {havenod: user1}, direction: OfferDirection.SELL, offerAmount: BigInt("400000000000"), assetCode: assetCode, priceMargin: 0.05});
 
     // get user2's market depth
     await wait(TestConfig.trade.maxTimePeerNoticeMs);
@@ -1084,7 +1101,7 @@ test("Can get market depth (CI, sanity check)", async () => {
     expect(marketDepth.getSellPricesList().length).toEqual(marketDepth.getSellDepthList().length);
 
     // test buy prices and depths
-    const buyOffers = (await user1.getOffers(assetCode, "BUY")).concat(await user1.getMyOffers(assetCode, "BUY")).sort(function(a, b) { return parseFloat(a.getPrice()) - parseFloat(b.getPrice()) });
+    const buyOffers = (await user1.getOffers(assetCode, OfferDirection.BUY)).concat(await user1.getMyOffers(assetCode, OfferDirection.BUY)).sort(function(a, b) { return parseFloat(a.getPrice()) - parseFloat(b.getPrice()) });
     expect(marketDepth.getBuyPricesList()[0]).toEqual(1 / parseFloat(buyOffers[0].getPrice())); // TODO: price when posting offer is reversed. this assumes crypto counter currency
     expect(marketDepth.getBuyPricesList()[1]).toEqual(1 / parseFloat(buyOffers[1].getPrice()));
     expect(marketDepth.getBuyPricesList()[2]).toEqual(1 / parseFloat(buyOffers[2].getPrice()));
@@ -1093,7 +1110,7 @@ test("Can get market depth (CI, sanity check)", async () => {
     expect(marketDepth.getBuyDepthList()[2]).toEqual(0.65);
 
     // test sell prices and depths
-    const sellOffers = (await user1.getOffers(assetCode, "SELL")).concat(await user1.getMyOffers(assetCode, "SELL")).sort(function(a, b) { return parseFloat(b.getPrice()) - parseFloat(a.getPrice()) });
+    const sellOffers = (await user1.getOffers(assetCode, OfferDirection.SELL)).concat(await user1.getMyOffers(assetCode, OfferDirection.SELL)).sort(function(a, b) { return parseFloat(b.getPrice()) - parseFloat(a.getPrice()) });
     expect(marketDepth.getSellPricesList()[0]).toEqual(1 / parseFloat(sellOffers[0].getPrice()));
     expect(marketDepth.getSellPricesList()[1]).toEqual(1 / parseFloat(sellOffers[1].getPrice()));
     expect(marketDepth.getSellPricesList()[2]).toEqual(1 / parseFloat(sellOffers[2].getPrice()));
@@ -1345,7 +1362,7 @@ test("Can post and remove an offer (CI, sanity check)", async () => {
   await user1.removeOffer(offer.getId());
 
   // offer is removed from my offers
-  if (getOffer(await user1.getMyOffers(assetCode, "BUY"), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in my offers after removal");
+  if (getOffer(await user1.getMyOffers(assetCode, OfferDirection.BUY), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in my offers after removal");
 
   // reserved balance released
   expect(BigInt((await user1.getBalances()).getAvailableBalance())).toEqual(availableBalanceBefore);
@@ -1367,7 +1384,7 @@ test("Can post and remove an offer (CI, sanity check)", async () => {
   await user1.removeOffer(offer.getId());
 
   // offer is removed from my offers
-  if (getOffer(await user1.getMyOffers(assetCode, "BUY"), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in my offers after removal");
+  if (getOffer(await user1.getMyOffers(assetCode, OfferDirection.BUY), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in my offers after removal");
 
   // reserved balance released
   expect(BigInt((await user1.getBalances()).getAvailableBalance())).toEqual(availableBalanceBefore);
@@ -1393,7 +1410,7 @@ test("Can schedule offers with locked funds (CI)", async () => {
 
     // schedule offer
     const assetCode = "BCH";
-    const direction = "BUY";
+    const direction = OfferDirection.BUY;
     const ctx = new TradeContext({maker: {havenod: user3}, assetCode: assetCode, direction: direction, awaitFundsToMakeOffer: false});
     let offer: OfferInfo = await makeOffer(ctx);
     assert.equal(offer.getState(), "SCHEDULED");
@@ -1498,7 +1515,7 @@ test("Cannot post offer exceeding trade limit (CI, sanity check)", async () => {
   try {
     await executeTrade({
       offerAmount: BigInt("2100000000000"),
-      direction: "BUY",
+      direction: OfferDirection.BUY,
       assetCode: assetCode,
       makerPaymentAccountId: account.getId(),
       takeOffer: false
@@ -1512,7 +1529,7 @@ test("Cannot post offer exceeding trade limit (CI, sanity check)", async () => {
   try {
     await executeTrade({
       offerAmount: BigInt("2600000000000"),
-      direction: "SELL",
+      direction: OfferDirection.SELL,
       assetCode: assetCode,
       makerPaymentAccountId: account.getId(),
       takeOffer: false
@@ -1525,7 +1542,7 @@ test("Cannot post offer exceeding trade limit (CI, sanity check)", async () => {
   // test that sell limit is higher than buy limit
   let offerId = await executeTrade({
     offerAmount: BigInt("2100000000000"),
-    direction: "SELL",
+    direction: OfferDirection.SELL,
     assetCode: assetCode,
     makerPaymentAccountId: account.getId(),
     takeOffer: false
@@ -1566,7 +1583,7 @@ test("Can complete all trade combinations (stress)", async () => {
   // generate trade context for each combination (buyer/seller, maker/taker, dispute(s), dispute winner)
   const ctxs: TradeContext[] = [];
   const MAKER_OPTS = [TradeRole.MAKER, TradeRole.TAKER];
-  const DIRECTION_OPTS = ["BUY", "SELL"];
+  const DIRECTION_OPTS = [OfferDirection.BUY, OfferDirection.SELL];
   const BUYER_DISPUTE_OPTS = [DisputeContext.NONE, DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK, DisputeContext.OPEN_AFTER_PAYMENT_SENT];
   const SELLER_DISPUTE_OPTS = [DisputeContext.NONE, DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK, DisputeContext.OPEN_AFTER_PAYMENT_SENT];
   const DISPUTE_WINNER_OPTS = [DisputeResult.Winner.BUYER, DisputeResult.Winner.SELLER];
@@ -1858,7 +1875,7 @@ test("Invalidates offers when reserved funds are spent (CI)", async () => {
 
     // offer is available to peers
     await wait(TestConfig.trade.walletSyncPeriodMs * 2);
-    if (!getOffer(await user2.getOffers(assetCode, "BUY"), offer.getId())) throw new Error("Offer " + offer.getId() + " was not found in peer's offers after posting");
+    if (!getOffer(await user2.getOffers(assetCode, OfferDirection.BUY), offer.getId())) throw new Error("Offer " + offer.getId() + " was not found in peer's offers after posting");
 
     // spend one of offer's reserved outputs
     if (!reservedKeyImages.length) throw new Error("No reserved key images detected");
@@ -1871,10 +1888,10 @@ test("Invalidates offers when reserved funds are spent (CI)", async () => {
 
     // offer is removed from peer offers
     await wait(20000);
-    if (getOffer(await user2.getOffers(assetCode, "BUY"), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in peer's offers after reserved funds spent");
+    if (getOffer(await user2.getOffers(assetCode, OfferDirection.BUY), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in peer's offers after reserved funds spent");
 
     // offer is removed from my offers
-    if (getOffer(await user1.getMyOffers(assetCode, "BUY"), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in my offers after reserved funds spent");
+    if (getOffer(await user1.getMyOffers(assetCode, OfferDirection.BUY), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in my offers after reserved funds spent");
 
     // offer is automatically cancelled
     try {
