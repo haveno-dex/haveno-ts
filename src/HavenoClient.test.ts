@@ -1555,7 +1555,7 @@ test("Can complete a trade within a range", async () => {
   // create payment accounts
   let paymentMethodId = "cash_at_atm";
   let assetCode = "aud";
-  let makerPaymentAccount = await createPaymentAccount(user1, assetCode, paymentMethodId);
+  let makerPaymentAccount = await createPaymentAccount(user1, assetCode, paymentMethodId); // TODO: support getPaymentAccount() which gets or creates
   let takerPaymentAccount = await createPaymentAccount(user2, assetCode, paymentMethodId);
 
   // execute trade
@@ -1573,9 +1573,20 @@ test("Can complete a trade within a range", async () => {
 });
 
 test("Can complete trades at the same time (CI, sanity check)", async () => {
+
+  // create trade contexts with customized payment methods
   const ctxs = getTradeContexts(TestConfig.assetCodes.length);
-  for (let i = 0; i < ctxs.length; i++) ctxs[i].assetCode = TestConfig.assetCodes[i]; // test each asset code
-  await executeTrades(ctxs, {maxConcurrency: TestConfig.trade.maxConcurrencyCI}); // cap concurrency for CI tests
+  for (let i = 0; i < ctxs.length; i++) {
+    ctxs[i].assetCode = TestConfig.assetCodes[i]; // test each asset code
+    let paymentMethodId;
+    if (ctxs[i].assetCode === "USD") paymentMethodId = "zelle";
+    if (ctxs[i].assetCode === "EUR") paymentMethodId = "revolut";
+    ctxs[i].makerPaymentAccountId = (await createPaymentAccount(ctxs[i].maker.havenod!, ctxs[i].assetCode!, paymentMethodId)).getId();
+    ctxs[i].takerPaymentAccountId = (await createPaymentAccount(ctxs[i].taker.havenod!, ctxs[i].assetCode!, paymentMethodId)).getId();
+  }
+
+  // execute trades with capped concurrency for CI tests
+  await executeTrades(ctxs, {maxConcurrency: TestConfig.trade.maxConcurrencyCI});
 });
 
 test("Can complete all trade combinations (stress)", async () => {
