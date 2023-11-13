@@ -4,11 +4,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const console_1 = __importDefault(require("console"));
-const HavenoError_1 = __importDefault(require("./utils/HavenoError"));
+const HavenoError_1 = __importDefault(require("./types/HavenoError"));
 const HavenoUtils_1 = __importDefault(require("./utils/HavenoUtils"));
 const TaskLooper_1 = __importDefault(require("./utils/TaskLooper"));
 const GrpcServiceClientPb_1 = require("./protobuf/GrpcServiceClientPb");
 const grpc_pb_1 = require("./protobuf/grpc_pb");
+const pb_pb_1 = require("./protobuf/pb_pb");
 /**
  * Haveno daemon client.
  */
@@ -921,14 +922,14 @@ class HavenoClient {
      * Get available offers to buy or sell XMR.
      *
      * @param {string} assetCode - traded asset code
-     * @param {string|undefined} direction - "buy" or "sell" (default all)
+     * @param {OfferDirection|undefined} direction - "buy" or "sell" (default all)
      * @return {OfferInfo[]} the available offers
      */
     async getOffers(assetCode, direction) {
         try {
-            if (!direction)
-                return (await this.getOffers(assetCode, "buy")).concat(await this.getOffers(assetCode, "sell")); // TODO: implement in backend
-            return (await this._offersClient.getOffers(new grpc_pb_1.GetOffersRequest().setDirection(direction).setCurrencyCode(assetCode), { password: this._password })).getOffersList();
+            if (direction === undefined)
+                return (await this.getOffers(assetCode, pb_pb_1.OfferDirection.BUY)).concat(await this.getOffers(assetCode, pb_pb_1.OfferDirection.SELL)); // TODO: implement in backend
+            return (await this._offersClient.getOffers(new grpc_pb_1.GetOffersRequest().setDirection(direction === pb_pb_1.OfferDirection.BUY ? "buy" : "sell").setCurrencyCode(assetCode), { password: this._password })).getOffersList();
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
@@ -938,7 +939,7 @@ class HavenoClient {
      * Get the user's posted offers to buy or sell XMR.
      *
      * @param {string|undefined} assetCode - traded asset code
-     * @param {string|undefined} direction - "buy" or "sell" XMR (default all)
+     * @param {OfferDirection|undefined} direction - get offers to buy or sell XMR (default all)
      * @return {OfferInfo[]} the user's created offers
      */
     async getMyOffers(assetCode, direction) {
@@ -946,8 +947,8 @@ class HavenoClient {
             const req = new grpc_pb_1.GetOffersRequest();
             if (assetCode)
                 req.setCurrencyCode(assetCode);
-            if (direction)
-                req.setDirection(direction);
+            if (direction !== undefined)
+                req.setDirection(direction === pb_pb_1.OfferDirection.BUY ? "buy" : "sell"); // TODO: request should use OfferDirection too?
             return (await this._offersClient.getMyOffers(req, { password: this._password })).getOffersList();
         }
         catch (e) {
@@ -971,7 +972,7 @@ class HavenoClient {
     /**
      * Post an offer.
      *
-     * @param {string} direction - "buy" or "sell" XMR
+     * @param {OfferDirection} direction - "buy" or "sell" XMR
      * @param {bigint} amount - amount of XMR to trade
      * @param {string} assetCode - asset code to trade for XMR
      * @param {string} paymentAccountId - payment account id
@@ -987,7 +988,7 @@ class HavenoClient {
         console_1.default.log("Posting offer with security deposit %: " + securityDepositPct);
         try {
             const request = new grpc_pb_1.PostOfferRequest()
-                .setDirection(direction)
+                .setDirection(direction === pb_pb_1.OfferDirection.BUY ? "buy" : "sell")
                 .setAmount(amount.toString())
                 .setCurrencyCode(assetCode)
                 .setPaymentAccountId(paymentAccountId)
