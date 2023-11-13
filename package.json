@@ -4,7 +4,9 @@
   "description": "Haveno TypeScript interface",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["dist/**/*"],
+  "files": [
+    "dist/**/*"
+  ],
   "scripts": {
     "prepare": "scripts/build_protobuf.sh",
     "test": "node --no-experimental-fetch ./node_modules/.bin/jest",
@@ -13,8 +15,13 @@
     "typedoc": "typedoc ./src/index.ts --entryPointStrategy expand src/ --exclude **/*.test.ts --excludePrivate"
   },
   "jest": {
-    "testPathIgnorePatterns": ["<rootDir>/dist/", "/node_modules/"],
-    "globals": { "window": {} }
+    "testPathIgnorePatterns": [
+      "<rootDir>/dist/",
+      "/node_modules/"
+    ],
+    "globals": {
+      "window": {}
+    }
   },
   "repository": {
     "type": "git",
@@ -47,7 +54,7 @@
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-jsx-a11y": "^6.7.1",
     "jest": "^26.6.0",
-    "monero-ts": "0.9.3",
+    "monero-ts": "^0.9.4",
     "typedoc": "^0.23.26",
     "typedoc-plugin-missing-exports": "^1.0.0",
     "typedoc-plugin-rename-defaults": "^0.6.4",

@@ -20,7 +20,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.HavenoUtils = exports.HavenoError = exports.HavenoClient = void 0;
 const HavenoClient_1 = __importDefault(require("./HavenoClient"));
 exports.HavenoClient = HavenoClient_1.default;
-const HavenoError_1 = __importDefault(require("./utils/HavenoError"));
+const HavenoError_1 = __importDefault(require("./types/HavenoError"));
 exports.HavenoError = HavenoError_1.default;
 const HavenoUtils_1 = __importDefault(require("./utils/HavenoUtils"));
 exports.HavenoUtils = HavenoUtils_1.default;

@@ -7734,7 +7734,7 @@ export enum SupportType {
   REFUND = 3,
 }
 export enum OfferDirection { 
-  OFFER_DIRECTION_ERROR = 0,
+  OFFER_DIRECTION_UNDEFINED = 0,
   BUY = 1,
   SELL = 2,
 }

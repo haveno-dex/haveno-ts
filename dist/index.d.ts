@@ -1,5 +1,5 @@
 import HavenoClient from "./HavenoClient";
-import HavenoError from "./utils/HavenoError";
+import HavenoError from "./types/HavenoError";
 import HavenoUtils from "./utils/HavenoUtils";
 export { HavenoClient };
 export { HavenoError };

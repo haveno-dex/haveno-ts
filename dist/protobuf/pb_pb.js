@@ -61579,7 +61579,7 @@ proto.io.haveno.protobuffer.SupportType = {
  * @enum {number}
  */
 proto.io.haveno.protobuffer.OfferDirection = {
-  OFFER_DIRECTION_ERROR: 0,
+  OFFER_DIRECTION_UNDEFINED: 0,
   BUY: 1,
   SELL: 2
 };

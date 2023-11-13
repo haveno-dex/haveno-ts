@@ -1,7 +1,7 @@
 import type * as grpcWeb from "grpc-web";
 import { GetVersionClient, AccountClient, MoneroConnectionsClient, DisputesClient, DisputeAgentsClient, NotificationsClient, WalletsClient, PriceClient, OffersClient, PaymentAccountsClient, TradesClient, ShutdownServerClient, MoneroNodeClient } from './protobuf/GrpcServiceClientPb';
 import { MarketPriceInfo, MarketDepthInfo, XmrBalanceInfo, OfferInfo, TradeInfo, XmrTx, XmrDestination, NotificationMessage, UrlConnection } from "./protobuf/grpc_pb";
-import { PaymentMethod, PaymentAccountForm, PaymentAccountFormField, PaymentAccount, PaymentAccountPayload, Attachment, DisputeResult, Dispute, ChatMessage, MoneroNodeSettings } from "./protobuf/pb_pb";
+import { OfferDirection, PaymentMethod, PaymentAccountForm, PaymentAccountFormField, PaymentAccount, PaymentAccountPayload, Attachment, DisputeResult, Dispute, ChatMessage, MoneroNodeSettings } from "./protobuf/pb_pb";
 /**
  * Haveno daemon client.
  */
@@ -392,18 +392,18 @@ export default class HavenoClient {
      * Get available offers to buy or sell XMR.
      *
      * @param {string} assetCode - traded asset code
-     * @param {string|undefined} direction - "buy" or "sell" (default all)
+     * @param {OfferDirection|undefined} direction - "buy" or "sell" (default all)
      * @return {OfferInfo[]} the available offers
      */
-    getOffers(assetCode: string, direction?: string): Promise<OfferInfo[]>;
+    getOffers(assetCode: string, direction?: OfferDirection): Promise<OfferInfo[]>;
     /**
      * Get the user's posted offers to buy or sell XMR.
      *
      * @param {string|undefined} assetCode - traded asset code
-     * @param {string|undefined} direction - "buy" or "sell" XMR (default all)
+     * @param {OfferDirection|undefined} direction - get offers to buy or sell XMR (default all)
      * @return {OfferInfo[]} the user's created offers
      */
-    getMyOffers(assetCode?: string, direction?: string): Promise<OfferInfo[]>;
+    getMyOffers(assetCode?: string, direction?: OfferDirection): Promise<OfferInfo[]>;
     /**
      * Get my offer by id.
      *
@@ -414,7 +414,7 @@ export default class HavenoClient {
     /**
      * Post an offer.
      *
-     * @param {string} direction - "buy" or "sell" XMR
+     * @param {OfferDirection} direction - "buy" or "sell" XMR
      * @param {bigint} amount - amount of XMR to trade
      * @param {string} assetCode - asset code to trade for XMR
      * @param {string} paymentAccountId - payment account id
@@ -426,7 +426,7 @@ export default class HavenoClient {
      * @param {number} reserveExactAmount - reserve exact amount needed for offer, incurring on-chain transaction and 10 confirmations before the offer goes live (default = false)
      * @return {OfferInfo} the posted offer
      */
-    postOffer(direction: string, amount: bigint, assetCode: string, paymentAccountId: string, securityDepositPct: number, price?: number, marketPriceMarginPct?: number, triggerPrice?: number, minAmount?: bigint, reserveExactAmount?: boolean): Promise<OfferInfo>;
+    postOffer(direction: OfferDirection, amount: bigint, assetCode: string, paymentAccountId: string, securityDepositPct: number, price?: number, marketPriceMarginPct?: number, triggerPrice?: number, minAmount?: bigint, reserveExactAmount?: boolean): Promise<OfferInfo>;
     /**
      * Remove a posted offer, releasing its reserved funds.
      *
