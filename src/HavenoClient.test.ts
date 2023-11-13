@@ -107,7 +107,7 @@ const defaultTradeConfig: Partial<TradeContext> = {
   takeOffer: true,
   awaitFundsToMakeOffer: true,
   direction: OfferDirection.BUY, // buy or sell xmr
-  offerAmount: BigInt("200000000000"), // amount of xmr to trade (0.2 XMR)
+  offerAmount: HavenoUtils.xmrToAtomicUnits(.2), // amount of xmr to trade
   offerMinAmount: undefined,
   assetCode: "usd", // counter asset to trade
   makerPaymentAccountId: undefined,
@@ -1670,14 +1670,13 @@ test("Can resolve a dispute (CI)", async () => {
     assetCode: assetCode,
     buyerDisputeContext: DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK,
     disputeWinner: DisputeResult.Winner.SELLER,
+    disputeWinnerAmount: HavenoUtils.xmrToAtomicUnits(.767),
     disputeReason: DisputeResult.Reason.OTHER,
     disputeSummary: "Payment not completed, so returning trade amount to seller.",
     testBalanceChangeEndToEnd: true
   });
 
-  // TODO: test with fixed price
   // TODO: test receiver = BUYER
-  // TODO: test with custom amount, or do the big test sequentially
 });
 
 test("Can resolve disputes (CI)", async () => {
@@ -1731,6 +1730,7 @@ test("Can resolve disputes (CI)", async () => {
     disputeWinner: DisputeResult.Winner.BUYER,
     disputeReason: DisputeResult.Reason.TRADE_ALREADY_SETTLED,
     disputeSummary: "Buyer wins dispute after sending payment",
+    disputeWinnerAmount: HavenoUtils.xmrToAtomicUnits(.1171),
   });
   HavenoUtils.log(1, "Opening disputes");
   await executeTrades(ctxs.slice(configIdx, configIdx === undefined ? undefined : configIdx + 1));
