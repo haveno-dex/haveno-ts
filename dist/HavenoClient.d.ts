@@ -1,7 +1,7 @@
 import type * as grpcWeb from "grpc-web";
-import { GetVersionClient, AccountClient, MoneroConnectionsClient, DisputesClient, DisputeAgentsClient, NotificationsClient, WalletsClient, PriceClient, OffersClient, PaymentAccountsClient, TradesClient, ShutdownServerClient, MoneroNodeClient } from './protobuf/GrpcServiceClientPb';
+import { GetVersionClient, AccountClient, XmrConnectionsClient, DisputesClient, DisputeAgentsClient, NotificationsClient, WalletsClient, PriceClient, OffersClient, PaymentAccountsClient, TradesClient, ShutdownServerClient, XmrNodeClient } from './protobuf/GrpcServiceClientPb';
 import { MarketPriceInfo, MarketDepthInfo, XmrBalanceInfo, OfferInfo, TradeInfo, XmrTx, XmrDestination, NotificationMessage, UrlConnection } from "./protobuf/grpc_pb";
-import { OfferDirection, PaymentMethod, PaymentAccountForm, PaymentAccountFormField, PaymentAccount, PaymentAccountPayload, Attachment, DisputeResult, Dispute, ChatMessage, MoneroNodeSettings } from "./protobuf/pb_pb";
+import { OfferDirection, PaymentMethod, PaymentAccountForm, PaymentAccountFormField, PaymentAccount, PaymentAccountPayload, Attachment, DisputeResult, Dispute, ChatMessage, XmrNodeSettings } from "./protobuf/pb_pb";
 /**
  * Haveno daemon client.
  */
@@ -12,8 +12,8 @@ export default class HavenoClient {
     /** @private */ _disputesClient: DisputesClient;
     /** @private */ _notificationsClient: NotificationsClient;
     /** @private */ _notificationStream: grpcWeb.ClientReadableStream<NotificationMessage> | undefined;
-    /** @private */ _moneroConnectionsClient: MoneroConnectionsClient;
-    /** @private */ _moneroNodeClient: MoneroNodeClient;
+    /** @private */ _xmrConnectionsClient: XmrConnectionsClient;
+    /** @private */ _xmrNodeClient: XmrNodeClient;
     /** @private */ _walletsClient: WalletsClient;
     /** @private */ _priceClient: PriceClient;
     /** @private */ _paymentAccountsClient: PaymentAccountsClient;
@@ -236,13 +236,13 @@ export default class HavenoClient {
     /**
      * Gets the current local monero node settings.
      */
-    getMoneroNodeSettings(): Promise<MoneroNodeSettings | undefined>;
+    getMoneroNodeSettings(): Promise<XmrNodeSettings | undefined>;
     /**
      * Starts the local monero node.
      *
      * @param {MoneroNodeSettings} settings - the settings to start the local node with
      */
-    startMoneroNode(settings: MoneroNodeSettings): Promise<void>;
+    startMoneroNode(settings: XmrNodeSettings): Promise<void>;
     /**
      * Stops the local monero node.
      */

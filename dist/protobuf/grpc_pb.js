@@ -76,8 +76,6 @@ goog.exportSymbol('proto.io.haveno.protobuffer.GetFundingAddressesReply', null, 
 goog.exportSymbol('proto.io.haveno.protobuffer.GetFundingAddressesRequest', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.GetMethodHelpReply', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.GetMethodHelpRequest', null, global);
-goog.exportSymbol('proto.io.haveno.protobuffer.GetMoneroNodeSettingsReply', null, global);
-goog.exportSymbol('proto.io.haveno.protobuffer.GetMoneroNodeSettingsRequest', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.GetMyOfferReply', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.GetMyOfferRequest', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.GetMyOffersReply', null, global);
@@ -105,6 +103,8 @@ goog.exportSymbol('proto.io.haveno.protobuffer.GetVersionReply', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.GetVersionRequest', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.GetXmrNewSubaddressReply', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.GetXmrNewSubaddressRequest', null, global);
+goog.exportSymbol('proto.io.haveno.protobuffer.GetXmrNodeSettingsReply', null, global);
+goog.exportSymbol('proto.io.haveno.protobuffer.GetXmrNodeSettingsRequest', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.GetXmrPrimaryAddressReply', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.GetXmrPrimaryAddressRequest', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.GetXmrSeedReply', null, global);
@@ -115,8 +115,8 @@ goog.exportSymbol('proto.io.haveno.protobuffer.IsAccountOpenReply', null, global
 goog.exportSymbol('proto.io.haveno.protobuffer.IsAccountOpenRequest', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.IsAppInitializedReply', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.IsAppInitializedRequest', null, global);
-goog.exportSymbol('proto.io.haveno.protobuffer.IsMoneroNodeOnlineReply', null, global);
-goog.exportSymbol('proto.io.haveno.protobuffer.IsMoneroNodeOnlineRequest', null, global);
+goog.exportSymbol('proto.io.haveno.protobuffer.IsXmrNodeOnlineReply', null, global);
+goog.exportSymbol('proto.io.haveno.protobuffer.IsXmrNodeOnlineRequest', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.LockWalletReply', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.LockWalletRequest', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.MarketDepthInfo', null, global);
@@ -164,14 +164,14 @@ goog.exportSymbol('proto.io.haveno.protobuffer.SetWalletPasswordReply', null, gl
 goog.exportSymbol('proto.io.haveno.protobuffer.SetWalletPasswordRequest', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.StartCheckingConnectionsReply', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.StartCheckingConnectionsRequest', null, global);
-goog.exportSymbol('proto.io.haveno.protobuffer.StartMoneroNodeReply', null, global);
-goog.exportSymbol('proto.io.haveno.protobuffer.StartMoneroNodeRequest', null, global);
+goog.exportSymbol('proto.io.haveno.protobuffer.StartXmrNodeReply', null, global);
+goog.exportSymbol('proto.io.haveno.protobuffer.StartXmrNodeRequest', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.StopCheckingConnectionsReply', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.StopCheckingConnectionsRequest', null, global);
-goog.exportSymbol('proto.io.haveno.protobuffer.StopMoneroNodeReply', null, global);
-goog.exportSymbol('proto.io.haveno.protobuffer.StopMoneroNodeRequest', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.StopReply', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.StopRequest', null, global);
+goog.exportSymbol('proto.io.haveno.protobuffer.StopXmrNodeReply', null, global);
+goog.exportSymbol('proto.io.haveno.protobuffer.StopXmrNodeRequest', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.TakeOfferReply', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.TakeOfferRequest', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.TradeInfo', null, global);
@@ -1566,16 +1566,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.io.haveno.protobuffer.IsMoneroNodeOnlineRequest = function(opt_data) {
+proto.io.haveno.protobuffer.IsXmrNodeOnlineRequest = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.io.haveno.protobuffer.IsMoneroNodeOnlineRequest, jspb.Message);
+goog.inherits(proto.io.haveno.protobuffer.IsXmrNodeOnlineRequest, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.io.haveno.protobuffer.IsMoneroNodeOnlineRequest.displayName = 'proto.io.haveno.protobuffer.IsMoneroNodeOnlineRequest';
+  proto.io.haveno.protobuffer.IsXmrNodeOnlineRequest.displayName = 'proto.io.haveno.protobuffer.IsXmrNodeOnlineRequest';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -1587,16 +1587,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.io.haveno.protobuffer.IsMoneroNodeOnlineReply = function(opt_data) {
+proto.io.haveno.protobuffer.IsXmrNodeOnlineReply = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.io.haveno.protobuffer.IsMoneroNodeOnlineReply, jspb.Message);
+goog.inherits(proto.io.haveno.protobuffer.IsXmrNodeOnlineReply, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.io.haveno.protobuffer.IsMoneroNodeOnlineReply.displayName = 'proto.io.haveno.protobuffer.IsMoneroNodeOnlineReply';
+  proto.io.haveno.protobuffer.IsXmrNodeOnlineReply.displayName = 'proto.io.haveno.protobuffer.IsXmrNodeOnlineReply';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -1608,16 +1608,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.io.haveno.protobuffer.GetMoneroNodeSettingsRequest = function(opt_data) {
+proto.io.haveno.protobuffer.GetXmrNodeSettingsRequest = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.io.haveno.protobuffer.GetMoneroNodeSettingsRequest, jspb.Message);
+goog.inherits(proto.io.haveno.protobuffer.GetXmrNodeSettingsRequest, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.io.haveno.protobuffer.GetMoneroNodeSettingsRequest.displayName = 'proto.io.haveno.protobuffer.GetMoneroNodeSettingsRequest';
+  proto.io.haveno.protobuffer.GetXmrNodeSettingsRequest.displayName = 'proto.io.haveno.protobuffer.GetXmrNodeSettingsRequest';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -1629,16 +1629,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.io.haveno.protobuffer.GetMoneroNodeSettingsReply = function(opt_data) {
+proto.io.haveno.protobuffer.GetXmrNodeSettingsReply = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.io.haveno.protobuffer.GetMoneroNodeSettingsReply, jspb.Message);
+goog.inherits(proto.io.haveno.protobuffer.GetXmrNodeSettingsReply, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.io.haveno.protobuffer.GetMoneroNodeSettingsReply.displayName = 'proto.io.haveno.protobuffer.GetMoneroNodeSettingsReply';
+  proto.io.haveno.protobuffer.GetXmrNodeSettingsReply.displayName = 'proto.io.haveno.protobuffer.GetXmrNodeSettingsReply';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -1650,16 +1650,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.io.haveno.protobuffer.StartMoneroNodeRequest = function(opt_data) {
+proto.io.haveno.protobuffer.StartXmrNodeRequest = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.io.haveno.protobuffer.StartMoneroNodeRequest, jspb.Message);
+goog.inherits(proto.io.haveno.protobuffer.StartXmrNodeRequest, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.io.haveno.protobuffer.StartMoneroNodeRequest.displayName = 'proto.io.haveno.protobuffer.StartMoneroNodeRequest';
+  proto.io.haveno.protobuffer.StartXmrNodeRequest.displayName = 'proto.io.haveno.protobuffer.StartXmrNodeRequest';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -1671,16 +1671,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.io.haveno.protobuffer.StartMoneroNodeReply = function(opt_data) {
+proto.io.haveno.protobuffer.StartXmrNodeReply = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.io.haveno.protobuffer.StartMoneroNodeReply, jspb.Message);
+goog.inherits(proto.io.haveno.protobuffer.StartXmrNodeReply, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.io.haveno.protobuffer.StartMoneroNodeReply.displayName = 'proto.io.haveno.protobuffer.StartMoneroNodeReply';
+  proto.io.haveno.protobuffer.StartXmrNodeReply.displayName = 'proto.io.haveno.protobuffer.StartXmrNodeReply';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -1692,16 +1692,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.io.haveno.protobuffer.StopMoneroNodeRequest = function(opt_data) {
+proto.io.haveno.protobuffer.StopXmrNodeRequest = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.io.haveno.protobuffer.StopMoneroNodeRequest, jspb.Message);
+goog.inherits(proto.io.haveno.protobuffer.StopXmrNodeRequest, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.io.haveno.protobuffer.StopMoneroNodeRequest.displayName = 'proto.io.haveno.protobuffer.StopMoneroNodeRequest';
+  proto.io.haveno.protobuffer.StopXmrNodeRequest.displayName = 'proto.io.haveno.protobuffer.StopXmrNodeRequest';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -1713,16 +1713,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.io.haveno.protobuffer.StopMoneroNodeReply = function(opt_data) {
+proto.io.haveno.protobuffer.StopXmrNodeReply = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.io.haveno.protobuffer.StopMoneroNodeReply, jspb.Message);
+goog.inherits(proto.io.haveno.protobuffer.StopXmrNodeReply, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.io.haveno.protobuffer.StopMoneroNodeReply.displayName = 'proto.io.haveno.protobuffer.StopMoneroNodeReply';
+  proto.io.haveno.protobuffer.StopXmrNodeReply.displayName = 'proto.io.haveno.protobuffer.StopXmrNodeReply';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -12346,8 +12346,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.io.haveno.protobuffer.IsMoneroNodeOnlineRequest.prototype.toObject = function(opt_includeInstance) {
-  return proto.io.haveno.protobuffer.IsMoneroNodeOnlineRequest.toObject(opt_includeInstance, this);
+proto.io.haveno.protobuffer.IsXmrNodeOnlineRequest.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.haveno.protobuffer.IsXmrNodeOnlineRequest.toObject(opt_includeInstance, this);
 };
 
 
@@ -12356,11 +12356,11 @@ proto.io.haveno.protobuffer.IsMoneroNodeOnlineRequest.prototype.toObject = funct
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.io.haveno.protobuffer.IsMoneroNodeOnlineRequest} msg The msg instance to transform.
+ * @param {!proto.io.haveno.protobuffer.IsXmrNodeOnlineRequest} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.io.haveno.protobuffer.IsMoneroNodeOnlineRequest.toObject = function(includeInstance, msg) {
+proto.io.haveno.protobuffer.IsXmrNodeOnlineRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
 
   };
@@ -12376,23 +12376,23 @@ proto.io.haveno.protobuffer.IsMoneroNodeOnlineRequest.toObject = function(includ
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.io.haveno.protobuffer.IsMoneroNodeOnlineRequest}
+ * @return {!proto.io.haveno.protobuffer.IsXmrNodeOnlineRequest}
  */
-proto.io.haveno.protobuffer.IsMoneroNodeOnlineRequest.deserializeBinary = function(bytes) {
+proto.io.haveno.protobuffer.IsXmrNodeOnlineRequest.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.io.haveno.protobuffer.IsMoneroNodeOnlineRequest;
-  return proto.io.haveno.protobuffer.IsMoneroNodeOnlineRequest.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.io.haveno.protobuffer.IsXmrNodeOnlineRequest;
+  return proto.io.haveno.protobuffer.IsXmrNodeOnlineRequest.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.io.haveno.protobuffer.IsMoneroNodeOnlineRequest} msg The message object to deserialize into.
+ * @param {!proto.io.haveno.protobuffer.IsXmrNodeOnlineRequest} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.io.haveno.protobuffer.IsMoneroNodeOnlineRequest}
+ * @return {!proto.io.haveno.protobuffer.IsXmrNodeOnlineRequest}
  */
-proto.io.haveno.protobuffer.IsMoneroNodeOnlineRequest.deserializeBinaryFromReader = function(msg, reader) {
+proto.io.haveno.protobuffer.IsXmrNodeOnlineRequest.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -12412,9 +12412,9 @@ proto.io.haveno.protobuffer.IsMoneroNodeOnlineRequest.deserializeBinaryFromReade
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.io.haveno.protobuffer.IsMoneroNodeOnlineRequest.prototype.serializeBinary = function() {
+proto.io.haveno.protobuffer.IsXmrNodeOnlineRequest.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.io.haveno.protobuffer.IsMoneroNodeOnlineRequest.serializeBinaryToWriter(this, writer);
+  proto.io.haveno.protobuffer.IsXmrNodeOnlineRequest.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -12422,11 +12422,11 @@ proto.io.haveno.protobuffer.IsMoneroNodeOnlineRequest.prototype.serializeBinary 
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.io.haveno.protobuffer.IsMoneroNodeOnlineRequest} message
+ * @param {!proto.io.haveno.protobuffer.IsXmrNodeOnlineRequest} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.io.haveno.protobuffer.IsMoneroNodeOnlineRequest.serializeBinaryToWriter = function(message, writer) {
+proto.io.haveno.protobuffer.IsXmrNodeOnlineRequest.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
 };
 
@@ -12447,8 +12447,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.io.haveno.protobuffer.IsMoneroNodeOnlineReply.prototype.toObject = function(opt_includeInstance) {
-  return proto.io.haveno.protobuffer.IsMoneroNodeOnlineReply.toObject(opt_includeInstance, this);
+proto.io.haveno.protobuffer.IsXmrNodeOnlineReply.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.haveno.protobuffer.IsXmrNodeOnlineReply.toObject(opt_includeInstance, this);
 };
 
 
@@ -12457,11 +12457,11 @@ proto.io.haveno.protobuffer.IsMoneroNodeOnlineReply.prototype.toObject = functio
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.io.haveno.protobuffer.IsMoneroNodeOnlineReply} msg The msg instance to transform.
+ * @param {!proto.io.haveno.protobuffer.IsXmrNodeOnlineReply} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.io.haveno.protobuffer.IsMoneroNodeOnlineReply.toObject = function(includeInstance, msg) {
+proto.io.haveno.protobuffer.IsXmrNodeOnlineReply.toObject = function(includeInstance, msg) {
   var f, obj = {
     isRunning: jspb.Message.getBooleanFieldWithDefault(msg, 1, false)
   };
@@ -12477,23 +12477,23 @@ proto.io.haveno.protobuffer.IsMoneroNodeOnlineReply.toObject = function(includeI
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.io.haveno.protobuffer.IsMoneroNodeOnlineReply}
+ * @return {!proto.io.haveno.protobuffer.IsXmrNodeOnlineReply}
  */
-proto.io.haveno.protobuffer.IsMoneroNodeOnlineReply.deserializeBinary = function(bytes) {
+proto.io.haveno.protobuffer.IsXmrNodeOnlineReply.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.io.haveno.protobuffer.IsMoneroNodeOnlineReply;
-  return proto.io.haveno.protobuffer.IsMoneroNodeOnlineReply.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.io.haveno.protobuffer.IsXmrNodeOnlineReply;
+  return proto.io.haveno.protobuffer.IsXmrNodeOnlineReply.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.io.haveno.protobuffer.IsMoneroNodeOnlineReply} msg The message object to deserialize into.
+ * @param {!proto.io.haveno.protobuffer.IsXmrNodeOnlineReply} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.io.haveno.protobuffer.IsMoneroNodeOnlineReply}
+ * @return {!proto.io.haveno.protobuffer.IsXmrNodeOnlineReply}
  */
-proto.io.haveno.protobuffer.IsMoneroNodeOnlineReply.deserializeBinaryFromReader = function(msg, reader) {
+proto.io.haveno.protobuffer.IsXmrNodeOnlineReply.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -12517,9 +12517,9 @@ proto.io.haveno.protobuffer.IsMoneroNodeOnlineReply.deserializeBinaryFromReader 
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.io.haveno.protobuffer.IsMoneroNodeOnlineReply.prototype.serializeBinary = function() {
+proto.io.haveno.protobuffer.IsXmrNodeOnlineReply.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.io.haveno.protobuffer.IsMoneroNodeOnlineReply.serializeBinaryToWriter(this, writer);
+  proto.io.haveno.protobuffer.IsXmrNodeOnlineReply.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -12527,11 +12527,11 @@ proto.io.haveno.protobuffer.IsMoneroNodeOnlineReply.prototype.serializeBinary = 
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.io.haveno.protobuffer.IsMoneroNodeOnlineReply} message
+ * @param {!proto.io.haveno.protobuffer.IsXmrNodeOnlineReply} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.io.haveno.protobuffer.IsMoneroNodeOnlineReply.serializeBinaryToWriter = function(message, writer) {
+proto.io.haveno.protobuffer.IsXmrNodeOnlineReply.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getIsRunning();
   if (f) {
@@ -12547,16 +12547,16 @@ proto.io.haveno.protobuffer.IsMoneroNodeOnlineReply.serializeBinaryToWriter = fu
  * optional bool is_running = 1;
  * @return {boolean}
  */
-proto.io.haveno.protobuffer.IsMoneroNodeOnlineReply.prototype.getIsRunning = function() {
+proto.io.haveno.protobuffer.IsXmrNodeOnlineReply.prototype.getIsRunning = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 1, false));
 };
 
 
 /**
  * @param {boolean} value
- * @return {!proto.io.haveno.protobuffer.IsMoneroNodeOnlineReply} returns this
+ * @return {!proto.io.haveno.protobuffer.IsXmrNodeOnlineReply} returns this
  */
-proto.io.haveno.protobuffer.IsMoneroNodeOnlineReply.prototype.setIsRunning = function(value) {
+proto.io.haveno.protobuffer.IsXmrNodeOnlineReply.prototype.setIsRunning = function(value) {
   return jspb.Message.setProto3BooleanField(this, 1, value);
 };
 
@@ -12577,8 +12577,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.io.haveno.protobuffer.GetMoneroNodeSettingsRequest.prototype.toObject = function(opt_includeInstance) {
-  return proto.io.haveno.protobuffer.GetMoneroNodeSettingsRequest.toObject(opt_includeInstance, this);
+proto.io.haveno.protobuffer.GetXmrNodeSettingsRequest.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.haveno.protobuffer.GetXmrNodeSettingsRequest.toObject(opt_includeInstance, this);
 };
 
 
@@ -12587,11 +12587,11 @@ proto.io.haveno.protobuffer.GetMoneroNodeSettingsRequest.prototype.toObject = fu
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.io.haveno.protobuffer.GetMoneroNodeSettingsRequest} msg The msg instance to transform.
+ * @param {!proto.io.haveno.protobuffer.GetXmrNodeSettingsRequest} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.io.haveno.protobuffer.GetMoneroNodeSettingsRequest.toObject = function(includeInstance, msg) {
+proto.io.haveno.protobuffer.GetXmrNodeSettingsRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
 
   };
@@ -12607,23 +12607,23 @@ proto.io.haveno.protobuffer.GetMoneroNodeSettingsRequest.toObject = function(inc
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.io.haveno.protobuffer.GetMoneroNodeSettingsRequest}
+ * @return {!proto.io.haveno.protobuffer.GetXmrNodeSettingsRequest}
  */
-proto.io.haveno.protobuffer.GetMoneroNodeSettingsRequest.deserializeBinary = function(bytes) {
+proto.io.haveno.protobuffer.GetXmrNodeSettingsRequest.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.io.haveno.protobuffer.GetMoneroNodeSettingsRequest;
-  return proto.io.haveno.protobuffer.GetMoneroNodeSettingsRequest.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.io.haveno.protobuffer.GetXmrNodeSettingsRequest;
+  return proto.io.haveno.protobuffer.GetXmrNodeSettingsRequest.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.io.haveno.protobuffer.GetMoneroNodeSettingsRequest} msg The message object to deserialize into.
+ * @param {!proto.io.haveno.protobuffer.GetXmrNodeSettingsRequest} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.io.haveno.protobuffer.GetMoneroNodeSettingsRequest}
+ * @return {!proto.io.haveno.protobuffer.GetXmrNodeSettingsRequest}
  */
-proto.io.haveno.protobuffer.GetMoneroNodeSettingsRequest.deserializeBinaryFromReader = function(msg, reader) {
+proto.io.haveno.protobuffer.GetXmrNodeSettingsRequest.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -12643,9 +12643,9 @@ proto.io.haveno.protobuffer.GetMoneroNodeSettingsRequest.deserializeBinaryFromRe
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.io.haveno.protobuffer.GetMoneroNodeSettingsRequest.prototype.serializeBinary = function() {
+proto.io.haveno.protobuffer.GetXmrNodeSettingsRequest.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.io.haveno.protobuffer.GetMoneroNodeSettingsRequest.serializeBinaryToWriter(this, writer);
+  proto.io.haveno.protobuffer.GetXmrNodeSettingsRequest.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -12653,11 +12653,11 @@ proto.io.haveno.protobuffer.GetMoneroNodeSettingsRequest.prototype.serializeBina
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.io.haveno.protobuffer.GetMoneroNodeSettingsRequest} message
+ * @param {!proto.io.haveno.protobuffer.GetXmrNodeSettingsRequest} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.io.haveno.protobuffer.GetMoneroNodeSettingsRequest.serializeBinaryToWriter = function(message, writer) {
+proto.io.haveno.protobuffer.GetXmrNodeSettingsRequest.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
 };
 
@@ -12678,8 +12678,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.io.haveno.protobuffer.GetMoneroNodeSettingsReply.prototype.toObject = function(opt_includeInstance) {
-  return proto.io.haveno.protobuffer.GetMoneroNodeSettingsReply.toObject(opt_includeInstance, this);
+proto.io.haveno.protobuffer.GetXmrNodeSettingsReply.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.haveno.protobuffer.GetXmrNodeSettingsReply.toObject(opt_includeInstance, this);
 };
 
 
@@ -12688,13 +12688,13 @@ proto.io.haveno.protobuffer.GetMoneroNodeSettingsReply.prototype.toObject = func
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.io.haveno.protobuffer.GetMoneroNodeSettingsReply} msg The msg instance to transform.
+ * @param {!proto.io.haveno.protobuffer.GetXmrNodeSettingsReply} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.io.haveno.protobuffer.GetMoneroNodeSettingsReply.toObject = function(includeInstance, msg) {
+proto.io.haveno.protobuffer.GetXmrNodeSettingsReply.toObject = function(includeInstance, msg) {
   var f, obj = {
-    settings: (f = msg.getSettings()) && pb_pb.MoneroNodeSettings.toObject(includeInstance, f)
+    settings: (f = msg.getSettings()) && pb_pb.XmrNodeSettings.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -12708,23 +12708,23 @@ proto.io.haveno.protobuffer.GetMoneroNodeSettingsReply.toObject = function(inclu
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.io.haveno.protobuffer.GetMoneroNodeSettingsReply}
+ * @return {!proto.io.haveno.protobuffer.GetXmrNodeSettingsReply}
  */
-proto.io.haveno.protobuffer.GetMoneroNodeSettingsReply.deserializeBinary = function(bytes) {
+proto.io.haveno.protobuffer.GetXmrNodeSettingsReply.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.io.haveno.protobuffer.GetMoneroNodeSettingsReply;
-  return proto.io.haveno.protobuffer.GetMoneroNodeSettingsReply.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.io.haveno.protobuffer.GetXmrNodeSettingsReply;
+  return proto.io.haveno.protobuffer.GetXmrNodeSettingsReply.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.io.haveno.protobuffer.GetMoneroNodeSettingsReply} msg The message object to deserialize into.
+ * @param {!proto.io.haveno.protobuffer.GetXmrNodeSettingsReply} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.io.haveno.protobuffer.GetMoneroNodeSettingsReply}
+ * @return {!proto.io.haveno.protobuffer.GetXmrNodeSettingsReply}
  */
-proto.io.haveno.protobuffer.GetMoneroNodeSettingsReply.deserializeBinaryFromReader = function(msg, reader) {
+proto.io.haveno.protobuffer.GetXmrNodeSettingsReply.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -12732,8 +12732,8 @@ proto.io.haveno.protobuffer.GetMoneroNodeSettingsReply.deserializeBinaryFromRead
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = new pb_pb.MoneroNodeSettings;
-      reader.readMessage(value,pb_pb.MoneroNodeSettings.deserializeBinaryFromReader);
+      var value = new pb_pb.XmrNodeSettings;
+      reader.readMessage(value,pb_pb.XmrNodeSettings.deserializeBinaryFromReader);
       msg.setSettings(value);
       break;
     default:
@@ -12749,9 +12749,9 @@ proto.io.haveno.protobuffer.GetMoneroNodeSettingsReply.deserializeBinaryFromRead
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.io.haveno.protobuffer.GetMoneroNodeSettingsReply.prototype.serializeBinary = function() {
+proto.io.haveno.protobuffer.GetXmrNodeSettingsReply.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.io.haveno.protobuffer.GetMoneroNodeSettingsReply.serializeBinaryToWriter(this, writer);
+  proto.io.haveno.protobuffer.GetXmrNodeSettingsReply.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -12759,47 +12759,47 @@ proto.io.haveno.protobuffer.GetMoneroNodeSettingsReply.prototype.serializeBinary
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.io.haveno.protobuffer.GetMoneroNodeSettingsReply} message
+ * @param {!proto.io.haveno.protobuffer.GetXmrNodeSettingsReply} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.io.haveno.protobuffer.GetMoneroNodeSettingsReply.serializeBinaryToWriter = function(message, writer) {
+proto.io.haveno.protobuffer.GetXmrNodeSettingsReply.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getSettings();
   if (f != null) {
     writer.writeMessage(
       1,
       f,
-      pb_pb.MoneroNodeSettings.serializeBinaryToWriter
+      pb_pb.XmrNodeSettings.serializeBinaryToWriter
     );
   }
 };
 
 
 /**
- * optional MoneroNodeSettings settings = 1;
- * @return {?proto.io.haveno.protobuffer.MoneroNodeSettings}
+ * optional XmrNodeSettings settings = 1;
+ * @return {?proto.io.haveno.protobuffer.XmrNodeSettings}
  */
-proto.io.haveno.protobuffer.GetMoneroNodeSettingsReply.prototype.getSettings = function() {
-  return /** @type{?proto.io.haveno.protobuffer.MoneroNodeSettings} */ (
-    jspb.Message.getWrapperField(this, pb_pb.MoneroNodeSettings, 1));
+proto.io.haveno.protobuffer.GetXmrNodeSettingsReply.prototype.getSettings = function() {
+  return /** @type{?proto.io.haveno.protobuffer.XmrNodeSettings} */ (
+    jspb.Message.getWrapperField(this, pb_pb.XmrNodeSettings, 1));
 };
 
 
 /**
- * @param {?proto.io.haveno.protobuffer.MoneroNodeSettings|undefined} value
- * @return {!proto.io.haveno.protobuffer.GetMoneroNodeSettingsReply} returns this
+ * @param {?proto.io.haveno.protobuffer.XmrNodeSettings|undefined} value
+ * @return {!proto.io.haveno.protobuffer.GetXmrNodeSettingsReply} returns this
 */
-proto.io.haveno.protobuffer.GetMoneroNodeSettingsReply.prototype.setSettings = function(value) {
+proto.io.haveno.protobuffer.GetXmrNodeSettingsReply.prototype.setSettings = function(value) {
   return jspb.Message.setWrapperField(this, 1, value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.io.haveno.protobuffer.GetMoneroNodeSettingsReply} returns this
+ * @return {!proto.io.haveno.protobuffer.GetXmrNodeSettingsReply} returns this
  */
-proto.io.haveno.protobuffer.GetMoneroNodeSettingsReply.prototype.clearSettings = function() {
+proto.io.haveno.protobuffer.GetXmrNodeSettingsReply.prototype.clearSettings = function() {
   return this.setSettings(undefined);
 };
 
@@ -12808,7 +12808,7 @@ proto.io.haveno.protobuffer.GetMoneroNodeSettingsReply.prototype.clearSettings =
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.io.haveno.protobuffer.GetMoneroNodeSettingsReply.prototype.hasSettings = function() {
+proto.io.haveno.protobuffer.GetXmrNodeSettingsReply.prototype.hasSettings = function() {
   return jspb.Message.getField(this, 1) != null;
 };
 
@@ -12829,8 +12829,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.io.haveno.protobuffer.StartMoneroNodeRequest.prototype.toObject = function(opt_includeInstance) {
-  return proto.io.haveno.protobuffer.StartMoneroNodeRequest.toObject(opt_includeInstance, this);
+proto.io.haveno.protobuffer.StartXmrNodeRequest.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.haveno.protobuffer.StartXmrNodeRequest.toObject(opt_includeInstance, this);
 };
 
 
@@ -12839,13 +12839,13 @@ proto.io.haveno.protobuffer.StartMoneroNodeRequest.prototype.toObject = function
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.io.haveno.protobuffer.StartMoneroNodeRequest} msg The msg instance to transform.
+ * @param {!proto.io.haveno.protobuffer.StartXmrNodeRequest} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.io.haveno.protobuffer.StartMoneroNodeRequest.toObject = function(includeInstance, msg) {
+proto.io.haveno.protobuffer.StartXmrNodeRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
-    settings: (f = msg.getSettings()) && pb_pb.MoneroNodeSettings.toObject(includeInstance, f)
+    settings: (f = msg.getSettings()) && pb_pb.XmrNodeSettings.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -12859,23 +12859,23 @@ proto.io.haveno.protobuffer.StartMoneroNodeRequest.toObject = function(includeIn
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.io.haveno.protobuffer.StartMoneroNodeRequest}
+ * @return {!proto.io.haveno.protobuffer.StartXmrNodeRequest}
  */
-proto.io.haveno.protobuffer.StartMoneroNodeRequest.deserializeBinary = function(bytes) {
+proto.io.haveno.protobuffer.StartXmrNodeRequest.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.io.haveno.protobuffer.StartMoneroNodeRequest;
-  return proto.io.haveno.protobuffer.StartMoneroNodeRequest.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.io.haveno.protobuffer.StartXmrNodeRequest;
+  return proto.io.haveno.protobuffer.StartXmrNodeRequest.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.io.haveno.protobuffer.StartMoneroNodeRequest} msg The message object to deserialize into.
+ * @param {!proto.io.haveno.protobuffer.StartXmrNodeRequest} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.io.haveno.protobuffer.StartMoneroNodeRequest}
+ * @return {!proto.io.haveno.protobuffer.StartXmrNodeRequest}
  */
-proto.io.haveno.protobuffer.StartMoneroNodeRequest.deserializeBinaryFromReader = function(msg, reader) {
+proto.io.haveno.protobuffer.StartXmrNodeRequest.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -12883,8 +12883,8 @@ proto.io.haveno.protobuffer.StartMoneroNodeRequest.deserializeBinaryFromReader =
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = new pb_pb.MoneroNodeSettings;
-      reader.readMessage(value,pb_pb.MoneroNodeSettings.deserializeBinaryFromReader);
+      var value = new pb_pb.XmrNodeSettings;
+      reader.readMessage(value,pb_pb.XmrNodeSettings.deserializeBinaryFromReader);
       msg.setSettings(value);
       break;
     default:
@@ -12900,9 +12900,9 @@ proto.io.haveno.protobuffer.StartMoneroNodeRequest.deserializeBinaryFromReader =
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.io.haveno.protobuffer.StartMoneroNodeRequest.prototype.serializeBinary = function() {
+proto.io.haveno.protobuffer.StartXmrNodeRequest.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.io.haveno.protobuffer.StartMoneroNodeRequest.serializeBinaryToWriter(this, writer);
+  proto.io.haveno.protobuffer.StartXmrNodeRequest.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -12910,47 +12910,47 @@ proto.io.haveno.protobuffer.StartMoneroNodeRequest.prototype.serializeBinary = f
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.io.haveno.protobuffer.StartMoneroNodeRequest} message
+ * @param {!proto.io.haveno.protobuffer.StartXmrNodeRequest} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.io.haveno.protobuffer.StartMoneroNodeRequest.serializeBinaryToWriter = function(message, writer) {
+proto.io.haveno.protobuffer.StartXmrNodeRequest.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getSettings();
   if (f != null) {
     writer.writeMessage(
       1,
       f,
-      pb_pb.MoneroNodeSettings.serializeBinaryToWriter
+      pb_pb.XmrNodeSettings.serializeBinaryToWriter
     );
   }
 };
 
 
 /**
- * optional MoneroNodeSettings settings = 1;
- * @return {?proto.io.haveno.protobuffer.MoneroNodeSettings}
+ * optional XmrNodeSettings settings = 1;
+ * @return {?proto.io.haveno.protobuffer.XmrNodeSettings}
  */
-proto.io.haveno.protobuffer.StartMoneroNodeRequest.prototype.getSettings = function() {
-  return /** @type{?proto.io.haveno.protobuffer.MoneroNodeSettings} */ (
-    jspb.Message.getWrapperField(this, pb_pb.MoneroNodeSettings, 1));
+proto.io.haveno.protobuffer.StartXmrNodeRequest.prototype.getSettings = function() {
+  return /** @type{?proto.io.haveno.protobuffer.XmrNodeSettings} */ (
+    jspb.Message.getWrapperField(this, pb_pb.XmrNodeSettings, 1));
 };
 
 
 /**
- * @param {?proto.io.haveno.protobuffer.MoneroNodeSettings|undefined} value
- * @return {!proto.io.haveno.protobuffer.StartMoneroNodeRequest} returns this
+ * @param {?proto.io.haveno.protobuffer.XmrNodeSettings|undefined} value
+ * @return {!proto.io.haveno.protobuffer.StartXmrNodeRequest} returns this
 */
-proto.io.haveno.protobuffer.StartMoneroNodeRequest.prototype.setSettings = function(value) {
+proto.io.haveno.protobuffer.StartXmrNodeRequest.prototype.setSettings = function(value) {
   return jspb.Message.setWrapperField(this, 1, value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.io.haveno.protobuffer.StartMoneroNodeRequest} returns this
+ * @return {!proto.io.haveno.protobuffer.StartXmrNodeRequest} returns this
  */
-proto.io.haveno.protobuffer.StartMoneroNodeRequest.prototype.clearSettings = function() {
+proto.io.haveno.protobuffer.StartXmrNodeRequest.prototype.clearSettings = function() {
   return this.setSettings(undefined);
 };
 
@@ -12959,7 +12959,7 @@ proto.io.haveno.protobuffer.StartMoneroNodeRequest.prototype.clearSettings = fun
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.io.haveno.protobuffer.StartMoneroNodeRequest.prototype.hasSettings = function() {
+proto.io.haveno.protobuffer.StartXmrNodeRequest.prototype.hasSettings = function() {
   return jspb.Message.getField(this, 1) != null;
 };
 
@@ -12980,8 +12980,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.io.haveno.protobuffer.StartMoneroNodeReply.prototype.toObject = function(opt_includeInstance) {
-  return proto.io.haveno.protobuffer.StartMoneroNodeReply.toObject(opt_includeInstance, this);
+proto.io.haveno.protobuffer.StartXmrNodeReply.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.haveno.protobuffer.StartXmrNodeReply.toObject(opt_includeInstance, this);
 };
 
 
@@ -12990,11 +12990,11 @@ proto.io.haveno.protobuffer.StartMoneroNodeReply.prototype.toObject = function(o
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.io.haveno.protobuffer.StartMoneroNodeReply} msg The msg instance to transform.
+ * @param {!proto.io.haveno.protobuffer.StartXmrNodeReply} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.io.haveno.protobuffer.StartMoneroNodeReply.toObject = function(includeInstance, msg) {
+proto.io.haveno.protobuffer.StartXmrNodeReply.toObject = function(includeInstance, msg) {
   var f, obj = {
 
   };
@@ -13010,23 +13010,23 @@ proto.io.haveno.protobuffer.StartMoneroNodeReply.toObject = function(includeInst
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.io.haveno.protobuffer.StartMoneroNodeReply}
+ * @return {!proto.io.haveno.protobuffer.StartXmrNodeReply}
  */
-proto.io.haveno.protobuffer.StartMoneroNodeReply.deserializeBinary = function(bytes) {
+proto.io.haveno.protobuffer.StartXmrNodeReply.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.io.haveno.protobuffer.StartMoneroNodeReply;
-  return proto.io.haveno.protobuffer.StartMoneroNodeReply.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.io.haveno.protobuffer.StartXmrNodeReply;
+  return proto.io.haveno.protobuffer.StartXmrNodeReply.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.io.haveno.protobuffer.StartMoneroNodeReply} msg The message object to deserialize into.
+ * @param {!proto.io.haveno.protobuffer.StartXmrNodeReply} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.io.haveno.protobuffer.StartMoneroNodeReply}
+ * @return {!proto.io.haveno.protobuffer.StartXmrNodeReply}
  */
-proto.io.haveno.protobuffer.StartMoneroNodeReply.deserializeBinaryFromReader = function(msg, reader) {
+proto.io.haveno.protobuffer.StartXmrNodeReply.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -13046,9 +13046,9 @@ proto.io.haveno.protobuffer.StartMoneroNodeReply.deserializeBinaryFromReader = f
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.io.haveno.protobuffer.StartMoneroNodeReply.prototype.serializeBinary = function() {
+proto.io.haveno.protobuffer.StartXmrNodeReply.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.io.haveno.protobuffer.StartMoneroNodeReply.serializeBinaryToWriter(this, writer);
+  proto.io.haveno.protobuffer.StartXmrNodeReply.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -13056,11 +13056,11 @@ proto.io.haveno.protobuffer.StartMoneroNodeReply.prototype.serializeBinary = fun
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.io.haveno.protobuffer.StartMoneroNodeReply} message
+ * @param {!proto.io.haveno.protobuffer.StartXmrNodeReply} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.io.haveno.protobuffer.StartMoneroNodeReply.serializeBinaryToWriter = function(message, writer) {
+proto.io.haveno.protobuffer.StartXmrNodeReply.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
 };
 
@@ -13081,8 +13081,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.io.haveno.protobuffer.StopMoneroNodeRequest.prototype.toObject = function(opt_includeInstance) {
-  return proto.io.haveno.protobuffer.StopMoneroNodeRequest.toObject(opt_includeInstance, this);
+proto.io.haveno.protobuffer.StopXmrNodeRequest.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.haveno.protobuffer.StopXmrNodeRequest.toObject(opt_includeInstance, this);
 };
 
 
@@ -13091,11 +13091,11 @@ proto.io.haveno.protobuffer.StopMoneroNodeRequest.prototype.toObject = function(
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.io.haveno.protobuffer.StopMoneroNodeRequest} msg The msg instance to transform.
+ * @param {!proto.io.haveno.protobuffer.StopXmrNodeRequest} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.io.haveno.protobuffer.StopMoneroNodeRequest.toObject = function(includeInstance, msg) {
+proto.io.haveno.protobuffer.StopXmrNodeRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
 
   };
@@ -13111,23 +13111,23 @@ proto.io.haveno.protobuffer.StopMoneroNodeRequest.toObject = function(includeIns
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.io.haveno.protobuffer.StopMoneroNodeRequest}
+ * @return {!proto.io.haveno.protobuffer.StopXmrNodeRequest}
  */
-proto.io.haveno.protobuffer.StopMoneroNodeRequest.deserializeBinary = function(bytes) {
+proto.io.haveno.protobuffer.StopXmrNodeRequest.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.io.haveno.protobuffer.StopMoneroNodeRequest;
-  return proto.io.haveno.protobuffer.StopMoneroNodeRequest.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.io.haveno.protobuffer.StopXmrNodeRequest;
+  return proto.io.haveno.protobuffer.StopXmrNodeRequest.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.io.haveno.protobuffer.StopMoneroNodeRequest} msg The message object to deserialize into.
+ * @param {!proto.io.haveno.protobuffer.StopXmrNodeRequest} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.io.haveno.protobuffer.StopMoneroNodeRequest}
+ * @return {!proto.io.haveno.protobuffer.StopXmrNodeRequest}
  */
-proto.io.haveno.protobuffer.StopMoneroNodeRequest.deserializeBinaryFromReader = function(msg, reader) {
+proto.io.haveno.protobuffer.StopXmrNodeRequest.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -13147,9 +13147,9 @@ proto.io.haveno.protobuffer.StopMoneroNodeRequest.deserializeBinaryFromReader = 
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.io.haveno.protobuffer.StopMoneroNodeRequest.prototype.serializeBinary = function() {
+proto.io.haveno.protobuffer.StopXmrNodeRequest.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.io.haveno.protobuffer.StopMoneroNodeRequest.serializeBinaryToWriter(this, writer);
+  proto.io.haveno.protobuffer.StopXmrNodeRequest.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -13157,11 +13157,11 @@ proto.io.haveno.protobuffer.StopMoneroNodeRequest.prototype.serializeBinary = fu
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.io.haveno.protobuffer.StopMoneroNodeRequest} message
+ * @param {!proto.io.haveno.protobuffer.StopXmrNodeRequest} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.io.haveno.protobuffer.StopMoneroNodeRequest.serializeBinaryToWriter = function(message, writer) {
+proto.io.haveno.protobuffer.StopXmrNodeRequest.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
 };
 
@@ -13182,8 +13182,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.io.haveno.protobuffer.StopMoneroNodeReply.prototype.toObject = function(opt_includeInstance) {
-  return proto.io.haveno.protobuffer.StopMoneroNodeReply.toObject(opt_includeInstance, this);
+proto.io.haveno.protobuffer.StopXmrNodeReply.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.haveno.protobuffer.StopXmrNodeReply.toObject(opt_includeInstance, this);
 };
 
 
@@ -13192,11 +13192,11 @@ proto.io.haveno.protobuffer.StopMoneroNodeReply.prototype.toObject = function(op
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.io.haveno.protobuffer.StopMoneroNodeReply} msg The msg instance to transform.
+ * @param {!proto.io.haveno.protobuffer.StopXmrNodeReply} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.io.haveno.protobuffer.StopMoneroNodeReply.toObject = function(includeInstance, msg) {
+proto.io.haveno.protobuffer.StopXmrNodeReply.toObject = function(includeInstance, msg) {
   var f, obj = {
 
   };
@@ -13212,23 +13212,23 @@ proto.io.haveno.protobuffer.StopMoneroNodeReply.toObject = function(includeInsta
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.io.haveno.protobuffer.StopMoneroNodeReply}
+ * @return {!proto.io.haveno.protobuffer.StopXmrNodeReply}
  */
-proto.io.haveno.protobuffer.StopMoneroNodeReply.deserializeBinary = function(bytes) {
+proto.io.haveno.protobuffer.StopXmrNodeReply.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.io.haveno.protobuffer.StopMoneroNodeReply;
-  return proto.io.haveno.protobuffer.StopMoneroNodeReply.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.io.haveno.protobuffer.StopXmrNodeReply;
+  return proto.io.haveno.protobuffer.StopXmrNodeReply.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.io.haveno.protobuffer.StopMoneroNodeReply} msg The message object to deserialize into.
+ * @param {!proto.io.haveno.protobuffer.StopXmrNodeReply} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.io.haveno.protobuffer.StopMoneroNodeReply}
+ * @return {!proto.io.haveno.protobuffer.StopXmrNodeReply}
  */
-proto.io.haveno.protobuffer.StopMoneroNodeReply.deserializeBinaryFromReader = function(msg, reader) {
+proto.io.haveno.protobuffer.StopXmrNodeReply.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -13248,9 +13248,9 @@ proto.io.haveno.protobuffer.StopMoneroNodeReply.deserializeBinaryFromReader = fu
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.io.haveno.protobuffer.StopMoneroNodeReply.prototype.serializeBinary = function() {
+proto.io.haveno.protobuffer.StopXmrNodeReply.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.io.haveno.protobuffer.StopMoneroNodeReply.serializeBinaryToWriter(this, writer);
+  proto.io.haveno.protobuffer.StopXmrNodeReply.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -13258,11 +13258,11 @@ proto.io.haveno.protobuffer.StopMoneroNodeReply.prototype.serializeBinary = func
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.io.haveno.protobuffer.StopMoneroNodeReply} message
+ * @param {!proto.io.haveno.protobuffer.StopXmrNodeReply} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.io.haveno.protobuffer.StopMoneroNodeReply.serializeBinaryToWriter = function(message, writer) {
+proto.io.haveno.protobuffer.StopXmrNodeReply.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
 };
 

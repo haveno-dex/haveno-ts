@@ -28,7 +28,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.WalletsClient = exports.TradesClient = exports.ShutdownServerClient = exports.GetTradeStatisticsClient = exports.PriceClient = exports.PaymentAccountsClient = exports.OffersClient = exports.MoneroNodeClient = exports.MoneroConnectionsClient = exports.NotificationsClient = exports.DisputeAgentsClient = exports.DisputesClient = exports.AccountClient = exports.GetVersionClient = exports.HelpClient = void 0;
+exports.WalletsClient = exports.TradesClient = exports.ShutdownServerClient = exports.GetTradeStatisticsClient = exports.PriceClient = exports.PaymentAccountsClient = exports.OffersClient = exports.XmrNodeClient = exports.XmrConnectionsClient = exports.NotificationsClient = exports.DisputeAgentsClient = exports.DisputesClient = exports.AccountClient = exports.GetVersionClient = exports.HelpClient = void 0;
 // GENERATED CODE -- DO NOT EDIT!
 /* eslint-disable */
 // @ts-nocheck
@@ -341,39 +341,39 @@ class NotificationsClient {
     }
 }
 exports.NotificationsClient = NotificationsClient;
-class MoneroConnectionsClient {
+class XmrConnectionsClient {
     constructor(hostname, credentials, options) {
-        this.methodDescriptorAddConnection = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.MoneroConnections/AddConnection', grpcWeb.MethodType.UNARY, grpc_pb.AddConnectionRequest, grpc_pb.AddConnectionReply, (request) => {
+        this.methodDescriptorAddConnection = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.XmrConnections/AddConnection', grpcWeb.MethodType.UNARY, grpc_pb.AddConnectionRequest, grpc_pb.AddConnectionReply, (request) => {
             return request.serializeBinary();
         }, grpc_pb.AddConnectionReply.deserializeBinary);
-        this.methodDescriptorRemoveConnection = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.MoneroConnections/RemoveConnection', grpcWeb.MethodType.UNARY, grpc_pb.RemoveConnectionRequest, grpc_pb.RemoveConnectionReply, (request) => {
+        this.methodDescriptorRemoveConnection = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.XmrConnections/RemoveConnection', grpcWeb.MethodType.UNARY, grpc_pb.RemoveConnectionRequest, grpc_pb.RemoveConnectionReply, (request) => {
             return request.serializeBinary();
         }, grpc_pb.RemoveConnectionReply.deserializeBinary);
-        this.methodDescriptorGetConnection = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.MoneroConnections/GetConnection', grpcWeb.MethodType.UNARY, grpc_pb.GetConnectionRequest, grpc_pb.GetConnectionReply, (request) => {
+        this.methodDescriptorGetConnection = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.XmrConnections/GetConnection', grpcWeb.MethodType.UNARY, grpc_pb.GetConnectionRequest, grpc_pb.GetConnectionReply, (request) => {
             return request.serializeBinary();
         }, grpc_pb.GetConnectionReply.deserializeBinary);
-        this.methodDescriptorGetConnections = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.MoneroConnections/GetConnections', grpcWeb.MethodType.UNARY, grpc_pb.GetConnectionsRequest, grpc_pb.GetConnectionsReply, (request) => {
+        this.methodDescriptorGetConnections = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.XmrConnections/GetConnections', grpcWeb.MethodType.UNARY, grpc_pb.GetConnectionsRequest, grpc_pb.GetConnectionsReply, (request) => {
             return request.serializeBinary();
         }, grpc_pb.GetConnectionsReply.deserializeBinary);
-        this.methodDescriptorSetConnection = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.MoneroConnections/SetConnection', grpcWeb.MethodType.UNARY, grpc_pb.SetConnectionRequest, grpc_pb.SetConnectionReply, (request) => {
+        this.methodDescriptorSetConnection = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.XmrConnections/SetConnection', grpcWeb.MethodType.UNARY, grpc_pb.SetConnectionRequest, grpc_pb.SetConnectionReply, (request) => {
             return request.serializeBinary();
         }, grpc_pb.SetConnectionReply.deserializeBinary);
-        this.methodDescriptorCheckConnection = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.MoneroConnections/CheckConnection', grpcWeb.MethodType.UNARY, grpc_pb.CheckConnectionRequest, grpc_pb.CheckConnectionReply, (request) => {
+        this.methodDescriptorCheckConnection = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.XmrConnections/CheckConnection', grpcWeb.MethodType.UNARY, grpc_pb.CheckConnectionRequest, grpc_pb.CheckConnectionReply, (request) => {
             return request.serializeBinary();
         }, grpc_pb.CheckConnectionReply.deserializeBinary);
-        this.methodDescriptorCheckConnections = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.MoneroConnections/CheckConnections', grpcWeb.MethodType.UNARY, grpc_pb.CheckConnectionsRequest, grpc_pb.CheckConnectionsReply, (request) => {
+        this.methodDescriptorCheckConnections = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.XmrConnections/CheckConnections', grpcWeb.MethodType.UNARY, grpc_pb.CheckConnectionsRequest, grpc_pb.CheckConnectionsReply, (request) => {
             return request.serializeBinary();
         }, grpc_pb.CheckConnectionsReply.deserializeBinary);
-        this.methodDescriptorStartCheckingConnections = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.MoneroConnections/StartCheckingConnections', grpcWeb.MethodType.UNARY, grpc_pb.StartCheckingConnectionsRequest, grpc_pb.StartCheckingConnectionsReply, (request) => {
+        this.methodDescriptorStartCheckingConnections = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.XmrConnections/StartCheckingConnections', grpcWeb.MethodType.UNARY, grpc_pb.StartCheckingConnectionsRequest, grpc_pb.StartCheckingConnectionsReply, (request) => {
             return request.serializeBinary();
         }, grpc_pb.StartCheckingConnectionsReply.deserializeBinary);
-        this.methodDescriptorStopCheckingConnections = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.MoneroConnections/StopCheckingConnections', grpcWeb.MethodType.UNARY, grpc_pb.StopCheckingConnectionsRequest, grpc_pb.StopCheckingConnectionsReply, (request) => {
+        this.methodDescriptorStopCheckingConnections = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.XmrConnections/StopCheckingConnections', grpcWeb.MethodType.UNARY, grpc_pb.StopCheckingConnectionsRequest, grpc_pb.StopCheckingConnectionsReply, (request) => {
             return request.serializeBinary();
         }, grpc_pb.StopCheckingConnectionsReply.deserializeBinary);
-        this.methodDescriptorGetBestAvailableConnection = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.MoneroConnections/GetBestAvailableConnection', grpcWeb.MethodType.UNARY, grpc_pb.GetBestAvailableConnectionRequest, grpc_pb.GetBestAvailableConnectionReply, (request) => {
+        this.methodDescriptorGetBestAvailableConnection = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.XmrConnections/GetBestAvailableConnection', grpcWeb.MethodType.UNARY, grpc_pb.GetBestAvailableConnectionRequest, grpc_pb.GetBestAvailableConnectionReply, (request) => {
             return request.serializeBinary();
         }, grpc_pb.GetBestAvailableConnectionReply.deserializeBinary);
-        this.methodDescriptorSetAutoSwitch = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.MoneroConnections/SetAutoSwitch', grpcWeb.MethodType.UNARY, grpc_pb.SetAutoSwitchRequest, grpc_pb.SetAutoSwitchReply, (request) => {
+        this.methodDescriptorSetAutoSwitch = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.XmrConnections/SetAutoSwitch', grpcWeb.MethodType.UNARY, grpc_pb.SetAutoSwitchRequest, grpc_pb.SetAutoSwitchReply, (request) => {
             return request.serializeBinary();
         }, grpc_pb.SetAutoSwitchReply.deserializeBinary);
         if (!options)
@@ -389,107 +389,107 @@ class MoneroConnectionsClient {
     addConnection(request, metadata, callback) {
         if (callback !== undefined) {
             return this.client_.rpcCall(this.hostname_ +
-                '/io.haveno.protobuffer.MoneroConnections/AddConnection', request, metadata || {}, this.methodDescriptorAddConnection, callback);
+                '/io.haveno.protobuffer.XmrConnections/AddConnection', request, metadata || {}, this.methodDescriptorAddConnection, callback);
         }
         return this.client_.unaryCall(this.hostname_ +
-            '/io.haveno.protobuffer.MoneroConnections/AddConnection', request, metadata || {}, this.methodDescriptorAddConnection);
+            '/io.haveno.protobuffer.XmrConnections/AddConnection', request, metadata || {}, this.methodDescriptorAddConnection);
     }
     removeConnection(request, metadata, callback) {
         if (callback !== undefined) {
             return this.client_.rpcCall(this.hostname_ +
-                '/io.haveno.protobuffer.MoneroConnections/RemoveConnection', request, metadata || {}, this.methodDescriptorRemoveConnection, callback);
+                '/io.haveno.protobuffer.XmrConnections/RemoveConnection', request, metadata || {}, this.methodDescriptorRemoveConnection, callback);
         }
         return this.client_.unaryCall(this.hostname_ +
-            '/io.haveno.protobuffer.MoneroConnections/RemoveConnection', request, metadata || {}, this.methodDescriptorRemoveConnection);
+            '/io.haveno.protobuffer.XmrConnections/RemoveConnection', request, metadata || {}, this.methodDescriptorRemoveConnection);
     }
     getConnection(request, metadata, callback) {
         if (callback !== undefined) {
             return this.client_.rpcCall(this.hostname_ +
-                '/io.haveno.protobuffer.MoneroConnections/GetConnection', request, metadata || {}, this.methodDescriptorGetConnection, callback);
+                '/io.haveno.protobuffer.XmrConnections/GetConnection', request, metadata || {}, this.methodDescriptorGetConnection, callback);
         }
         return this.client_.unaryCall(this.hostname_ +
-            '/io.haveno.protobuffer.MoneroConnections/GetConnection', request, metadata || {}, this.methodDescriptorGetConnection);
+            '/io.haveno.protobuffer.XmrConnections/GetConnection', request, metadata || {}, this.methodDescriptorGetConnection);
     }
     getConnections(request, metadata, callback) {
         if (callback !== undefined) {
             return this.client_.rpcCall(this.hostname_ +
-                '/io.haveno.protobuffer.MoneroConnections/GetConnections', request, metadata || {}, this.methodDescriptorGetConnections, callback);
+                '/io.haveno.protobuffer.XmrConnections/GetConnections', request, metadata || {}, this.methodDescriptorGetConnections, callback);
         }
         return this.client_.unaryCall(this.hostname_ +
-            '/io.haveno.protobuffer.MoneroConnections/GetConnections', request, metadata || {}, this.methodDescriptorGetConnections);
+            '/io.haveno.protobuffer.XmrConnections/GetConnections', request, metadata || {}, this.methodDescriptorGetConnections);
     }
     setConnection(request, metadata, callback) {
         if (callback !== undefined) {
             return this.client_.rpcCall(this.hostname_ +
-                '/io.haveno.protobuffer.MoneroConnections/SetConnection', request, metadata || {}, this.methodDescriptorSetConnection, callback);
+                '/io.haveno.protobuffer.XmrConnections/SetConnection', request, metadata || {}, this.methodDescriptorSetConnection, callback);
         }
         return this.client_.unaryCall(this.hostname_ +
-            '/io.haveno.protobuffer.MoneroConnections/SetConnection', request, metadata || {}, this.methodDescriptorSetConnection);
+            '/io.haveno.protobuffer.XmrConnections/SetConnection', request, metadata || {}, this.methodDescriptorSetConnection);
     }
     checkConnection(request, metadata, callback) {
         if (callback !== undefined) {
             return this.client_.rpcCall(this.hostname_ +
-                '/io.haveno.protobuffer.MoneroConnections/CheckConnection', request, metadata || {}, this.methodDescriptorCheckConnection, callback);
+                '/io.haveno.protobuffer.XmrConnections/CheckConnection', request, metadata || {}, this.methodDescriptorCheckConnection, callback);
         }
         return this.client_.unaryCall(this.hostname_ +
-            '/io.haveno.protobuffer.MoneroConnections/CheckConnection', request, metadata || {}, this.methodDescriptorCheckConnection);
+            '/io.haveno.protobuffer.XmrConnections/CheckConnection', request, metadata || {}, this.methodDescriptorCheckConnection);
     }
     checkConnections(request, metadata, callback) {
         if (callback !== undefined) {
             return this.client_.rpcCall(this.hostname_ +
-                '/io.haveno.protobuffer.MoneroConnections/CheckConnections', request, metadata || {}, this.methodDescriptorCheckConnections, callback);
+                '/io.haveno.protobuffer.XmrConnections/CheckConnections', request, metadata || {}, this.methodDescriptorCheckConnections, callback);
         }
         return this.client_.unaryCall(this.hostname_ +
-            '/io.haveno.protobuffer.MoneroConnections/CheckConnections', request, metadata || {}, this.methodDescriptorCheckConnections);
+            '/io.haveno.protobuffer.XmrConnections/CheckConnections', request, metadata || {}, this.methodDescriptorCheckConnections);
     }
     startCheckingConnections(request, metadata, callback) {
         if (callback !== undefined) {
             return this.client_.rpcCall(this.hostname_ +
-                '/io.haveno.protobuffer.MoneroConnections/StartCheckingConnections', request, metadata || {}, this.methodDescriptorStartCheckingConnections, callback);
+                '/io.haveno.protobuffer.XmrConnections/StartCheckingConnections', request, metadata || {}, this.methodDescriptorStartCheckingConnections, callback);
         }
         return this.client_.unaryCall(this.hostname_ +
-            '/io.haveno.protobuffer.MoneroConnections/StartCheckingConnections', request, metadata || {}, this.methodDescriptorStartCheckingConnections);
+            '/io.haveno.protobuffer.XmrConnections/StartCheckingConnections', request, metadata || {}, this.methodDescriptorStartCheckingConnections);
     }
     stopCheckingConnections(request, metadata, callback) {
         if (callback !== undefined) {
             return this.client_.rpcCall(this.hostname_ +
-                '/io.haveno.protobuffer.MoneroConnections/StopCheckingConnections', request, metadata || {}, this.methodDescriptorStopCheckingConnections, callback);
+                '/io.haveno.protobuffer.XmrConnections/StopCheckingConnections', request, metadata || {}, this.methodDescriptorStopCheckingConnections, callback);
         }
         return this.client_.unaryCall(this.hostname_ +
-            '/io.haveno.protobuffer.MoneroConnections/StopCheckingConnections', request, metadata || {}, this.methodDescriptorStopCheckingConnections);
+            '/io.haveno.protobuffer.XmrConnections/StopCheckingConnections', request, metadata || {}, this.methodDescriptorStopCheckingConnections);
     }
     getBestAvailableConnection(request, metadata, callback) {
         if (callback !== undefined) {
             return this.client_.rpcCall(this.hostname_ +
-                '/io.haveno.protobuffer.MoneroConnections/GetBestAvailableConnection', request, metadata || {}, this.methodDescriptorGetBestAvailableConnection, callback);
+                '/io.haveno.protobuffer.XmrConnections/GetBestAvailableConnection', request, metadata || {}, this.methodDescriptorGetBestAvailableConnection, callback);
         }
         return this.client_.unaryCall(this.hostname_ +
-            '/io.haveno.protobuffer.MoneroConnections/GetBestAvailableConnection', request, metadata || {}, this.methodDescriptorGetBestAvailableConnection);
+            '/io.haveno.protobuffer.XmrConnections/GetBestAvailableConnection', request, metadata || {}, this.methodDescriptorGetBestAvailableConnection);
     }
     setAutoSwitch(request, metadata, callback) {
         if (callback !== undefined) {
             return this.client_.rpcCall(this.hostname_ +
-                '/io.haveno.protobuffer.MoneroConnections/SetAutoSwitch', request, metadata || {}, this.methodDescriptorSetAutoSwitch, callback);
+                '/io.haveno.protobuffer.XmrConnections/SetAutoSwitch', request, metadata || {}, this.methodDescriptorSetAutoSwitch, callback);
         }
         return this.client_.unaryCall(this.hostname_ +
-            '/io.haveno.protobuffer.MoneroConnections/SetAutoSwitch', request, metadata || {}, this.methodDescriptorSetAutoSwitch);
+            '/io.haveno.protobuffer.XmrConnections/SetAutoSwitch', request, metadata || {}, this.methodDescriptorSetAutoSwitch);
     }
 }
-exports.MoneroConnectionsClient = MoneroConnectionsClient;
-class MoneroNodeClient {
+exports.XmrConnectionsClient = XmrConnectionsClient;
+class XmrNodeClient {
     constructor(hostname, credentials, options) {
-        this.methodDescriptorIsMoneroNodeOnline = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.MoneroNode/IsMoneroNodeOnline', grpcWeb.MethodType.UNARY, grpc_pb.IsMoneroNodeOnlineRequest, grpc_pb.IsMoneroNodeOnlineReply, (request) => {
+        this.methodDescriptorIsXmrNodeOnline = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.XmrNode/IsXmrNodeOnline', grpcWeb.MethodType.UNARY, grpc_pb.IsXmrNodeOnlineRequest, grpc_pb.IsXmrNodeOnlineReply, (request) => {
             return request.serializeBinary();
-        }, grpc_pb.IsMoneroNodeOnlineReply.deserializeBinary);
-        this.methodDescriptorGetMoneroNodeSettings = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.MoneroNode/GetMoneroNodeSettings', grpcWeb.MethodType.UNARY, grpc_pb.GetMoneroNodeSettingsRequest, grpc_pb.GetMoneroNodeSettingsReply, (request) => {
+        }, grpc_pb.IsXmrNodeOnlineReply.deserializeBinary);
+        this.methodDescriptorGetXmrNodeSettings = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.XmrNode/GetXmrNodeSettings', grpcWeb.MethodType.UNARY, grpc_pb.GetXmrNodeSettingsRequest, grpc_pb.GetXmrNodeSettingsReply, (request) => {
             return request.serializeBinary();
-        }, grpc_pb.GetMoneroNodeSettingsReply.deserializeBinary);
-        this.methodDescriptorStartMoneroNode = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.MoneroNode/StartMoneroNode', grpcWeb.MethodType.UNARY, grpc_pb.StartMoneroNodeRequest, grpc_pb.StartMoneroNodeReply, (request) => {
+        }, grpc_pb.GetXmrNodeSettingsReply.deserializeBinary);
+        this.methodDescriptorStartXmrNode = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.XmrNode/StartXmrNode', grpcWeb.MethodType.UNARY, grpc_pb.StartXmrNodeRequest, grpc_pb.StartXmrNodeReply, (request) => {
             return request.serializeBinary();
-        }, grpc_pb.StartMoneroNodeReply.deserializeBinary);
-        this.methodDescriptorStopMoneroNode = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.MoneroNode/StopMoneroNode', grpcWeb.MethodType.UNARY, grpc_pb.StopMoneroNodeRequest, grpc_pb.StopMoneroNodeReply, (request) => {
+        }, grpc_pb.StartXmrNodeReply.deserializeBinary);
+        this.methodDescriptorStopXmrNode = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.XmrNode/StopXmrNode', grpcWeb.MethodType.UNARY, grpc_pb.StopXmrNodeRequest, grpc_pb.StopXmrNodeReply, (request) => {
             return request.serializeBinary();
-        }, grpc_pb.StopMoneroNodeReply.deserializeBinary);
+        }, grpc_pb.StopXmrNodeReply.deserializeBinary);
         if (!options)
             options = {};
         if (!credentials)
@@ -500,40 +500,40 @@ class MoneroNodeClient {
         this.credentials_ = credentials;
         this.options_ = options;
     }
-    isMoneroNodeOnline(request, metadata, callback) {
+    isXmrNodeOnline(request, metadata, callback) {
         if (callback !== undefined) {
             return this.client_.rpcCall(this.hostname_ +
-                '/io.haveno.protobuffer.MoneroNode/IsMoneroNodeOnline', request, metadata || {}, this.methodDescriptorIsMoneroNodeOnline, callback);
+                '/io.haveno.protobuffer.XmrNode/IsXmrNodeOnline', request, metadata || {}, this.methodDescriptorIsXmrNodeOnline, callback);
         }
         return this.client_.unaryCall(this.hostname_ +
-            '/io.haveno.protobuffer.MoneroNode/IsMoneroNodeOnline', request, metadata || {}, this.methodDescriptorIsMoneroNodeOnline);
+            '/io.haveno.protobuffer.XmrNode/IsXmrNodeOnline', request, metadata || {}, this.methodDescriptorIsXmrNodeOnline);
     }
-    getMoneroNodeSettings(request, metadata, callback) {
+    getXmrNodeSettings(request, metadata, callback) {
         if (callback !== undefined) {
             return this.client_.rpcCall(this.hostname_ +
-                '/io.haveno.protobuffer.MoneroNode/GetMoneroNodeSettings', request, metadata || {}, this.methodDescriptorGetMoneroNodeSettings, callback);
+                '/io.haveno.protobuffer.XmrNode/GetXmrNodeSettings', request, metadata || {}, this.methodDescriptorGetXmrNodeSettings, callback);
         }
         return this.client_.unaryCall(this.hostname_ +
-            '/io.haveno.protobuffer.MoneroNode/GetMoneroNodeSettings', request, metadata || {}, this.methodDescriptorGetMoneroNodeSettings);
+            '/io.haveno.protobuffer.XmrNode/GetXmrNodeSettings', request, metadata || {}, this.methodDescriptorGetXmrNodeSettings);
     }
-    startMoneroNode(request, metadata, callback) {
+    startXmrNode(request, metadata, callback) {
         if (callback !== undefined) {
             return this.client_.rpcCall(this.hostname_ +
-                '/io.haveno.protobuffer.MoneroNode/StartMoneroNode', request, metadata || {}, this.methodDescriptorStartMoneroNode, callback);
+                '/io.haveno.protobuffer.XmrNode/StartXmrNode', request, metadata || {}, this.methodDescriptorStartXmrNode, callback);
         }
         return this.client_.unaryCall(this.hostname_ +
-            '/io.haveno.protobuffer.MoneroNode/StartMoneroNode', request, metadata || {}, this.methodDescriptorStartMoneroNode);
+            '/io.haveno.protobuffer.XmrNode/StartXmrNode', request, metadata || {}, this.methodDescriptorStartXmrNode);
     }
-    stopMoneroNode(request, metadata, callback) {
+    stopXmrNode(request, metadata, callback) {
         if (callback !== undefined) {
             return this.client_.rpcCall(this.hostname_ +
-                '/io.haveno.protobuffer.MoneroNode/StopMoneroNode', request, metadata || {}, this.methodDescriptorStopMoneroNode, callback);
+                '/io.haveno.protobuffer.XmrNode/StopXmrNode', request, metadata || {}, this.methodDescriptorStopXmrNode, callback);
         }
         return this.client_.unaryCall(this.hostname_ +
-            '/io.haveno.protobuffer.MoneroNode/StopMoneroNode', request, metadata || {}, this.methodDescriptorStopMoneroNode);
+            '/io.haveno.protobuffer.XmrNode/StopXmrNode', request, metadata || {}, this.methodDescriptorStopXmrNode);
     }
 }
-exports.MoneroNodeClient = MoneroNodeClient;
+exports.XmrNodeClient = XmrNodeClient;
 class OffersClient {
     constructor(hostname, credentials, options) {
         this.methodDescriptorGetOffer = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.Offers/GetOffer', grpcWeb.MethodType.UNARY, grpc_pb.GetOfferRequest, grpc_pb.GetOfferReply, (request) => {

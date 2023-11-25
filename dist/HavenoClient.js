@@ -45,8 +45,8 @@ class HavenoClient {
         this._password = password;
         this._getVersionClient = new GrpcServiceClientPb_1.GetVersionClient(this._url);
         this._accountClient = new GrpcServiceClientPb_1.AccountClient(this._url);
-        this._moneroConnectionsClient = new GrpcServiceClientPb_1.MoneroConnectionsClient(this._url);
-        this._moneroNodeClient = new GrpcServiceClientPb_1.MoneroNodeClient(this._url);
+        this._xmrConnectionsClient = new GrpcServiceClientPb_1.XmrConnectionsClient(this._url);
+        this._xmrNodeClient = new GrpcServiceClientPb_1.XmrNodeClient(this._url);
         this._disputeAgentsClient = new GrpcServiceClientPb_1.DisputeAgentsClient(this._url);
         this._disputesClient = new GrpcServiceClientPb_1.DisputesClient(this._url);
         this._walletsClient = new GrpcServiceClientPb_1.WalletsClient(this._url);
@@ -400,7 +400,7 @@ class HavenoClient {
      */
     async addMoneroConnection(connection) {
         try {
-            await this._moneroConnectionsClient.addConnection(new grpc_pb_1.AddConnectionRequest().setConnection(typeof connection === "string" ? new grpc_pb_1.UrlConnection().setUrl(connection) : connection), { password: this._password });
+            await this._xmrConnectionsClient.addConnection(new grpc_pb_1.AddConnectionRequest().setConnection(typeof connection === "string" ? new grpc_pb_1.UrlConnection().setUrl(connection) : connection), { password: this._password });
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
@@ -413,7 +413,7 @@ class HavenoClient {
      */
     async removeMoneroConnection(url) {
         try {
-            await this._moneroConnectionsClient.removeConnection(new grpc_pb_1.RemoveConnectionRequest().setUrl(url), { password: this._password });
+            await this._xmrConnectionsClient.removeConnection(new grpc_pb_1.RemoveConnectionRequest().setUrl(url), { password: this._password });
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
@@ -426,7 +426,7 @@ class HavenoClient {
      */
     async getMoneroConnection() {
         try {
-            return await (await this._moneroConnectionsClient.getConnection(new grpc_pb_1.GetConnectionRequest(), { password: this._password })).getConnection();
+            return await (await this._xmrConnectionsClient.getConnection(new grpc_pb_1.GetConnectionRequest(), { password: this._password })).getConnection();
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
@@ -439,7 +439,7 @@ class HavenoClient {
      */
     async getMoneroConnections() {
         try {
-            return (await this._moneroConnectionsClient.getConnections(new grpc_pb_1.GetConnectionsRequest(), { password: this._password })).getConnectionsList();
+            return (await this._xmrConnectionsClient.getConnections(new grpc_pb_1.GetConnectionsRequest(), { password: this._password })).getConnectionsList();
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
@@ -462,7 +462,7 @@ class HavenoClient {
         else
             request.setConnection(connection);
         try {
-            await this._moneroConnectionsClient.setConnection(request, { password: this._password });
+            await this._xmrConnectionsClient.setConnection(request, { password: this._password });
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
@@ -477,7 +477,7 @@ class HavenoClient {
      */
     async checkMoneroConnection() {
         try {
-            return (await this._moneroConnectionsClient.checkConnection(new grpc_pb_1.CheckConnectionRequest(), { password: this._password })).getConnection();
+            return (await this._xmrConnectionsClient.checkConnection(new grpc_pb_1.CheckConnectionRequest(), { password: this._password })).getConnection();
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
@@ -490,7 +490,7 @@ class HavenoClient {
      */
     async checkMoneroConnections() {
         try {
-            return (await this._moneroConnectionsClient.checkConnections(new grpc_pb_1.CheckConnectionsRequest(), { password: this._password })).getConnectionsList();
+            return (await this._xmrConnectionsClient.checkConnections(new grpc_pb_1.CheckConnectionsRequest(), { password: this._password })).getConnectionsList();
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
@@ -503,7 +503,7 @@ class HavenoClient {
      */
     async startCheckingConnection(refreshPeriod) {
         try {
-            await this._moneroConnectionsClient.startCheckingConnections(new grpc_pb_1.StartCheckingConnectionsRequest().setRefreshPeriod(refreshPeriod), { password: this._password });
+            await this._xmrConnectionsClient.startCheckingConnections(new grpc_pb_1.StartCheckingConnectionsRequest().setRefreshPeriod(refreshPeriod), { password: this._password });
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
@@ -514,7 +514,7 @@ class HavenoClient {
      */
     async stopCheckingConnection() {
         try {
-            await this._moneroConnectionsClient.stopCheckingConnections(new grpc_pb_1.StopCheckingConnectionsRequest(), { password: this._password });
+            await this._xmrConnectionsClient.stopCheckingConnections(new grpc_pb_1.StopCheckingConnectionsRequest(), { password: this._password });
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
@@ -527,7 +527,7 @@ class HavenoClient {
      */
     async getBestAvailableConnection() {
         try {
-            return (await this._moneroConnectionsClient.getBestAvailableConnection(new grpc_pb_1.GetBestAvailableConnectionRequest(), { password: this._password })).getConnection();
+            return (await this._xmrConnectionsClient.getBestAvailableConnection(new grpc_pb_1.GetBestAvailableConnectionRequest(), { password: this._password })).getConnection();
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
@@ -540,7 +540,7 @@ class HavenoClient {
      */
     async setAutoSwitch(autoSwitch) {
         try {
-            await this._moneroConnectionsClient.setAutoSwitch(new grpc_pb_1.SetAutoSwitchRequest().setAutoSwitch(autoSwitch), { password: this._password });
+            await this._xmrConnectionsClient.setAutoSwitch(new grpc_pb_1.SetAutoSwitchRequest().setAutoSwitch(autoSwitch), { password: this._password });
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
@@ -551,7 +551,7 @@ class HavenoClient {
      */
     async isMoneroNodeOnline() {
         try {
-            return (await this._moneroNodeClient.isMoneroNodeOnline(new grpc_pb_1.IsMoneroNodeOnlineRequest(), { password: this._password })).getIsRunning();
+            return (await this._xmrNodeClient.isXmrNodeOnline(new grpc_pb_1.IsXmrNodeOnlineRequest(), { password: this._password })).getIsRunning();
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
@@ -562,8 +562,8 @@ class HavenoClient {
      */
     async getMoneroNodeSettings() {
         try {
-            const request = new grpc_pb_1.GetMoneroNodeSettingsRequest();
-            return (await this._moneroNodeClient.getMoneroNodeSettings(request, { password: this._password })).getSettings();
+            const request = new grpc_pb_1.GetXmrNodeSettingsRequest();
+            return (await this._xmrNodeClient.getXmrNodeSettings(request, { password: this._password })).getSettings();
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
@@ -576,8 +576,8 @@ class HavenoClient {
      */
     async startMoneroNode(settings) {
         try {
-            const request = new grpc_pb_1.StartMoneroNodeRequest().setSettings(settings);
-            await this._moneroNodeClient.startMoneroNode(request, { password: this._password });
+            const request = new grpc_pb_1.StartXmrNodeRequest().setSettings(settings);
+            await this._xmrNodeClient.startXmrNode(request, { password: this._password });
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
@@ -588,7 +588,7 @@ class HavenoClient {
      */
     async stopMoneroNode() {
         try {
-            await this._moneroNodeClient.stopMoneroNode(new grpc_pb_1.StopMoneroNodeRequest(), { password: this._password });
+            await this._xmrNodeClient.stopXmrNode(new grpc_pb_1.StopXmrNodeRequest(), { password: this._password });
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);

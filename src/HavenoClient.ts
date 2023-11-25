@@ -3,9 +3,9 @@ import HavenoError from "./types/HavenoError";
 import HavenoUtils from "./utils/HavenoUtils";
 import TaskLooper from "./utils/TaskLooper";
 import type * as grpcWeb from "grpc-web";
-import { GetVersionClient, AccountClient, MoneroConnectionsClient, DisputesClient, DisputeAgentsClient, NotificationsClient, WalletsClient, PriceClient, OffersClient, PaymentAccountsClient, TradesClient, ShutdownServerClient, MoneroNodeClient } from './protobuf/GrpcServiceClientPb';
-import { GetVersionRequest, GetVersionReply, IsAppInitializedRequest, IsAppInitializedReply, RegisterDisputeAgentRequest, UnregisterDisputeAgentRequest, MarketPriceRequest, MarketPriceReply, MarketPricesRequest, MarketPricesReply, MarketPriceInfo, MarketDepthRequest, MarketDepthReply, MarketDepthInfo, GetBalancesRequest, GetBalancesReply, XmrBalanceInfo, GetMyOfferRequest, GetMyOfferReply, GetOffersRequest, GetOffersReply, OfferInfo, GetPaymentMethodsRequest, GetPaymentMethodsReply, GetPaymentAccountFormRequest, CreatePaymentAccountRequest, ValidateFormFieldRequest, CreatePaymentAccountReply, GetPaymentAccountFormReply, GetPaymentAccountsRequest, GetPaymentAccountsReply, CreateCryptoCurrencyPaymentAccountRequest, CreateCryptoCurrencyPaymentAccountReply, PostOfferRequest, PostOfferReply, CancelOfferRequest, TakeOfferRequest, TakeOfferReply, TradeInfo, GetTradeRequest, GetTradeReply, GetTradesRequest, GetTradesReply, GetXmrSeedRequest, GetXmrSeedReply, GetXmrPrimaryAddressRequest, GetXmrPrimaryAddressReply, GetXmrNewSubaddressRequest, GetXmrNewSubaddressReply, ConfirmPaymentSentRequest, ConfirmPaymentReceivedRequest, CompleteTradeRequest, XmrTx, GetXmrTxsRequest, GetXmrTxsReply, XmrDestination, CreateXmrTxRequest, CreateXmrTxReply, RelayXmrTxRequest, RelayXmrTxReply, CreateAccountRequest, AccountExistsRequest, AccountExistsReply, DeleteAccountRequest, OpenAccountRequest, IsAccountOpenRequest, IsAccountOpenReply, CloseAccountRequest, ChangePasswordRequest, BackupAccountRequest, BackupAccountReply, RestoreAccountRequest, StopRequest, NotificationMessage, RegisterNotificationListenerRequest, SendNotificationRequest, UrlConnection, AddConnectionRequest, RemoveConnectionRequest, GetConnectionRequest, GetConnectionsRequest, SetConnectionRequest, CheckConnectionRequest, CheckConnectionsReply, CheckConnectionsRequest, StartCheckingConnectionsRequest, StopCheckingConnectionsRequest, GetBestAvailableConnectionRequest, SetAutoSwitchRequest, CheckConnectionReply, GetConnectionsReply, GetConnectionReply, GetBestAvailableConnectionReply, GetDisputeRequest, GetDisputeReply, GetDisputesRequest, GetDisputesReply, OpenDisputeRequest, ResolveDisputeRequest, SendDisputeChatMessageRequest, SendChatMessageRequest, GetChatMessagesRequest, GetChatMessagesReply, StartMoneroNodeRequest, StopMoneroNodeRequest, IsMoneroNodeOnlineRequest, IsMoneroNodeOnlineReply, GetMoneroNodeSettingsRequest, GetMoneroNodeSettingsReply } from "./protobuf/grpc_pb";
-import { OfferDirection, PaymentMethod, PaymentAccountForm, PaymentAccountFormField, PaymentAccount, PaymentAccountPayload, AvailabilityResult, Attachment, DisputeResult, Dispute, ChatMessage, MoneroNodeSettings } from "./protobuf/pb_pb";
+import { GetVersionClient, AccountClient, XmrConnectionsClient, DisputesClient, DisputeAgentsClient, NotificationsClient, WalletsClient, PriceClient, OffersClient, PaymentAccountsClient, TradesClient, ShutdownServerClient, XmrNodeClient } from './protobuf/GrpcServiceClientPb';
+import { GetVersionRequest, GetVersionReply, IsAppInitializedRequest, IsAppInitializedReply, RegisterDisputeAgentRequest, UnregisterDisputeAgentRequest, MarketPriceRequest, MarketPriceReply, MarketPricesRequest, MarketPricesReply, MarketPriceInfo, MarketDepthRequest, MarketDepthReply, MarketDepthInfo, GetBalancesRequest, GetBalancesReply, XmrBalanceInfo, GetMyOfferRequest, GetMyOfferReply, GetOffersRequest, GetOffersReply, OfferInfo, GetPaymentMethodsRequest, GetPaymentMethodsReply, GetPaymentAccountFormRequest, CreatePaymentAccountRequest, ValidateFormFieldRequest, CreatePaymentAccountReply, GetPaymentAccountFormReply, GetPaymentAccountsRequest, GetPaymentAccountsReply, CreateCryptoCurrencyPaymentAccountRequest, CreateCryptoCurrencyPaymentAccountReply, PostOfferRequest, PostOfferReply, CancelOfferRequest, TakeOfferRequest, TakeOfferReply, TradeInfo, GetTradeRequest, GetTradeReply, GetTradesRequest, GetTradesReply, GetXmrSeedRequest, GetXmrSeedReply, GetXmrPrimaryAddressRequest, GetXmrPrimaryAddressReply, GetXmrNewSubaddressRequest, GetXmrNewSubaddressReply, ConfirmPaymentSentRequest, ConfirmPaymentReceivedRequest, CompleteTradeRequest, XmrTx, GetXmrTxsRequest, GetXmrTxsReply, XmrDestination, CreateXmrTxRequest, CreateXmrTxReply, RelayXmrTxRequest, RelayXmrTxReply, CreateAccountRequest, AccountExistsRequest, AccountExistsReply, DeleteAccountRequest, OpenAccountRequest, IsAccountOpenRequest, IsAccountOpenReply, CloseAccountRequest, ChangePasswordRequest, BackupAccountRequest, BackupAccountReply, RestoreAccountRequest, StopRequest, NotificationMessage, RegisterNotificationListenerRequest, SendNotificationRequest, UrlConnection, AddConnectionRequest, RemoveConnectionRequest, GetConnectionRequest, GetConnectionsRequest, SetConnectionRequest, CheckConnectionRequest, CheckConnectionsReply, CheckConnectionsRequest, StartCheckingConnectionsRequest, StopCheckingConnectionsRequest, GetBestAvailableConnectionRequest, SetAutoSwitchRequest, CheckConnectionReply, GetConnectionsReply, GetConnectionReply, GetBestAvailableConnectionReply, GetDisputeRequest, GetDisputeReply, GetDisputesRequest, GetDisputesReply, OpenDisputeRequest, ResolveDisputeRequest, SendDisputeChatMessageRequest, SendChatMessageRequest, GetChatMessagesRequest, GetChatMessagesReply, StartXmrNodeRequest, StopXmrNodeRequest, IsXmrNodeOnlineRequest, IsXmrNodeOnlineReply, GetXmrNodeSettingsRequest, GetXmrNodeSettingsReply } from "./protobuf/grpc_pb";
+import { OfferDirection, PaymentMethod, PaymentAccountForm, PaymentAccountFormField, PaymentAccount, PaymentAccountPayload, AvailabilityResult, Attachment, DisputeResult, Dispute, ChatMessage, XmrNodeSettings } from "./protobuf/pb_pb";
 
 /**
  * Haveno daemon client.
@@ -19,8 +19,8 @@ export default class HavenoClient {
   /** @private */ _disputesClient: DisputesClient;
   /** @private */ _notificationsClient: NotificationsClient;
   /** @private */ _notificationStream: grpcWeb.ClientReadableStream<NotificationMessage> | undefined;
-  /** @private */ _moneroConnectionsClient: MoneroConnectionsClient;
-  /** @private */ _moneroNodeClient: MoneroNodeClient;
+  /** @private */ _xmrConnectionsClient: XmrConnectionsClient;
+  /** @private */ _xmrNodeClient: XmrNodeClient;
   /** @private */ _walletsClient: WalletsClient;
   /** @private */ _priceClient: PriceClient;
   /** @private */ _paymentAccountsClient: PaymentAccountsClient;
@@ -59,8 +59,8 @@ export default class HavenoClient {
     this._password = password;
     this._getVersionClient = new GetVersionClient(this._url);
     this._accountClient = new AccountClient(this._url);
-    this._moneroConnectionsClient = new MoneroConnectionsClient(this._url);
-    this._moneroNodeClient = new MoneroNodeClient(this._url);
+    this._xmrConnectionsClient = new XmrConnectionsClient(this._url);
+    this._xmrNodeClient = new XmrNodeClient(this._url);
     this._disputeAgentsClient = new DisputeAgentsClient(this._url);
     this._disputesClient = new DisputesClient(this._url);
     this._walletsClient = new WalletsClient(this._url);
@@ -426,7 +426,7 @@ export default class HavenoClient {
    */
   async addMoneroConnection(connection: string | UrlConnection): Promise<void> {
     try {
-      await this._moneroConnectionsClient.addConnection(new AddConnectionRequest().setConnection(typeof connection === "string" ? new UrlConnection().setUrl(connection) : connection), {password: this._password});
+      await this._xmrConnectionsClient.addConnection(new AddConnectionRequest().setConnection(typeof connection === "string" ? new UrlConnection().setUrl(connection) : connection), {password: this._password});
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);
     }
@@ -439,7 +439,7 @@ export default class HavenoClient {
    */
   async removeMoneroConnection(url: string): Promise<void> {
     try {
-      await this._moneroConnectionsClient.removeConnection(new RemoveConnectionRequest().setUrl(url), {password: this._password});
+      await this._xmrConnectionsClient.removeConnection(new RemoveConnectionRequest().setUrl(url), {password: this._password});
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);
     }
@@ -452,7 +452,7 @@ export default class HavenoClient {
    */
   async getMoneroConnection(): Promise<UrlConnection | undefined> {
     try {
-      return await (await this._moneroConnectionsClient.getConnection(new GetConnectionRequest(), {password: this._password})).getConnection();
+      return await (await this._xmrConnectionsClient.getConnection(new GetConnectionRequest(), {password: this._password})).getConnection();
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);
     }
@@ -465,7 +465,7 @@ export default class HavenoClient {
    */
   async getMoneroConnections(): Promise<UrlConnection[]> {
     try {
-      return (await this._moneroConnectionsClient.getConnections(new GetConnectionsRequest(), {password: this._password})).getConnectionsList();
+      return (await this._xmrConnectionsClient.getConnections(new GetConnectionsRequest(), {password: this._password})).getConnectionsList();
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);
     }
@@ -486,7 +486,7 @@ export default class HavenoClient {
     if (typeof connection === "string") request.setUrl(connection);
     else request.setConnection(connection);
     try {
-      await this._moneroConnectionsClient.setConnection(request, {password: this._password});
+      await this._xmrConnectionsClient.setConnection(request, {password: this._password});
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);
     }
@@ -501,7 +501,7 @@ export default class HavenoClient {
    */
   async checkMoneroConnection(): Promise<UrlConnection | undefined> {
     try {
-      return (await this._moneroConnectionsClient.checkConnection(new CheckConnectionRequest(), {password: this._password})).getConnection();
+      return (await this._xmrConnectionsClient.checkConnection(new CheckConnectionRequest(), {password: this._password})).getConnection();
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);
     }
@@ -514,7 +514,7 @@ export default class HavenoClient {
    */
   async checkMoneroConnections(): Promise<UrlConnection[]> {
     try {
-      return (await this._moneroConnectionsClient.checkConnections(new CheckConnectionsRequest(), {password: this._password})).getConnectionsList();
+      return (await this._xmrConnectionsClient.checkConnections(new CheckConnectionsRequest(), {password: this._password})).getConnectionsList();
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);
     }
@@ -527,7 +527,7 @@ export default class HavenoClient {
    */
   async startCheckingConnection(refreshPeriod: number): Promise<void> {
     try {
-      await this._moneroConnectionsClient.startCheckingConnections(new StartCheckingConnectionsRequest().setRefreshPeriod(refreshPeriod), {password: this._password});
+      await this._xmrConnectionsClient.startCheckingConnections(new StartCheckingConnectionsRequest().setRefreshPeriod(refreshPeriod), {password: this._password});
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);
     }
@@ -538,7 +538,7 @@ export default class HavenoClient {
    */
   async stopCheckingConnection(): Promise<void> {
     try {
-      await this._moneroConnectionsClient.stopCheckingConnections(new StopCheckingConnectionsRequest(), {password: this._password});
+      await this._xmrConnectionsClient.stopCheckingConnections(new StopCheckingConnectionsRequest(), {password: this._password});
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);
     }
@@ -551,7 +551,7 @@ export default class HavenoClient {
    */
   async getBestAvailableConnection(): Promise<UrlConnection | undefined> {
     try {
-      return (await this._moneroConnectionsClient.getBestAvailableConnection(new GetBestAvailableConnectionRequest(), {password: this._password})).getConnection();
+      return (await this._xmrConnectionsClient.getBestAvailableConnection(new GetBestAvailableConnectionRequest(), {password: this._password})).getConnection();
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);
     }
@@ -564,7 +564,7 @@ export default class HavenoClient {
    */
   async setAutoSwitch(autoSwitch: boolean): Promise<void> {
     try {
-      await this._moneroConnectionsClient.setAutoSwitch(new SetAutoSwitchRequest().setAutoSwitch(autoSwitch), {password: this._password});
+      await this._xmrConnectionsClient.setAutoSwitch(new SetAutoSwitchRequest().setAutoSwitch(autoSwitch), {password: this._password});
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);
     }
@@ -575,7 +575,7 @@ export default class HavenoClient {
    */
   async isMoneroNodeOnline(): Promise<boolean> {
     try {
-      return (await this._moneroNodeClient.isMoneroNodeOnline(new IsMoneroNodeOnlineRequest(), {password: this._password})).getIsRunning();
+      return (await this._xmrNodeClient.isXmrNodeOnline(new IsXmrNodeOnlineRequest(), {password: this._password})).getIsRunning();
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);
     }
@@ -584,10 +584,10 @@ export default class HavenoClient {
   /**
    * Gets the current local monero node settings.
    */
-  async getMoneroNodeSettings(): Promise<MoneroNodeSettings | undefined> {
+  async getMoneroNodeSettings(): Promise<XmrNodeSettings | undefined> {
     try {
-      const request = new GetMoneroNodeSettingsRequest();
-      return (await this._moneroNodeClient.getMoneroNodeSettings(request, {password: this._password})).getSettings();
+      const request = new GetXmrNodeSettingsRequest();
+      return (await this._xmrNodeClient.getXmrNodeSettings(request, {password: this._password})).getSettings();
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);
     }
@@ -598,10 +598,10 @@ export default class HavenoClient {
    *
    * @param {MoneroNodeSettings} settings - the settings to start the local node with
    */
-  async startMoneroNode(settings: MoneroNodeSettings): Promise<void> {
+  async startMoneroNode(settings: XmrNodeSettings): Promise<void> {
     try {
-      const request = new StartMoneroNodeRequest().setSettings(settings);
-      await this._moneroNodeClient.startMoneroNode(request, {password: this._password});
+      const request = new StartXmrNodeRequest().setSettings(settings);
+      await this._xmrNodeClient.startXmrNode(request, {password: this._password});
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);
     }
@@ -612,7 +612,7 @@ export default class HavenoClient {
    */
   async stopMoneroNode(): Promise<void> {
     try {
-      await this._moneroNodeClient.stopMoneroNode(new StopMoneroNodeRequest(), {password: this._password});
+      await this._xmrNodeClient.stopXmrNode(new StopXmrNodeRequest(), {password: this._password});
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);
     }

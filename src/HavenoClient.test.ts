@@ -18,8 +18,8 @@ import {
   PaymentAccountForm,
   PaymentAccountFormField,
   PaymentAccount,
-  MoneroNodeSettings,
   XmrDestination,
+  XmrNodeSettings,
   XmrTx,
   XmrIncomingTransfer,
   XmrOutgoingTransfer,
@@ -857,7 +857,7 @@ test("Can start and stop a local Monero node (CI)", async() => {
     HavenoUtils.log(0, "Warning: local Monero node is already running, skipping start and stop local Monero node tests");
 
     // expect error due to existing running node
-    const newSettings = new MoneroNodeSettings();
+    const newSettings = new XmrNodeSettings();
     try {
       await user1.startMoneroNode(newSettings);
       throw new Error("should have thrown");
@@ -868,7 +868,7 @@ test("Can start and stop a local Monero node (CI)", async() => {
   } else {
 
     // expect error when passing in bad arguments
-    const badSettings = new MoneroNodeSettings();
+    const badSettings = new XmrNodeSettings();
     badSettings.setStartupFlagsList(["--invalid-flag"]);
     try {
       await user1.startMoneroNode(badSettings);
@@ -879,7 +879,7 @@ test("Can start and stop a local Monero node (CI)", async() => {
 
     // expect successful start with custom settings
     const connectionsBefore = await user1.getMoneroConnections();
-    const settings: MoneroNodeSettings = new MoneroNodeSettings();
+    const settings: XmrNodeSettings = new XmrNodeSettings();
     const dataDir = TestConfig.moneroBinsDir + "/" + TestConfig.baseCurrencyNetwork + "/node1";
     const logFile = dataDir + "/test.log";
     const p2pPort = 38086;
@@ -901,7 +901,7 @@ test("Can start and stop a local Monero node (CI)", async() => {
     assert(height >= 0);
 
     // expect error due to existing running node
-    const newSettings = new MoneroNodeSettings();
+    const newSettings = new XmrNodeSettings();
     try {
       await user1.startMoneroNode(newSettings);
       throw new Error("should have thrown");
@@ -3689,7 +3689,7 @@ function testOffer(offer: OfferInfo, ctx?: Partial<TradeContext>) {
   }
 }
 
-function testMoneroNodeSettingsEqual(settingsBefore: MoneroNodeSettings, settingsAfter: MoneroNodeSettings) {
+function testMoneroNodeSettingsEqual(settingsBefore: XmrNodeSettings, settingsAfter: XmrNodeSettings) {
     expect(settingsBefore.getBlockchainPath()).toEqual(settingsAfter.getBlockchainPath());
     expect(settingsBefore.getBootstrapUrl()).toEqual(settingsAfter.getBootstrapUrl());
     expect(settingsBefore.getStartupFlagsList()).toEqual(settingsAfter.getStartupFlagsList());
