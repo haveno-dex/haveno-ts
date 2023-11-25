@@ -156,7 +156,7 @@ export declare class NotificationsClient {
     sendNotification(request: grpc_pb.SendNotificationRequest, metadata: grpcWeb.Metadata | null): Promise<grpc_pb.SendNotificationReply>;
     sendNotification(request: grpc_pb.SendNotificationRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.SendNotificationReply) => void): grpcWeb.ClientReadableStream<grpc_pb.SendNotificationReply>;
 }
-export declare class MoneroConnectionsClient {
+export declare class XmrConnectionsClient {
     client_: grpcWeb.AbstractClientBase;
     hostname_: string;
     credentials_: null | {
@@ -204,7 +204,7 @@ export declare class MoneroConnectionsClient {
     setAutoSwitch(request: grpc_pb.SetAutoSwitchRequest, metadata: grpcWeb.Metadata | null): Promise<grpc_pb.SetAutoSwitchReply>;
     setAutoSwitch(request: grpc_pb.SetAutoSwitchRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.SetAutoSwitchReply) => void): grpcWeb.ClientReadableStream<grpc_pb.SetAutoSwitchReply>;
 }
-export declare class MoneroNodeClient {
+export declare class XmrNodeClient {
     client_: grpcWeb.AbstractClientBase;
     hostname_: string;
     credentials_: null | {
@@ -218,18 +218,18 @@ export declare class MoneroNodeClient {
     }, options?: null | {
         [index: string]: any;
     });
-    methodDescriptorIsMoneroNodeOnline: grpcWeb.MethodDescriptor<grpc_pb.IsMoneroNodeOnlineRequest, grpc_pb.IsMoneroNodeOnlineReply>;
-    isMoneroNodeOnline(request: grpc_pb.IsMoneroNodeOnlineRequest, metadata: grpcWeb.Metadata | null): Promise<grpc_pb.IsMoneroNodeOnlineReply>;
-    isMoneroNodeOnline(request: grpc_pb.IsMoneroNodeOnlineRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.IsMoneroNodeOnlineReply) => void): grpcWeb.ClientReadableStream<grpc_pb.IsMoneroNodeOnlineReply>;
-    methodDescriptorGetMoneroNodeSettings: grpcWeb.MethodDescriptor<grpc_pb.GetMoneroNodeSettingsRequest, grpc_pb.GetMoneroNodeSettingsReply>;
-    getMoneroNodeSettings(request: grpc_pb.GetMoneroNodeSettingsRequest, metadata: grpcWeb.Metadata | null): Promise<grpc_pb.GetMoneroNodeSettingsReply>;
-    getMoneroNodeSettings(request: grpc_pb.GetMoneroNodeSettingsRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.GetMoneroNodeSettingsReply) => void): grpcWeb.ClientReadableStream<grpc_pb.GetMoneroNodeSettingsReply>;
-    methodDescriptorStartMoneroNode: grpcWeb.MethodDescriptor<grpc_pb.StartMoneroNodeRequest, grpc_pb.StartMoneroNodeReply>;
-    startMoneroNode(request: grpc_pb.StartMoneroNodeRequest, metadata: grpcWeb.Metadata | null): Promise<grpc_pb.StartMoneroNodeReply>;
-    startMoneroNode(request: grpc_pb.StartMoneroNodeRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.StartMoneroNodeReply) => void): grpcWeb.ClientReadableStream<grpc_pb.StartMoneroNodeReply>;
-    methodDescriptorStopMoneroNode: grpcWeb.MethodDescriptor<grpc_pb.StopMoneroNodeRequest, grpc_pb.StopMoneroNodeReply>;
-    stopMoneroNode(request: grpc_pb.StopMoneroNodeRequest, metadata: grpcWeb.Metadata | null): Promise<grpc_pb.StopMoneroNodeReply>;
-    stopMoneroNode(request: grpc_pb.StopMoneroNodeRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.StopMoneroNodeReply) => void): grpcWeb.ClientReadableStream<grpc_pb.StopMoneroNodeReply>;
+    methodDescriptorIsXmrNodeOnline: grpcWeb.MethodDescriptor<grpc_pb.IsXmrNodeOnlineRequest, grpc_pb.IsXmrNodeOnlineReply>;
+    isXmrNodeOnline(request: grpc_pb.IsXmrNodeOnlineRequest, metadata: grpcWeb.Metadata | null): Promise<grpc_pb.IsXmrNodeOnlineReply>;
+    isXmrNodeOnline(request: grpc_pb.IsXmrNodeOnlineRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.IsXmrNodeOnlineReply) => void): grpcWeb.ClientReadableStream<grpc_pb.IsXmrNodeOnlineReply>;
+    methodDescriptorGetXmrNodeSettings: grpcWeb.MethodDescriptor<grpc_pb.GetXmrNodeSettingsRequest, grpc_pb.GetXmrNodeSettingsReply>;
+    getXmrNodeSettings(request: grpc_pb.GetXmrNodeSettingsRequest, metadata: grpcWeb.Metadata | null): Promise<grpc_pb.GetXmrNodeSettingsReply>;
+    getXmrNodeSettings(request: grpc_pb.GetXmrNodeSettingsRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.GetXmrNodeSettingsReply) => void): grpcWeb.ClientReadableStream<grpc_pb.GetXmrNodeSettingsReply>;
+    methodDescriptorStartXmrNode: grpcWeb.MethodDescriptor<grpc_pb.StartXmrNodeRequest, grpc_pb.StartXmrNodeReply>;
+    startXmrNode(request: grpc_pb.StartXmrNodeRequest, metadata: grpcWeb.Metadata | null): Promise<grpc_pb.StartXmrNodeReply>;
+    startXmrNode(request: grpc_pb.StartXmrNodeRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.StartXmrNodeReply) => void): grpcWeb.ClientReadableStream<grpc_pb.StartXmrNodeReply>;
+    methodDescriptorStopXmrNode: grpcWeb.MethodDescriptor<grpc_pb.StopXmrNodeRequest, grpc_pb.StopXmrNodeReply>;
+    stopXmrNode(request: grpc_pb.StopXmrNodeRequest, metadata: grpcWeb.Metadata | null): Promise<grpc_pb.StopXmrNodeReply>;
+    stopXmrNode(request: grpc_pb.StopXmrNodeRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.StopXmrNodeReply) => void): grpcWeb.ClientReadableStream<grpc_pb.StopXmrNodeReply>;
 }
 export declare class OffersClient {
     client_: grpcWeb.AbstractClientBase;

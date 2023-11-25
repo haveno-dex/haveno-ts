@@ -1183,130 +1183,130 @@ export namespace SetAutoSwitchReply {
   }
 }
 
-export class IsMoneroNodeOnlineRequest extends jspb.Message {
+export class IsXmrNodeOnlineRequest extends jspb.Message {
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): IsMoneroNodeOnlineRequest.AsObject;
-  static toObject(includeInstance: boolean, msg: IsMoneroNodeOnlineRequest): IsMoneroNodeOnlineRequest.AsObject;
-  static serializeBinaryToWriter(message: IsMoneroNodeOnlineRequest, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): IsMoneroNodeOnlineRequest;
-  static deserializeBinaryFromReader(message: IsMoneroNodeOnlineRequest, reader: jspb.BinaryReader): IsMoneroNodeOnlineRequest;
+  toObject(includeInstance?: boolean): IsXmrNodeOnlineRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: IsXmrNodeOnlineRequest): IsXmrNodeOnlineRequest.AsObject;
+  static serializeBinaryToWriter(message: IsXmrNodeOnlineRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): IsXmrNodeOnlineRequest;
+  static deserializeBinaryFromReader(message: IsXmrNodeOnlineRequest, reader: jspb.BinaryReader): IsXmrNodeOnlineRequest;
 }
 
-export namespace IsMoneroNodeOnlineRequest {
+export namespace IsXmrNodeOnlineRequest {
   export type AsObject = {
   }
 }
 
-export class IsMoneroNodeOnlineReply extends jspb.Message {
+export class IsXmrNodeOnlineReply extends jspb.Message {
   getIsRunning(): boolean;
-  setIsRunning(value: boolean): IsMoneroNodeOnlineReply;
+  setIsRunning(value: boolean): IsXmrNodeOnlineReply;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): IsMoneroNodeOnlineReply.AsObject;
-  static toObject(includeInstance: boolean, msg: IsMoneroNodeOnlineReply): IsMoneroNodeOnlineReply.AsObject;
-  static serializeBinaryToWriter(message: IsMoneroNodeOnlineReply, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): IsMoneroNodeOnlineReply;
-  static deserializeBinaryFromReader(message: IsMoneroNodeOnlineReply, reader: jspb.BinaryReader): IsMoneroNodeOnlineReply;
+  toObject(includeInstance?: boolean): IsXmrNodeOnlineReply.AsObject;
+  static toObject(includeInstance: boolean, msg: IsXmrNodeOnlineReply): IsXmrNodeOnlineReply.AsObject;
+  static serializeBinaryToWriter(message: IsXmrNodeOnlineReply, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): IsXmrNodeOnlineReply;
+  static deserializeBinaryFromReader(message: IsXmrNodeOnlineReply, reader: jspb.BinaryReader): IsXmrNodeOnlineReply;
 }
 
-export namespace IsMoneroNodeOnlineReply {
+export namespace IsXmrNodeOnlineReply {
   export type AsObject = {
     isRunning: boolean,
   }
 }
 
-export class GetMoneroNodeSettingsRequest extends jspb.Message {
+export class GetXmrNodeSettingsRequest extends jspb.Message {
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): GetMoneroNodeSettingsRequest.AsObject;
-  static toObject(includeInstance: boolean, msg: GetMoneroNodeSettingsRequest): GetMoneroNodeSettingsRequest.AsObject;
-  static serializeBinaryToWriter(message: GetMoneroNodeSettingsRequest, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): GetMoneroNodeSettingsRequest;
-  static deserializeBinaryFromReader(message: GetMoneroNodeSettingsRequest, reader: jspb.BinaryReader): GetMoneroNodeSettingsRequest;
+  toObject(includeInstance?: boolean): GetXmrNodeSettingsRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: GetXmrNodeSettingsRequest): GetXmrNodeSettingsRequest.AsObject;
+  static serializeBinaryToWriter(message: GetXmrNodeSettingsRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GetXmrNodeSettingsRequest;
+  static deserializeBinaryFromReader(message: GetXmrNodeSettingsRequest, reader: jspb.BinaryReader): GetXmrNodeSettingsRequest;
 }
 
-export namespace GetMoneroNodeSettingsRequest {
+export namespace GetXmrNodeSettingsRequest {
   export type AsObject = {
   }
 }
 
-export class GetMoneroNodeSettingsReply extends jspb.Message {
-  getSettings(): pb_pb.MoneroNodeSettings | undefined;
-  setSettings(value?: pb_pb.MoneroNodeSettings): GetMoneroNodeSettingsReply;
+export class GetXmrNodeSettingsReply extends jspb.Message {
+  getSettings(): pb_pb.XmrNodeSettings | undefined;
+  setSettings(value?: pb_pb.XmrNodeSettings): GetXmrNodeSettingsReply;
   hasSettings(): boolean;
-  clearSettings(): GetMoneroNodeSettingsReply;
+  clearSettings(): GetXmrNodeSettingsReply;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): GetMoneroNodeSettingsReply.AsObject;
-  static toObject(includeInstance: boolean, msg: GetMoneroNodeSettingsReply): GetMoneroNodeSettingsReply.AsObject;
-  static serializeBinaryToWriter(message: GetMoneroNodeSettingsReply, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): GetMoneroNodeSettingsReply;
-  static deserializeBinaryFromReader(message: GetMoneroNodeSettingsReply, reader: jspb.BinaryReader): GetMoneroNodeSettingsReply;
+  toObject(includeInstance?: boolean): GetXmrNodeSettingsReply.AsObject;
+  static toObject(includeInstance: boolean, msg: GetXmrNodeSettingsReply): GetXmrNodeSettingsReply.AsObject;
+  static serializeBinaryToWriter(message: GetXmrNodeSettingsReply, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GetXmrNodeSettingsReply;
+  static deserializeBinaryFromReader(message: GetXmrNodeSettingsReply, reader: jspb.BinaryReader): GetXmrNodeSettingsReply;
 }
 
-export namespace GetMoneroNodeSettingsReply {
+export namespace GetXmrNodeSettingsReply {
   export type AsObject = {
-    settings?: pb_pb.MoneroNodeSettings.AsObject,
+    settings?: pb_pb.XmrNodeSettings.AsObject,
   }
 }
 
-export class StartMoneroNodeRequest extends jspb.Message {
-  getSettings(): pb_pb.MoneroNodeSettings | undefined;
-  setSettings(value?: pb_pb.MoneroNodeSettings): StartMoneroNodeRequest;
+export class StartXmrNodeRequest extends jspb.Message {
+  getSettings(): pb_pb.XmrNodeSettings | undefined;
+  setSettings(value?: pb_pb.XmrNodeSettings): StartXmrNodeRequest;
   hasSettings(): boolean;
-  clearSettings(): StartMoneroNodeRequest;
+  clearSettings(): StartXmrNodeRequest;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): StartMoneroNodeRequest.AsObject;
-  static toObject(includeInstance: boolean, msg: StartMoneroNodeRequest): StartMoneroNodeRequest.AsObject;
-  static serializeBinaryToWriter(message: StartMoneroNodeRequest, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): StartMoneroNodeRequest;
-  static deserializeBinaryFromReader(message: StartMoneroNodeRequest, reader: jspb.BinaryReader): StartMoneroNodeRequest;
+  toObject(includeInstance?: boolean): StartXmrNodeRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: StartXmrNodeRequest): StartXmrNodeRequest.AsObject;
+  static serializeBinaryToWriter(message: StartXmrNodeRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): StartXmrNodeRequest;
+  static deserializeBinaryFromReader(message: StartXmrNodeRequest, reader: jspb.BinaryReader): StartXmrNodeRequest;
 }
 
-export namespace StartMoneroNodeRequest {
+export namespace StartXmrNodeRequest {
   export type AsObject = {
-    settings?: pb_pb.MoneroNodeSettings.AsObject,
+    settings?: pb_pb.XmrNodeSettings.AsObject,
   }
 }
 
-export class StartMoneroNodeReply extends jspb.Message {
+export class StartXmrNodeReply extends jspb.Message {
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): StartMoneroNodeReply.AsObject;
-  static toObject(includeInstance: boolean, msg: StartMoneroNodeReply): StartMoneroNodeReply.AsObject;
-  static serializeBinaryToWriter(message: StartMoneroNodeReply, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): StartMoneroNodeReply;
-  static deserializeBinaryFromReader(message: StartMoneroNodeReply, reader: jspb.BinaryReader): StartMoneroNodeReply;
+  toObject(includeInstance?: boolean): StartXmrNodeReply.AsObject;
+  static toObject(includeInstance: boolean, msg: StartXmrNodeReply): StartXmrNodeReply.AsObject;
+  static serializeBinaryToWriter(message: StartXmrNodeReply, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): StartXmrNodeReply;
+  static deserializeBinaryFromReader(message: StartXmrNodeReply, reader: jspb.BinaryReader): StartXmrNodeReply;
 }
 
-export namespace StartMoneroNodeReply {
-  export type AsObject = {
-  }
-}
-
-export class StopMoneroNodeRequest extends jspb.Message {
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): StopMoneroNodeRequest.AsObject;
-  static toObject(includeInstance: boolean, msg: StopMoneroNodeRequest): StopMoneroNodeRequest.AsObject;
-  static serializeBinaryToWriter(message: StopMoneroNodeRequest, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): StopMoneroNodeRequest;
-  static deserializeBinaryFromReader(message: StopMoneroNodeRequest, reader: jspb.BinaryReader): StopMoneroNodeRequest;
-}
-
-export namespace StopMoneroNodeRequest {
+export namespace StartXmrNodeReply {
   export type AsObject = {
   }
 }
 
-export class StopMoneroNodeReply extends jspb.Message {
+export class StopXmrNodeRequest extends jspb.Message {
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): StopMoneroNodeReply.AsObject;
-  static toObject(includeInstance: boolean, msg: StopMoneroNodeReply): StopMoneroNodeReply.AsObject;
-  static serializeBinaryToWriter(message: StopMoneroNodeReply, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): StopMoneroNodeReply;
-  static deserializeBinaryFromReader(message: StopMoneroNodeReply, reader: jspb.BinaryReader): StopMoneroNodeReply;
+  toObject(includeInstance?: boolean): StopXmrNodeRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: StopXmrNodeRequest): StopXmrNodeRequest.AsObject;
+  static serializeBinaryToWriter(message: StopXmrNodeRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): StopXmrNodeRequest;
+  static deserializeBinaryFromReader(message: StopXmrNodeRequest, reader: jspb.BinaryReader): StopXmrNodeRequest;
 }
 
-export namespace StopMoneroNodeReply {
+export namespace StopXmrNodeRequest {
+  export type AsObject = {
+  }
+}
+
+export class StopXmrNodeReply extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): StopXmrNodeReply.AsObject;
+  static toObject(includeInstance: boolean, msg: StopXmrNodeReply): StopXmrNodeReply.AsObject;
+  static serializeBinaryToWriter(message: StopXmrNodeReply, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): StopXmrNodeReply;
+  static deserializeBinaryFromReader(message: StopXmrNodeReply, reader: jspb.BinaryReader): StopXmrNodeReply;
+}
+
+export namespace StopXmrNodeReply {
   export type AsObject = {
   }
 }

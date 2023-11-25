@@ -6379,21 +6379,6 @@ export class ProcessModel extends jspb.Message {
   getMultisigAddress(): string;
   setMultisigAddress(value: string): ProcessModel;
 
-  getPaymentSentMessage(): PaymentSentMessage | undefined;
-  setPaymentSentMessage(value?: PaymentSentMessage): ProcessModel;
-  hasPaymentSentMessage(): boolean;
-  clearPaymentSentMessage(): ProcessModel;
-
-  getPaymentReceivedMessage(): PaymentReceivedMessage | undefined;
-  setPaymentReceivedMessage(value?: PaymentReceivedMessage): ProcessModel;
-  hasPaymentReceivedMessage(): boolean;
-  clearPaymentReceivedMessage(): ProcessModel;
-
-  getDisputeClosedMessage(): DisputeClosedMessage | undefined;
-  setDisputeClosedMessage(value?: DisputeClosedMessage): ProcessModel;
-  hasDisputeClosedMessage(): boolean;
-  clearDisputeClosedMessage(): ProcessModel;
-
   getMediatedPayoutTxSignature(): Uint8Array | string;
   getMediatedPayoutTxSignature_asU8(): Uint8Array;
   getMediatedPayoutTxSignature_asB64(): string;
@@ -6428,9 +6413,6 @@ export namespace ProcessModel {
     arbitrator?: TradePeer.AsObject,
     tempTradePeerNodeAddress?: NodeAddress.AsObject,
     multisigAddress: string,
-    paymentSentMessage?: PaymentSentMessage.AsObject,
-    paymentReceivedMessage?: PaymentReceivedMessage.AsObject,
-    disputeClosedMessage?: DisputeClosedMessage.AsObject,
     mediatedPayoutTxSignature: Uint8Array | string,
     buyerPayoutAmountFromMediation: number,
     sellerPayoutAmountFromMediation: number,
@@ -6511,6 +6493,21 @@ export class TradePeer extends jspb.Message {
   getMediatedPayoutTxSignature_asB64(): string;
   setMediatedPayoutTxSignature(value: Uint8Array | string): TradePeer;
 
+  getPaymentSentMessage(): PaymentSentMessage | undefined;
+  setPaymentSentMessage(value?: PaymentSentMessage): TradePeer;
+  hasPaymentSentMessage(): boolean;
+  clearPaymentSentMessage(): TradePeer;
+
+  getPaymentReceivedMessage(): PaymentReceivedMessage | undefined;
+  setPaymentReceivedMessage(value?: PaymentReceivedMessage): TradePeer;
+  hasPaymentReceivedMessage(): boolean;
+  clearPaymentReceivedMessage(): TradePeer;
+
+  getDisputeClosedMessage(): DisputeClosedMessage | undefined;
+  setDisputeClosedMessage(value?: DisputeClosedMessage): TradePeer;
+  hasDisputeClosedMessage(): boolean;
+  clearDisputeClosedMessage(): TradePeer;
+
   getReserveTxHash(): string;
   setReserveTxHash(value: string): TradePeer;
 
@@ -6582,6 +6579,9 @@ export namespace TradePeer {
     accountAgeWitness?: AccountAgeWitness.AsObject,
     currentDate: number,
     mediatedPayoutTxSignature: Uint8Array | string,
+    paymentSentMessage?: PaymentSentMessage.AsObject,
+    paymentReceivedMessage?: PaymentReceivedMessage.AsObject,
+    disputeClosedMessage?: DisputeClosedMessage.AsObject,
     reserveTxHash: string,
     reserveTxHex: string,
     reserveTxKey: string,
@@ -6927,10 +6927,10 @@ export class PreferencesPayload extends jspb.Message {
   getNotifyOnPreRelease(): boolean;
   setNotifyOnPreRelease(value: boolean): PreferencesPayload;
 
-  getMoneroNodeSettings(): MoneroNodeSettings | undefined;
-  setMoneroNodeSettings(value?: MoneroNodeSettings): PreferencesPayload;
-  hasMoneroNodeSettings(): boolean;
-  clearMoneroNodeSettings(): PreferencesPayload;
+  getXmrNodeSettings(): XmrNodeSettings | undefined;
+  setXmrNodeSettings(value?: XmrNodeSettings): PreferencesPayload;
+  hasXmrNodeSettings(): boolean;
+  clearXmrNodeSettings(): PreferencesPayload;
 
   getClearDataAfterDays(): number;
   setClearDataAfterDays(value: number): PreferencesPayload;
@@ -7011,7 +7011,7 @@ export namespace PreferencesPayload {
     showOffersMatchingMyAccounts: boolean,
     denyApiTaker: boolean,
     notifyOnPreRelease: boolean,
-    moneroNodeSettings?: MoneroNodeSettings.AsObject,
+    xmrNodeSettings?: XmrNodeSettings.AsObject,
     clearDataAfterDays: number,
     buyScreenCryptoCurrencyCode: string,
     sellScreenCryptoCurrencyCode: string,
@@ -7055,27 +7055,27 @@ export namespace AutoConfirmSettings {
   }
 }
 
-export class MoneroNodeSettings extends jspb.Message {
+export class XmrNodeSettings extends jspb.Message {
   getBlockchainPath(): string;
-  setBlockchainPath(value: string): MoneroNodeSettings;
+  setBlockchainPath(value: string): XmrNodeSettings;
 
   getBootstrapUrl(): string;
-  setBootstrapUrl(value: string): MoneroNodeSettings;
+  setBootstrapUrl(value: string): XmrNodeSettings;
 
   getStartupFlagsList(): Array<string>;
-  setStartupFlagsList(value: Array<string>): MoneroNodeSettings;
-  clearStartupFlagsList(): MoneroNodeSettings;
-  addStartupFlags(value: string, index?: number): MoneroNodeSettings;
+  setStartupFlagsList(value: Array<string>): XmrNodeSettings;
+  clearStartupFlagsList(): XmrNodeSettings;
+  addStartupFlags(value: string, index?: number): XmrNodeSettings;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): MoneroNodeSettings.AsObject;
-  static toObject(includeInstance: boolean, msg: MoneroNodeSettings): MoneroNodeSettings.AsObject;
-  static serializeBinaryToWriter(message: MoneroNodeSettings, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): MoneroNodeSettings;
-  static deserializeBinaryFromReader(message: MoneroNodeSettings, reader: jspb.BinaryReader): MoneroNodeSettings;
+  toObject(includeInstance?: boolean): XmrNodeSettings.AsObject;
+  static toObject(includeInstance: boolean, msg: XmrNodeSettings): XmrNodeSettings.AsObject;
+  static serializeBinaryToWriter(message: XmrNodeSettings, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): XmrNodeSettings;
+  static deserializeBinaryFromReader(message: XmrNodeSettings, reader: jspb.BinaryReader): XmrNodeSettings;
 }
 
-export namespace MoneroNodeSettings {
+export namespace XmrNodeSettings {
   export type AsObject = {
     blockchainPath: string,
     bootstrapUrl: string,
