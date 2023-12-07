@@ -2650,12 +2650,6 @@ export class TradeInfo extends jspb.Message {
   getTakerFee(): string;
   setTakerFee(value: string): TradeInfo;
 
-  getTakerFeeTxId(): string;
-  setTakerFeeTxId(value: string): TradeInfo;
-
-  getPayoutTxId(): string;
-  setPayoutTxId(value: string): TradeInfo;
-
   getAmount(): string;
   setAmount(value: string): TradeInfo;
 
@@ -2664,6 +2658,24 @@ export class TradeInfo extends jspb.Message {
 
   getSellerSecurityDeposit(): string;
   setSellerSecurityDeposit(value: string): TradeInfo;
+
+  getBuyerDepositTxFee(): string;
+  setBuyerDepositTxFee(value: string): TradeInfo;
+
+  getSellerDepositTxFee(): string;
+  setSellerDepositTxFee(value: string): TradeInfo;
+
+  getBuyerPayoutTxFee(): string;
+  setBuyerPayoutTxFee(value: string): TradeInfo;
+
+  getSellerPayoutTxFee(): string;
+  setSellerPayoutTxFee(value: string): TradeInfo;
+
+  getBuyerPayoutAmount(): string;
+  setBuyerPayoutAmount(value: string): TradeInfo;
+
+  getSellerPayoutAmount(): string;
+  setSellerPayoutAmount(value: string): TradeInfo;
 
   getPrice(): string;
   setPrice(value: string): TradeInfo;
@@ -2733,6 +2745,9 @@ export class TradeInfo extends jspb.Message {
   getTakerDepositTxId(): string;
   setTakerDepositTxId(value: string): TradeInfo;
 
+  getPayoutTxId(): string;
+  setPayoutTxId(value: string): TradeInfo;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): TradeInfo.AsObject;
   static toObject(includeInstance: boolean, msg: TradeInfo): TradeInfo.AsObject;
@@ -2749,11 +2764,15 @@ export namespace TradeInfo {
     date: number,
     role: string,
     takerFee: string,
-    takerFeeTxId: string,
-    payoutTxId: string,
     amount: string,
     buyerSecurityDeposit: string,
     sellerSecurityDeposit: string,
+    buyerDepositTxFee: string,
+    sellerDepositTxFee: string,
+    buyerPayoutTxFee: string,
+    sellerPayoutTxFee: string,
+    buyerPayoutAmount: string,
+    sellerPayoutAmount: string,
     price: string,
     arbitratorNodeAddress: string,
     tradePeerNodeAddress: string,
@@ -2776,6 +2795,7 @@ export namespace TradeInfo {
     tradeVolume: string,
     makerDepositTxId: string,
     takerDepositTxId: string,
+    payoutTxId: string,
   }
 }
 

@@ -23112,33 +23112,38 @@ proto.io.haveno.protobuffer.TradeInfo.toObject = function(includeInstance, msg) 
     date: jspb.Message.getFieldWithDefault(msg, 4, 0),
     role: jspb.Message.getFieldWithDefault(msg, 5, ""),
     takerFee: jspb.Message.getFieldWithDefault(msg, 6, "0"),
-    takerFeeTxId: jspb.Message.getFieldWithDefault(msg, 7, ""),
-    payoutTxId: jspb.Message.getFieldWithDefault(msg, 8, ""),
-    amount: jspb.Message.getFieldWithDefault(msg, 9, "0"),
-    buyerSecurityDeposit: jspb.Message.getFieldWithDefault(msg, 10, "0"),
-    sellerSecurityDeposit: jspb.Message.getFieldWithDefault(msg, 11, "0"),
-    price: jspb.Message.getFieldWithDefault(msg, 12, ""),
-    arbitratorNodeAddress: jspb.Message.getFieldWithDefault(msg, 13, ""),
-    tradePeerNodeAddress: jspb.Message.getFieldWithDefault(msg, 14, ""),
-    state: jspb.Message.getFieldWithDefault(msg, 15, ""),
-    phase: jspb.Message.getFieldWithDefault(msg, 16, ""),
-    periodState: jspb.Message.getFieldWithDefault(msg, 17, ""),
-    payoutState: jspb.Message.getFieldWithDefault(msg, 18, ""),
-    disputeState: jspb.Message.getFieldWithDefault(msg, 19, ""),
-    isDepositsPublished: jspb.Message.getBooleanFieldWithDefault(msg, 20, false),
-    isDepositsConfirmed: jspb.Message.getBooleanFieldWithDefault(msg, 21, false),
-    isDepositsUnlocked: jspb.Message.getBooleanFieldWithDefault(msg, 22, false),
-    isPaymentSent: jspb.Message.getBooleanFieldWithDefault(msg, 23, false),
-    isPaymentReceived: jspb.Message.getBooleanFieldWithDefault(msg, 24, false),
-    isPayoutPublished: jspb.Message.getBooleanFieldWithDefault(msg, 25, false),
-    isPayoutConfirmed: jspb.Message.getBooleanFieldWithDefault(msg, 26, false),
-    isPayoutUnlocked: jspb.Message.getBooleanFieldWithDefault(msg, 27, false),
-    isCompleted: jspb.Message.getBooleanFieldWithDefault(msg, 28, false),
-    contractAsJson: jspb.Message.getFieldWithDefault(msg, 29, ""),
+    amount: jspb.Message.getFieldWithDefault(msg, 7, "0"),
+    buyerSecurityDeposit: jspb.Message.getFieldWithDefault(msg, 8, "0"),
+    sellerSecurityDeposit: jspb.Message.getFieldWithDefault(msg, 9, "0"),
+    buyerDepositTxFee: jspb.Message.getFieldWithDefault(msg, 10, "0"),
+    sellerDepositTxFee: jspb.Message.getFieldWithDefault(msg, 11, "0"),
+    buyerPayoutTxFee: jspb.Message.getFieldWithDefault(msg, 12, "0"),
+    sellerPayoutTxFee: jspb.Message.getFieldWithDefault(msg, 13, "0"),
+    buyerPayoutAmount: jspb.Message.getFieldWithDefault(msg, 14, "0"),
+    sellerPayoutAmount: jspb.Message.getFieldWithDefault(msg, 15, "0"),
+    price: jspb.Message.getFieldWithDefault(msg, 16, ""),
+    arbitratorNodeAddress: jspb.Message.getFieldWithDefault(msg, 17, ""),
+    tradePeerNodeAddress: jspb.Message.getFieldWithDefault(msg, 18, ""),
+    state: jspb.Message.getFieldWithDefault(msg, 19, ""),
+    phase: jspb.Message.getFieldWithDefault(msg, 20, ""),
+    periodState: jspb.Message.getFieldWithDefault(msg, 21, ""),
+    payoutState: jspb.Message.getFieldWithDefault(msg, 22, ""),
+    disputeState: jspb.Message.getFieldWithDefault(msg, 23, ""),
+    isDepositsPublished: jspb.Message.getBooleanFieldWithDefault(msg, 24, false),
+    isDepositsConfirmed: jspb.Message.getBooleanFieldWithDefault(msg, 25, false),
+    isDepositsUnlocked: jspb.Message.getBooleanFieldWithDefault(msg, 26, false),
+    isPaymentSent: jspb.Message.getBooleanFieldWithDefault(msg, 27, false),
+    isPaymentReceived: jspb.Message.getBooleanFieldWithDefault(msg, 28, false),
+    isPayoutPublished: jspb.Message.getBooleanFieldWithDefault(msg, 29, false),
+    isPayoutConfirmed: jspb.Message.getBooleanFieldWithDefault(msg, 30, false),
+    isPayoutUnlocked: jspb.Message.getBooleanFieldWithDefault(msg, 31, false),
+    isCompleted: jspb.Message.getBooleanFieldWithDefault(msg, 32, false),
+    contractAsJson: jspb.Message.getFieldWithDefault(msg, 33, ""),
     contract: (f = msg.getContract()) && proto.io.haveno.protobuffer.ContractInfo.toObject(includeInstance, f),
-    tradeVolume: jspb.Message.getFieldWithDefault(msg, 31, ""),
-    makerDepositTxId: jspb.Message.getFieldWithDefault(msg, 32, ""),
-    takerDepositTxId: jspb.Message.getFieldWithDefault(msg, 33, "")
+    tradeVolume: jspb.Message.getFieldWithDefault(msg, 35, ""),
+    makerDepositTxId: jspb.Message.getFieldWithDefault(msg, 36, ""),
+    takerDepositTxId: jspb.Message.getFieldWithDefault(msg, 37, ""),
+    payoutTxId: jspb.Message.getFieldWithDefault(msg, 38, "")
   };
 
   if (includeInstance) {
@@ -23201,113 +23206,133 @@ proto.io.haveno.protobuffer.TradeInfo.deserializeBinaryFromReader = function(msg
       msg.setTakerFee(value);
       break;
     case 7:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setTakerFeeTxId(value);
-      break;
-    case 8:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setPayoutTxId(value);
-      break;
-    case 9:
       var value = /** @type {string} */ (reader.readUint64String());
       msg.setAmount(value);
       break;
-    case 10:
+    case 8:
       var value = /** @type {string} */ (reader.readUint64String());
       msg.setBuyerSecurityDeposit(value);
       break;
-    case 11:
+    case 9:
       var value = /** @type {string} */ (reader.readUint64String());
       msg.setSellerSecurityDeposit(value);
       break;
+    case 10:
+      var value = /** @type {string} */ (reader.readUint64String());
+      msg.setBuyerDepositTxFee(value);
+      break;
+    case 11:
+      var value = /** @type {string} */ (reader.readUint64String());
+      msg.setSellerDepositTxFee(value);
+      break;
     case 12:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setPrice(value);
+      var value = /** @type {string} */ (reader.readUint64String());
+      msg.setBuyerPayoutTxFee(value);
       break;
     case 13:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setArbitratorNodeAddress(value);
+      var value = /** @type {string} */ (reader.readUint64String());
+      msg.setSellerPayoutTxFee(value);
       break;
     case 14:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setTradePeerNodeAddress(value);
+      var value = /** @type {string} */ (reader.readUint64String());
+      msg.setBuyerPayoutAmount(value);
       break;
     case 15:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setState(value);
+      var value = /** @type {string} */ (reader.readUint64String());
+      msg.setSellerPayoutAmount(value);
       break;
     case 16:
       var value = /** @type {string} */ (reader.readString());
-      msg.setPhase(value);
+      msg.setPrice(value);
       break;
     case 17:
       var value = /** @type {string} */ (reader.readString());
-      msg.setPeriodState(value);
+      msg.setArbitratorNodeAddress(value);
       break;
     case 18:
       var value = /** @type {string} */ (reader.readString());
-      msg.setPayoutState(value);
+      msg.setTradePeerNodeAddress(value);
       break;
     case 19:
       var value = /** @type {string} */ (reader.readString());
-      msg.setDisputeState(value);
+      msg.setState(value);
       break;
     case 20:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setIsDepositsPublished(value);
+      var value = /** @type {string} */ (reader.readString());
+      msg.setPhase(value);
       break;
     case 21:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setIsDepositsConfirmed(value);
+      var value = /** @type {string} */ (reader.readString());
+      msg.setPeriodState(value);
       break;
     case 22:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setIsDepositsUnlocked(value);
+      var value = /** @type {string} */ (reader.readString());
+      msg.setPayoutState(value);
       break;
     case 23:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setIsPaymentSent(value);
+      var value = /** @type {string} */ (reader.readString());
+      msg.setDisputeState(value);
       break;
     case 24:
       var value = /** @type {boolean} */ (reader.readBool());
-      msg.setIsPaymentReceived(value);
+      msg.setIsDepositsPublished(value);
       break;
     case 25:
       var value = /** @type {boolean} */ (reader.readBool());
-      msg.setIsPayoutPublished(value);
+      msg.setIsDepositsConfirmed(value);
       break;
     case 26:
       var value = /** @type {boolean} */ (reader.readBool());
-      msg.setIsPayoutConfirmed(value);
+      msg.setIsDepositsUnlocked(value);
       break;
     case 27:
       var value = /** @type {boolean} */ (reader.readBool());
-      msg.setIsPayoutUnlocked(value);
+      msg.setIsPaymentSent(value);
       break;
     case 28:
       var value = /** @type {boolean} */ (reader.readBool());
-      msg.setIsCompleted(value);
+      msg.setIsPaymentReceived(value);
       break;
     case 29:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setIsPayoutPublished(value);
+      break;
+    case 30:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setIsPayoutConfirmed(value);
+      break;
+    case 31:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setIsPayoutUnlocked(value);
+      break;
+    case 32:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setIsCompleted(value);
+      break;
+    case 33:
       var value = /** @type {string} */ (reader.readString());
       msg.setContractAsJson(value);
       break;
-    case 30:
+    case 34:
       var value = new proto.io.haveno.protobuffer.ContractInfo;
       reader.readMessage(value,proto.io.haveno.protobuffer.ContractInfo.deserializeBinaryFromReader);
       msg.setContract(value);
       break;
-    case 31:
+    case 35:
       var value = /** @type {string} */ (reader.readString());
       msg.setTradeVolume(value);
       break;
-    case 32:
+    case 36:
       var value = /** @type {string} */ (reader.readString());
       msg.setMakerDepositTxId(value);
       break;
-    case 33:
+    case 37:
       var value = /** @type {string} */ (reader.readString());
       msg.setTakerDepositTxId(value);
+      break;
+    case 38:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setPayoutTxId(value);
       break;
     default:
       reader.skipField();
@@ -23381,171 +23406,199 @@ proto.io.haveno.protobuffer.TradeInfo.serializeBinaryToWriter = function(message
       f
     );
   }
-  f = message.getTakerFeeTxId();
-  if (f.length > 0) {
-    writer.writeString(
-      7,
-      f
-    );
-  }
-  f = message.getPayoutTxId();
-  if (f.length > 0) {
-    writer.writeString(
-      8,
-      f
-    );
-  }
   f = message.getAmount();
   if (parseInt(f, 10) !== 0) {
     writer.writeUint64String(
-      9,
+      7,
       f
     );
   }
   f = message.getBuyerSecurityDeposit();
   if (parseInt(f, 10) !== 0) {
     writer.writeUint64String(
-      10,
+      8,
       f
     );
   }
   f = message.getSellerSecurityDeposit();
   if (parseInt(f, 10) !== 0) {
     writer.writeUint64String(
+      9,
+      f
+    );
+  }
+  f = message.getBuyerDepositTxFee();
+  if (parseInt(f, 10) !== 0) {
+    writer.writeUint64String(
+      10,
+      f
+    );
+  }
+  f = message.getSellerDepositTxFee();
+  if (parseInt(f, 10) !== 0) {
+    writer.writeUint64String(
       11,
+      f
+    );
+  }
+  f = message.getBuyerPayoutTxFee();
+  if (parseInt(f, 10) !== 0) {
+    writer.writeUint64String(
+      12,
+      f
+    );
+  }
+  f = message.getSellerPayoutTxFee();
+  if (parseInt(f, 10) !== 0) {
+    writer.writeUint64String(
+      13,
+      f
+    );
+  }
+  f = message.getBuyerPayoutAmount();
+  if (parseInt(f, 10) !== 0) {
+    writer.writeUint64String(
+      14,
+      f
+    );
+  }
+  f = message.getSellerPayoutAmount();
+  if (parseInt(f, 10) !== 0) {
+    writer.writeUint64String(
+      15,
       f
     );
   }
   f = message.getPrice();
   if (f.length > 0) {
     writer.writeString(
-      12,
+      16,
       f
     );
   }
   f = message.getArbitratorNodeAddress();
   if (f.length > 0) {
     writer.writeString(
-      13,
+      17,
       f
     );
   }
   f = message.getTradePeerNodeAddress();
   if (f.length > 0) {
     writer.writeString(
-      14,
+      18,
       f
     );
   }
   f = message.getState();
   if (f.length > 0) {
     writer.writeString(
-      15,
+      19,
       f
     );
   }
   f = message.getPhase();
   if (f.length > 0) {
     writer.writeString(
-      16,
+      20,
       f
     );
   }
   f = message.getPeriodState();
   if (f.length > 0) {
     writer.writeString(
-      17,
+      21,
       f
     );
   }
   f = message.getPayoutState();
   if (f.length > 0) {
     writer.writeString(
-      18,
+      22,
       f
     );
   }
   f = message.getDisputeState();
   if (f.length > 0) {
     writer.writeString(
-      19,
+      23,
       f
     );
   }
   f = message.getIsDepositsPublished();
   if (f) {
     writer.writeBool(
-      20,
+      24,
       f
     );
   }
   f = message.getIsDepositsConfirmed();
   if (f) {
     writer.writeBool(
-      21,
+      25,
       f
     );
   }
   f = message.getIsDepositsUnlocked();
   if (f) {
     writer.writeBool(
-      22,
+      26,
       f
     );
   }
   f = message.getIsPaymentSent();
   if (f) {
     writer.writeBool(
-      23,
+      27,
       f
     );
   }
   f = message.getIsPaymentReceived();
   if (f) {
     writer.writeBool(
-      24,
+      28,
       f
     );
   }
   f = message.getIsPayoutPublished();
   if (f) {
     writer.writeBool(
-      25,
+      29,
       f
     );
   }
   f = message.getIsPayoutConfirmed();
   if (f) {
     writer.writeBool(
-      26,
+      30,
       f
     );
   }
   f = message.getIsPayoutUnlocked();
   if (f) {
     writer.writeBool(
-      27,
+      31,
       f
     );
   }
   f = message.getIsCompleted();
   if (f) {
     writer.writeBool(
-      28,
+      32,
       f
     );
   }
   f = message.getContractAsJson();
   if (f.length > 0) {
     writer.writeString(
-      29,
+      33,
       f
     );
   }
   f = message.getContract();
   if (f != null) {
     writer.writeMessage(
-      30,
+      34,
       f,
       proto.io.haveno.protobuffer.ContractInfo.serializeBinaryToWriter
     );
@@ -23553,21 +23606,28 @@ proto.io.haveno.protobuffer.TradeInfo.serializeBinaryToWriter = function(message
   f = message.getTradeVolume();
   if (f.length > 0) {
     writer.writeString(
-      31,
+      35,
       f
     );
   }
   f = message.getMakerDepositTxId();
   if (f.length > 0) {
     writer.writeString(
-      32,
+      36,
       f
     );
   }
   f = message.getTakerDepositTxId();
   if (f.length > 0) {
     writer.writeString(
-      33,
+      37,
+      f
+    );
+  }
+  f = message.getPayoutTxId();
+  if (f.length > 0) {
+    writer.writeString(
+      38,
       f
     );
   }
@@ -23702,47 +23762,11 @@ proto.io.haveno.protobuffer.TradeInfo.prototype.setTakerFee = function(value) {
 
 
 /**
- * optional string taker_fee_tx_id = 7;
- * @return {string}
- */
-proto.io.haveno.protobuffer.TradeInfo.prototype.getTakerFeeTxId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
- */
-proto.io.haveno.protobuffer.TradeInfo.prototype.setTakerFeeTxId = function(value) {
-  return jspb.Message.setProto3StringField(this, 7, value);
-};
-
-
-/**
- * optional string payout_tx_id = 8;
- * @return {string}
- */
-proto.io.haveno.protobuffer.TradeInfo.prototype.getPayoutTxId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 8, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
- */
-proto.io.haveno.protobuffer.TradeInfo.prototype.setPayoutTxId = function(value) {
-  return jspb.Message.setProto3StringField(this, 8, value);
-};
-
-
-/**
- * optional uint64 amount = 9;
+ * optional uint64 amount = 7;
  * @return {string}
  */
 proto.io.haveno.protobuffer.TradeInfo.prototype.getAmount = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 9, "0"));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, "0"));
 };
 
 
@@ -23751,16 +23775,16 @@ proto.io.haveno.protobuffer.TradeInfo.prototype.getAmount = function() {
  * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
  */
 proto.io.haveno.protobuffer.TradeInfo.prototype.setAmount = function(value) {
-  return jspb.Message.setProto3StringIntField(this, 9, value);
+  return jspb.Message.setProto3StringIntField(this, 7, value);
 };
 
 
 /**
- * optional uint64 buyer_security_deposit = 10;
+ * optional uint64 buyer_security_deposit = 8;
  * @return {string}
  */
 proto.io.haveno.protobuffer.TradeInfo.prototype.getBuyerSecurityDeposit = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 10, "0"));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 8, "0"));
 };
 
 
@@ -23769,16 +23793,16 @@ proto.io.haveno.protobuffer.TradeInfo.prototype.getBuyerSecurityDeposit = functi
  * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
  */
 proto.io.haveno.protobuffer.TradeInfo.prototype.setBuyerSecurityDeposit = function(value) {
-  return jspb.Message.setProto3StringIntField(this, 10, value);
+  return jspb.Message.setProto3StringIntField(this, 8, value);
 };
 
 
 /**
- * optional uint64 seller_security_deposit = 11;
+ * optional uint64 seller_security_deposit = 9;
  * @return {string}
  */
 proto.io.haveno.protobuffer.TradeInfo.prototype.getSellerSecurityDeposit = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 11, "0"));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 9, "0"));
 };
 
 
@@ -23787,87 +23811,123 @@ proto.io.haveno.protobuffer.TradeInfo.prototype.getSellerSecurityDeposit = funct
  * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
  */
 proto.io.haveno.protobuffer.TradeInfo.prototype.setSellerSecurityDeposit = function(value) {
+  return jspb.Message.setProto3StringIntField(this, 9, value);
+};
+
+
+/**
+ * optional uint64 buyer_deposit_tx_fee = 10;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.TradeInfo.prototype.getBuyerDepositTxFee = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 10, "0"));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
+ */
+proto.io.haveno.protobuffer.TradeInfo.prototype.setBuyerDepositTxFee = function(value) {
+  return jspb.Message.setProto3StringIntField(this, 10, value);
+};
+
+
+/**
+ * optional uint64 seller_deposit_tx_fee = 11;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.TradeInfo.prototype.getSellerDepositTxFee = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 11, "0"));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
+ */
+proto.io.haveno.protobuffer.TradeInfo.prototype.setSellerDepositTxFee = function(value) {
   return jspb.Message.setProto3StringIntField(this, 11, value);
 };
 
 
 /**
- * optional string price = 12;
+ * optional uint64 buyer_payout_tx_fee = 12;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.TradeInfo.prototype.getBuyerPayoutTxFee = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 12, "0"));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
+ */
+proto.io.haveno.protobuffer.TradeInfo.prototype.setBuyerPayoutTxFee = function(value) {
+  return jspb.Message.setProto3StringIntField(this, 12, value);
+};
+
+
+/**
+ * optional uint64 seller_payout_tx_fee = 13;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.TradeInfo.prototype.getSellerPayoutTxFee = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 13, "0"));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
+ */
+proto.io.haveno.protobuffer.TradeInfo.prototype.setSellerPayoutTxFee = function(value) {
+  return jspb.Message.setProto3StringIntField(this, 13, value);
+};
+
+
+/**
+ * optional uint64 buyer_payout_amount = 14;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.TradeInfo.prototype.getBuyerPayoutAmount = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 14, "0"));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
+ */
+proto.io.haveno.protobuffer.TradeInfo.prototype.setBuyerPayoutAmount = function(value) {
+  return jspb.Message.setProto3StringIntField(this, 14, value);
+};
+
+
+/**
+ * optional uint64 seller_payout_amount = 15;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.TradeInfo.prototype.getSellerPayoutAmount = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 15, "0"));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
+ */
+proto.io.haveno.protobuffer.TradeInfo.prototype.setSellerPayoutAmount = function(value) {
+  return jspb.Message.setProto3StringIntField(this, 15, value);
+};
+
+
+/**
+ * optional string price = 16;
  * @return {string}
  */
 proto.io.haveno.protobuffer.TradeInfo.prototype.getPrice = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 12, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
- */
-proto.io.haveno.protobuffer.TradeInfo.prototype.setPrice = function(value) {
-  return jspb.Message.setProto3StringField(this, 12, value);
-};
-
-
-/**
- * optional string arbitrator_node_address = 13;
- * @return {string}
- */
-proto.io.haveno.protobuffer.TradeInfo.prototype.getArbitratorNodeAddress = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 13, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
- */
-proto.io.haveno.protobuffer.TradeInfo.prototype.setArbitratorNodeAddress = function(value) {
-  return jspb.Message.setProto3StringField(this, 13, value);
-};
-
-
-/**
- * optional string trade_peer_node_address = 14;
- * @return {string}
- */
-proto.io.haveno.protobuffer.TradeInfo.prototype.getTradePeerNodeAddress = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 14, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
- */
-proto.io.haveno.protobuffer.TradeInfo.prototype.setTradePeerNodeAddress = function(value) {
-  return jspb.Message.setProto3StringField(this, 14, value);
-};
-
-
-/**
- * optional string state = 15;
- * @return {string}
- */
-proto.io.haveno.protobuffer.TradeInfo.prototype.getState = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 15, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
- */
-proto.io.haveno.protobuffer.TradeInfo.prototype.setState = function(value) {
-  return jspb.Message.setProto3StringField(this, 15, value);
-};
-
-
-/**
- * optional string phase = 16;
- * @return {string}
- */
-proto.io.haveno.protobuffer.TradeInfo.prototype.getPhase = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 16, ""));
 };
 
@@ -23876,16 +23936,16 @@ proto.io.haveno.protobuffer.TradeInfo.prototype.getPhase = function() {
  * @param {string} value
  * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
  */
-proto.io.haveno.protobuffer.TradeInfo.prototype.setPhase = function(value) {
+proto.io.haveno.protobuffer.TradeInfo.prototype.setPrice = function(value) {
   return jspb.Message.setProto3StringField(this, 16, value);
 };
 
 
 /**
- * optional string period_state = 17;
+ * optional string arbitrator_node_address = 17;
  * @return {string}
  */
-proto.io.haveno.protobuffer.TradeInfo.prototype.getPeriodState = function() {
+proto.io.haveno.protobuffer.TradeInfo.prototype.getArbitratorNodeAddress = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 17, ""));
 };
 
@@ -23894,16 +23954,16 @@ proto.io.haveno.protobuffer.TradeInfo.prototype.getPeriodState = function() {
  * @param {string} value
  * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
  */
-proto.io.haveno.protobuffer.TradeInfo.prototype.setPeriodState = function(value) {
+proto.io.haveno.protobuffer.TradeInfo.prototype.setArbitratorNodeAddress = function(value) {
   return jspb.Message.setProto3StringField(this, 17, value);
 };
 
 
 /**
- * optional string payout_state = 18;
+ * optional string trade_peer_node_address = 18;
  * @return {string}
  */
-proto.io.haveno.protobuffer.TradeInfo.prototype.getPayoutState = function() {
+proto.io.haveno.protobuffer.TradeInfo.prototype.getTradePeerNodeAddress = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 18, ""));
 };
 
@@ -23912,16 +23972,16 @@ proto.io.haveno.protobuffer.TradeInfo.prototype.getPayoutState = function() {
  * @param {string} value
  * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
  */
-proto.io.haveno.protobuffer.TradeInfo.prototype.setPayoutState = function(value) {
+proto.io.haveno.protobuffer.TradeInfo.prototype.setTradePeerNodeAddress = function(value) {
   return jspb.Message.setProto3StringField(this, 18, value);
 };
 
 
 /**
- * optional string dispute_state = 19;
+ * optional string state = 19;
  * @return {string}
  */
-proto.io.haveno.protobuffer.TradeInfo.prototype.getDisputeState = function() {
+proto.io.haveno.protobuffer.TradeInfo.prototype.getState = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 19, ""));
 };
 
@@ -23930,88 +23990,88 @@ proto.io.haveno.protobuffer.TradeInfo.prototype.getDisputeState = function() {
  * @param {string} value
  * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
  */
-proto.io.haveno.protobuffer.TradeInfo.prototype.setDisputeState = function(value) {
+proto.io.haveno.protobuffer.TradeInfo.prototype.setState = function(value) {
   return jspb.Message.setProto3StringField(this, 19, value);
 };
 
 
 /**
- * optional bool is_deposits_published = 20;
+ * optional string phase = 20;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.TradeInfo.prototype.getPhase = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 20, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
+ */
+proto.io.haveno.protobuffer.TradeInfo.prototype.setPhase = function(value) {
+  return jspb.Message.setProto3StringField(this, 20, value);
+};
+
+
+/**
+ * optional string period_state = 21;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.TradeInfo.prototype.getPeriodState = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 21, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
+ */
+proto.io.haveno.protobuffer.TradeInfo.prototype.setPeriodState = function(value) {
+  return jspb.Message.setProto3StringField(this, 21, value);
+};
+
+
+/**
+ * optional string payout_state = 22;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.TradeInfo.prototype.getPayoutState = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 22, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
+ */
+proto.io.haveno.protobuffer.TradeInfo.prototype.setPayoutState = function(value) {
+  return jspb.Message.setProto3StringField(this, 22, value);
+};
+
+
+/**
+ * optional string dispute_state = 23;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.TradeInfo.prototype.getDisputeState = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 23, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
+ */
+proto.io.haveno.protobuffer.TradeInfo.prototype.setDisputeState = function(value) {
+  return jspb.Message.setProto3StringField(this, 23, value);
+};
+
+
+/**
+ * optional bool is_deposits_published = 24;
  * @return {boolean}
  */
 proto.io.haveno.protobuffer.TradeInfo.prototype.getIsDepositsPublished = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 20, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
- */
-proto.io.haveno.protobuffer.TradeInfo.prototype.setIsDepositsPublished = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 20, value);
-};
-
-
-/**
- * optional bool is_deposits_confirmed = 21;
- * @return {boolean}
- */
-proto.io.haveno.protobuffer.TradeInfo.prototype.getIsDepositsConfirmed = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 21, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
- */
-proto.io.haveno.protobuffer.TradeInfo.prototype.setIsDepositsConfirmed = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 21, value);
-};
-
-
-/**
- * optional bool is_deposits_unlocked = 22;
- * @return {boolean}
- */
-proto.io.haveno.protobuffer.TradeInfo.prototype.getIsDepositsUnlocked = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 22, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
- */
-proto.io.haveno.protobuffer.TradeInfo.prototype.setIsDepositsUnlocked = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 22, value);
-};
-
-
-/**
- * optional bool is_payment_sent = 23;
- * @return {boolean}
- */
-proto.io.haveno.protobuffer.TradeInfo.prototype.getIsPaymentSent = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 23, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
- */
-proto.io.haveno.protobuffer.TradeInfo.prototype.setIsPaymentSent = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 23, value);
-};
-
-
-/**
- * optional bool is_payment_received = 24;
- * @return {boolean}
- */
-proto.io.haveno.protobuffer.TradeInfo.prototype.getIsPaymentReceived = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 24, false));
 };
 
@@ -24020,16 +24080,16 @@ proto.io.haveno.protobuffer.TradeInfo.prototype.getIsPaymentReceived = function(
  * @param {boolean} value
  * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
  */
-proto.io.haveno.protobuffer.TradeInfo.prototype.setIsPaymentReceived = function(value) {
+proto.io.haveno.protobuffer.TradeInfo.prototype.setIsDepositsPublished = function(value) {
   return jspb.Message.setProto3BooleanField(this, 24, value);
 };
 
 
 /**
- * optional bool is_payout_published = 25;
+ * optional bool is_deposits_confirmed = 25;
  * @return {boolean}
  */
-proto.io.haveno.protobuffer.TradeInfo.prototype.getIsPayoutPublished = function() {
+proto.io.haveno.protobuffer.TradeInfo.prototype.getIsDepositsConfirmed = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 25, false));
 };
 
@@ -24038,16 +24098,16 @@ proto.io.haveno.protobuffer.TradeInfo.prototype.getIsPayoutPublished = function(
  * @param {boolean} value
  * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
  */
-proto.io.haveno.protobuffer.TradeInfo.prototype.setIsPayoutPublished = function(value) {
+proto.io.haveno.protobuffer.TradeInfo.prototype.setIsDepositsConfirmed = function(value) {
   return jspb.Message.setProto3BooleanField(this, 25, value);
 };
 
 
 /**
- * optional bool is_payout_confirmed = 26;
+ * optional bool is_deposits_unlocked = 26;
  * @return {boolean}
  */
-proto.io.haveno.protobuffer.TradeInfo.prototype.getIsPayoutConfirmed = function() {
+proto.io.haveno.protobuffer.TradeInfo.prototype.getIsDepositsUnlocked = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 26, false));
 };
 
@@ -24056,16 +24116,16 @@ proto.io.haveno.protobuffer.TradeInfo.prototype.getIsPayoutConfirmed = function(
  * @param {boolean} value
  * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
  */
-proto.io.haveno.protobuffer.TradeInfo.prototype.setIsPayoutConfirmed = function(value) {
+proto.io.haveno.protobuffer.TradeInfo.prototype.setIsDepositsUnlocked = function(value) {
   return jspb.Message.setProto3BooleanField(this, 26, value);
 };
 
 
 /**
- * optional bool is_payout_unlocked = 27;
+ * optional bool is_payment_sent = 27;
  * @return {boolean}
  */
-proto.io.haveno.protobuffer.TradeInfo.prototype.getIsPayoutUnlocked = function() {
+proto.io.haveno.protobuffer.TradeInfo.prototype.getIsPaymentSent = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 27, false));
 };
 
@@ -24074,16 +24134,16 @@ proto.io.haveno.protobuffer.TradeInfo.prototype.getIsPayoutUnlocked = function()
  * @param {boolean} value
  * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
  */
-proto.io.haveno.protobuffer.TradeInfo.prototype.setIsPayoutUnlocked = function(value) {
+proto.io.haveno.protobuffer.TradeInfo.prototype.setIsPaymentSent = function(value) {
   return jspb.Message.setProto3BooleanField(this, 27, value);
 };
 
 
 /**
- * optional bool is_completed = 28;
+ * optional bool is_payment_received = 28;
  * @return {boolean}
  */
-proto.io.haveno.protobuffer.TradeInfo.prototype.getIsCompleted = function() {
+proto.io.haveno.protobuffer.TradeInfo.prototype.getIsPaymentReceived = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 28, false));
 };
 
@@ -24092,17 +24152,89 @@ proto.io.haveno.protobuffer.TradeInfo.prototype.getIsCompleted = function() {
  * @param {boolean} value
  * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
  */
-proto.io.haveno.protobuffer.TradeInfo.prototype.setIsCompleted = function(value) {
+proto.io.haveno.protobuffer.TradeInfo.prototype.setIsPaymentReceived = function(value) {
   return jspb.Message.setProto3BooleanField(this, 28, value);
 };
 
 
 /**
- * optional string contract_as_json = 29;
+ * optional bool is_payout_published = 29;
+ * @return {boolean}
+ */
+proto.io.haveno.protobuffer.TradeInfo.prototype.getIsPayoutPublished = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 29, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
+ */
+proto.io.haveno.protobuffer.TradeInfo.prototype.setIsPayoutPublished = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 29, value);
+};
+
+
+/**
+ * optional bool is_payout_confirmed = 30;
+ * @return {boolean}
+ */
+proto.io.haveno.protobuffer.TradeInfo.prototype.getIsPayoutConfirmed = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 30, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
+ */
+proto.io.haveno.protobuffer.TradeInfo.prototype.setIsPayoutConfirmed = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 30, value);
+};
+
+
+/**
+ * optional bool is_payout_unlocked = 31;
+ * @return {boolean}
+ */
+proto.io.haveno.protobuffer.TradeInfo.prototype.getIsPayoutUnlocked = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 31, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
+ */
+proto.io.haveno.protobuffer.TradeInfo.prototype.setIsPayoutUnlocked = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 31, value);
+};
+
+
+/**
+ * optional bool is_completed = 32;
+ * @return {boolean}
+ */
+proto.io.haveno.protobuffer.TradeInfo.prototype.getIsCompleted = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 32, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
+ */
+proto.io.haveno.protobuffer.TradeInfo.prototype.setIsCompleted = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 32, value);
+};
+
+
+/**
+ * optional string contract_as_json = 33;
  * @return {string}
  */
 proto.io.haveno.protobuffer.TradeInfo.prototype.getContractAsJson = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 29, ""));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 33, ""));
 };
 
 
@@ -24111,17 +24243,17 @@ proto.io.haveno.protobuffer.TradeInfo.prototype.getContractAsJson = function() {
  * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
  */
 proto.io.haveno.protobuffer.TradeInfo.prototype.setContractAsJson = function(value) {
-  return jspb.Message.setProto3StringField(this, 29, value);
+  return jspb.Message.setProto3StringField(this, 33, value);
 };
 
 
 /**
- * optional ContractInfo contract = 30;
+ * optional ContractInfo contract = 34;
  * @return {?proto.io.haveno.protobuffer.ContractInfo}
  */
 proto.io.haveno.protobuffer.TradeInfo.prototype.getContract = function() {
   return /** @type{?proto.io.haveno.protobuffer.ContractInfo} */ (
-    jspb.Message.getWrapperField(this, proto.io.haveno.protobuffer.ContractInfo, 30));
+    jspb.Message.getWrapperField(this, proto.io.haveno.protobuffer.ContractInfo, 34));
 };
 
 
@@ -24130,7 +24262,7 @@ proto.io.haveno.protobuffer.TradeInfo.prototype.getContract = function() {
  * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
 */
 proto.io.haveno.protobuffer.TradeInfo.prototype.setContract = function(value) {
-  return jspb.Message.setWrapperField(this, 30, value);
+  return jspb.Message.setWrapperField(this, 34, value);
 };
 
 
@@ -24148,16 +24280,16 @@ proto.io.haveno.protobuffer.TradeInfo.prototype.clearContract = function() {
  * @return {boolean}
  */
 proto.io.haveno.protobuffer.TradeInfo.prototype.hasContract = function() {
-  return jspb.Message.getField(this, 30) != null;
+  return jspb.Message.getField(this, 34) != null;
 };
 
 
 /**
- * optional string trade_volume = 31;
+ * optional string trade_volume = 35;
  * @return {string}
  */
 proto.io.haveno.protobuffer.TradeInfo.prototype.getTradeVolume = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 31, ""));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 35, ""));
 };
 
 
@@ -24166,16 +24298,16 @@ proto.io.haveno.protobuffer.TradeInfo.prototype.getTradeVolume = function() {
  * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
  */
 proto.io.haveno.protobuffer.TradeInfo.prototype.setTradeVolume = function(value) {
-  return jspb.Message.setProto3StringField(this, 31, value);
+  return jspb.Message.setProto3StringField(this, 35, value);
 };
 
 
 /**
- * optional string maker_deposit_tx_id = 32;
+ * optional string maker_deposit_tx_id = 36;
  * @return {string}
  */
 proto.io.haveno.protobuffer.TradeInfo.prototype.getMakerDepositTxId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 32, ""));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 36, ""));
 };
 
 
@@ -24184,16 +24316,16 @@ proto.io.haveno.protobuffer.TradeInfo.prototype.getMakerDepositTxId = function()
  * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
  */
 proto.io.haveno.protobuffer.TradeInfo.prototype.setMakerDepositTxId = function(value) {
-  return jspb.Message.setProto3StringField(this, 32, value);
+  return jspb.Message.setProto3StringField(this, 36, value);
 };
 
 
 /**
- * optional string taker_deposit_tx_id = 33;
+ * optional string taker_deposit_tx_id = 37;
  * @return {string}
  */
 proto.io.haveno.protobuffer.TradeInfo.prototype.getTakerDepositTxId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 33, ""));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 37, ""));
 };
 
 
@@ -24202,7 +24334,25 @@ proto.io.haveno.protobuffer.TradeInfo.prototype.getTakerDepositTxId = function()
  * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
  */
 proto.io.haveno.protobuffer.TradeInfo.prototype.setTakerDepositTxId = function(value) {
-  return jspb.Message.setProto3StringField(this, 33, value);
+  return jspb.Message.setProto3StringField(this, 37, value);
+};
+
+
+/**
+ * optional string payout_tx_id = 38;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.TradeInfo.prototype.getPayoutTxId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 38, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
+ */
+proto.io.haveno.protobuffer.TradeInfo.prototype.setPayoutTxId = function(value) {
+  return jspb.Message.setProto3StringField(this, 38, value);
 };
 
 
