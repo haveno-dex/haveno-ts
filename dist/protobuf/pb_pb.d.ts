@@ -3180,11 +3180,11 @@ export class DisputeResult extends jspb.Message {
   getArbitratorSignature_asB64(): string;
   setArbitratorSignature(value: Uint8Array | string): DisputeResult;
 
-  getBuyerPayoutAmount(): number;
-  setBuyerPayoutAmount(value: number): DisputeResult;
+  getBuyerPayoutAmountBeforeCost(): number;
+  setBuyerPayoutAmountBeforeCost(value: number): DisputeResult;
 
-  getSellerPayoutAmount(): number;
-  setSellerPayoutAmount(value: number): DisputeResult;
+  getSellerPayoutAmountBeforeCost(): number;
+  setSellerPayoutAmountBeforeCost(value: number): DisputeResult;
 
   getSubtractFeeFrom(): DisputeResult.SubtractFeeFrom;
   setSubtractFeeFrom(value: DisputeResult.SubtractFeeFrom): DisputeResult;
@@ -3220,8 +3220,8 @@ export namespace DisputeResult {
     summaryNotes: string,
     chatMessage?: ChatMessage.AsObject,
     arbitratorSignature: Uint8Array | string,
-    buyerPayoutAmount: number,
-    sellerPayoutAmount: number,
+    buyerPayoutAmountBeforeCost: number,
+    sellerPayoutAmountBeforeCost: number,
     subtractFeeFrom: DisputeResult.SubtractFeeFrom,
     arbitratorPubKey: Uint8Array | string,
     closeDate: number,
@@ -6030,9 +6030,6 @@ export class Trade extends jspb.Message {
   getTakerFee(): number;
   setTakerFee(value: number): Trade;
 
-  getTotalTxFee(): number;
-  setTotalTxFee(value: number): Trade;
-
   getTakeOfferDate(): number;
   setTakeOfferDate(value: number): Trade;
 
@@ -6125,7 +6122,6 @@ export namespace Trade {
     payoutTxKey: string,
     amount: number,
     takerFee: number,
-    totalTxFee: number,
     takeOfferDate: number,
     price: number,
     state: Trade.State,
@@ -6531,6 +6527,12 @@ export class TradePeer extends jspb.Message {
   getExchangedMultisigHex(): string;
   setExchangedMultisigHex(value: string): TradePeer;
 
+  getUpdatedMultisigHex(): string;
+  setUpdatedMultisigHex(value: string): TradePeer;
+
+  getDepositsConfirmedMessageAcked(): boolean;
+  setDepositsConfirmedMessageAcked(value: boolean): TradePeer;
+
   getDepositTxHash(): string;
   setDepositTxHash(value: string): TradePeer;
 
@@ -6546,11 +6548,14 @@ export class TradePeer extends jspb.Message {
   getSecurityDeposit(): number;
   setSecurityDeposit(value: number): TradePeer;
 
-  getUpdatedMultisigHex(): string;
-  setUpdatedMultisigHex(value: string): TradePeer;
+  getUnsignedPayoutTxHex(): string;
+  setUnsignedPayoutTxHex(value: string): TradePeer;
 
-  getDepositsConfirmedMessageAcked(): boolean;
-  setDepositsConfirmedMessageAcked(value: boolean): TradePeer;
+  getPayoutTxFee(): number;
+  setPayoutTxFee(value: number): TradePeer;
+
+  getPayoutAmount(): number;
+  setPayoutAmount(value: number): TradePeer;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): TradePeer.AsObject;
@@ -6589,13 +6594,16 @@ export namespace TradePeer {
     preparedMultisigHex: string,
     madeMultisigHex: string,
     exchangedMultisigHex: string,
+    updatedMultisigHex: string,
+    depositsConfirmedMessageAcked: boolean,
     depositTxHash: string,
     depositTxHex: string,
     depositTxKey: string,
     depositTxFee: number,
     securityDeposit: number,
-    updatedMultisigHex: string,
-    depositsConfirmedMessageAcked: boolean,
+    unsignedPayoutTxHex: string,
+    payoutTxFee: number,
+    payoutAmount: number,
   }
 }
 
