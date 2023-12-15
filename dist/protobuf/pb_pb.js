@@ -49227,7 +49227,8 @@ proto.io.haveno.protobuffer.Trade.toObject = function(includeInstance, msg) {
     refundAgentNodeAddress: (f = msg.getRefundAgentNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
     refundResultState: jspb.Message.getFieldWithDefault(msg, 27, 0),
     counterCurrencyExtraData: jspb.Message.getFieldWithDefault(msg, 28, ""),
-    uid: jspb.Message.getFieldWithDefault(msg, 29, "")
+    uid: jspb.Message.getFieldWithDefault(msg, 29, ""),
+    isCompleted: jspb.Message.getBooleanFieldWithDefault(msg, 30, false)
   };
 
   if (includeInstance) {
@@ -49382,6 +49383,10 @@ proto.io.haveno.protobuffer.Trade.deserializeBinaryFromReader = function(msg, re
     case 29:
       var value = /** @type {string} */ (reader.readString());
       msg.setUid(value);
+      break;
+    case 30:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setIsCompleted(value);
       break;
     default:
       reader.skipField();
@@ -49615,6 +49620,13 @@ proto.io.haveno.protobuffer.Trade.serializeBinaryToWriter = function(message, wr
       f
     );
   }
+  f = message.getIsCompleted();
+  if (f) {
+    writer.writeBool(
+      30,
+      f
+    );
+  }
 };
 
 
@@ -49648,8 +49660,7 @@ proto.io.haveno.protobuffer.Trade.State = {
   SELLER_SENT_PAYMENT_RECEIVED_MSG: 23,
   SELLER_SEND_FAILED_PAYMENT_RECEIVED_MSG: 24,
   SELLER_STORED_IN_MAILBOX_PAYMENT_RECEIVED_MSG: 25,
-  SELLER_SAW_ARRIVED_PAYMENT_RECEIVED_MSG: 26,
-  TRADE_COMPLETED: 27
+  SELLER_SAW_ARRIVED_PAYMENT_RECEIVED_MSG: 26
 };
 
 /**
@@ -49663,8 +49674,7 @@ proto.io.haveno.protobuffer.Trade.Phase = {
   DEPOSITS_CONFIRMED: 4,
   DEPOSITS_UNLOCKED: 5,
   PAYMENT_SENT: 6,
-  PAYMENT_RECEIVED: 7,
-  COMPLETED: 8
+  PAYMENT_RECEIVED: 7
 };
 
 /**
@@ -50367,6 +50377,24 @@ proto.io.haveno.protobuffer.Trade.prototype.getUid = function() {
  */
 proto.io.haveno.protobuffer.Trade.prototype.setUid = function(value) {
   return jspb.Message.setProto3StringField(this, 29, value);
+};
+
+
+/**
+ * optional bool is_completed = 30;
+ * @return {boolean}
+ */
+proto.io.haveno.protobuffer.Trade.prototype.getIsCompleted = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 30, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.io.haveno.protobuffer.Trade} returns this
+ */
+proto.io.haveno.protobuffer.Trade.prototype.setIsCompleted = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 30, value);
 };
 
 

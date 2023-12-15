@@ -6105,6 +6105,9 @@ export class Trade extends jspb.Message {
   getUid(): string;
   setUid(value: string): Trade;
 
+  getIsCompleted(): boolean;
+  setIsCompleted(value: boolean): Trade;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Trade.AsObject;
   static toObject(includeInstance: boolean, msg: Trade): Trade.AsObject;
@@ -6143,6 +6146,7 @@ export namespace Trade {
     refundResultState: RefundResultState,
     counterCurrencyExtraData: string,
     uid: string,
+    isCompleted: boolean,
   }
 
   export enum State { 
@@ -6173,7 +6177,6 @@ export namespace Trade {
     SELLER_SEND_FAILED_PAYMENT_RECEIVED_MSG = 24,
     SELLER_STORED_IN_MAILBOX_PAYMENT_RECEIVED_MSG = 25,
     SELLER_SAW_ARRIVED_PAYMENT_RECEIVED_MSG = 26,
-    TRADE_COMPLETED = 27,
   }
 
   export enum Phase { 
@@ -6185,7 +6188,6 @@ export namespace Trade {
     DEPOSITS_UNLOCKED = 5,
     PAYMENT_SENT = 6,
     PAYMENT_RECEIVED = 7,
-    COMPLETED = 8,
   }
 
   export enum PayoutState { 

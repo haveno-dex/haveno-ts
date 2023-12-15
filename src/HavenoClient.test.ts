@@ -264,6 +264,10 @@ class TradeContext {
     return this.buyerOfflineAfterDisputeOpened || this.sellerOfflineAfterDisputeOpened || this.buyerOfflineAfterPaymentSent || this.buyerOfflineAfterTake || this.sellerOfflineAfterTake;
   }
 
+  getPhase() {
+    return this.isPaymentReceived ? "PAYMENT_RECEIVED" : this.isPaymentSent ? "PAYMENT_SENT" : "DEPOSITS_UNLOCKED";
+  }
+
   static init(ctxP: Partial<TradeContext> | undefined): TradeContext {
     let ctx = ctxP instanceof TradeContext ? ctxP : new TradeContext(ctxP);
     if (!ctx.offerAmount && ctx.tradeAmount) ctx.offerAmount = ctx.tradeAmount;
@@ -2432,7 +2436,7 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
     // payout tx is published by buyer (priority) or arbitrator
     await wait(ctx.walletSyncPeriodMs);
     await testTradeState(await ctx.getSeller().havenod!.getTrade(trade.getTradeId()), {phase: "PAYMENT_RECEIVED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"], isCompleted: false, isPayoutPublished: true});
-    await testTradeState(await ctx.arbitrator.havenod!.getTrade(trade.getTradeId()), {phase: "COMPLETED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"], isCompleted: true, isPayoutPublished: true}); // arbitrator trade auto completes
+    await testTradeState(await ctx.arbitrator.havenod!.getTrade(trade.getTradeId()), {phase: "PAYMENT_RECEIVED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"], isCompleted: true, isPayoutPublished: true}); // arbitrator trade auto completes
 
     // buyer comes online if offline
     if (ctx.buyerOfflineAfterPaymentSent) {
@@ -2447,9 +2451,9 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
 
     // test trade completion
     await ctx.getBuyer().havenod!.completeTrade(trade.getTradeId());
-    await testTradeState(await ctx.getBuyer().havenod!.getTrade(trade.getTradeId()), {phase: "COMPLETED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"], isCompleted: true, isPayoutPublished: true});
+    await testTradeState(await ctx.getBuyer().havenod!.getTrade(trade.getTradeId()), {phase: "PAYMENT_RECEIVED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"], isCompleted: true, isPayoutPublished: true});
     await ctx.getSeller().havenod!.completeTrade(trade.getTradeId());
-    await testTradeState(await ctx.getSeller().havenod!.getTrade(trade.getTradeId()), {phase: "COMPLETED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"], isCompleted: true, isPayoutPublished: true});
+    await testTradeState(await ctx.getSeller().havenod!.getTrade(trade.getTradeId()), {phase: "PAYMENT_RECEIVED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"], isCompleted: true, isPayoutPublished: true});
 
     // record balances on completion
     if (!ctx.maker.balancesAfterPayout) {
@@ -2483,9 +2487,10 @@ async function testTradePayoutUnlock(ctxP: Partial<TradeContext>) {
   let trade = await ctx.arbitrator.havenod!.getTrade(ctx.offerId!);
   if (trade.getPayoutState() !== "PAYOUT_CONFIRMED") await mineToHeight(height + 1);
   await wait(TestConfig.maxWalletStartupMs + ctx.walletSyncPeriodMs * 2);
-  if (ctx.getBuyer().havenod) await testTradeState(await ctx.getBuyer().havenod!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"]});
-  if (ctx.getSeller().havenod) await testTradeState(await ctx.getSeller().havenod!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"]});
-  await testTradeState(await ctx.arbitrator.havenod!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"]});
+  const disputeState = ctx.isPaymentReceived ? "NO_DISPUTE" : "DISPUTE_CLOSED";
+  if (ctx.getBuyer().havenod) await testTradeState(await ctx.getBuyer().havenod!.getTrade(ctx.offerId!), {phase: ctx.getPhase(), disputeState: disputeState, payoutState: ["PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"]});
+  if (ctx.getSeller().havenod) await testTradeState(await ctx.getSeller().havenod!.getTrade(ctx.offerId!), {phase: ctx.getPhase(), disputeState: disputeState, payoutState: ["PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"]});
+  await testTradeState(await ctx.arbitrator.havenod!.getTrade(ctx.offerId!), {phase: ctx.getPhase(), payoutState: ["PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"]});
   let payoutTx = ctx.getBuyer().havenod ? await ctx.getBuyer().havenod?.getXmrTx(payoutTxId) : await ctx.getSeller().havenod?.getXmrTx(payoutTxId);
   expect(payoutTx?.getIsConfirmed());
 
@@ -2494,9 +2499,9 @@ async function testTradePayoutUnlock(ctxP: Partial<TradeContext>) {
   trade = await ctx.arbitrator.havenod!.getTrade(ctx.offerId!);
   if (trade.getPayoutState() !== "PAYOUT_UNLOCKED") await mineToHeight(height + 10);
   await wait(TestConfig.maxWalletStartupMs + ctx.walletSyncPeriodMs * 2);
-  if (await ctx.getBuyer().havenod) await testTradeState(await ctx.getBuyer().havenod!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_UNLOCKED"]});
-  if (await ctx.getSeller().havenod) await testTradeState(await ctx.getSeller().havenod!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_UNLOCKED"]});
-  await testTradeState(await ctx.arbitrator.havenod!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_UNLOCKED"]});
+  if (await ctx.getBuyer().havenod) await testTradeState(await ctx.getBuyer().havenod!.getTrade(ctx.offerId!), {phase: ctx.getPhase(), disputeState: disputeState, payoutState: ["PAYOUT_UNLOCKED"]});
+  if (await ctx.getSeller().havenod) await testTradeState(await ctx.getSeller().havenod!.getTrade(ctx.offerId!), {phase: ctx.getPhase(), disputeState: disputeState, payoutState: ["PAYOUT_UNLOCKED"]});
+  await testTradeState(await ctx.arbitrator.havenod!.getTrade(ctx.offerId!), {phase: ctx.getPhase(), disputeState: disputeState, payoutState: ["PAYOUT_UNLOCKED"]});
   payoutTx = ctx.getBuyer().havenod ? await ctx.getBuyer().havenod?.getXmrTx(payoutTxId) : await ctx.getSeller().havenod?.getXmrTx(payoutTxId);
   expect(!payoutTx?.getIsLocked());
 }
@@ -2508,7 +2513,12 @@ async function testTradeState(trade: TradeInfo, ctx: Partial<TradeContext>) {
   if (ctx.isCompleted !== undefined) expect(trade.getIsCompleted()).toEqual(ctx.isCompleted);
   if (ctx.isPayoutPublished !== undefined) expect(trade.getIsPayoutPublished()).toEqual(ctx.isPayoutPublished);
   if (ctx.isPayoutConfirmed !== undefined) expect(trade.getIsPayoutConfirmed()).toEqual(ctx.isPayoutConfirmed);
+  if (ctx.isPayoutConfirmed) expect(trade.getIsPayoutPublished()).toEqual(true);
   if (ctx.isPayoutUnlocked !== undefined) expect(trade.getIsPayoutUnlocked()).toEqual(ctx.isPayoutUnlocked);
+  if (ctx.isPayoutUnlocked) {
+    expect(trade.getIsPayoutConfirmed()).toEqual(true);
+    expect(trade.getIsPayoutPublished()).toEqual(true);
+  }
 }
 
 async function makeOffer(ctxP?: Partial<TradeContext>): Promise<OfferInfo> {
@@ -2921,9 +2931,9 @@ async function resolveDispute(ctxP: Partial<TradeContext>) {
   }
 
   // test trade state
-  if (ctx.getBuyer().havenod) await testTradeState(await ctx.getBuyer().havenod!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"], disputeState: "DISPUTE_CLOSED", isCompleted: true, isPayoutPublished: true});
-  if (ctx.getSeller().havenod) await testTradeState(await ctx.getSeller().havenod!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"], disputeState: "DISPUTE_CLOSED", isCompleted: true, isPayoutPublished: true});
-  await testTradeState(await ctx.arbitrator.havenod!.getTrade(ctx.offerId!), {phase: "COMPLETED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"], disputeState: "DISPUTE_CLOSED", isCompleted: true, isPayoutPublished: true});
+  if (ctx.getBuyer().havenod) await testTradeState(await ctx.getBuyer().havenod!.getTrade(ctx.offerId!), {phase: ctx.getPhase(), payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"], disputeState: "DISPUTE_CLOSED", isCompleted: true, isPayoutPublished: true});
+  if (ctx.getSeller().havenod) await testTradeState(await ctx.getSeller().havenod!.getTrade(ctx.offerId!), {phase: ctx.getPhase(), payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"], disputeState: "DISPUTE_CLOSED", isCompleted: true, isPayoutPublished: true});
+  await testTradeState(await ctx.arbitrator.havenod!.getTrade(ctx.offerId!), {phase: ctx.getPhase(), payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"], disputeState: "DISPUTE_CLOSED", isCompleted: true, isPayoutPublished: true});
 
   // signing peer has payout tx id on 0 conf (peers must wait for confirmation to see outgoing tx)
   const winnerd = ctx.disputeWinner === DisputeResult.Winner.BUYER ? ctx.getBuyer().havenod : ctx.getSeller().havenod;
