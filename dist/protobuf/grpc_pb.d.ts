@@ -1,6 +1,6 @@
 import * as jspb from 'google-protobuf'
 
-import * as pb_pb from './pb_pb';
+import * as pb_pb from './pb_pb'; // proto import: "pb.proto"
 
 
 export class GetMethodHelpRequest extends jspb.Message {
