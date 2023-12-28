@@ -2683,7 +2683,7 @@ async function takeOffer(ctxP: Partial<TradeContext>): Promise<TradeInfo> {
   await ctx.taker.havenod!.addNotificationListener(notification => { takerNotifications.push(notification); });
 
   // record balances before offer taken, once
-  if (!ctx.taker.balancesBeforeTake) {
+  if (ctx.taker.balancesBeforeTake === undefined) {
     ctx.maker.balancesBeforeTake = await ctx.maker.havenod?.getBalances();
     ctx.taker.balancesBeforeTake = await ctx.taker.havenod?.getBalances();
   }
@@ -2704,7 +2704,7 @@ async function takeOffer(ctxP: Partial<TradeContext>): Promise<TradeInfo> {
   expect(tradeNotifications[0].getMessage()).toEqual("Your offer " + ctx.offerId + " has been accepted");
 
   // record context after offer taken, once
-  if (!ctx.getBuyer().balancesAfterTake) {
+  if (ctx.getBuyer().balancesAfterTake === undefined) {
     ctx.tradeAmount = BigInt(trade.getAmount()); // re-assign trade amount which could be adjusted
     ctx.arbitrator.trade = await ctx.arbitrator.havenod!.getTrade(ctx.offerId!);
     ctx.maker.trade = await ctx.maker.havenod!.getTrade(ctx.offerId!);
