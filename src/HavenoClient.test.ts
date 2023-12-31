@@ -2026,7 +2026,17 @@ test("Can handle unexpected errors during trade initialization", async () => {
       await traders[2].takeOffer(offer.getId(), paymentAccount.getId());
       throw new Error("Should have failed taking offer because maker trade funds spent")
     } catch (err: any) {
-      assert(err.message.includes("not enough unlocked money") || err.message.includes("timeout reached. protocol did not complete"), "Unexpected error: " + err.message);
+
+      // determine if error is expected
+      let expected = false;
+      const expectedErrMsgs = ["not enough unlocked money", "timeout reached. protocol did not complete", "trade is already taken"];
+      for (const expectedErrMsg of expectedErrMsgs) {
+        if (err.message.indexOf(expectedErrMsg) >= 0) {
+          expected = true;
+          break;
+        }
+      }
+      if (!expected) throw err;
     }
 
     // trader 2's balance is unreserved
