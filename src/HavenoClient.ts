@@ -1062,8 +1062,9 @@ export default class HavenoClient {
           .setOfferId(offerId)
           .setPaymentAccountId(paymentAccountId);
       if (amount) request.setAmount(amount.toString());
-      HavenoUtils.log(0, "Taking offer with taker amount: " + amount);
-      return (await this._tradesClient.takeOffer(request, {password: this._password})).getTrade()!;
+      const resp = await this._tradesClient.takeOffer(request, {password: this._password});
+      if (resp.getTrade()) return resp.getTrade()!;
+      throw new HavenoError(resp.getFailureReason()?.getDescription()!, resp.getFailureReason()?.getAvailabilityResult());
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);
     }
