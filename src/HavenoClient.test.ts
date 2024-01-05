@@ -3425,7 +3425,7 @@ async function startMining(): Promise<boolean> {
   try {
     const numThreads = getBaseCurrencyNetwork() === BaseCurrencyNetwork.XMR_LOCAL ? 1 : Math.max(1, Math.floor(os.cpus().length * TestConfig.maxCpuPct));
     await monerod.startMining(await fundingWallet.getPrimaryAddress(), numThreads);
-    HavenoUtils.log(2, "Mining started successfully");
+    HavenoUtils.log(2, "Mining started");
     return true;
   } catch (err: any) {
     if (err.message !== "Already mining") throw err;
