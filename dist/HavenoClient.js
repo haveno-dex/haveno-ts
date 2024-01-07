@@ -1037,8 +1037,10 @@ class HavenoClient {
                 .setPaymentAccountId(paymentAccountId);
             if (amount)
                 request.setAmount(amount.toString());
-            HavenoUtils_1.default.log(0, "Taking offer with taker amount: " + amount);
-            return (await this._tradesClient.takeOffer(request, { password: this._password })).getTrade();
+            const resp = await this._tradesClient.takeOffer(request, { password: this._password });
+            if (resp.getTrade())
+                return resp.getTrade();
+            throw new HavenoError_1.default(resp.getFailureReason()?.getDescription(), resp.getFailureReason()?.getAvailabilityResult());
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
