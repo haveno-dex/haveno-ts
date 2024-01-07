@@ -2715,16 +2715,11 @@ async function takeOffer(ctxP: Partial<TradeContext>): Promise<TradeInfo> {
 
   // record context after offer taken, once
   if (ctx.getBuyer().balancesAfterTake === undefined) {
-    ctx.tradeAmount = BigInt(trade.getAmount()); // re-assign trade amount which could be adjusted
-    ctx.arbitrator.trade = await ctx.arbitrator.havenod!.getTrade(ctx.offerId!);
-    ctx.maker.trade = await ctx.maker.havenod!.getTrade(ctx.offerId!);
-    ctx.taker.trade = await ctx.taker.havenod!.getTrade(ctx.offerId!);
-    ctx.maker.balancesAfterTake = await ctx.maker.havenod!.getBalances();
-    ctx.taker.balancesAfterTake = await ctx.taker.havenod!.getBalances();
-    ctx.maker.depositTx = await monerod.getTx(ctx.arbitrator.trade!.getMakerDepositTxId());
-    ctx.taker.depositTx = await monerod.getTx(ctx.arbitrator.trade!.getTakerDepositTxId());
 
     // wait to observe deposit txs
+    ctx.arbitrator.trade = await ctx.arbitrator.havenod!.getTrade(ctx.offerId!);
+    ctx.maker.depositTx = await monerod.getTx(ctx.arbitrator.trade!.getMakerDepositTxId());
+    ctx.taker.depositTx = await monerod.getTx(ctx.arbitrator.trade!.getTakerDepositTxId());
     if (!ctx.maker.depositTx || !ctx.taker.depositTx) {
         if (!ctx.maker.depositTx) HavenoUtils.log(0, "Maker deposit tx not found with id " + ctx.arbitrator.trade!.getMakerDepositTxId() + ", waiting...");
         if (!ctx.taker.depositTx) HavenoUtils.log(0, "Taker deposit tx not found with id " + ctx.arbitrator.trade!.getTakerDepositTxId() + ", waiting...");
@@ -2734,6 +2729,13 @@ async function takeOffer(ctxP: Partial<TradeContext>): Promise<TradeInfo> {
         if (!ctx.maker.depositTx) throw new Error("Maker deposit tx not found with id " + ctx.arbitrator.trade!.getMakerDepositTxId());
         if (!ctx.taker.depositTx) throw new Error("Taker deposit tx not found with id " + ctx.arbitrator.trade!.getTakerDepositTxId());
     }
+
+    // record context
+    ctx.tradeAmount = BigInt(trade.getAmount()); // re-assign trade amount which could be adjusted
+    ctx.maker.trade = await ctx.maker.havenod!.getTrade(ctx.offerId!);
+    ctx.taker.trade = await ctx.taker.havenod!.getTrade(ctx.offerId!);
+    ctx.maker.balancesAfterTake = await ctx.maker.havenod!.getBalances();
+    ctx.taker.balancesAfterTake = await ctx.taker.havenod!.getBalances();
     ctx.maker.depositTxFee = BigInt(ctx.maker.depositTx!.getFee());
     ctx.taker.depositTxFee = BigInt(ctx.taker.depositTx!.getFee());
     ctx.maker.tradeFee = BigInt(trade.getOffer()!.getMakerFee());
