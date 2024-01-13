@@ -2276,8 +2276,12 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
     // wait for split output tx to unlock
     if (ctx.isStopped) return ctx.offerId!;
     if (ctx.reserveExactAmount) {
-      await mineToHeight(await monerod.getHeight() + 10); // TODO: wait for offer to be available (dandilion)
-      await wait(TestConfig.daemonPollPeriodMs * 2);
+      const splitOutputTxId = ctx.offer?.getSplitOutputTxHash();
+      HavenoUtils.log(1, "Waiting for split output tx " + splitOutputTxId + " to unlock");
+      if (splitOutputTxId) {
+        await mineToUnlock(splitOutputTxId);
+        await wait(TestConfig.trade.walletSyncPeriodMs + TestConfig.trade.maxTimePeerNoticeMs);
+      }
     }
 
     // take offer or get existing trade
@@ -3450,6 +3454,17 @@ async function mineToHeight(height: number) {
   const miningStarted = await startMining();
   while (await monerod.getHeight() < height) {
     await moneroTs.GenUtils.waitFor(TestConfig.trade.walletSyncPeriodMs);
+  }
+  if (miningStarted) await stopMining();
+}
+
+async function mineToUnlock(txHash: string) {
+  let tx = await monerod.getTx(txHash);
+  if (tx && tx.getNumConfirmations() >= 10) return; // TODO: tx.getIsLocked()
+  const miningStarted = await startMining();
+  while (!tx || tx.getNumConfirmations() < 10) {
+    await moneroTs.GenUtils.waitFor(TestConfig.trade.walletSyncPeriodMs);
+    tx = await monerod.getTx(txHash);
   }
   if (miningStarted) await stopMining();
 }
