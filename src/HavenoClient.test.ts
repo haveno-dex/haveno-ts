@@ -692,7 +692,7 @@ test("Can manage an account (CI)", async () => {
   }
 });
 
-test("Can manage Monero daemon connections (CI)", async () => {
+test("RUNTHIS Can manage Monero daemon connections (CI)", async () => {
   let monerod2: moneroTs.MoneroDaemonRpc | undefined = undefined;
   let user3: HavenoClient|undefined;
   let err: any;
