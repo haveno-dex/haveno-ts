@@ -6349,9 +6349,6 @@ export class ProcessModel extends jspb.Message {
   getPaymentSentMessageState(): string;
   setPaymentSentMessageState(value: string): ProcessModel;
 
-  getPaymentSentMessageStateArbitrator(): string;
-  setPaymentSentMessageStateArbitrator(value: string): ProcessModel;
-
   getMakerSignature(): Uint8Array | string;
   getMakerSignature_asU8(): Uint8Array;
   getMakerSignature_asB64(): string;
@@ -6391,9 +6388,6 @@ export class ProcessModel extends jspb.Message {
   getSellerPayoutAmountFromMediation(): number;
   setSellerPayoutAmountFromMediation(value: number): ProcessModel;
 
-  getDeleteBackupsHeight(): number;
-  setDeleteBackupsHeight(value: number): ProcessModel;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ProcessModel.AsObject;
   static toObject(includeInstance: boolean, msg: ProcessModel): ProcessModel.AsObject;
@@ -6411,7 +6405,6 @@ export namespace ProcessModel {
     useSavingsWallet: boolean,
     fundsNeededForTrade: number,
     paymentSentMessageState: string,
-    paymentSentMessageStateArbitrator: string,
     makerSignature: Uint8Array | string,
     maker?: TradePeer.AsObject,
     taker?: TradePeer.AsObject,
@@ -6421,7 +6414,6 @@ export namespace ProcessModel {
     mediatedPayoutTxSignature: Uint8Array | string,
     buyerPayoutAmountFromMediation: number,
     sellerPayoutAmountFromMediation: number,
-    deleteBackupsHeight: number,
   }
 }
 

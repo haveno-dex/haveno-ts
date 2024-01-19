@@ -337,11 +337,11 @@ const TestConfig = {
         version: "1.0.17"
     },
     monerod: {
-        url: "http://localhost:" + getNetworkStartPort() + "8081", // 18081, 28081, 38081 for mainnet, testnet, and stagenet, respectively
+        url: "http://localhost:" + (getBaseCurrencyNetwork() == BaseCurrencyNetwork.XMR_LOCAL ? "4" : getNetworkStartPort()) + "8081", // 18081, 28081, 48081 for mainnet, stagenet, and local testnet, respectively
         username: "",
         password: ""
     },
-    monerod3: { // corresponds to monerod3-local in Makefile
+    monerod2: {
         url: "http://localhost:58081",
         username: "superuser",
         password: "abctesting123",
@@ -693,7 +693,7 @@ test("Can manage an account (CI)", async () => {
 });
 
 test("Can manage Monero daemon connections (CI)", async () => {
-  let monerod3: moneroTs.MoneroDaemonRpc | undefined = undefined;
+  let monerod2: moneroTs.MoneroDaemonRpc | undefined = undefined;
   let user3: HavenoClient|undefined;
   let err: any;
   try {
@@ -720,54 +720,48 @@ test("Can manage Monero daemon connections (CI)", async () => {
 
     // set prioritized connection without credentials
     await user3.setMoneroConnection(new UrlConnection()
-        .setUrl(TestConfig.monerod3.url)
+        .setUrl(TestConfig.monerod2.url)
         .setPriority(1));
     connection = await user3.getMoneroConnection();
-    testConnection(connection!, TestConfig.monerod3.url, undefined, undefined, 1); // status may or may not be known due to periodic connection checking
+    testConnection(connection!, TestConfig.monerod2.url, undefined, undefined, 1); // status may or may not be known due to periodic connection checking
 
     // connection is offline
     connection = await user3.checkMoneroConnection();
     assert(!await user3.isConnectedToMonero());
-    testConnection(connection!, TestConfig.monerod3.url, OnlineStatus.OFFLINE, AuthenticationStatus.NO_AUTHENTICATION, 1);
+    testConnection(connection!, TestConfig.monerod2.url, OnlineStatus.OFFLINE, AuthenticationStatus.NO_AUTHENTICATION, 1);
 
-    // start monerod3
+    // start monerod2
     const cmd = [
       TestConfig.moneroBinsDir + "/monerod",
       "--no-igd",
       "--hide-my-port",
-      "--data-dir",  TestConfig.moneroBinsDir + "/" + TestConfig.baseCurrencyNetwork.toLowerCase() + "/node3",
-      "--p2p-bind-ip", "127.0.0.1",
-      "--p2p-bind-port", TestConfig.monerod3.p2pBindPort,
-      "--rpc-bind-port", TestConfig.monerod3.rpcBindPort,
-      "--zmq-rpc-bind-port", TestConfig.monerod3.zmqRpcBindPort,
-      "--log-level", "0",
-      "--confirm-external-bind",
-      "--rpc-access-control-origins", "http://localhost:8080",
-      "--fixed-difficulty", "500",
-      "--disable-rpc-ban"
+      "--data-dir",  TestConfig.moneroBinsDir + "/" + TestConfig.baseCurrencyNetwork.toLowerCase() + "/testnode",
+      "--p2p-bind-port", TestConfig.monerod2.p2pBindPort,
+      "--rpc-bind-port", TestConfig.monerod2.rpcBindPort,
+      "--no-zmq"
     ];
     if (getBaseCurrencyNetwork() !== BaseCurrencyNetwork.XMR_MAINNET) cmd.push("--" + moneroTs.MoneroNetworkType.toString(TestConfig.networkType).toLowerCase());
-    if (TestConfig.monerod3.username) cmd.push("--rpc-login", TestConfig.monerod3.username + ":" + TestConfig.monerod3.password);
-    monerod3 = await moneroTs.connectToDaemonRpc(cmd);
+    if (TestConfig.monerod2.username) cmd.push("--rpc-login", TestConfig.monerod2.username + ":" + TestConfig.monerod2.password);
+    monerod2 = await moneroTs.connectToDaemonRpc(cmd);
 
     // connection is online and not authenticated
     connection = await user3.checkMoneroConnection();
     assert(!await user3.isConnectedToMonero());
-    testConnection(connection!, TestConfig.monerod3.url, OnlineStatus.ONLINE, AuthenticationStatus.NOT_AUTHENTICATED, 1);
+    testConnection(connection!, TestConfig.monerod2.url, OnlineStatus.ONLINE, AuthenticationStatus.NOT_AUTHENTICATED, 1);
 
     // set connection credentials
     await user3.setMoneroConnection(new UrlConnection()
-        .setUrl(TestConfig.monerod3.url)
-        .setUsername(TestConfig.monerod3.username)
-        .setPassword(TestConfig.monerod3.password)
+        .setUrl(TestConfig.monerod2.url)
+        .setUsername(TestConfig.monerod2.username)
+        .setPassword(TestConfig.monerod2.password)
         .setPriority(1));
     connection = await user3.getMoneroConnection();
-    testConnection(connection!, TestConfig.monerod3.url, undefined, undefined, 1);
+    testConnection(connection!, TestConfig.monerod2.url, undefined, undefined, 1);
 
     // connection is online and authenticated
     connection = await user3.checkMoneroConnection();
     assert(await user3.isConnectedToMonero());
-    testConnection(connection!, TestConfig.monerod3.url, OnlineStatus.ONLINE, AuthenticationStatus.AUTHENTICATED, 1);
+    testConnection(connection!, TestConfig.monerod2.url, OnlineStatus.ONLINE, AuthenticationStatus.AUTHENTICATED, 1);
 
     // change account password
     const newPassword = "newPassword";
@@ -780,7 +774,7 @@ test("Can manage Monero daemon connections (CI)", async () => {
 
     // connection is restored, online, and authenticated
     connection = await user3.getMoneroConnection();
-    testConnection(connection!, TestConfig.monerod3.url, OnlineStatus.ONLINE, AuthenticationStatus.AUTHENTICATED, 1);
+    testConnection(connection!, TestConfig.monerod2.url, OnlineStatus.ONLINE, AuthenticationStatus.AUTHENTICATED, 1);
 
     // priority connections are polled
     await wait(TestConfig.daemonPollPeriodMs * 2);
@@ -791,8 +785,8 @@ test("Can manage Monero daemon connections (CI)", async () => {
     await user3.setAutoSwitch(true);
 
     // stop monerod
-    //await monerod3.stopProcess(); // TODO (monero-ts): monerod remains available after await monerod.stopProcess() for up to 40 seconds
-    await moneroTs.GenUtils.killProcess(monerod3.getProcess(), "SIGKILL");
+    //await monerod2.stopProcess(); // TODO (monero-ts): monerod remains available after await monerod.stopProcess() for up to 40 seconds
+    await moneroTs.GenUtils.killProcess(monerod2.getProcess(), "SIGKILL");
 
     // test auto switch after periodic connection check
     await wait(TestConfig.daemonPollPeriodMs * 2);
@@ -849,14 +843,10 @@ test("Can manage Monero daemon connections (CI)", async () => {
 
   // stop processes
   if (user3) await releaseHavenoProcess(user3, true);
-  if (monerod3) await monerod3.stopProcess();
+  if (monerod2) await monerod2.stopProcess();
   if (err) throw err;
 });
 
-// NOTE: To run full test, the following conditions must be met:
-// - monerod1-local must be stopped
-// - monerod2-local must be running
-// - user1-daemon-local must be running and own its monerod process (so it can be stopped)
 test("Can start and stop a local Monero node (CI)", async() => {
 
   // expect error stopping local node
@@ -900,10 +890,12 @@ test("Can start and stop a local Monero node (CI)", async() => {
     // expect successful start with custom settings
     const connectionsBefore = await user1.getMoneroConnections();
     const settings: XmrNodeSettings = new XmrNodeSettings();
-    const dataDir = TestConfig.moneroBinsDir + "/" + TestConfig.baseCurrencyNetwork.toLowerCase() + "/node1";
+    const dataDir = TestConfig.moneroBinsDir + "/" + TestConfig.baseCurrencyNetwork + "/node1";
     const logFile = dataDir + "/test.log";
+    const p2pPort = 38086;
+    const rpcPort = 38087;
     settings.setBlockchainPath(dataDir);
-    settings.setStartupFlagsList(["--log-file", logFile, "--no-zmq"]);
+    settings.setStartupFlagsList(["--log-file", logFile, "--p2p-bind-port", p2pPort.toString(), "--rpc-bind-port", rpcPort.toString(), "--no-zmq"]);
     await user1.startMoneroNode(settings);
     isMoneroNodeOnline = await user1.isMoneroNodeOnline();
     assert(isMoneroNodeOnline);
@@ -913,9 +905,10 @@ test("Can start and stop a local Monero node (CI)", async() => {
     testMoneroNodeSettingsEqual(settings, settingsAfter!);
 
     // expect connection to local monero node to succeed
-    let daemon = await moneroTs.connectToDaemonRpc(TestConfig.monerod.url, "superuser", "abctesting123");
+    const rpcUrl = "http://127.0.0.1:" + rpcPort.toString();
+    let daemon = await moneroTs.connectToDaemonRpc(rpcUrl, "superuser", "abctesting123");
     let height = await daemon.getHeight();
-    assert(height > 0);
+    assert(height >= 0);
 
     // expect error due to existing running node
     const newSettings = new XmrNodeSettings();
@@ -931,12 +924,11 @@ test("Can start and stop a local Monero node (CI)", async() => {
     isMoneroNodeOnline = await user1.isMoneroNodeOnline();
     assert(!isMoneroNodeOnline);
     try {
-      daemon = await moneroTs.connectToDaemonRpc(TestConfig.monerod.url);
+      daemon = await moneroTs.connectToDaemonRpc(rpcUrl);
       height = await daemon.getHeight();
-      console.log("GOT HEIGHT: " + height);
-      throw new Error("should have thrown"); 
+      throw new Error("should have thrown");
     } catch (err: any) {
-      if (err.message !== "RequestError: Error: connect ECONNREFUSED 127.0.0.1:28081") throw new Error("Unexpected error: " + err.message);
+      if (err.message !== "RequestError: Error: connect ECONNREFUSED 127.0.0.1:" + rpcPort.toString()) throw new Error("Unexpected error: " + err.message);
     }
   }
 });
@@ -3830,9 +3822,9 @@ function testOffer(offer: OfferInfo, ctx?: Partial<TradeContext>) {
 }
 
 function testMoneroNodeSettingsEqual(settingsBefore: XmrNodeSettings, settingsAfter: XmrNodeSettings) {
-    expect(settingsAfter.getBlockchainPath()).toEqual(settingsBefore.getBlockchainPath());
-    expect(settingsAfter.getBootstrapUrl()).toEqual(settingsBefore.getBootstrapUrl());
-    expect(settingsAfter.getStartupFlagsList()).toEqual(settingsBefore.getStartupFlagsList());
+    expect(settingsBefore.getBlockchainPath()).toEqual(settingsAfter.getBlockchainPath());
+    expect(settingsBefore.getBootstrapUrl()).toEqual(settingsAfter.getBootstrapUrl());
+    expect(settingsBefore.getStartupFlagsList()).toEqual(settingsAfter.getStartupFlagsList());
 }
 
 function getFormField(form: PaymentAccountForm, fieldId: PaymentAccountFormField.FieldId): PaymentAccountFormField {
