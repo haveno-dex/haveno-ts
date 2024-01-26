@@ -1826,7 +1826,8 @@ test("Can go offline while resolving a dispute (CI)", async () => {
   }
 
   // stop and delete traders
-  if (ctx.maker!.havenod) await releaseHavenoProcess(ctx.maker!.havenod!, true);
+  if (ctx.maker && ctx.maker.havenod) await releaseHavenoProcess(ctx.maker!.havenod!, true);
+  if (ctx.taker && ctx.taker.havenod) await releaseHavenoProcess(ctx.taker!.havenod!, true); // closing this client after first induces HttpClientImpl.shutdown() to hang, so this tests timeout handling
   if (ctx.sellerAppName) deleteHavenoInstanceByAppName(ctx.sellerAppName!); // seller is offline
   if (err) throw err;
 });
