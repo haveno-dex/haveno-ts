@@ -57360,7 +57360,8 @@ proto.io.haveno.protobuffer.UserPayload.toObject = function(includeInstance, msg
     acceptedRefundAgentsList: jspb.Message.toObjectList(msg.getAcceptedRefundAgentsList(),
     proto.io.haveno.protobuffer.RefundAgent.toObject, includeInstance),
     registeredRefundAgent: (f = msg.getRegisteredRefundAgent()) && proto.io.haveno.protobuffer.RefundAgent.toObject(includeInstance, f),
-    cookieMap: (f = msg.getCookieMap()) ? f.toObject(includeInstance, undefined) : []
+    cookieMap: (f = msg.getCookieMap()) ? f.toObject(includeInstance, undefined) : [],
+    walletCreationDate: jspb.Message.getFieldWithDefault(msg, 17, 0)
   };
 
   if (includeInstance) {
@@ -57475,6 +57476,10 @@ proto.io.haveno.protobuffer.UserPayload.deserializeBinaryFromReader = function(m
       reader.readMessage(value, function(message, reader) {
         jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readString, jspb.BinaryReader.prototype.readString, null, "", "");
          });
+      break;
+    case 17:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setWalletCreationDate(value);
       break;
     default:
       reader.skipField();
@@ -57626,6 +57631,13 @@ proto.io.haveno.protobuffer.UserPayload.serializeBinaryToWriter = function(messa
   f = message.getCookieMap(true);
   if (f && f.getLength() > 0) {
     f.serializeBinary(16, writer, jspb.BinaryWriter.prototype.writeString, jspb.BinaryWriter.prototype.writeString);
+  }
+  f = message.getWalletCreationDate();
+  if (f !== 0) {
+    writer.writeInt64(
+      17,
+      f
+    );
   }
 };
 
@@ -58191,6 +58203,24 @@ proto.io.haveno.protobuffer.UserPayload.prototype.getCookieMap = function(opt_no
 proto.io.haveno.protobuffer.UserPayload.prototype.clearCookieMap = function() {
   this.getCookieMap().clear();
   return this;};
+
+
+/**
+ * optional int64 wallet_creation_date = 17;
+ * @return {number}
+ */
+proto.io.haveno.protobuffer.UserPayload.prototype.getWalletCreationDate = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 17, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.io.haveno.protobuffer.UserPayload} returns this
+ */
+proto.io.haveno.protobuffer.UserPayload.prototype.setWalletCreationDate = function(value) {
+  return jspb.Message.setProto3IntField(this, 17, value);
+};
 
 
 
