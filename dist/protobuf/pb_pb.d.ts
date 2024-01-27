@@ -7178,6 +7178,9 @@ export class UserPayload extends jspb.Message {
   getCookieMap(): jspb.Map<string, string>;
   clearCookieMap(): UserPayload;
 
+  getWalletCreationDate(): number;
+  setWalletCreationDate(value: number): UserPayload;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UserPayload.AsObject;
   static toObject(includeInstance: boolean, msg: UserPayload): UserPayload.AsObject;
@@ -7204,6 +7207,7 @@ export namespace UserPayload {
     acceptedRefundAgentsList: Array<RefundAgent.AsObject>,
     registeredRefundAgent?: RefundAgent.AsObject,
     cookieMap: Array<[string, string]>,
+    walletCreationDate: number,
   }
 }
 

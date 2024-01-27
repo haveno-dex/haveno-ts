@@ -33,8 +33,8 @@ import path from "path";
 import net from "net";
 import assert from "assert";
 import console from "console"; // import console because jest swallows messages in real time
+import moneroTs from "monero-ts";
 import * as os from 'os';
-import * as moneroTs from "monero-ts";
 
 // ------------------------------ TEST CONFIG ---------------------------------
 
