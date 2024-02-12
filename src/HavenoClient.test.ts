@@ -1550,7 +1550,7 @@ test("Cannot post offer exceeding trade limit (CI, sanity check)", async () => {
   // test posting buy offer above limit
   try {
     await executeTrade({
-      offerAmount: moneroTs.MoneroUtils.xmrToAtomicUnits(2.6),
+      offerAmount: moneroTs.MoneroUtils.xmrToAtomicUnits(3.1),
       direction: OfferDirection.BUY,
       assetCode: assetCode,
       makerPaymentAccountId: account.getId(),
@@ -1564,7 +1564,7 @@ test("Cannot post offer exceeding trade limit (CI, sanity check)", async () => {
   // test posting sell offer above limit
   try {
     await executeTrade({
-      offerAmount: moneroTs.MoneroUtils.xmrToAtomicUnits(8.1),
+      offerAmount: moneroTs.MoneroUtils.xmrToAtomicUnits(12.1),
       direction: OfferDirection.SELL,
       assetCode: assetCode,
       makerPaymentAccountId: account.getId(),
