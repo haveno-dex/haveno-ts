@@ -1,6 +1,6 @@
 // --------------------------------- IMPORTS ----------------------------------
 
-// haveno imports
+// haveno imports 
 import {
   HavenoClient,
   HavenoError,
@@ -118,7 +118,7 @@ const defaultTradeConfig: Partial<TradeContext> = {
   awaitFundsToTakeOffer: true,
   offerId: undefined,
   takerPaymentAccountId: undefined,
-  buyerSendsPayment: true,
+  buyerSendsPayment: false,
   sellerReceivesPayment: true,
   resolveDispute: true, // resolve dispute after opening
   disputeWinner: DisputeResult.Winner.SELLER,
