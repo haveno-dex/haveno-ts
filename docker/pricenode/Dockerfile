@@ -1,4 +1,4 @@
-FROM gradle:jdk11
+FROM gradle:jdk21
 
 RUN set -ex && \
     apt update && \
