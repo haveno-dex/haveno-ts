@@ -1,4 +1,4 @@
-FROM openjdk:11
+FROM openjdk:21-jdk-bullseye
 
 RUN set -ex && \
     apt update && \
