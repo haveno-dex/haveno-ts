@@ -54,7 +54,7 @@
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-jsx-a11y": "^6.7.1",
     "jest": "^26.6.0",
-    "monero-ts": "^0.9.6",
+    "monero-ts": "^0.9.7",
     "typedoc": "^0.23.26",
     "typedoc-plugin-missing-exports": "^1.0.0",
     "typedoc-plugin-rename-defaults": "^0.6.4",
