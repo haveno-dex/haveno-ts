@@ -191,6 +191,11 @@ export class NetworkEnvelope extends jspb.Message {
   hasMediatedPayoutTxPublishedMessage(): boolean;
   clearMediatedPayoutTxPublishedMessage(): NetworkEnvelope;
 
+  getFileTransferPart(): FileTransferPart | undefined;
+  setFileTransferPart(value?: FileTransferPart): NetworkEnvelope;
+  hasFileTransferPart(): boolean;
+  clearFileTransferPart(): NetworkEnvelope;
+
   getMessageCase(): NetworkEnvelope.MessageCase;
 
   serializeBinary(): Uint8Array;
@@ -241,6 +246,7 @@ export namespace NetworkEnvelope {
     chatMessage?: ChatMessage.AsObject,
     mediatedPayoutTxSignatureMessage?: MediatedPayoutTxSignatureMessage.AsObject,
     mediatedPayoutTxPublishedMessage?: MediatedPayoutTxPublishedMessage.AsObject,
+    fileTransferPart?: FileTransferPart.AsObject,
   }
 
   export enum MessageCase { 
@@ -282,6 +288,7 @@ export namespace NetworkEnvelope {
     CHAT_MESSAGE = 36,
     MEDIATED_PAYOUT_TX_SIGNATURE_MESSAGE = 37,
     MEDIATED_PAYOUT_TX_PUBLISHED_MESSAGE = 38,
+    FILE_TRANSFER_PART = 39,
   }
 }
 
@@ -414,6 +421,48 @@ export namespace GetUpdatedDataRequest {
     nonce: number,
     excludedKeysList: Array<Uint8Array | string>,
     version: string,
+  }
+}
+
+export class FileTransferPart extends jspb.Message {
+  getSenderNodeAddress(): NodeAddress | undefined;
+  setSenderNodeAddress(value?: NodeAddress): FileTransferPart;
+  hasSenderNodeAddress(): boolean;
+  clearSenderNodeAddress(): FileTransferPart;
+
+  getUid(): string;
+  setUid(value: string): FileTransferPart;
+
+  getTradeId(): string;
+  setTradeId(value: string): FileTransferPart;
+
+  getTraderId(): number;
+  setTraderId(value: number): FileTransferPart;
+
+  getSeqNumOrFileLength(): number;
+  setSeqNumOrFileLength(value: number): FileTransferPart;
+
+  getMessageData(): Uint8Array | string;
+  getMessageData_asU8(): Uint8Array;
+  getMessageData_asB64(): string;
+  setMessageData(value: Uint8Array | string): FileTransferPart;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): FileTransferPart.AsObject;
+  static toObject(includeInstance: boolean, msg: FileTransferPart): FileTransferPart.AsObject;
+  static serializeBinaryToWriter(message: FileTransferPart, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): FileTransferPart;
+  static deserializeBinaryFromReader(message: FileTransferPart, reader: jspb.BinaryReader): FileTransferPart;
+}
+
+export namespace FileTransferPart {
+  export type AsObject = {
+    senderNodeAddress?: NodeAddress.AsObject,
+    uid: string,
+    tradeId: string,
+    traderId: number,
+    seqNumOrFileLength: number,
+    messageData: Uint8Array | string,
   }
 }
 
@@ -962,8 +1011,8 @@ export namespace PrefixedSealedAndSignedMessage {
 }
 
 export class InitTradeRequest extends jspb.Message {
-  getTradeId(): string;
-  setTradeId(value: string): InitTradeRequest;
+  getOfferId(): string;
+  setOfferId(value: string): InitTradeRequest;
 
   getSenderNodeAddress(): NodeAddress | undefined;
   setSenderNodeAddress(value?: NodeAddress): InitTradeRequest;
@@ -980,9 +1029,6 @@ export class InitTradeRequest extends jspb.Message {
 
   getTradePrice(): number;
   setTradePrice(value: number): InitTradeRequest;
-
-  getTradeFee(): number;
-  setTradeFee(value: number): InitTradeRequest;
 
   getAccountId(): string;
   setAccountId(value: string): InitTradeRequest;
@@ -1046,12 +1092,11 @@ export class InitTradeRequest extends jspb.Message {
 
 export namespace InitTradeRequest {
   export type AsObject = {
-    tradeId: string,
+    offerId: string,
     senderNodeAddress?: NodeAddress.AsObject,
     pubKeyRing?: PubKeyRing.AsObject,
     tradeAmount: number,
     tradePrice: number,
-    tradeFee: number,
     accountId: string,
     paymentAccountId: string,
     paymentMethodId: string,
@@ -2736,6 +2781,21 @@ export class OfferPayload extends jspb.Message {
   getMinAmount(): number;
   setMinAmount(value: number): OfferPayload;
 
+  getMakerFeePct(): number;
+  setMakerFeePct(value: number): OfferPayload;
+
+  getTakerFeePct(): number;
+  setTakerFeePct(value: number): OfferPayload;
+
+  getPenaltyFeePct(): number;
+  setPenaltyFeePct(value: number): OfferPayload;
+
+  getBuyerSecurityDepositPct(): number;
+  setBuyerSecurityDepositPct(value: number): OfferPayload;
+
+  getSellerSecurityDepositPct(): number;
+  setSellerSecurityDepositPct(value: number): OfferPayload;
+
   getBaseCurrencyCode(): string;
   setBaseCurrencyCode(value: string): OfferPayload;
 
@@ -2769,15 +2829,6 @@ export class OfferPayload extends jspb.Message {
 
   getBlockHeightAtOfferCreation(): number;
   setBlockHeightAtOfferCreation(value: number): OfferPayload;
-
-  getMakerFee(): number;
-  setMakerFee(value: number): OfferPayload;
-
-  getBuyerSecurityDepositPct(): number;
-  setBuyerSecurityDepositPct(value: number): OfferPayload;
-
-  getSellerSecurityDepositPct(): number;
-  setSellerSecurityDepositPct(value: number): OfferPayload;
 
   getMaxTradeLimit(): number;
   setMaxTradeLimit(value: number): OfferPayload;
@@ -2844,6 +2895,11 @@ export namespace OfferPayload {
     useMarketBasedPrice: boolean,
     amount: number,
     minAmount: number,
+    makerFeePct: number,
+    takerFeePct: number,
+    penaltyFeePct: number,
+    buyerSecurityDepositPct: number,
+    sellerSecurityDepositPct: number,
     baseCurrencyCode: string,
     counterCurrencyCode: string,
     paymentMethodId: string,
@@ -2854,9 +2910,6 @@ export namespace OfferPayload {
     acceptedBankIdsList: Array<string>,
     versionNr: string,
     blockHeightAtOfferCreation: number,
-    makerFee: number,
-    buyerSecurityDepositPct: number,
-    sellerSecurityDepositPct: number,
     maxTradeLimit: number,
     maxTradePeriod: number,
     useAutoClose: boolean,
@@ -6027,9 +6080,6 @@ export class Trade extends jspb.Message {
   getAmount(): number;
   setAmount(value: number): Trade;
 
-  getTakerFee(): number;
-  setTakerFee(value: number): Trade;
-
   getTakeOfferDate(): number;
   setTakeOfferDate(value: number): Trade;
 
@@ -6124,7 +6174,6 @@ export namespace Trade {
     payoutTxHex: string,
     payoutTxKey: string,
     amount: number,
-    takerFee: number,
     takeOfferDate: number,
     price: number,
     state: Trade.State,

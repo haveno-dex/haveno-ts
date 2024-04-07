@@ -125,7 +125,7 @@ const defaultTradeConfig: Partial<TradeContext> = {
   takeOffer: true,
   awaitFundsToMakeOffer: true,
   direction: OfferDirection.BUY, // buy or sell xmr
-  offerAmount: HavenoUtils.xmrToAtomicUnits(.2), // amount of xmr to trade
+  offerAmount: 193312996088n,
   offerMinAmount: undefined,
   assetCode: "usd", // counter asset to trade
   makerPaymentAccountId: undefined,
@@ -309,8 +309,12 @@ class TradeContext {
     str += "\nSecurity deposit percent: " + this.securityDepositPct;
     str += "\nMaker balance before offer: " + this.maker.balancesBeforeOffer?.getBalance();
     str += "\nMaker split output tx fee: " + this.maker.splitOutputTxFee;
-    if (this.offer) str += "\nMaker trade fee: " + this.offer!.getMakerFee();
+    if (this.offer) {
+      str += "\nMaker fee percent: " + this.offer!.getMakerFeePct();
+      str += "\nTaker fee percent: " + this.offer!.getTakerFeePct();
+    }
     if (this.arbitrator && this.arbitrator!.trade) {
+      str += "\nMaker trade fee: " + this.arbitrator?.trade?.getMakerFee();
       str += "\nMaker deposit tx id: " + this.arbitrator!.trade!.getMakerDepositTxId();
       if (this.arbitrator!.trade!.getMakerDepositTxId()) {
         let tx = await monerod.getTx(this.arbitrator!.trade!.getMakerDepositTxId());
@@ -1612,11 +1616,14 @@ test("Can complete a trade within a range", async () => {
   let takerPaymentAccount = await createPaymentAccount(user2, assetCode, paymentMethodId);
 
   // execute trade
+  const offerAmount = HavenoUtils.xmrToAtomicUnits(2);
+  const offerMinAmount = HavenoUtils.xmrToAtomicUnits(.15);
+  const tradeAmount = getRandomBigIntWithinRange(offerMinAmount, offerAmount);
   await executeTrade({
     price: 142.23,
-    offerAmount: HavenoUtils.xmrToAtomicUnits(2),
-    offerMinAmount: HavenoUtils.xmrToAtomicUnits(.15),
-    tradeAmount: HavenoUtils.xmrToAtomicUnits(1),
+    offerAmount: offerAmount,
+    offerMinAmount: offerMinAmount,
+    tradeAmount: tradeAmount,
     testPayoutUnlocked: true, // override to test unlock
     makerPaymentAccountId: makerPaymentAccount.getId(),
     takerPaymentAccountId: takerPaymentAccount.getId(),
@@ -1627,10 +1634,11 @@ test("Can complete a trade within a range", async () => {
 
 test("Can complete trades at the same time (CI, sanity check)", async () => {
 
-  // create trade contexts with customized payment methods
+  // create trade contexts with customized payment methods and random amounts
   const ctxs = getTradeContexts(TestConfig.assetCodes.length);
   for (let i = 0; i < ctxs.length; i++) {
     ctxs[i].assetCode = TestConfig.assetCodes[i]; // test each asset code
+    ctxs[i].offerAmount = getRandomBigIntWithinPercent(TestConfig.trade.offerAmount!, 0.15);
     let paymentMethodId;
     if (ctxs[i].assetCode === "USD") paymentMethodId = "zelle";
     if (ctxs[i].assetCode === "EUR") paymentMethodId = "revolut";
@@ -1666,7 +1674,8 @@ test("Can complete all trade combinations (stress)", async () => {
               buyerDisputeContext: BUYER_DISPUTE_OPTS[k],
               sellerDisputeContext: SELLER_DISPUTE_OPTS[l],
               disputeWinner: DISPUTE_WINNER_OPTS[m],
-              disputeSummary: "After much deliberation, " + (DISPUTE_WINNER_OPTS[m] === DisputeResult.Winner.BUYER ? "buyer" : "seller") + " is winner"
+              disputeSummary: "After much deliberation, " + (DISPUTE_WINNER_OPTS[m] === DisputeResult.Winner.BUYER ? "buyer" : "seller") + " is winner",
+              offerAmount: getRandomBigIntWithinPercent(TestConfig.trade.offerAmount!, 0.15)
             };
             ctxs.push(Object.assign({}, new TradeContext(TestConfig.trade), ctx));
           }
@@ -2768,7 +2777,7 @@ async function takeOffer(ctxP: Partial<TradeContext>): Promise<TradeInfo> {
     ctx.taker.balancesAfterTake = await ctx.taker.havenod!.getBalances();
     ctx.maker.depositTxFee = BigInt(ctx.maker.depositTx!.getFee());
     ctx.taker.depositTxFee = BigInt(ctx.taker.depositTx!.getFee());
-    ctx.maker.tradeFee = BigInt(trade.getOffer()!.getMakerFee());
+    ctx.maker.tradeFee = BigInt(trade.getMakerFee());
     ctx.taker.tradeFee = BigInt(trade.getTakerFee());
     ctx.getBuyer().securityDepositActual = BigInt(trade.getBuyerSecurityDeposit()!);
     ctx.getSeller().securityDepositActual = BigInt(trade.getSellerSecurityDeposit()!);
@@ -2832,7 +2841,7 @@ async function testTrade(trade: TradeInfo, ctx: TradeContext) {
   expect(BigInt(trade.getAmount())).toEqual(ctx!.tradeAmount);
 
   // test security deposit = max(.1, trade amount * security deposit pct)
-  const expectedSecurityDeposit = HavenoUtils.xmrToAtomicUnits(Math.max(.1, HavenoUtils.atomicUnitsToXmr(ctx.tradeAmount!) * ctx.securityDepositPct!));
+  const expectedSecurityDeposit = HavenoUtils.max(HavenoUtils.xmrToAtomicUnits(.1), HavenoUtils.multiply(ctx.tradeAmount!, ctx.securityDepositPct!));
   expect(BigInt(trade.getBuyerSecurityDeposit())).toEqual(expectedSecurityDeposit - ctx.getBuyer().depositTxFee);
   expect(BigInt(trade.getSellerSecurityDeposit())).toEqual(expectedSecurityDeposit - ctx.getSeller().depositTxFee);
 
@@ -3770,6 +3779,18 @@ function testOutgoingTransfer(transfer: XmrOutgoingTransfer, ctx: TxContext) {
 function testDestination(destination: XmrDestination) {
   assert(destination.getAddress());
   expect(BigInt(destination.getAmount())).toBeGreaterThan(0n);
+}
+
+function getRandomBigIntWithinPercent(base: bigint, percent: number): bigint {
+  return getRandomBigIntWithinRange(base - multiply(base, percent), base + multiply(base, percent));
+}
+
+function multiply(amount: bigint, multiplier: number): bigint {
+  return BigInt(Math.round(Number(amount) * multiplier));
+}
+
+function getRandomBigIntWithinRange(min: bigint, max: bigint): bigint {
+  return BigInt(Math.floor(Math.random() * (Number(max) - Number(min))) + Number(min));
 }
 
 function getRandomAssetCode() {
