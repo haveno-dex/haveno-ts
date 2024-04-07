@@ -17,6 +17,7 @@
 
 import assert from "assert";
 import console from "console";
+import Decimal from 'decimal.js';
 import { PaymentAccountForm, PaymentAccountFormField } from "../protobuf/pb_pb";
 
 /**
@@ -96,19 +97,50 @@ export default class HavenoUtils {
    * 
    * @param {number} durationMs - the duration to wait for in milliseconds
    */
-    static async waitFor(durationMs: number) {
-      return new Promise(function(resolve) { setTimeout(resolve, durationMs); });
-    }
+  static async waitFor(durationMs: number) {
+    return new Promise(function(resolve) { setTimeout(resolve, durationMs); });
+  }
 
   /**
-   * Divide one bigint by another.
+   * Convert XMR to atomic units.
    * 
-   * @param {bigint} a dividend
-   * @param {bigint} b divisor
+   * @param {number | string} amountXmr - amount in XMR to convert to atomic units
+   * @return {bigint} amount in atomic units
+   */
+  static xmrToAtomicUnits(amountXmr: number | string): bigint {
+    return BigInt(new Decimal(amountXmr).mul(HavenoUtils.AU_PER_XMR.toString()).toFixed(0));
+  }
+  
+  /**
+   * Convert atomic units to XMR.
+   * 
+   * @param {bigint | string} amountAtomicUnits - amount in atomic units to convert to XMR
+   * @return {number} amount in XMR 
+   */
+  static atomicUnitsToXmr(amountAtomicUnits: bigint | string): number {
+    return new Decimal(amountAtomicUnits.toString()).div(HavenoUtils.AU_PER_XMR.toString()).toNumber();
+  }
+
+  /**
+   * Divide one atomic units by another.
+   * 
+   * @param {bigint} au1 dividend
+   * @param {bigint} au2 divisor
    * @returns {number} the result
    */
-  static divideBI(a: bigint, b: bigint): number {
-    return Number(a * 10000000000000n / b) / 10000000000000;
+  static divide(au1: bigint, au2: bigint): number {
+    return this.atomicUnitsToXmr(au1) / this.atomicUnitsToXmr(au2);
+  }
+
+  /**
+   * Multiply a bigint by a number or bigint.
+   * 
+   * @param a bigint to multiply
+   * @param b bigint or number to multiply by
+   * @returns the product as a bigint
+   */
+  static multiply(a: bigint, b: number | bigint): bigint {
+    return BigInt((new Decimal(a.toString()).mul(new Decimal(b.toString())).toFixed(0)));
   }
 
   /**
@@ -119,7 +151,7 @@ export default class HavenoUtils {
    * @returns {number} the percentage difference as a float
    */
   static percentageDiff(a: bigint, b: bigint): number {
-    return HavenoUtils.divideBI(a - b, a);
+    return HavenoUtils.divide(a - b, a);
   }
 
   /**
@@ -133,33 +165,14 @@ export default class HavenoUtils {
   }
 
   /**
-   * Convert XMR to atomic units.
+   * Return the maximum of two bigints.
    * 
-   * @param {number | string} amountXmr - amount in XMR to convert to atomic units
-   * @return {bigint} amount in atomic units
+   * @param {bigint} bi1 first bigint
+   * @param {bigint} bi2 second bigint
+   * @returns {bigint} the maximum of the two bigints
    */
-  static xmrToAtomicUnits(amountXmr: number | string): bigint {
-    if (typeof amountXmr === "number") amountXmr = "" + amountXmr;
-    let decimalDivisor = 1;
-    let decimalIdx = amountXmr.indexOf('.');
-    if (decimalIdx > -1) {
-      decimalDivisor = Math.pow(10, amountXmr.length - decimalIdx - 1);
-      amountXmr = amountXmr.slice(0, decimalIdx) + amountXmr.slice(decimalIdx + 1);
-    }
-    return BigInt(amountXmr) * BigInt(HavenoUtils.AU_PER_XMR) / BigInt(decimalDivisor);
-  }
-  
-  /**
-   * Convert atomic units to XMR.
-   * 
-   * @param {bigint | string} amountAtomicUnits - amount in atomic units to convert to XMR
-   * @return {number} amount in XMR 
-   */
-  static atomicUnitsToXmr(amountAtomicUnits: bigint | string) {
-    if (typeof amountAtomicUnits === "string") amountAtomicUnits = BigInt(amountAtomicUnits);
-    const quotient: bigint = amountAtomicUnits / HavenoUtils.AU_PER_XMR;
-    const remainder: bigint = amountAtomicUnits % HavenoUtils.AU_PER_XMR;
-    return Number(quotient) + Number(remainder) / Number(HavenoUtils.AU_PER_XMR);
+  static max(bi1: bigint, bi2: bigint): bigint {
+    return bi1 > bi2 ? bi1 : bi2;
   }
 
   // ------------------------- PAYMENT ACCOUNT FORMS --------------------------
