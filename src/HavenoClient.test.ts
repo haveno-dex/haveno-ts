@@ -143,11 +143,10 @@ const defaultTradeConfig: Partial<TradeContext> = {
   disputeSummary: "Seller is winner",
   walletSyncPeriodMs: 5000,
   maxTimePeerNoticeMs: 5000,
-  maxConcurrency: 14, // max concurrency
-  maxConcurrencyCI: 7, // CI test max concurrency
   stopOnFailure: true,
   testPayoutConfirmed: true,
-  testPayoutUnlocked: false
+  testPayoutUnlocked: false,
+  maxConcurrency: getMaxConcurrency()
 }
 
 /**
@@ -217,8 +216,6 @@ class TradeContext {
   isPayoutUnlocked?: boolean
   buyerOpenedDispute?: boolean;
   sellerOpenedDispute?: boolean;
-  maxConcurrency?: number;
-  maxConcurrencyCI?: number;
   walletSyncPeriodMs: number;
   maxTimePeerNoticeMs: number;
   stopOnFailure?: boolean;
@@ -230,6 +227,7 @@ class TradeContext {
   payoutTxId?: string
   testBalanceChangeEndToEnd?: boolean;
   isStopped: boolean;
+  maxConcurrency: number;
 
   constructor(ctx?: Partial<TradeContext>) {
     Object.assign(this, ctx);
@@ -1647,7 +1645,7 @@ test("Can complete trades at the same time (CI, sanity check)", async () => {
   }
 
   // execute trades with capped concurrency for CI tests
-  await executeTrades(ctxs, {maxConcurrency: TestConfig.trade.maxConcurrencyCI});
+  await executeTrades(ctxs);
 });
 
 test("Can complete all trade combinations (stress)", async () => {
@@ -3872,6 +3870,14 @@ function testMoneroNodeSettingsEqual(settingsBefore: XmrNodeSettings, settingsAf
     expect(settingsAfter.getBlockchainPath()).toEqual(settingsBefore.getBlockchainPath());
     expect(settingsAfter.getBootstrapUrl()).toEqual(settingsBefore.getBootstrapUrl());
     expect(settingsAfter.getStartupFlagsList()).toEqual(settingsBefore.getStartupFlagsList());
+}
+
+function getMaxConcurrency() {
+  return isGitHubActions() ? 4 : 14;
+}
+
+function isGitHubActions() {
+  return process.env.GITHUB_ACTIONS === 'true';
 }
 
 function getFormField(form: PaymentAccountForm, fieldId: PaymentAccountFormField.FieldId): PaymentAccountFormField {
