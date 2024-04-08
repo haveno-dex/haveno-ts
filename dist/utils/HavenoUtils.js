@@ -92,14 +92,42 @@ class HavenoUtils {
         return new Promise(function (resolve) { setTimeout(resolve, durationMs); });
     }
     /**
-     * Divide one bigint by another.
+     * Convert XMR to atomic units.
      *
-     * @param {bigint} a dividend
-     * @param {bigint} b divisor
+     * @param {number | string} amountXmr - amount in XMR to convert to atomic units
+     * @return {bigint} amount in atomic units
+     */
+    static xmrToAtomicUnits(amountXmr) {
+        return BigInt(new decimal_js_1.default(amountXmr).mul(HavenoUtils.AU_PER_XMR.toString()).toFixed(0));
+    }
+    /**
+     * Convert atomic units to XMR.
+     *
+     * @param {bigint | string} amountAtomicUnits - amount in atomic units to convert to XMR
+     * @return {number} amount in XMR
+     */
+    static atomicUnitsToXmr(amountAtomicUnits) {
+        return new decimal_js_1.default(amountAtomicUnits.toString()).div(HavenoUtils.AU_PER_XMR.toString()).toNumber();
+    }
+    /**
+     * Divide one atomic units by another.
+     *
+     * @param {bigint} au1 dividend
+     * @param {bigint} au2 divisor
      * @returns {number} the result
      */
-    static divideBI(a, b) {
-        return Number(a * 10000000000000n / b) / 10000000000000;
+    static divide(au1, au2) {
+        return this.atomicUnitsToXmr(au1) / this.atomicUnitsToXmr(au2);
+    }
+    /**
+     * Multiply a bigint by a number or bigint.
+     *
+     * @param a bigint to multiply
+     * @param b bigint or number to multiply by
+     * @returns the product as a bigint
+     */
+    static multiply(a, b) {
+        return BigInt((new decimal_js_1.default(a.toString()).mul(new decimal_js_1.default(b.toString())).toFixed(0)));
     }
     /**
      * Calculate the difference from a first bigint to a second, as a percentage (float).
@@ -109,7 +137,7 @@ class HavenoUtils {
      * @returns {number} the percentage difference as a float
      */
     static percentageDiff(a, b) {
-        return HavenoUtils.divideBI(a - b, a);
+        return HavenoUtils.divide(a - b, a);
     }
     /**
      * Return the absolute value of the given bigint.
@@ -121,34 +149,14 @@ class HavenoUtils {
         return a < 0 ? -a : a;
     }
     /**
-     * Convert XMR to atomic units.
+     * Return the maximum of two bigints.
      *
-     * @param {number | string} amountXmr - amount in XMR to convert to atomic units
-     * @return {bigint} amount in atomic units
+     * @param {bigint} bi1 first bigint
+     * @param {bigint} bi2 second bigint
+     * @returns {bigint} the maximum of the two bigints
      */
-    static xmrToAtomicUnits(amountXmr) {
-        if (typeof amountXmr === "number")
-            amountXmr = "" + amountXmr;
-        let decimalDivisor = 1;
-        let decimalIdx = amountXmr.indexOf('.');
-        if (decimalIdx > -1) {
-            decimalDivisor = Math.pow(10, amountXmr.length - decimalIdx - 1);
-            amountXmr = amountXmr.slice(0, decimalIdx) + amountXmr.slice(decimalIdx + 1);
-        }
-        return BigInt(amountXmr) * BigInt(HavenoUtils.AU_PER_XMR) / BigInt(decimalDivisor);
-    }
-    /**
-     * Convert atomic units to XMR.
-     *
-     * @param {bigint | string} amountAtomicUnits - amount in atomic units to convert to XMR
-     * @return {number} amount in XMR
-     */
-    static atomicUnitsToXmr(amountAtomicUnits) {
-        if (typeof amountAtomicUnits === "string")
-            amountAtomicUnits = BigInt(amountAtomicUnits);
-        const quotient = amountAtomicUnits / HavenoUtils.AU_PER_XMR;
-        const remainder = amountAtomicUnits % HavenoUtils.AU_PER_XMR;
-        return new decimal_js_1.default(quotient.toString()).plus(new decimal_js_1.default(remainder.toString()).div(HavenoUtils.AU_PER_XMR.toString())).toNumber();
+    static max(bi1, bi2) {
+        return bi1 > bi2 ? bi1 : bi2;
     }
     // ------------------------- PAYMENT ACCOUNT FORMS --------------------------
     /**

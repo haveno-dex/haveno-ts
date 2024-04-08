@@ -49,13 +49,35 @@ export default class HavenoUtils {
      */
     static waitFor(durationMs: number): Promise<unknown>;
     /**
-     * Divide one bigint by another.
+     * Convert XMR to atomic units.
      *
-     * @param {bigint} a dividend
-     * @param {bigint} b divisor
+     * @param {number | string} amountXmr - amount in XMR to convert to atomic units
+     * @return {bigint} amount in atomic units
+     */
+    static xmrToAtomicUnits(amountXmr: number | string): bigint;
+    /**
+     * Convert atomic units to XMR.
+     *
+     * @param {bigint | string} amountAtomicUnits - amount in atomic units to convert to XMR
+     * @return {number} amount in XMR
+     */
+    static atomicUnitsToXmr(amountAtomicUnits: bigint | string): number;
+    /**
+     * Divide one atomic units by another.
+     *
+     * @param {bigint} au1 dividend
+     * @param {bigint} au2 divisor
      * @returns {number} the result
      */
-    static divideBI(a: bigint, b: bigint): number;
+    static divide(au1: bigint, au2: bigint): number;
+    /**
+     * Multiply a bigint by a number or bigint.
+     *
+     * @param a bigint to multiply
+     * @param b bigint or number to multiply by
+     * @returns the product as a bigint
+     */
+    static multiply(a: bigint, b: number | bigint): bigint;
     /**
      * Calculate the difference from a first bigint to a second, as a percentage (float).
      *
@@ -72,19 +94,13 @@ export default class HavenoUtils {
      */
     static abs(a: bigint): bigint;
     /**
-     * Convert XMR to atomic units.
+     * Return the maximum of two bigints.
      *
-     * @param {number | string} amountXmr - amount in XMR to convert to atomic units
-     * @return {bigint} amount in atomic units
+     * @param {bigint} bi1 first bigint
+     * @param {bigint} bi2 second bigint
+     * @returns {bigint} the maximum of the two bigints
      */
-    static xmrToAtomicUnits(amountXmr: number | string): bigint;
-    /**
-     * Convert atomic units to XMR.
-     *
-     * @param {bigint | string} amountAtomicUnits - amount in atomic units to convert to XMR
-     * @return {number} amount in XMR
-     */
-    static atomicUnitsToXmr(amountAtomicUnits: bigint | string): number;
+    static max(bi1: bigint, bi2: bigint): bigint;
     /**
      * Get a validated payment method id from a string or form id.
      *
