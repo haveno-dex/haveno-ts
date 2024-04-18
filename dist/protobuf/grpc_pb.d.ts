@@ -2818,6 +2818,9 @@ export class ContractInfo extends jspb.Message {
   getSellerNodeAddress(): string;
   setSellerNodeAddress(value: string): ContractInfo;
 
+  getArbitratorNodeAddress(): string;
+  setArbitratorNodeAddress(value: string): ContractInfo;
+
   getIsBuyerMakerAndSellerTaker(): boolean;
   setIsBuyerMakerAndSellerTaker(value: boolean): ContractInfo;
 
@@ -2846,9 +2849,6 @@ export class ContractInfo extends jspb.Message {
   getLockTime(): number;
   setLockTime(value: number): ContractInfo;
 
-  getArbitratorNodeAddress(): string;
-  setArbitratorNodeAddress(value: string): ContractInfo;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ContractInfo.AsObject;
   static toObject(includeInstance: boolean, msg: ContractInfo): ContractInfo.AsObject;
@@ -2861,6 +2861,7 @@ export namespace ContractInfo {
   export type AsObject = {
     buyerNodeAddress: string,
     sellerNodeAddress: string,
+    arbitratorNodeAddress: string,
     isBuyerMakerAndSellerTaker: boolean,
     makerAccountId: string,
     takerAccountId: string,
@@ -2869,7 +2870,6 @@ export namespace ContractInfo {
     makerPayoutAddressString: string,
     takerPayoutAddressString: string,
     lockTime: number,
-    arbitratorNodeAddress: string,
   }
 }
 

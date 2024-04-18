@@ -1567,7 +1567,7 @@ if (goog.DEBUG && !COMPILED) {
  * @constructor
  */
 proto.io.haveno.protobuffer.OfferPayload = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, 500, proto.io.haveno.protobuffer.OfferPayload.repeatedFields_, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.io.haveno.protobuffer.OfferPayload.repeatedFields_, null);
 };
 goog.inherits(proto.io.haveno.protobuffer.OfferPayload, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -3016,7 +3016,7 @@ if (goog.DEBUG && !COMPILED) {
  * @constructor
  */
 proto.io.haveno.protobuffer.PersistableEnvelope = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, 500, null, proto.io.haveno.protobuffer.PersistableEnvelope.oneofGroups_);
+  jspb.Message.initialize(this, opt_data, 0, -1, null, proto.io.haveno.protobuffer.PersistableEnvelope.oneofGroups_);
 };
 goog.inherits(proto.io.haveno.protobuffer.PersistableEnvelope, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -3436,7 +3436,7 @@ if (goog.DEBUG && !COMPILED) {
  * @constructor
  */
 proto.io.haveno.protobuffer.Tradable = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, 500, null, proto.io.haveno.protobuffer.Tradable.oneofGroups_);
+  jspb.Message.initialize(this, opt_data, 0, -1, null, proto.io.haveno.protobuffer.Tradable.oneofGroups_);
 };
 goog.inherits(proto.io.haveno.protobuffer.Tradable, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -25329,7 +25329,7 @@ proto.io.haveno.protobuffer.MailboxStoragePayload.prototype.clearExtraDataMap = 
  * @private {!Array<number>}
  * @const
  */
-proto.io.haveno.protobuffer.OfferPayload.repeatedFields_ = [21,23,1003];
+proto.io.haveno.protobuffer.OfferPayload.repeatedFields_ = [21,23,38];
 
 
 
@@ -25399,7 +25399,7 @@ proto.io.haveno.protobuffer.OfferPayload.toObject = function(includeInstance, ms
     protocolVersion: jspb.Message.getFieldWithDefault(msg, 35, 0),
     arbitratorSigner: (f = msg.getArbitratorSigner()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
     arbitratorSignature: msg.getArbitratorSignature_asB64(),
-    reserveTxKeyImagesList: (f = jspb.Message.getRepeatedField(msg, 1003)) == null ? undefined : f
+    reserveTxKeyImagesList: (f = jspb.Message.getRepeatedField(msg, 38)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -25580,16 +25580,16 @@ proto.io.haveno.protobuffer.OfferPayload.deserializeBinaryFromReader = function(
       var value = /** @type {number} */ (reader.readInt32());
       msg.setProtocolVersion(value);
       break;
-    case 1001:
+    case 36:
       var value = new proto.io.haveno.protobuffer.NodeAddress;
       reader.readMessage(value,proto.io.haveno.protobuffer.NodeAddress.deserializeBinaryFromReader);
       msg.setArbitratorSigner(value);
       break;
-    case 1002:
+    case 37:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setArbitratorSignature(value);
       break;
-    case 1003:
+    case 38:
       var value = /** @type {string} */ (reader.readString());
       msg.addReserveTxKeyImages(value);
       break;
@@ -25869,7 +25869,7 @@ proto.io.haveno.protobuffer.OfferPayload.serializeBinaryToWriter = function(mess
   f = message.getArbitratorSigner();
   if (f != null) {
     writer.writeMessage(
-      1001,
+      36,
       f,
       proto.io.haveno.protobuffer.NodeAddress.serializeBinaryToWriter
     );
@@ -25877,14 +25877,14 @@ proto.io.haveno.protobuffer.OfferPayload.serializeBinaryToWriter = function(mess
   f = message.getArbitratorSignature_asU8();
   if (f.length > 0) {
     writer.writeBytes(
-      1002,
+      37,
       f
     );
   }
   f = message.getReserveTxKeyImagesList();
   if (f.length > 0) {
     writer.writeRepeatedString(
-      1003,
+      38,
       f
     );
   }
@@ -26602,12 +26602,12 @@ proto.io.haveno.protobuffer.OfferPayload.prototype.setProtocolVersion = function
 
 
 /**
- * optional NodeAddress arbitrator_signer = 1001;
+ * optional NodeAddress arbitrator_signer = 36;
  * @return {?proto.io.haveno.protobuffer.NodeAddress}
  */
 proto.io.haveno.protobuffer.OfferPayload.prototype.getArbitratorSigner = function() {
   return /** @type{?proto.io.haveno.protobuffer.NodeAddress} */ (
-    jspb.Message.getWrapperField(this, proto.io.haveno.protobuffer.NodeAddress, 1001));
+    jspb.Message.getWrapperField(this, proto.io.haveno.protobuffer.NodeAddress, 36));
 };
 
 
@@ -26616,7 +26616,7 @@ proto.io.haveno.protobuffer.OfferPayload.prototype.getArbitratorSigner = functio
  * @return {!proto.io.haveno.protobuffer.OfferPayload} returns this
 */
 proto.io.haveno.protobuffer.OfferPayload.prototype.setArbitratorSigner = function(value) {
-  return jspb.Message.setWrapperField(this, 1001, value);
+  return jspb.Message.setWrapperField(this, 36, value);
 };
 
 
@@ -26634,21 +26634,21 @@ proto.io.haveno.protobuffer.OfferPayload.prototype.clearArbitratorSigner = funct
  * @return {boolean}
  */
 proto.io.haveno.protobuffer.OfferPayload.prototype.hasArbitratorSigner = function() {
-  return jspb.Message.getField(this, 1001) != null;
+  return jspb.Message.getField(this, 36) != null;
 };
 
 
 /**
- * optional bytes arbitrator_signature = 1002;
+ * optional bytes arbitrator_signature = 37;
  * @return {!(string|Uint8Array)}
  */
 proto.io.haveno.protobuffer.OfferPayload.prototype.getArbitratorSignature = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1002, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 37, ""));
 };
 
 
 /**
- * optional bytes arbitrator_signature = 1002;
+ * optional bytes arbitrator_signature = 37;
  * This is a type-conversion wrapper around `getArbitratorSignature()`
  * @return {string}
  */
@@ -26659,7 +26659,7 @@ proto.io.haveno.protobuffer.OfferPayload.prototype.getArbitratorSignature_asB64 
 
 
 /**
- * optional bytes arbitrator_signature = 1002;
+ * optional bytes arbitrator_signature = 37;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getArbitratorSignature()`
@@ -26676,16 +26676,16 @@ proto.io.haveno.protobuffer.OfferPayload.prototype.getArbitratorSignature_asU8 =
  * @return {!proto.io.haveno.protobuffer.OfferPayload} returns this
  */
 proto.io.haveno.protobuffer.OfferPayload.prototype.setArbitratorSignature = function(value) {
-  return jspb.Message.setProto3BytesField(this, 1002, value);
+  return jspb.Message.setProto3BytesField(this, 37, value);
 };
 
 
 /**
- * repeated string reserve_tx_key_images = 1003;
+ * repeated string reserve_tx_key_images = 38;
  * @return {!Array<string>}
  */
 proto.io.haveno.protobuffer.OfferPayload.prototype.getReserveTxKeyImagesList = function() {
-  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 1003));
+  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 38));
 };
 
 
@@ -26694,7 +26694,7 @@ proto.io.haveno.protobuffer.OfferPayload.prototype.getReserveTxKeyImagesList = f
  * @return {!proto.io.haveno.protobuffer.OfferPayload} returns this
  */
 proto.io.haveno.protobuffer.OfferPayload.prototype.setReserveTxKeyImagesList = function(value) {
-  return jspb.Message.setField(this, 1003, value || []);
+  return jspb.Message.setField(this, 38, value || []);
 };
 
 
@@ -26704,7 +26704,7 @@ proto.io.haveno.protobuffer.OfferPayload.prototype.setReserveTxKeyImagesList = f
  * @return {!proto.io.haveno.protobuffer.OfferPayload} returns this
  */
 proto.io.haveno.protobuffer.OfferPayload.prototype.addReserveTxKeyImages = function(value, opt_index) {
-  return jspb.Message.addToRepeatedField(this, 1003, value, opt_index);
+  return jspb.Message.addToRepeatedField(this, 38, value, opt_index);
 };
 
 
@@ -43967,7 +43967,7 @@ proto.io.haveno.protobuffer.SwiftAccountPayload.prototype.setIntermediaryAddress
  * @private {!Array<!Array<number>>}
  * @const
  */
-proto.io.haveno.protobuffer.PersistableEnvelope.oneofGroups_ = [[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,1001,1002,1003]];
+proto.io.haveno.protobuffer.PersistableEnvelope.oneofGroups_ = [[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]];
 
 /**
  * @enum {number}
@@ -43991,9 +43991,9 @@ proto.io.haveno.protobuffer.PersistableEnvelope.MessageCase = {
   MAILBOX_MESSAGE_LIST: 15,
   IGNORED_MAILBOX_MAP: 16,
   REMOVED_PAYLOADS_MAP: 17,
-  XMR_ADDRESS_ENTRY_LIST: 1001,
-  SIGNED_OFFER_LIST: 1002,
-  ENCRYPTED_CONNECTION_LIST: 1003
+  XMR_ADDRESS_ENTRY_LIST: 18,
+  SIGNED_OFFER_LIST: 19,
+  ENCRYPTED_CONNECTION_LIST: 20
 };
 
 /**
@@ -44175,17 +44175,17 @@ proto.io.haveno.protobuffer.PersistableEnvelope.deserializeBinaryFromReader = fu
       reader.readMessage(value,proto.io.haveno.protobuffer.RemovedPayloadsMap.deserializeBinaryFromReader);
       msg.setRemovedPayloadsMap(value);
       break;
-    case 1001:
+    case 18:
       var value = new proto.io.haveno.protobuffer.XmrAddressEntryList;
       reader.readMessage(value,proto.io.haveno.protobuffer.XmrAddressEntryList.deserializeBinaryFromReader);
       msg.setXmrAddressEntryList(value);
       break;
-    case 1002:
+    case 19:
       var value = new proto.io.haveno.protobuffer.SignedOfferList;
       reader.readMessage(value,proto.io.haveno.protobuffer.SignedOfferList.deserializeBinaryFromReader);
       msg.setSignedOfferList(value);
       break;
-    case 1003:
+    case 20:
       var value = new proto.io.haveno.protobuffer.EncryptedConnectionList;
       reader.readMessage(value,proto.io.haveno.protobuffer.EncryptedConnectionList.deserializeBinaryFromReader);
       msg.setEncryptedConnectionList(value);
@@ -44358,7 +44358,7 @@ proto.io.haveno.protobuffer.PersistableEnvelope.serializeBinaryToWriter = functi
   f = message.getXmrAddressEntryList();
   if (f != null) {
     writer.writeMessage(
-      1001,
+      18,
       f,
       proto.io.haveno.protobuffer.XmrAddressEntryList.serializeBinaryToWriter
     );
@@ -44366,7 +44366,7 @@ proto.io.haveno.protobuffer.PersistableEnvelope.serializeBinaryToWriter = functi
   f = message.getSignedOfferList();
   if (f != null) {
     writer.writeMessage(
-      1002,
+      19,
       f,
       proto.io.haveno.protobuffer.SignedOfferList.serializeBinaryToWriter
     );
@@ -44374,7 +44374,7 @@ proto.io.haveno.protobuffer.PersistableEnvelope.serializeBinaryToWriter = functi
   f = message.getEncryptedConnectionList();
   if (f != null) {
     writer.writeMessage(
-      1003,
+      20,
       f,
       proto.io.haveno.protobuffer.EncryptedConnectionList.serializeBinaryToWriter
     );
@@ -45012,12 +45012,12 @@ proto.io.haveno.protobuffer.PersistableEnvelope.prototype.hasRemovedPayloadsMap 
 
 
 /**
- * optional XmrAddressEntryList xmr_address_entry_list = 1001;
+ * optional XmrAddressEntryList xmr_address_entry_list = 18;
  * @return {?proto.io.haveno.protobuffer.XmrAddressEntryList}
  */
 proto.io.haveno.protobuffer.PersistableEnvelope.prototype.getXmrAddressEntryList = function() {
   return /** @type{?proto.io.haveno.protobuffer.XmrAddressEntryList} */ (
-    jspb.Message.getWrapperField(this, proto.io.haveno.protobuffer.XmrAddressEntryList, 1001));
+    jspb.Message.getWrapperField(this, proto.io.haveno.protobuffer.XmrAddressEntryList, 18));
 };
 
 
@@ -45026,7 +45026,7 @@ proto.io.haveno.protobuffer.PersistableEnvelope.prototype.getXmrAddressEntryList
  * @return {!proto.io.haveno.protobuffer.PersistableEnvelope} returns this
 */
 proto.io.haveno.protobuffer.PersistableEnvelope.prototype.setXmrAddressEntryList = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 1001, proto.io.haveno.protobuffer.PersistableEnvelope.oneofGroups_[0], value);
+  return jspb.Message.setOneofWrapperField(this, 18, proto.io.haveno.protobuffer.PersistableEnvelope.oneofGroups_[0], value);
 };
 
 
@@ -45044,17 +45044,17 @@ proto.io.haveno.protobuffer.PersistableEnvelope.prototype.clearXmrAddressEntryLi
  * @return {boolean}
  */
 proto.io.haveno.protobuffer.PersistableEnvelope.prototype.hasXmrAddressEntryList = function() {
-  return jspb.Message.getField(this, 1001) != null;
+  return jspb.Message.getField(this, 18) != null;
 };
 
 
 /**
- * optional SignedOfferList signed_offer_list = 1002;
+ * optional SignedOfferList signed_offer_list = 19;
  * @return {?proto.io.haveno.protobuffer.SignedOfferList}
  */
 proto.io.haveno.protobuffer.PersistableEnvelope.prototype.getSignedOfferList = function() {
   return /** @type{?proto.io.haveno.protobuffer.SignedOfferList} */ (
-    jspb.Message.getWrapperField(this, proto.io.haveno.protobuffer.SignedOfferList, 1002));
+    jspb.Message.getWrapperField(this, proto.io.haveno.protobuffer.SignedOfferList, 19));
 };
 
 
@@ -45063,7 +45063,7 @@ proto.io.haveno.protobuffer.PersistableEnvelope.prototype.getSignedOfferList = f
  * @return {!proto.io.haveno.protobuffer.PersistableEnvelope} returns this
 */
 proto.io.haveno.protobuffer.PersistableEnvelope.prototype.setSignedOfferList = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 1002, proto.io.haveno.protobuffer.PersistableEnvelope.oneofGroups_[0], value);
+  return jspb.Message.setOneofWrapperField(this, 19, proto.io.haveno.protobuffer.PersistableEnvelope.oneofGroups_[0], value);
 };
 
 
@@ -45081,17 +45081,17 @@ proto.io.haveno.protobuffer.PersistableEnvelope.prototype.clearSignedOfferList =
  * @return {boolean}
  */
 proto.io.haveno.protobuffer.PersistableEnvelope.prototype.hasSignedOfferList = function() {
-  return jspb.Message.getField(this, 1002) != null;
+  return jspb.Message.getField(this, 19) != null;
 };
 
 
 /**
- * optional EncryptedConnectionList encrypted_connection_list = 1003;
+ * optional EncryptedConnectionList encrypted_connection_list = 20;
  * @return {?proto.io.haveno.protobuffer.EncryptedConnectionList}
  */
 proto.io.haveno.protobuffer.PersistableEnvelope.prototype.getEncryptedConnectionList = function() {
   return /** @type{?proto.io.haveno.protobuffer.EncryptedConnectionList} */ (
-    jspb.Message.getWrapperField(this, proto.io.haveno.protobuffer.EncryptedConnectionList, 1003));
+    jspb.Message.getWrapperField(this, proto.io.haveno.protobuffer.EncryptedConnectionList, 20));
 };
 
 
@@ -45100,7 +45100,7 @@ proto.io.haveno.protobuffer.PersistableEnvelope.prototype.getEncryptedConnection
  * @return {!proto.io.haveno.protobuffer.PersistableEnvelope} returns this
 */
 proto.io.haveno.protobuffer.PersistableEnvelope.prototype.setEncryptedConnectionList = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 1003, proto.io.haveno.protobuffer.PersistableEnvelope.oneofGroups_[0], value);
+  return jspb.Message.setOneofWrapperField(this, 20, proto.io.haveno.protobuffer.PersistableEnvelope.oneofGroups_[0], value);
 };
 
 
@@ -45118,7 +45118,7 @@ proto.io.haveno.protobuffer.PersistableEnvelope.prototype.clearEncryptedConnecti
  * @return {boolean}
  */
 proto.io.haveno.protobuffer.PersistableEnvelope.prototype.hasEncryptedConnectionList = function() {
-  return jspb.Message.getField(this, 1003) != null;
+  return jspb.Message.getField(this, 20) != null;
 };
 
 
@@ -49110,7 +49110,7 @@ proto.io.haveno.protobuffer.OpenOffer.prototype.setReserveTxKey = function(value
  * @private {!Array<!Array<number>>}
  * @const
  */
-proto.io.haveno.protobuffer.Tradable.oneofGroups_ = [[1,2,3,4,5,6,1001]];
+proto.io.haveno.protobuffer.Tradable.oneofGroups_ = [[1,2,3,4,5,6,7]];
 
 /**
  * @enum {number}
@@ -49118,12 +49118,12 @@ proto.io.haveno.protobuffer.Tradable.oneofGroups_ = [[1,2,3,4,5,6,1001]];
 proto.io.haveno.protobuffer.Tradable.MessageCase = {
   MESSAGE_NOT_SET: 0,
   OPEN_OFFER: 1,
-  BUYER_AS_MAKER_TRADE: 2,
-  BUYER_AS_TAKER_TRADE: 3,
-  SELLER_AS_MAKER_TRADE: 4,
-  SELLER_AS_TAKER_TRADE: 5,
-  ARBITRATOR_TRADE: 6,
-  SIGNED_OFFER: 1001
+  SIGNED_OFFER: 2,
+  BUYER_AS_MAKER_TRADE: 3,
+  BUYER_AS_TAKER_TRADE: 4,
+  SELLER_AS_MAKER_TRADE: 5,
+  SELLER_AS_TAKER_TRADE: 6,
+  ARBITRATOR_TRADE: 7
 };
 
 /**
@@ -49165,12 +49165,12 @@ proto.io.haveno.protobuffer.Tradable.prototype.toObject = function(opt_includeIn
 proto.io.haveno.protobuffer.Tradable.toObject = function(includeInstance, msg) {
   var f, obj = {
     openOffer: (f = msg.getOpenOffer()) && proto.io.haveno.protobuffer.OpenOffer.toObject(includeInstance, f),
+    signedOffer: (f = msg.getSignedOffer()) && proto.io.haveno.protobuffer.SignedOffer.toObject(includeInstance, f),
     buyerAsMakerTrade: (f = msg.getBuyerAsMakerTrade()) && proto.io.haveno.protobuffer.BuyerAsMakerTrade.toObject(includeInstance, f),
     buyerAsTakerTrade: (f = msg.getBuyerAsTakerTrade()) && proto.io.haveno.protobuffer.BuyerAsTakerTrade.toObject(includeInstance, f),
     sellerAsMakerTrade: (f = msg.getSellerAsMakerTrade()) && proto.io.haveno.protobuffer.SellerAsMakerTrade.toObject(includeInstance, f),
     sellerAsTakerTrade: (f = msg.getSellerAsTakerTrade()) && proto.io.haveno.protobuffer.SellerAsTakerTrade.toObject(includeInstance, f),
-    arbitratorTrade: (f = msg.getArbitratorTrade()) && proto.io.haveno.protobuffer.ArbitratorTrade.toObject(includeInstance, f),
-    signedOffer: (f = msg.getSignedOffer()) && proto.io.haveno.protobuffer.SignedOffer.toObject(includeInstance, f)
+    arbitratorTrade: (f = msg.getArbitratorTrade()) && proto.io.haveno.protobuffer.ArbitratorTrade.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -49213,34 +49213,34 @@ proto.io.haveno.protobuffer.Tradable.deserializeBinaryFromReader = function(msg,
       msg.setOpenOffer(value);
       break;
     case 2:
+      var value = new proto.io.haveno.protobuffer.SignedOffer;
+      reader.readMessage(value,proto.io.haveno.protobuffer.SignedOffer.deserializeBinaryFromReader);
+      msg.setSignedOffer(value);
+      break;
+    case 3:
       var value = new proto.io.haveno.protobuffer.BuyerAsMakerTrade;
       reader.readMessage(value,proto.io.haveno.protobuffer.BuyerAsMakerTrade.deserializeBinaryFromReader);
       msg.setBuyerAsMakerTrade(value);
       break;
-    case 3:
+    case 4:
       var value = new proto.io.haveno.protobuffer.BuyerAsTakerTrade;
       reader.readMessage(value,proto.io.haveno.protobuffer.BuyerAsTakerTrade.deserializeBinaryFromReader);
       msg.setBuyerAsTakerTrade(value);
       break;
-    case 4:
+    case 5:
       var value = new proto.io.haveno.protobuffer.SellerAsMakerTrade;
       reader.readMessage(value,proto.io.haveno.protobuffer.SellerAsMakerTrade.deserializeBinaryFromReader);
       msg.setSellerAsMakerTrade(value);
       break;
-    case 5:
+    case 6:
       var value = new proto.io.haveno.protobuffer.SellerAsTakerTrade;
       reader.readMessage(value,proto.io.haveno.protobuffer.SellerAsTakerTrade.deserializeBinaryFromReader);
       msg.setSellerAsTakerTrade(value);
       break;
-    case 6:
+    case 7:
       var value = new proto.io.haveno.protobuffer.ArbitratorTrade;
       reader.readMessage(value,proto.io.haveno.protobuffer.ArbitratorTrade.deserializeBinaryFromReader);
       msg.setArbitratorTrade(value);
-      break;
-    case 1001:
-      var value = new proto.io.haveno.protobuffer.SignedOffer;
-      reader.readMessage(value,proto.io.haveno.protobuffer.SignedOffer.deserializeBinaryFromReader);
-      msg.setSignedOffer(value);
       break;
     default:
       reader.skipField();
@@ -49279,10 +49279,18 @@ proto.io.haveno.protobuffer.Tradable.serializeBinaryToWriter = function(message,
       proto.io.haveno.protobuffer.OpenOffer.serializeBinaryToWriter
     );
   }
-  f = message.getBuyerAsMakerTrade();
+  f = message.getSignedOffer();
   if (f != null) {
     writer.writeMessage(
       2,
+      f,
+      proto.io.haveno.protobuffer.SignedOffer.serializeBinaryToWriter
+    );
+  }
+  f = message.getBuyerAsMakerTrade();
+  if (f != null) {
+    writer.writeMessage(
+      3,
       f,
       proto.io.haveno.protobuffer.BuyerAsMakerTrade.serializeBinaryToWriter
     );
@@ -49290,7 +49298,7 @@ proto.io.haveno.protobuffer.Tradable.serializeBinaryToWriter = function(message,
   f = message.getBuyerAsTakerTrade();
   if (f != null) {
     writer.writeMessage(
-      3,
+      4,
       f,
       proto.io.haveno.protobuffer.BuyerAsTakerTrade.serializeBinaryToWriter
     );
@@ -49298,7 +49306,7 @@ proto.io.haveno.protobuffer.Tradable.serializeBinaryToWriter = function(message,
   f = message.getSellerAsMakerTrade();
   if (f != null) {
     writer.writeMessage(
-      4,
+      5,
       f,
       proto.io.haveno.protobuffer.SellerAsMakerTrade.serializeBinaryToWriter
     );
@@ -49306,7 +49314,7 @@ proto.io.haveno.protobuffer.Tradable.serializeBinaryToWriter = function(message,
   f = message.getSellerAsTakerTrade();
   if (f != null) {
     writer.writeMessage(
-      5,
+      6,
       f,
       proto.io.haveno.protobuffer.SellerAsTakerTrade.serializeBinaryToWriter
     );
@@ -49314,17 +49322,9 @@ proto.io.haveno.protobuffer.Tradable.serializeBinaryToWriter = function(message,
   f = message.getArbitratorTrade();
   if (f != null) {
     writer.writeMessage(
-      6,
+      7,
       f,
       proto.io.haveno.protobuffer.ArbitratorTrade.serializeBinaryToWriter
-    );
-  }
-  f = message.getSignedOffer();
-  if (f != null) {
-    writer.writeMessage(
-      1001,
-      f,
-      proto.io.haveno.protobuffer.SignedOffer.serializeBinaryToWriter
     );
   }
 };
@@ -49368,197 +49368,12 @@ proto.io.haveno.protobuffer.Tradable.prototype.hasOpenOffer = function() {
 
 
 /**
- * optional BuyerAsMakerTrade buyer_as_maker_trade = 2;
- * @return {?proto.io.haveno.protobuffer.BuyerAsMakerTrade}
- */
-proto.io.haveno.protobuffer.Tradable.prototype.getBuyerAsMakerTrade = function() {
-  return /** @type{?proto.io.haveno.protobuffer.BuyerAsMakerTrade} */ (
-    jspb.Message.getWrapperField(this, proto.io.haveno.protobuffer.BuyerAsMakerTrade, 2));
-};
-
-
-/**
- * @param {?proto.io.haveno.protobuffer.BuyerAsMakerTrade|undefined} value
- * @return {!proto.io.haveno.protobuffer.Tradable} returns this
-*/
-proto.io.haveno.protobuffer.Tradable.prototype.setBuyerAsMakerTrade = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 2, proto.io.haveno.protobuffer.Tradable.oneofGroups_[0], value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.io.haveno.protobuffer.Tradable} returns this
- */
-proto.io.haveno.protobuffer.Tradable.prototype.clearBuyerAsMakerTrade = function() {
-  return this.setBuyerAsMakerTrade(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.io.haveno.protobuffer.Tradable.prototype.hasBuyerAsMakerTrade = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * optional BuyerAsTakerTrade buyer_as_taker_trade = 3;
- * @return {?proto.io.haveno.protobuffer.BuyerAsTakerTrade}
- */
-proto.io.haveno.protobuffer.Tradable.prototype.getBuyerAsTakerTrade = function() {
-  return /** @type{?proto.io.haveno.protobuffer.BuyerAsTakerTrade} */ (
-    jspb.Message.getWrapperField(this, proto.io.haveno.protobuffer.BuyerAsTakerTrade, 3));
-};
-
-
-/**
- * @param {?proto.io.haveno.protobuffer.BuyerAsTakerTrade|undefined} value
- * @return {!proto.io.haveno.protobuffer.Tradable} returns this
-*/
-proto.io.haveno.protobuffer.Tradable.prototype.setBuyerAsTakerTrade = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 3, proto.io.haveno.protobuffer.Tradable.oneofGroups_[0], value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.io.haveno.protobuffer.Tradable} returns this
- */
-proto.io.haveno.protobuffer.Tradable.prototype.clearBuyerAsTakerTrade = function() {
-  return this.setBuyerAsTakerTrade(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.io.haveno.protobuffer.Tradable.prototype.hasBuyerAsTakerTrade = function() {
-  return jspb.Message.getField(this, 3) != null;
-};
-
-
-/**
- * optional SellerAsMakerTrade seller_as_maker_trade = 4;
- * @return {?proto.io.haveno.protobuffer.SellerAsMakerTrade}
- */
-proto.io.haveno.protobuffer.Tradable.prototype.getSellerAsMakerTrade = function() {
-  return /** @type{?proto.io.haveno.protobuffer.SellerAsMakerTrade} */ (
-    jspb.Message.getWrapperField(this, proto.io.haveno.protobuffer.SellerAsMakerTrade, 4));
-};
-
-
-/**
- * @param {?proto.io.haveno.protobuffer.SellerAsMakerTrade|undefined} value
- * @return {!proto.io.haveno.protobuffer.Tradable} returns this
-*/
-proto.io.haveno.protobuffer.Tradable.prototype.setSellerAsMakerTrade = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 4, proto.io.haveno.protobuffer.Tradable.oneofGroups_[0], value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.io.haveno.protobuffer.Tradable} returns this
- */
-proto.io.haveno.protobuffer.Tradable.prototype.clearSellerAsMakerTrade = function() {
-  return this.setSellerAsMakerTrade(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.io.haveno.protobuffer.Tradable.prototype.hasSellerAsMakerTrade = function() {
-  return jspb.Message.getField(this, 4) != null;
-};
-
-
-/**
- * optional SellerAsTakerTrade seller_as_taker_trade = 5;
- * @return {?proto.io.haveno.protobuffer.SellerAsTakerTrade}
- */
-proto.io.haveno.protobuffer.Tradable.prototype.getSellerAsTakerTrade = function() {
-  return /** @type{?proto.io.haveno.protobuffer.SellerAsTakerTrade} */ (
-    jspb.Message.getWrapperField(this, proto.io.haveno.protobuffer.SellerAsTakerTrade, 5));
-};
-
-
-/**
- * @param {?proto.io.haveno.protobuffer.SellerAsTakerTrade|undefined} value
- * @return {!proto.io.haveno.protobuffer.Tradable} returns this
-*/
-proto.io.haveno.protobuffer.Tradable.prototype.setSellerAsTakerTrade = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 5, proto.io.haveno.protobuffer.Tradable.oneofGroups_[0], value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.io.haveno.protobuffer.Tradable} returns this
- */
-proto.io.haveno.protobuffer.Tradable.prototype.clearSellerAsTakerTrade = function() {
-  return this.setSellerAsTakerTrade(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.io.haveno.protobuffer.Tradable.prototype.hasSellerAsTakerTrade = function() {
-  return jspb.Message.getField(this, 5) != null;
-};
-
-
-/**
- * optional ArbitratorTrade arbitrator_trade = 6;
- * @return {?proto.io.haveno.protobuffer.ArbitratorTrade}
- */
-proto.io.haveno.protobuffer.Tradable.prototype.getArbitratorTrade = function() {
-  return /** @type{?proto.io.haveno.protobuffer.ArbitratorTrade} */ (
-    jspb.Message.getWrapperField(this, proto.io.haveno.protobuffer.ArbitratorTrade, 6));
-};
-
-
-/**
- * @param {?proto.io.haveno.protobuffer.ArbitratorTrade|undefined} value
- * @return {!proto.io.haveno.protobuffer.Tradable} returns this
-*/
-proto.io.haveno.protobuffer.Tradable.prototype.setArbitratorTrade = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 6, proto.io.haveno.protobuffer.Tradable.oneofGroups_[0], value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.io.haveno.protobuffer.Tradable} returns this
- */
-proto.io.haveno.protobuffer.Tradable.prototype.clearArbitratorTrade = function() {
-  return this.setArbitratorTrade(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.io.haveno.protobuffer.Tradable.prototype.hasArbitratorTrade = function() {
-  return jspb.Message.getField(this, 6) != null;
-};
-
-
-/**
- * optional SignedOffer signed_offer = 1001;
+ * optional SignedOffer signed_offer = 2;
  * @return {?proto.io.haveno.protobuffer.SignedOffer}
  */
 proto.io.haveno.protobuffer.Tradable.prototype.getSignedOffer = function() {
   return /** @type{?proto.io.haveno.protobuffer.SignedOffer} */ (
-    jspb.Message.getWrapperField(this, proto.io.haveno.protobuffer.SignedOffer, 1001));
+    jspb.Message.getWrapperField(this, proto.io.haveno.protobuffer.SignedOffer, 2));
 };
 
 
@@ -49567,7 +49382,7 @@ proto.io.haveno.protobuffer.Tradable.prototype.getSignedOffer = function() {
  * @return {!proto.io.haveno.protobuffer.Tradable} returns this
 */
 proto.io.haveno.protobuffer.Tradable.prototype.setSignedOffer = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 1001, proto.io.haveno.protobuffer.Tradable.oneofGroups_[0], value);
+  return jspb.Message.setOneofWrapperField(this, 2, proto.io.haveno.protobuffer.Tradable.oneofGroups_[0], value);
 };
 
 
@@ -49585,7 +49400,192 @@ proto.io.haveno.protobuffer.Tradable.prototype.clearSignedOffer = function() {
  * @return {boolean}
  */
 proto.io.haveno.protobuffer.Tradable.prototype.hasSignedOffer = function() {
-  return jspb.Message.getField(this, 1001) != null;
+  return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * optional BuyerAsMakerTrade buyer_as_maker_trade = 3;
+ * @return {?proto.io.haveno.protobuffer.BuyerAsMakerTrade}
+ */
+proto.io.haveno.protobuffer.Tradable.prototype.getBuyerAsMakerTrade = function() {
+  return /** @type{?proto.io.haveno.protobuffer.BuyerAsMakerTrade} */ (
+    jspb.Message.getWrapperField(this, proto.io.haveno.protobuffer.BuyerAsMakerTrade, 3));
+};
+
+
+/**
+ * @param {?proto.io.haveno.protobuffer.BuyerAsMakerTrade|undefined} value
+ * @return {!proto.io.haveno.protobuffer.Tradable} returns this
+*/
+proto.io.haveno.protobuffer.Tradable.prototype.setBuyerAsMakerTrade = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 3, proto.io.haveno.protobuffer.Tradable.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.io.haveno.protobuffer.Tradable} returns this
+ */
+proto.io.haveno.protobuffer.Tradable.prototype.clearBuyerAsMakerTrade = function() {
+  return this.setBuyerAsMakerTrade(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.io.haveno.protobuffer.Tradable.prototype.hasBuyerAsMakerTrade = function() {
+  return jspb.Message.getField(this, 3) != null;
+};
+
+
+/**
+ * optional BuyerAsTakerTrade buyer_as_taker_trade = 4;
+ * @return {?proto.io.haveno.protobuffer.BuyerAsTakerTrade}
+ */
+proto.io.haveno.protobuffer.Tradable.prototype.getBuyerAsTakerTrade = function() {
+  return /** @type{?proto.io.haveno.protobuffer.BuyerAsTakerTrade} */ (
+    jspb.Message.getWrapperField(this, proto.io.haveno.protobuffer.BuyerAsTakerTrade, 4));
+};
+
+
+/**
+ * @param {?proto.io.haveno.protobuffer.BuyerAsTakerTrade|undefined} value
+ * @return {!proto.io.haveno.protobuffer.Tradable} returns this
+*/
+proto.io.haveno.protobuffer.Tradable.prototype.setBuyerAsTakerTrade = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 4, proto.io.haveno.protobuffer.Tradable.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.io.haveno.protobuffer.Tradable} returns this
+ */
+proto.io.haveno.protobuffer.Tradable.prototype.clearBuyerAsTakerTrade = function() {
+  return this.setBuyerAsTakerTrade(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.io.haveno.protobuffer.Tradable.prototype.hasBuyerAsTakerTrade = function() {
+  return jspb.Message.getField(this, 4) != null;
+};
+
+
+/**
+ * optional SellerAsMakerTrade seller_as_maker_trade = 5;
+ * @return {?proto.io.haveno.protobuffer.SellerAsMakerTrade}
+ */
+proto.io.haveno.protobuffer.Tradable.prototype.getSellerAsMakerTrade = function() {
+  return /** @type{?proto.io.haveno.protobuffer.SellerAsMakerTrade} */ (
+    jspb.Message.getWrapperField(this, proto.io.haveno.protobuffer.SellerAsMakerTrade, 5));
+};
+
+
+/**
+ * @param {?proto.io.haveno.protobuffer.SellerAsMakerTrade|undefined} value
+ * @return {!proto.io.haveno.protobuffer.Tradable} returns this
+*/
+proto.io.haveno.protobuffer.Tradable.prototype.setSellerAsMakerTrade = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 5, proto.io.haveno.protobuffer.Tradable.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.io.haveno.protobuffer.Tradable} returns this
+ */
+proto.io.haveno.protobuffer.Tradable.prototype.clearSellerAsMakerTrade = function() {
+  return this.setSellerAsMakerTrade(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.io.haveno.protobuffer.Tradable.prototype.hasSellerAsMakerTrade = function() {
+  return jspb.Message.getField(this, 5) != null;
+};
+
+
+/**
+ * optional SellerAsTakerTrade seller_as_taker_trade = 6;
+ * @return {?proto.io.haveno.protobuffer.SellerAsTakerTrade}
+ */
+proto.io.haveno.protobuffer.Tradable.prototype.getSellerAsTakerTrade = function() {
+  return /** @type{?proto.io.haveno.protobuffer.SellerAsTakerTrade} */ (
+    jspb.Message.getWrapperField(this, proto.io.haveno.protobuffer.SellerAsTakerTrade, 6));
+};
+
+
+/**
+ * @param {?proto.io.haveno.protobuffer.SellerAsTakerTrade|undefined} value
+ * @return {!proto.io.haveno.protobuffer.Tradable} returns this
+*/
+proto.io.haveno.protobuffer.Tradable.prototype.setSellerAsTakerTrade = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 6, proto.io.haveno.protobuffer.Tradable.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.io.haveno.protobuffer.Tradable} returns this
+ */
+proto.io.haveno.protobuffer.Tradable.prototype.clearSellerAsTakerTrade = function() {
+  return this.setSellerAsTakerTrade(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.io.haveno.protobuffer.Tradable.prototype.hasSellerAsTakerTrade = function() {
+  return jspb.Message.getField(this, 6) != null;
+};
+
+
+/**
+ * optional ArbitratorTrade arbitrator_trade = 7;
+ * @return {?proto.io.haveno.protobuffer.ArbitratorTrade}
+ */
+proto.io.haveno.protobuffer.Tradable.prototype.getArbitratorTrade = function() {
+  return /** @type{?proto.io.haveno.protobuffer.ArbitratorTrade} */ (
+    jspb.Message.getWrapperField(this, proto.io.haveno.protobuffer.ArbitratorTrade, 7));
+};
+
+
+/**
+ * @param {?proto.io.haveno.protobuffer.ArbitratorTrade|undefined} value
+ * @return {!proto.io.haveno.protobuffer.Tradable} returns this
+*/
+proto.io.haveno.protobuffer.Tradable.prototype.setArbitratorTrade = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 7, proto.io.haveno.protobuffer.Tradable.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.io.haveno.protobuffer.Tradable} returns this
+ */
+proto.io.haveno.protobuffer.Tradable.prototype.clearArbitratorTrade = function() {
+  return this.setArbitratorTrade(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.io.haveno.protobuffer.Tradable.prototype.hasArbitratorTrade = function() {
+  return jspb.Message.getField(this, 7) != null;
 };
 
 
