@@ -449,7 +449,7 @@ const TestConfig = {
         XMR_STAGENET: ["1aa111f817b7fdaaec1c8d5281a1837cc71c336db09b87cf23344a0a4e3bb2cb", "6b5a404eb5ff7154f2357126c84c3becfe2e7c59ca3844954ce9476bec2a6228", "fd4ef301a2e4faa3c77bc26393919895fa29b0908f2bbd51f6f6de3e46fb7a6e"],
         XMR_MAINNET: []
     },
-    tradeInitTimeout: 60000,
+    tradeStepTimeoutMs: 120000,
     testTimeout: getBaseCurrencyNetwork() === BaseCurrencyNetwork.XMR_LOCAL ? 2400000 : 5400000, // timeout in ms for each test to complete (40 minutes for private network, 90 minutes for public network)
     trade: new TradeContext(defaultTradeConfig)
 };
@@ -2033,10 +2033,10 @@ test("Can handle unexpected errors during trade initialization", async () => {
     await wait(10000); // give time for trade initialization to fail and offer to become available
     offer = await traders[0].getMyOffer(offer.getId());
     if (offer.getState() !== "AVAILABLE") {
-        HavenoUtils.log(1, "Offer is not yet available, waiting to become available after timeout..."); // TODO (woodser): fail trade on nack during initialization to save a bunch of time
-        await wait(TestConfig.tradeInitTimeout - 10000); // wait remaining time for offer to become available after timeout
-        offer = await traders[0].getMyOffer(offer.getId());
-        assert.equal(offer.getState(), "AVAILABLE");
+      HavenoUtils.log(1, "Offer is not yet available, waiting to become available after timeout..."); // TODO (woodser): fail trade on nack during initialization to save a bunch of time
+      await wait(TestConfig.tradeStepTimeoutMs); // wait for offer to become available after timeout
+      offer = await traders[0].getMyOffer(offer.getId());
+      assert.equal(offer.getState(), "AVAILABLE");
     }
 
     // trader 0 spends trade funds after trader 2 takes offer
