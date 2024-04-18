@@ -24480,15 +24480,15 @@ proto.io.haveno.protobuffer.ContractInfo.toObject = function(includeInstance, ms
   var f, obj = {
     buyerNodeAddress: jspb.Message.getFieldWithDefault(msg, 1, ""),
     sellerNodeAddress: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    isBuyerMakerAndSellerTaker: jspb.Message.getBooleanFieldWithDefault(msg, 5, false),
-    makerAccountId: jspb.Message.getFieldWithDefault(msg, 6, ""),
-    takerAccountId: jspb.Message.getFieldWithDefault(msg, 7, ""),
+    arbitratorNodeAddress: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    isBuyerMakerAndSellerTaker: jspb.Message.getBooleanFieldWithDefault(msg, 6, false),
+    makerAccountId: jspb.Message.getFieldWithDefault(msg, 7, ""),
+    takerAccountId: jspb.Message.getFieldWithDefault(msg, 8, ""),
     makerPaymentAccountPayload: (f = msg.getMakerPaymentAccountPayload()) && pb_pb.PaymentAccountPayload.toObject(includeInstance, f),
     takerPaymentAccountPayload: (f = msg.getTakerPaymentAccountPayload()) && pb_pb.PaymentAccountPayload.toObject(includeInstance, f),
-    makerPayoutAddressString: jspb.Message.getFieldWithDefault(msg, 10, ""),
-    takerPayoutAddressString: jspb.Message.getFieldWithDefault(msg, 11, ""),
-    lockTime: jspb.Message.getFieldWithDefault(msg, 12, 0),
-    arbitratorNodeAddress: jspb.Message.getFieldWithDefault(msg, 100, "")
+    makerPayoutAddressString: jspb.Message.getFieldWithDefault(msg, 11, ""),
+    takerPayoutAddressString: jspb.Message.getFieldWithDefault(msg, 12, ""),
+    lockTime: jspb.Message.getFieldWithDefault(msg, 13, 0)
   };
 
   if (includeInstance) {
@@ -24533,43 +24533,43 @@ proto.io.haveno.protobuffer.ContractInfo.deserializeBinaryFromReader = function(
       var value = /** @type {string} */ (reader.readString());
       msg.setSellerNodeAddress(value);
       break;
-    case 5:
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setArbitratorNodeAddress(value);
+      break;
+    case 6:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setIsBuyerMakerAndSellerTaker(value);
       break;
-    case 6:
+    case 7:
       var value = /** @type {string} */ (reader.readString());
       msg.setMakerAccountId(value);
       break;
-    case 7:
+    case 8:
       var value = /** @type {string} */ (reader.readString());
       msg.setTakerAccountId(value);
-      break;
-    case 8:
-      var value = new pb_pb.PaymentAccountPayload;
-      reader.readMessage(value,pb_pb.PaymentAccountPayload.deserializeBinaryFromReader);
-      msg.setMakerPaymentAccountPayload(value);
       break;
     case 9:
       var value = new pb_pb.PaymentAccountPayload;
       reader.readMessage(value,pb_pb.PaymentAccountPayload.deserializeBinaryFromReader);
-      msg.setTakerPaymentAccountPayload(value);
+      msg.setMakerPaymentAccountPayload(value);
       break;
     case 10:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setMakerPayoutAddressString(value);
+      var value = new pb_pb.PaymentAccountPayload;
+      reader.readMessage(value,pb_pb.PaymentAccountPayload.deserializeBinaryFromReader);
+      msg.setTakerPaymentAccountPayload(value);
       break;
     case 11:
       var value = /** @type {string} */ (reader.readString());
-      msg.setTakerPayoutAddressString(value);
+      msg.setMakerPayoutAddressString(value);
       break;
     case 12:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setTakerPayoutAddressString(value);
+      break;
+    case 13:
       var value = /** @type {number} */ (reader.readUint64());
       msg.setLockTime(value);
-      break;
-    case 100:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setArbitratorNodeAddress(value);
       break;
     default:
       reader.skipField();
@@ -24614,36 +24614,35 @@ proto.io.haveno.protobuffer.ContractInfo.serializeBinaryToWriter = function(mess
       f
     );
   }
+  f = message.getArbitratorNodeAddress();
+  if (f.length > 0) {
+    writer.writeString(
+      3,
+      f
+    );
+  }
   f = message.getIsBuyerMakerAndSellerTaker();
   if (f) {
     writer.writeBool(
-      5,
+      6,
       f
     );
   }
   f = message.getMakerAccountId();
   if (f.length > 0) {
     writer.writeString(
-      6,
+      7,
       f
     );
   }
   f = message.getTakerAccountId();
   if (f.length > 0) {
     writer.writeString(
-      7,
+      8,
       f
     );
   }
   f = message.getMakerPaymentAccountPayload();
-  if (f != null) {
-    writer.writeMessage(
-      8,
-      f,
-      pb_pb.PaymentAccountPayload.serializeBinaryToWriter
-    );
-  }
-  f = message.getTakerPaymentAccountPayload();
   if (f != null) {
     writer.writeMessage(
       9,
@@ -24651,31 +24650,32 @@ proto.io.haveno.protobuffer.ContractInfo.serializeBinaryToWriter = function(mess
       pb_pb.PaymentAccountPayload.serializeBinaryToWriter
     );
   }
-  f = message.getMakerPayoutAddressString();
-  if (f.length > 0) {
-    writer.writeString(
+  f = message.getTakerPaymentAccountPayload();
+  if (f != null) {
+    writer.writeMessage(
       10,
-      f
+      f,
+      pb_pb.PaymentAccountPayload.serializeBinaryToWriter
     );
   }
-  f = message.getTakerPayoutAddressString();
+  f = message.getMakerPayoutAddressString();
   if (f.length > 0) {
     writer.writeString(
       11,
       f
     );
   }
-  f = message.getLockTime();
-  if (f !== 0) {
-    writer.writeUint64(
+  f = message.getTakerPayoutAddressString();
+  if (f.length > 0) {
+    writer.writeString(
       12,
       f
     );
   }
-  f = message.getArbitratorNodeAddress();
-  if (f.length > 0) {
-    writer.writeString(
-      100,
+  f = message.getLockTime();
+  if (f !== 0) {
+    writer.writeUint64(
+      13,
       f
     );
   }
@@ -24719,11 +24719,29 @@ proto.io.haveno.protobuffer.ContractInfo.prototype.setSellerNodeAddress = functi
 
 
 /**
- * optional bool is_buyer_maker_and_seller_taker = 5;
+ * optional string arbitrator_node_address = 3;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.ContractInfo.prototype.getArbitratorNodeAddress = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.ContractInfo} returns this
+ */
+proto.io.haveno.protobuffer.ContractInfo.prototype.setArbitratorNodeAddress = function(value) {
+  return jspb.Message.setProto3StringField(this, 3, value);
+};
+
+
+/**
+ * optional bool is_buyer_maker_and_seller_taker = 6;
  * @return {boolean}
  */
 proto.io.haveno.protobuffer.ContractInfo.prototype.getIsBuyerMakerAndSellerTaker = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 5, false));
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 6, false));
 };
 
 
@@ -24732,33 +24750,15 @@ proto.io.haveno.protobuffer.ContractInfo.prototype.getIsBuyerMakerAndSellerTaker
  * @return {!proto.io.haveno.protobuffer.ContractInfo} returns this
  */
 proto.io.haveno.protobuffer.ContractInfo.prototype.setIsBuyerMakerAndSellerTaker = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 5, value);
+  return jspb.Message.setProto3BooleanField(this, 6, value);
 };
 
 
 /**
- * optional string maker_account_id = 6;
+ * optional string maker_account_id = 7;
  * @return {string}
  */
 proto.io.haveno.protobuffer.ContractInfo.prototype.getMakerAccountId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.io.haveno.protobuffer.ContractInfo} returns this
- */
-proto.io.haveno.protobuffer.ContractInfo.prototype.setMakerAccountId = function(value) {
-  return jspb.Message.setProto3StringField(this, 6, value);
-};
-
-
-/**
- * optional string taker_account_id = 7;
- * @return {string}
- */
-proto.io.haveno.protobuffer.ContractInfo.prototype.getTakerAccountId = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
 };
 
@@ -24767,18 +24767,36 @@ proto.io.haveno.protobuffer.ContractInfo.prototype.getTakerAccountId = function(
  * @param {string} value
  * @return {!proto.io.haveno.protobuffer.ContractInfo} returns this
  */
-proto.io.haveno.protobuffer.ContractInfo.prototype.setTakerAccountId = function(value) {
+proto.io.haveno.protobuffer.ContractInfo.prototype.setMakerAccountId = function(value) {
   return jspb.Message.setProto3StringField(this, 7, value);
 };
 
 
 /**
- * optional PaymentAccountPayload maker_payment_account_payload = 8;
+ * optional string taker_account_id = 8;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.ContractInfo.prototype.getTakerAccountId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 8, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.ContractInfo} returns this
+ */
+proto.io.haveno.protobuffer.ContractInfo.prototype.setTakerAccountId = function(value) {
+  return jspb.Message.setProto3StringField(this, 8, value);
+};
+
+
+/**
+ * optional PaymentAccountPayload maker_payment_account_payload = 9;
  * @return {?proto.io.haveno.protobuffer.PaymentAccountPayload}
  */
 proto.io.haveno.protobuffer.ContractInfo.prototype.getMakerPaymentAccountPayload = function() {
   return /** @type{?proto.io.haveno.protobuffer.PaymentAccountPayload} */ (
-    jspb.Message.getWrapperField(this, pb_pb.PaymentAccountPayload, 8));
+    jspb.Message.getWrapperField(this, pb_pb.PaymentAccountPayload, 9));
 };
 
 
@@ -24787,7 +24805,7 @@ proto.io.haveno.protobuffer.ContractInfo.prototype.getMakerPaymentAccountPayload
  * @return {!proto.io.haveno.protobuffer.ContractInfo} returns this
 */
 proto.io.haveno.protobuffer.ContractInfo.prototype.setMakerPaymentAccountPayload = function(value) {
-  return jspb.Message.setWrapperField(this, 8, value);
+  return jspb.Message.setWrapperField(this, 9, value);
 };
 
 
@@ -24805,17 +24823,17 @@ proto.io.haveno.protobuffer.ContractInfo.prototype.clearMakerPaymentAccountPaylo
  * @return {boolean}
  */
 proto.io.haveno.protobuffer.ContractInfo.prototype.hasMakerPaymentAccountPayload = function() {
-  return jspb.Message.getField(this, 8) != null;
+  return jspb.Message.getField(this, 9) != null;
 };
 
 
 /**
- * optional PaymentAccountPayload taker_payment_account_payload = 9;
+ * optional PaymentAccountPayload taker_payment_account_payload = 10;
  * @return {?proto.io.haveno.protobuffer.PaymentAccountPayload}
  */
 proto.io.haveno.protobuffer.ContractInfo.prototype.getTakerPaymentAccountPayload = function() {
   return /** @type{?proto.io.haveno.protobuffer.PaymentAccountPayload} */ (
-    jspb.Message.getWrapperField(this, pb_pb.PaymentAccountPayload, 9));
+    jspb.Message.getWrapperField(this, pb_pb.PaymentAccountPayload, 10));
 };
 
 
@@ -24824,7 +24842,7 @@ proto.io.haveno.protobuffer.ContractInfo.prototype.getTakerPaymentAccountPayload
  * @return {!proto.io.haveno.protobuffer.ContractInfo} returns this
 */
 proto.io.haveno.protobuffer.ContractInfo.prototype.setTakerPaymentAccountPayload = function(value) {
-  return jspb.Message.setWrapperField(this, 9, value);
+  return jspb.Message.setWrapperField(this, 10, value);
 };
 
 
@@ -24842,33 +24860,15 @@ proto.io.haveno.protobuffer.ContractInfo.prototype.clearTakerPaymentAccountPaylo
  * @return {boolean}
  */
 proto.io.haveno.protobuffer.ContractInfo.prototype.hasTakerPaymentAccountPayload = function() {
-  return jspb.Message.getField(this, 9) != null;
+  return jspb.Message.getField(this, 10) != null;
 };
 
 
 /**
- * optional string maker_payout_address_string = 10;
+ * optional string maker_payout_address_string = 11;
  * @return {string}
  */
 proto.io.haveno.protobuffer.ContractInfo.prototype.getMakerPayoutAddressString = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 10, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.io.haveno.protobuffer.ContractInfo} returns this
- */
-proto.io.haveno.protobuffer.ContractInfo.prototype.setMakerPayoutAddressString = function(value) {
-  return jspb.Message.setProto3StringField(this, 10, value);
-};
-
-
-/**
- * optional string taker_payout_address_string = 11;
- * @return {string}
- */
-proto.io.haveno.protobuffer.ContractInfo.prototype.getTakerPayoutAddressString = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 11, ""));
 };
 
@@ -24877,17 +24877,35 @@ proto.io.haveno.protobuffer.ContractInfo.prototype.getTakerPayoutAddressString =
  * @param {string} value
  * @return {!proto.io.haveno.protobuffer.ContractInfo} returns this
  */
-proto.io.haveno.protobuffer.ContractInfo.prototype.setTakerPayoutAddressString = function(value) {
+proto.io.haveno.protobuffer.ContractInfo.prototype.setMakerPayoutAddressString = function(value) {
   return jspb.Message.setProto3StringField(this, 11, value);
 };
 
 
 /**
- * optional uint64 lock_time = 12;
+ * optional string taker_payout_address_string = 12;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.ContractInfo.prototype.getTakerPayoutAddressString = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 12, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.ContractInfo} returns this
+ */
+proto.io.haveno.protobuffer.ContractInfo.prototype.setTakerPayoutAddressString = function(value) {
+  return jspb.Message.setProto3StringField(this, 12, value);
+};
+
+
+/**
+ * optional uint64 lock_time = 13;
  * @return {number}
  */
 proto.io.haveno.protobuffer.ContractInfo.prototype.getLockTime = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 12, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 13, 0));
 };
 
 
@@ -24896,25 +24914,7 @@ proto.io.haveno.protobuffer.ContractInfo.prototype.getLockTime = function() {
  * @return {!proto.io.haveno.protobuffer.ContractInfo} returns this
  */
 proto.io.haveno.protobuffer.ContractInfo.prototype.setLockTime = function(value) {
-  return jspb.Message.setProto3IntField(this, 12, value);
-};
-
-
-/**
- * optional string arbitrator_node_address = 100;
- * @return {string}
- */
-proto.io.haveno.protobuffer.ContractInfo.prototype.getArbitratorNodeAddress = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 100, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.io.haveno.protobuffer.ContractInfo} returns this
- */
-proto.io.haveno.protobuffer.ContractInfo.prototype.setArbitratorNodeAddress = function(value) {
-  return jspb.Message.setProto3StringField(this, 100, value);
+  return jspb.Message.setProto3IntField(this, 13, value);
 };
 
 

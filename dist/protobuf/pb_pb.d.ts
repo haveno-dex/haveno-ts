@@ -5439,9 +5439,9 @@ export namespace PersistableEnvelope {
     MAILBOX_MESSAGE_LIST = 15,
     IGNORED_MAILBOX_MAP = 16,
     REMOVED_PAYLOADS_MAP = 17,
-    XMR_ADDRESS_ENTRY_LIST = 1001,
-    SIGNED_OFFER_LIST = 1002,
-    ENCRYPTED_CONNECTION_LIST = 1003,
+    XMR_ADDRESS_ENTRY_LIST = 18,
+    SIGNED_OFFER_LIST = 19,
+    ENCRYPTED_CONNECTION_LIST = 20,
   }
 }
 
@@ -5994,6 +5994,11 @@ export class Tradable extends jspb.Message {
   hasOpenOffer(): boolean;
   clearOpenOffer(): Tradable;
 
+  getSignedOffer(): SignedOffer | undefined;
+  setSignedOffer(value?: SignedOffer): Tradable;
+  hasSignedOffer(): boolean;
+  clearSignedOffer(): Tradable;
+
   getBuyerAsMakerTrade(): BuyerAsMakerTrade | undefined;
   setBuyerAsMakerTrade(value?: BuyerAsMakerTrade): Tradable;
   hasBuyerAsMakerTrade(): boolean;
@@ -6019,11 +6024,6 @@ export class Tradable extends jspb.Message {
   hasArbitratorTrade(): boolean;
   clearArbitratorTrade(): Tradable;
 
-  getSignedOffer(): SignedOffer | undefined;
-  setSignedOffer(value?: SignedOffer): Tradable;
-  hasSignedOffer(): boolean;
-  clearSignedOffer(): Tradable;
-
   getMessageCase(): Tradable.MessageCase;
 
   serializeBinary(): Uint8Array;
@@ -6037,23 +6037,23 @@ export class Tradable extends jspb.Message {
 export namespace Tradable {
   export type AsObject = {
     openOffer?: OpenOffer.AsObject,
+    signedOffer?: SignedOffer.AsObject,
     buyerAsMakerTrade?: BuyerAsMakerTrade.AsObject,
     buyerAsTakerTrade?: BuyerAsTakerTrade.AsObject,
     sellerAsMakerTrade?: SellerAsMakerTrade.AsObject,
     sellerAsTakerTrade?: SellerAsTakerTrade.AsObject,
     arbitratorTrade?: ArbitratorTrade.AsObject,
-    signedOffer?: SignedOffer.AsObject,
   }
 
   export enum MessageCase { 
     MESSAGE_NOT_SET = 0,
     OPEN_OFFER = 1,
-    BUYER_AS_MAKER_TRADE = 2,
-    BUYER_AS_TAKER_TRADE = 3,
-    SELLER_AS_MAKER_TRADE = 4,
-    SELLER_AS_TAKER_TRADE = 5,
-    ARBITRATOR_TRADE = 6,
-    SIGNED_OFFER = 1001,
+    SIGNED_OFFER = 2,
+    BUYER_AS_MAKER_TRADE = 3,
+    BUYER_AS_TAKER_TRADE = 4,
+    SELLER_AS_MAKER_TRADE = 5,
+    SELLER_AS_TAKER_TRADE = 6,
+    ARBITRATOR_TRADE = 7,
   }
 }
 
