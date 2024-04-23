@@ -798,11 +798,12 @@ test("Can manage Monero daemon connections (CI)", async () => {
     user3 = await initHaveno({appName: appName, accountPassword: newPassword});
 
     // connection is restored, online, and authenticated
+    await user3.checkMoneroConnection();
     connection = await user3.getMoneroConnection();
     testConnection(connection!, TestConfig.monerod3.url, OnlineStatus.ONLINE, AuthenticationStatus.AUTHENTICATED, 1);
 
     // priority connections are polled
-    await wait(TestConfig.daemonPollPeriodMs * 2);
+    await user3.checkMoneroConnections();
     connections = await user3.getMoneroConnections();
     testConnection(getConnection(connections, monerodUrl1)!, monerodUrl1, OnlineStatus.ONLINE, AuthenticationStatus.AUTHENTICATED, 1);
 
@@ -815,6 +816,7 @@ test("Can manage Monero daemon connections (CI)", async () => {
 
     // test auto switch after periodic connection check
     await wait(TestConfig.daemonPollPeriodMs * 2);
+    await user3.checkMoneroConnection();
     connection = await user3.getMoneroConnection();
     testConnection(connection!, monerodUrl1, OnlineStatus.ONLINE, AuthenticationStatus.AUTHENTICATED, 1);
 

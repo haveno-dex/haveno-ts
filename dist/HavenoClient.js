@@ -518,7 +518,7 @@ class HavenoClient {
      */
     async startCheckingConnection(refreshPeriod) {
         try {
-            await this._xmrConnectionsClient.startCheckingConnections(new grpc_pb_1.StartCheckingConnectionsRequest().setRefreshPeriod(refreshPeriod), { password: this._password });
+            await this._xmrConnectionsClient.startCheckingConnection(new grpc_pb_1.StartCheckingConnectionRequest().setRefreshPeriod(refreshPeriod), { password: this._password });
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
@@ -529,7 +529,7 @@ class HavenoClient {
      */
     async stopCheckingConnection() {
         try {
-            await this._xmrConnectionsClient.stopCheckingConnections(new grpc_pb_1.StopCheckingConnectionsRequest(), { password: this._password });
+            await this._xmrConnectionsClient.stopCheckingConnection(new grpc_pb_1.StopCheckingConnectionRequest(), { password: this._password });
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
