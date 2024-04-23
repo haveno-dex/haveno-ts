@@ -1057,62 +1057,62 @@ export namespace CheckConnectionsReply {
   }
 }
 
-export class StartCheckingConnectionsRequest extends jspb.Message {
+export class StartCheckingConnectionRequest extends jspb.Message {
   getRefreshPeriod(): number;
-  setRefreshPeriod(value: number): StartCheckingConnectionsRequest;
+  setRefreshPeriod(value: number): StartCheckingConnectionRequest;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): StartCheckingConnectionsRequest.AsObject;
-  static toObject(includeInstance: boolean, msg: StartCheckingConnectionsRequest): StartCheckingConnectionsRequest.AsObject;
-  static serializeBinaryToWriter(message: StartCheckingConnectionsRequest, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): StartCheckingConnectionsRequest;
-  static deserializeBinaryFromReader(message: StartCheckingConnectionsRequest, reader: jspb.BinaryReader): StartCheckingConnectionsRequest;
+  toObject(includeInstance?: boolean): StartCheckingConnectionRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: StartCheckingConnectionRequest): StartCheckingConnectionRequest.AsObject;
+  static serializeBinaryToWriter(message: StartCheckingConnectionRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): StartCheckingConnectionRequest;
+  static deserializeBinaryFromReader(message: StartCheckingConnectionRequest, reader: jspb.BinaryReader): StartCheckingConnectionRequest;
 }
 
-export namespace StartCheckingConnectionsRequest {
+export namespace StartCheckingConnectionRequest {
   export type AsObject = {
     refreshPeriod: number,
   }
 }
 
-export class StartCheckingConnectionsReply extends jspb.Message {
+export class StartCheckingConnectionReply extends jspb.Message {
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): StartCheckingConnectionsReply.AsObject;
-  static toObject(includeInstance: boolean, msg: StartCheckingConnectionsReply): StartCheckingConnectionsReply.AsObject;
-  static serializeBinaryToWriter(message: StartCheckingConnectionsReply, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): StartCheckingConnectionsReply;
-  static deserializeBinaryFromReader(message: StartCheckingConnectionsReply, reader: jspb.BinaryReader): StartCheckingConnectionsReply;
+  toObject(includeInstance?: boolean): StartCheckingConnectionReply.AsObject;
+  static toObject(includeInstance: boolean, msg: StartCheckingConnectionReply): StartCheckingConnectionReply.AsObject;
+  static serializeBinaryToWriter(message: StartCheckingConnectionReply, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): StartCheckingConnectionReply;
+  static deserializeBinaryFromReader(message: StartCheckingConnectionReply, reader: jspb.BinaryReader): StartCheckingConnectionReply;
 }
 
-export namespace StartCheckingConnectionsReply {
+export namespace StartCheckingConnectionReply {
   export type AsObject = {
   }
 }
 
-export class StopCheckingConnectionsRequest extends jspb.Message {
+export class StopCheckingConnectionRequest extends jspb.Message {
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): StopCheckingConnectionsRequest.AsObject;
-  static toObject(includeInstance: boolean, msg: StopCheckingConnectionsRequest): StopCheckingConnectionsRequest.AsObject;
-  static serializeBinaryToWriter(message: StopCheckingConnectionsRequest, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): StopCheckingConnectionsRequest;
-  static deserializeBinaryFromReader(message: StopCheckingConnectionsRequest, reader: jspb.BinaryReader): StopCheckingConnectionsRequest;
+  toObject(includeInstance?: boolean): StopCheckingConnectionRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: StopCheckingConnectionRequest): StopCheckingConnectionRequest.AsObject;
+  static serializeBinaryToWriter(message: StopCheckingConnectionRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): StopCheckingConnectionRequest;
+  static deserializeBinaryFromReader(message: StopCheckingConnectionRequest, reader: jspb.BinaryReader): StopCheckingConnectionRequest;
 }
 
-export namespace StopCheckingConnectionsRequest {
+export namespace StopCheckingConnectionRequest {
   export type AsObject = {
   }
 }
 
-export class StopCheckingConnectionsReply extends jspb.Message {
+export class StopCheckingConnectionReply extends jspb.Message {
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): StopCheckingConnectionsReply.AsObject;
-  static toObject(includeInstance: boolean, msg: StopCheckingConnectionsReply): StopCheckingConnectionsReply.AsObject;
-  static serializeBinaryToWriter(message: StopCheckingConnectionsReply, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): StopCheckingConnectionsReply;
-  static deserializeBinaryFromReader(message: StopCheckingConnectionsReply, reader: jspb.BinaryReader): StopCheckingConnectionsReply;
+  toObject(includeInstance?: boolean): StopCheckingConnectionReply.AsObject;
+  static toObject(includeInstance: boolean, msg: StopCheckingConnectionReply): StopCheckingConnectionReply.AsObject;
+  static serializeBinaryToWriter(message: StopCheckingConnectionReply, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): StopCheckingConnectionReply;
+  static deserializeBinaryFromReader(message: StopCheckingConnectionReply, reader: jspb.BinaryReader): StopCheckingConnectionReply;
 }
 
-export namespace StopCheckingConnectionsReply {
+export namespace StopCheckingConnectionReply {
   export type AsObject = {
   }
 }

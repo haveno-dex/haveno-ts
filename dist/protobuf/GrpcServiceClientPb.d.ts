@@ -191,12 +191,12 @@ export declare class XmrConnectionsClient {
     methodDescriptorCheckConnections: grpcWeb.MethodDescriptor<grpc_pb.CheckConnectionsRequest, grpc_pb.CheckConnectionsReply>;
     checkConnections(request: grpc_pb.CheckConnectionsRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.CheckConnectionsReply>;
     checkConnections(request: grpc_pb.CheckConnectionsRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.CheckConnectionsReply) => void): grpcWeb.ClientReadableStream<grpc_pb.CheckConnectionsReply>;
-    methodDescriptorStartCheckingConnections: grpcWeb.MethodDescriptor<grpc_pb.StartCheckingConnectionsRequest, grpc_pb.StartCheckingConnectionsReply>;
-    startCheckingConnections(request: grpc_pb.StartCheckingConnectionsRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.StartCheckingConnectionsReply>;
-    startCheckingConnections(request: grpc_pb.StartCheckingConnectionsRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.StartCheckingConnectionsReply) => void): grpcWeb.ClientReadableStream<grpc_pb.StartCheckingConnectionsReply>;
-    methodDescriptorStopCheckingConnections: grpcWeb.MethodDescriptor<grpc_pb.StopCheckingConnectionsRequest, grpc_pb.StopCheckingConnectionsReply>;
-    stopCheckingConnections(request: grpc_pb.StopCheckingConnectionsRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.StopCheckingConnectionsReply>;
-    stopCheckingConnections(request: grpc_pb.StopCheckingConnectionsRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.StopCheckingConnectionsReply) => void): grpcWeb.ClientReadableStream<grpc_pb.StopCheckingConnectionsReply>;
+    methodDescriptorStartCheckingConnection: grpcWeb.MethodDescriptor<grpc_pb.StartCheckingConnectionRequest, grpc_pb.StartCheckingConnectionReply>;
+    startCheckingConnection(request: grpc_pb.StartCheckingConnectionRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.StartCheckingConnectionReply>;
+    startCheckingConnection(request: grpc_pb.StartCheckingConnectionRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.StartCheckingConnectionReply) => void): grpcWeb.ClientReadableStream<grpc_pb.StartCheckingConnectionReply>;
+    methodDescriptorStopCheckingConnection: grpcWeb.MethodDescriptor<grpc_pb.StopCheckingConnectionRequest, grpc_pb.StopCheckingConnectionReply>;
+    stopCheckingConnection(request: grpc_pb.StopCheckingConnectionRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.StopCheckingConnectionReply>;
+    stopCheckingConnection(request: grpc_pb.StopCheckingConnectionRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.StopCheckingConnectionReply) => void): grpcWeb.ClientReadableStream<grpc_pb.StopCheckingConnectionReply>;
     methodDescriptorGetBestAvailableConnection: grpcWeb.MethodDescriptor<grpc_pb.GetBestAvailableConnectionRequest, grpc_pb.GetBestAvailableConnectionReply>;
     getBestAvailableConnection(request: grpc_pb.GetBestAvailableConnectionRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.GetBestAvailableConnectionReply>;
     getBestAvailableConnection(request: grpc_pb.GetBestAvailableConnectionRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.GetBestAvailableConnectionReply) => void): grpcWeb.ClientReadableStream<grpc_pb.GetBestAvailableConnectionReply>;

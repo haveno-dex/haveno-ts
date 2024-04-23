@@ -368,12 +368,12 @@ class XmrConnectionsClient {
         this.methodDescriptorCheckConnections = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.XmrConnections/CheckConnections', grpcWeb.MethodType.UNARY, grpc_pb.CheckConnectionsRequest, grpc_pb.CheckConnectionsReply, (request) => {
             return request.serializeBinary();
         }, grpc_pb.CheckConnectionsReply.deserializeBinary);
-        this.methodDescriptorStartCheckingConnections = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.XmrConnections/StartCheckingConnections', grpcWeb.MethodType.UNARY, grpc_pb.StartCheckingConnectionsRequest, grpc_pb.StartCheckingConnectionsReply, (request) => {
+        this.methodDescriptorStartCheckingConnection = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.XmrConnections/StartCheckingConnection', grpcWeb.MethodType.UNARY, grpc_pb.StartCheckingConnectionRequest, grpc_pb.StartCheckingConnectionReply, (request) => {
             return request.serializeBinary();
-        }, grpc_pb.StartCheckingConnectionsReply.deserializeBinary);
-        this.methodDescriptorStopCheckingConnections = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.XmrConnections/StopCheckingConnections', grpcWeb.MethodType.UNARY, grpc_pb.StopCheckingConnectionsRequest, grpc_pb.StopCheckingConnectionsReply, (request) => {
+        }, grpc_pb.StartCheckingConnectionReply.deserializeBinary);
+        this.methodDescriptorStopCheckingConnection = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.XmrConnections/StopCheckingConnection', grpcWeb.MethodType.UNARY, grpc_pb.StopCheckingConnectionRequest, grpc_pb.StopCheckingConnectionReply, (request) => {
             return request.serializeBinary();
-        }, grpc_pb.StopCheckingConnectionsReply.deserializeBinary);
+        }, grpc_pb.StopCheckingConnectionReply.deserializeBinary);
         this.methodDescriptorGetBestAvailableConnection = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.XmrConnections/GetBestAvailableConnection', grpcWeb.MethodType.UNARY, grpc_pb.GetBestAvailableConnectionRequest, grpc_pb.GetBestAvailableConnectionReply, (request) => {
             return request.serializeBinary();
         }, grpc_pb.GetBestAvailableConnectionReply.deserializeBinary);
@@ -446,21 +446,21 @@ class XmrConnectionsClient {
         return this.client_.unaryCall(this.hostname_ +
             '/io.haveno.protobuffer.XmrConnections/CheckConnections', request, metadata || {}, this.methodDescriptorCheckConnections);
     }
-    startCheckingConnections(request, metadata, callback) {
+    startCheckingConnection(request, metadata, callback) {
         if (callback !== undefined) {
             return this.client_.rpcCall(this.hostname_ +
-                '/io.haveno.protobuffer.XmrConnections/StartCheckingConnections', request, metadata || {}, this.methodDescriptorStartCheckingConnections, callback);
+                '/io.haveno.protobuffer.XmrConnections/StartCheckingConnection', request, metadata || {}, this.methodDescriptorStartCheckingConnection, callback);
         }
         return this.client_.unaryCall(this.hostname_ +
-            '/io.haveno.protobuffer.XmrConnections/StartCheckingConnections', request, metadata || {}, this.methodDescriptorStartCheckingConnections);
+            '/io.haveno.protobuffer.XmrConnections/StartCheckingConnection', request, metadata || {}, this.methodDescriptorStartCheckingConnection);
     }
-    stopCheckingConnections(request, metadata, callback) {
+    stopCheckingConnection(request, metadata, callback) {
         if (callback !== undefined) {
             return this.client_.rpcCall(this.hostname_ +
-                '/io.haveno.protobuffer.XmrConnections/StopCheckingConnections', request, metadata || {}, this.methodDescriptorStopCheckingConnections, callback);
+                '/io.haveno.protobuffer.XmrConnections/StopCheckingConnection', request, metadata || {}, this.methodDescriptorStopCheckingConnection, callback);
         }
         return this.client_.unaryCall(this.hostname_ +
-            '/io.haveno.protobuffer.XmrConnections/StopCheckingConnections', request, metadata || {}, this.methodDescriptorStopCheckingConnections);
+            '/io.haveno.protobuffer.XmrConnections/StopCheckingConnection', request, metadata || {}, this.methodDescriptorStopCheckingConnection);
     }
     getBestAvailableConnection(request, metadata, callback) {
         if (callback !== undefined) {
