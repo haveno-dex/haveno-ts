@@ -449,7 +449,7 @@ const TestConfig = {
         XMR_STAGENET: ["1aa111f817b7fdaaec1c8d5281a1837cc71c336db09b87cf23344a0a4e3bb2cb", "6b5a404eb5ff7154f2357126c84c3becfe2e7c59ca3844954ce9476bec2a6228", "fd4ef301a2e4faa3c77bc26393919895fa29b0908f2bbd51f6f6de3e46fb7a6e"],
         XMR_MAINNET: []
     },
-    tradeStepTimeoutMs: 120000,
+    tradeStepTimeoutMs: getBaseCurrencyNetwork() === BaseCurrencyNetwork.XMR_LOCAL ? 45000 : 180000,
     testTimeout: getBaseCurrencyNetwork() === BaseCurrencyNetwork.XMR_LOCAL ? 2400000 : 5400000, // timeout in ms for each test to complete (40 minutes for private network, 90 minutes for public network)
     trade: new TradeContext(defaultTradeConfig)
 };
@@ -2032,7 +2032,7 @@ test("Can handle unexpected errors during trade initialization", async () => {
     // TODO: test it's unavailable right after taking (taker will know before maker)
 
     // trader 0's offer remains available
-    await wait(10000); // give time for trade initialization to fail and offer to become available
+    await wait(15000); // give time for trade initialization to fail and offer to become available
     offer = await traders[0].getMyOffer(offer.getId());
     if (offer.getState() !== "AVAILABLE") {
       HavenoUtils.log(1, "Offer is not yet available, waiting to become available after timeout..."); // TODO (woodser): fail trade on nack during initialization to save a bunch of time
@@ -2359,12 +2359,14 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
     const promises: Promise<void>[] = [];
     ctx.buyerAppName = ctx.getBuyer().havenod!.getAppName();
     if (ctx.buyerOfflineAfterTake) {
+      HavenoUtils.log(0, "Buyer going offline");
       promises.push(releaseHavenoProcess(ctx.getBuyer().havenod!));
       if (ctx.isBuyerMaker()) ctx.maker.havenod = undefined;
       else ctx.taker.havenod = undefined;
     }
     ctx.sellerAppName = ctx.getSeller().havenod!.getAppName();
     if (ctx.sellerOfflineAfterTake) {
+      HavenoUtils.log(0, "Seller going offline");
       promises.push(releaseHavenoProcess(ctx.getSeller().havenod!));
       if (ctx.isBuyerMaker()) ctx.taker.havenod = undefined;
       else ctx.maker.havenod = undefined;
@@ -2378,6 +2380,7 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
     // buyer comes online if offline and used
     if (ctx.isStopped) return ctx.offerId!;
     if (ctx.buyerOfflineAfterTake && ((ctx.buyerSendsPayment && !ctx.isPaymentSent && ctx.sellerDisputeContext !== DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK) || (ctx.buyerDisputeContext === DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK && !ctx.buyerOpenedDispute))) {
+      HavenoUtils.log(0, "Buyer coming online");
       const buyer = await initHaveno({appName: ctx.buyerAppName, excludePorts: ctx.usedPorts}); // change buyer's node address
       if (ctx.isBuyerMaker()) ctx.maker.havenod = buyer;
       else ctx.taker.havenod = buyer;
@@ -2465,6 +2468,7 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
     // buyer goes offline if configured
     if (ctx.isStopped) return ctx.offerId!;
     if (ctx.buyerOfflineAfterPaymentSent) {
+      HavenoUtils.log(0, "Buyer going offline");
       await releaseHavenoProcess(ctx.getBuyer().havenod!);
       if (ctx.isBuyerMaker()) ctx.maker.havenod = undefined;
       else ctx.taker.havenod = undefined;
@@ -2473,6 +2477,7 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
     // seller comes online if offline
     if (ctx.isStopped) return ctx.offerId!;
     if (!ctx.getSeller().havenod) {
+      HavenoUtils.log(0, "Seller coming online");
       const seller = await initHaveno({appName: ctx.sellerAppName, excludePorts: ctx.usedPorts});
       if (ctx.isBuyerMaker()) ctx.taker.havenod = seller;
       else ctx.maker.havenod = seller;
