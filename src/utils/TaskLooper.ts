@@ -39,13 +39,15 @@ export default class TaskLooper {
   /**
    * Start the task loop.
    * 
-   * @param {int} periodInMs the loop period in milliseconds
+   * @param {number} periodInMs the loop period in milliseconds
+   * @param {boolean} targetFixedPeriod specifies if the task should target a fixed period by accounting for run time (default false)
+   * @return {TaskLooper} this instance for chaining
    */
-  start(periodInMs: number) {
+  start(periodInMs: number, targetFixedPeriod: boolean) {
     if (periodInMs <= 0) throw new Error("Looper period must be greater than 0 ms");
     if (this._isStarted) return;
     this._isStarted = true;
-    this._runLoop(periodInMs);
+    this._runLoop(periodInMs, targetFixedPeriod);
   }
   
   /**
@@ -58,12 +60,12 @@ export default class TaskLooper {
     this._timeout = undefined;
   }
   
-  async _runLoop(periodInMs: number) {
+  async _runLoop(periodInMs: number, targetFixedPeriod: boolean) {
     this._isLooping = true;
     while (this._isStarted) {
       const startTime = Date.now();
       await this._fn();
-      if (this._isStarted) await new Promise((resolve) => { this._timeout = setTimeout(resolve, periodInMs - (Date.now() - startTime)); });
+      if (this._isStarted) await new Promise((resolve) => { this._timeout = setTimeout(resolve, periodInMs - (targetFixedPeriod ? (Date.now() - startTime) : 0)); });
     }
     this._isLooping = false;
   }
