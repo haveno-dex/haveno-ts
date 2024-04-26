@@ -2547,6 +2547,7 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
     // buyer comes online if offline
     if (ctx.isStopped) return ctx.offerId!;
     if (ctx.buyerOfflineAfterPaymentSent) {
+      HavenoUtils.log(0, "Buyer coming online");
       const buyer = await initHaveno({appName: ctx.buyerAppName, excludePorts: ctx.usedPorts});
       if (ctx.isBuyerMaker()) ctx.maker.havenod = buyer;
       else ctx.taker.havenod = buyer;
