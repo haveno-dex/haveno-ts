@@ -143,6 +143,7 @@ const defaultTradeConfig: Partial<TradeContext> = {
   disputeSummary: "Seller is winner",
   walletSyncPeriodMs: 5000,
   maxTimePeerNoticeMs: 5000,
+  testChatMessages: true,
   stopOnFailure: true,
   testPayoutConfirmed: true,
   testPayoutUnlocked: false,
@@ -218,6 +219,7 @@ class TradeContext {
   sellerOpenedDispute?: boolean;
   walletSyncPeriodMs: number;
   maxTimePeerNoticeMs: number;
+  testChatMessages: boolean;
   stopOnFailure?: boolean;
   buyerAppName?: string;
   sellerAppName?: string;
@@ -2924,65 +2926,69 @@ async function testOpenDispute(ctxP: Partial<TradeContext>) {
   await ctx.getDisputePeer()!.havenod!.addNotificationListener(notification => { HavenoUtils.log(3, "Dispute peer received notification " + notification.getType() + " " + (notification.getChatMessage() ? notification.getChatMessage()?.getMessage() : "")); disputePeerNotifications.push(notification); });
   await arbitrator.addNotificationListener(notification => { HavenoUtils.log(3, "Arbitrator received notification " + notification.getType() + " " + (notification.getChatMessage() ? notification.getChatMessage()?.getMessage() : "")); arbitratorNotifications.push(notification); });
 
-  // arbitrator sends chat messages to traders
-  HavenoUtils.log(1, "Arbitrator sending chat messages to traders. tradeId=" + ctx.offerId + ", disputeId=" + openerDispute.getId());
-  await ctx.arbitrator.havenod!.sendDisputeChatMessage(arbDisputeOpener!.getId(), "Arbitrator chat message to dispute opener", []);
-  await ctx.arbitrator.havenod!.sendDisputeChatMessage(arbDisputePeer!.getId(), "Arbitrator chat message to dispute peer", []);
+  // test chat messages
+  if (ctx.testChatMessages) {
 
-  // traders reply to arbitrator chat messages
-  await wait(ctx.maxTimePeerNoticeMs); // wait for arbitrator's message to arrive
-  const attachment = new Attachment();
-  const bytes = new Uint8Array(Buffer.from("Proof dispute opener was scammed", "utf8"));
-  attachment.setBytes(bytes);
-  attachment.setFileName("proof.txt");
-  const attachment2 = new Attachment();
-  const bytes2 = new Uint8Array(Buffer.from("picture bytes", "utf8"));
-  attachment2.setBytes(bytes2);
-  attachment2.setFileName("proof.png");
-  HavenoUtils.log(2, "Dispute opener sending chat message to arbitrator. tradeId=" + ctx.offerId + ", disputeId=" + openerDispute.getId());
-  await ctx.getDisputeOpener()!.havenod!.sendDisputeChatMessage(openerDispute.getId(), "Dispute opener chat message", [attachment, attachment2]);
-  await wait(ctx.maxTimePeerNoticeMs); // wait for user2's message to arrive
-  HavenoUtils.log(2, "Dispute peer sending chat message to arbitrator. tradeId=" + ctx.offerId + ", disputeId=" + peerDispute.getId());
-  await ctx.getDisputePeer()!.havenod!.sendDisputeChatMessage(peerDispute.getId(), "Dispute peer chat message", []);
+    // arbitrator sends chat messages to traders
+    HavenoUtils.log(1, "Arbitrator sending chat messages to traders. tradeId=" + ctx.offerId + ", disputeId=" + openerDispute.getId());
+    await ctx.arbitrator.havenod!.sendDisputeChatMessage(arbDisputeOpener!.getId(), "Arbitrator chat message to dispute opener", []);
+    await ctx.arbitrator.havenod!.sendDisputeChatMessage(arbDisputePeer!.getId(), "Arbitrator chat message to dispute peer", []);
 
-  // test trader chat messages
-  await wait(ctx.maxTimePeerNoticeMs);
-  let dispute = await ctx.getDisputeOpener()!.havenod!.getDispute(ctx.offerId!);
-  let messages = dispute.getChatMessageList();
-  expect(messages.length).toBeGreaterThanOrEqual(3); // last messages are chat, first messages are system message and possibly DisputeOpenedMessage acks
-  expect(messages[messages.length - 2].getMessage()).toEqual("Arbitrator chat message to dispute opener");
-  expect(messages[messages.length - 1].getMessage()).toEqual("Dispute opener chat message");
-  let attachments = messages[messages.length - 1].getAttachmentsList();
-  expect(attachments.length).toEqual(2);
-  expect(attachments[0].getFileName()).toEqual("proof.txt");
-  expect(attachments[0].getBytes()).toEqual(bytes);
-  expect(attachments[1].getFileName()).toEqual("proof.png");
-  expect(attachments[1].getBytes()).toEqual(bytes2);
-  dispute = await ctx.getDisputePeer()!.havenod!.getDispute(ctx.offerId!);
-  messages = dispute.getChatMessageList();
-  expect(messages.length).toBeGreaterThanOrEqual(3);
-  expect(messages[messages.length - 2].getMessage()).toEqual("Arbitrator chat message to dispute peer");
-  expect(messages[messages.length - 1].getMessage()).toEqual("Dispute peer chat message");
+    // traders reply to arbitrator chat messages
+    await wait(ctx.maxTimePeerNoticeMs); // wait for arbitrator's message to arrive
+    const attachment = new Attachment();
+    const bytes = new Uint8Array(Buffer.from("Proof dispute opener was scammed", "utf8"));
+    attachment.setBytes(bytes);
+    attachment.setFileName("proof.txt");
+    const attachment2 = new Attachment();
+    const bytes2 = new Uint8Array(Buffer.from("picture bytes", "utf8"));
+    attachment2.setBytes(bytes2);
+    attachment2.setFileName("proof.png");
+    HavenoUtils.log(2, "Dispute opener sending chat message to arbitrator. tradeId=" + ctx.offerId + ", disputeId=" + openerDispute.getId());
+    await ctx.getDisputeOpener()!.havenod!.sendDisputeChatMessage(openerDispute.getId(), "Dispute opener chat message", [attachment, attachment2]);
+    await wait(ctx.maxTimePeerNoticeMs); // wait for user2's message to arrive
+    HavenoUtils.log(2, "Dispute peer sending chat message to arbitrator. tradeId=" + ctx.offerId + ", disputeId=" + peerDispute.getId());
+    await ctx.getDisputePeer()!.havenod!.sendDisputeChatMessage(peerDispute.getId(), "Dispute peer chat message", []);
 
-  // test notifications of chat messages
-  let chatNotifications = getNotifications(disputeOpenerNotifications, NotificationMessage.NotificationType.CHAT_MESSAGE, ctx.offerId);
-  expect(chatNotifications.length).toBe(1);
-  expect(chatNotifications[0].getChatMessage()?.getMessage()).toEqual("Arbitrator chat message to dispute opener");
-  chatNotifications = getNotifications(disputePeerNotifications, NotificationMessage.NotificationType.CHAT_MESSAGE, ctx.offerId);
-  expect(chatNotifications.length).toBe(1);
-  expect(chatNotifications[0].getChatMessage()?.getMessage()).toEqual("Arbitrator chat message to dispute peer");
+    // test trader chat messages
+    await wait(ctx.maxTimePeerNoticeMs);
+    let dispute = await ctx.getDisputeOpener()!.havenod!.getDispute(ctx.offerId!);
+    let messages = dispute.getChatMessageList();
+    expect(messages.length).toBeGreaterThanOrEqual(3); // last messages are chat, first messages are system message and possibly DisputeOpenedMessage acks
+    expect(messages[messages.length - 2].getMessage()).toEqual("Arbitrator chat message to dispute opener");
+    expect(messages[messages.length - 1].getMessage()).toEqual("Dispute opener chat message");
+    let attachments = messages[messages.length - 1].getAttachmentsList();
+    expect(attachments.length).toEqual(2);
+    expect(attachments[0].getFileName()).toEqual("proof.txt");
+    expect(attachments[0].getBytes()).toEqual(bytes);
+    expect(attachments[1].getFileName()).toEqual("proof.png");
+    expect(attachments[1].getBytes()).toEqual(bytes2);
+    dispute = await ctx.getDisputePeer()!.havenod!.getDispute(ctx.offerId!);
+    messages = dispute.getChatMessageList();
+    expect(messages.length).toBeGreaterThanOrEqual(3);
+    expect(messages[messages.length - 2].getMessage()).toEqual("Arbitrator chat message to dispute peer");
+    expect(messages[messages.length - 1].getMessage()).toEqual("Dispute peer chat message");
 
-  // arbitrator has 2 chat messages, one with attachments
-  chatNotifications = getNotifications(arbitratorNotifications, NotificationMessage.NotificationType.CHAT_MESSAGE, ctx.offerId);
-  expect(chatNotifications.length).toBe(2);
-  expect(chatNotifications[0].getChatMessage()?.getMessage()).toEqual("Dispute opener chat message");
-  assert(chatNotifications[0].getChatMessage()?.getAttachmentsList());
-  attachments = chatNotifications[0].getChatMessage()?.getAttachmentsList()!;
-  expect(attachments[0].getFileName()).toEqual("proof.txt");
-  expect(attachments[0].getBytes()).toEqual(bytes);
-  expect(attachments[1].getFileName()).toEqual("proof.png");
-  expect(attachments[1].getBytes()).toEqual(bytes2);
-  expect(chatNotifications[1].getChatMessage()?.getMessage()).toEqual("Dispute peer chat message");
+    // test notifications of chat messages
+    let chatNotifications = getNotifications(disputeOpenerNotifications, NotificationMessage.NotificationType.CHAT_MESSAGE, ctx.offerId);
+    expect(chatNotifications.length).toBe(1);
+    expect(chatNotifications[0].getChatMessage()?.getMessage()).toEqual("Arbitrator chat message to dispute opener");
+    chatNotifications = getNotifications(disputePeerNotifications, NotificationMessage.NotificationType.CHAT_MESSAGE, ctx.offerId);
+    expect(chatNotifications.length).toBe(1);
+    expect(chatNotifications[0].getChatMessage()?.getMessage()).toEqual("Arbitrator chat message to dispute peer");
+
+    // arbitrator has 2 chat messages, one with attachments
+    chatNotifications = getNotifications(arbitratorNotifications, NotificationMessage.NotificationType.CHAT_MESSAGE, ctx.offerId);
+    expect(chatNotifications.length).toBe(2);
+    expect(chatNotifications[0].getChatMessage()?.getMessage()).toEqual("Dispute opener chat message");
+    assert(chatNotifications[0].getChatMessage()?.getAttachmentsList());
+    attachments = chatNotifications[0].getChatMessage()?.getAttachmentsList()!;
+    expect(attachments[0].getFileName()).toEqual("proof.txt");
+    expect(attachments[0].getBytes()).toEqual(bytes);
+    expect(attachments[1].getFileName()).toEqual("proof.png");
+    expect(attachments[1].getBytes()).toEqual(bytes2);
+    expect(chatNotifications[1].getChatMessage()?.getMessage()).toEqual("Dispute peer chat message");
+  }
 }
 
 async function resolveDispute(ctxP: Partial<TradeContext>) {
