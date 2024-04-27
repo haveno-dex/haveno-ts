@@ -2248,7 +2248,8 @@ async function executeTrades(ctxs: Partial<TradeContext>[], executionCtx?: Parti
     if (executionCtx.concurrentTrades) {
       const tradePromises: Promise<string>[] = [];
       const pool = new moneroTs.ThreadPool(executionCtx.maxConcurrency!);
-      for (const ctx of ctxs) tradePromises.push(pool.submit(() => executeTrade(Object.assign(ctx, {concurrentTrades: executionCtx!.concurrentTrades}))));
+      for (let i = 0; i < ctxs.length; i++) ctxs[i] = TradeContext.init(Object.assign(ctxs[i], {concurrentTrades: executionCtx!.concurrentTrades})); // inititalize full trade contexts to avoid copy
+      for (const ctx of ctxs) tradePromises.push(pool.submit(() => executeTrade(ctx)));
       try {
         offerIds = await Promise.all(tradePromises);
       } catch (e2) {
