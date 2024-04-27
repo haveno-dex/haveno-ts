@@ -483,6 +483,14 @@ const HAVENO_WALLETS: Map<HavenoClient, any> = new Map<HavenoClient, any>();
 // other config
 const OFFLINE_ERR_MSG = "Http response at 400 or 500 level";
 
+function getMaxConcurrency() {
+  return isGitHubActions() ? 4 : 20;
+}
+
+function isGitHubActions() {
+  return process.env.GITHUB_ACTIONS === 'true';
+}
+
 // -------------------------- BEFORE / AFTER TESTS ----------------------------
 
 jest.setTimeout(TestConfig.testTimeout);
@@ -3885,14 +3893,6 @@ function testMoneroNodeSettingsEqual(settingsBefore: XmrNodeSettings, settingsAf
     expect(settingsAfter.getBlockchainPath()).toEqual(settingsBefore.getBlockchainPath());
     expect(settingsAfter.getBootstrapUrl()).toEqual(settingsBefore.getBootstrapUrl());
     expect(settingsAfter.getStartupFlagsList()).toEqual(settingsBefore.getStartupFlagsList());
-}
-
-function getMaxConcurrency() {
-  return isGitHubActions() ? 4 : 14;
-}
-
-function isGitHubActions() {
-  return process.env.GITHUB_ACTIONS === 'true';
 }
 
 function getFormField(form: PaymentAccountForm, fieldId: PaymentAccountFormField.FieldId): PaymentAccountFormField {
