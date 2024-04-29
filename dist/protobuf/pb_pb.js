@@ -49595,7 +49595,7 @@ proto.io.haveno.protobuffer.Tradable.prototype.hasArbitratorTrade = function() {
  * @private {!Array<number>}
  * @const
  */
-proto.io.haveno.protobuffer.Trade.repeatedFields_ = [20,29];
+proto.io.haveno.protobuffer.Trade.repeatedFields_ = [20];
 
 
 
@@ -49656,8 +49656,7 @@ proto.io.haveno.protobuffer.Trade.toObject = function(includeInstance, msg) {
     refundResultState: jspb.Message.getFieldWithDefault(msg, 25, 0),
     counterCurrencyExtraData: jspb.Message.getFieldWithDefault(msg, 26, ""),
     uid: jspb.Message.getFieldWithDefault(msg, 27, ""),
-    isCompleted: jspb.Message.getBooleanFieldWithDefault(msg, 28, false),
-    importedMultisigHexesList: (f = jspb.Message.getRepeatedField(msg, 29)) == null ? undefined : f
+    isCompleted: jspb.Message.getBooleanFieldWithDefault(msg, 28, false)
   };
 
   if (includeInstance) {
@@ -49812,10 +49811,6 @@ proto.io.haveno.protobuffer.Trade.deserializeBinaryFromReader = function(msg, re
     case 28:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setIsCompleted(value);
-      break;
-    case 29:
-      var value = /** @type {string} */ (reader.readString());
-      msg.addImportedMultisigHexes(value);
       break;
     default:
       reader.skipField();
@@ -50046,13 +50041,6 @@ proto.io.haveno.protobuffer.Trade.serializeBinaryToWriter = function(message, wr
   if (f) {
     writer.writeBool(
       28,
-      f
-    );
-  }
-  f = message.getImportedMultisigHexesList();
-  if (f.length > 0) {
-    writer.writeRepeatedString(
-      29,
       f
     );
   }
@@ -50806,43 +50794,6 @@ proto.io.haveno.protobuffer.Trade.prototype.getIsCompleted = function() {
  */
 proto.io.haveno.protobuffer.Trade.prototype.setIsCompleted = function(value) {
   return jspb.Message.setProto3BooleanField(this, 28, value);
-};
-
-
-/**
- * repeated string imported_multisig_hexes = 29;
- * @return {!Array<string>}
- */
-proto.io.haveno.protobuffer.Trade.prototype.getImportedMultisigHexesList = function() {
-  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 29));
-};
-
-
-/**
- * @param {!Array<string>} value
- * @return {!proto.io.haveno.protobuffer.Trade} returns this
- */
-proto.io.haveno.protobuffer.Trade.prototype.setImportedMultisigHexesList = function(value) {
-  return jspb.Message.setField(this, 29, value || []);
-};
-
-
-/**
- * @param {string} value
- * @param {number=} opt_index
- * @return {!proto.io.haveno.protobuffer.Trade} returns this
- */
-proto.io.haveno.protobuffer.Trade.prototype.addImportedMultisigHexes = function(value, opt_index) {
-  return jspb.Message.addToRepeatedField(this, 29, value, opt_index);
-};
-
-
-/**
- * Clears the list making it empty but non-null.
- * @return {!proto.io.haveno.protobuffer.Trade} returns this
- */
-proto.io.haveno.protobuffer.Trade.prototype.clearImportedMultisigHexesList = function() {
-  return this.setImportedMultisigHexesList([]);
 };
 
 

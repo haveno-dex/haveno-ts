@@ -16,12 +16,14 @@ export default class TaskLooper {
     /**
      * Start the task loop.
      *
-     * @param {int} periodInMs the loop period in milliseconds
+     * @param {number} periodInMs the loop period in milliseconds
+     * @param {boolean} targetFixedPeriod specifies if the task should target a fixed period by accounting for run time (default false)
+     * @return {TaskLooper} this instance for chaining
      */
-    start(periodInMs: number): void;
+    start(periodInMs: number, targetFixedPeriod: boolean): void;
     /**
      * Stop the task loop.
      */
     stop(): void;
-    _runLoop(periodInMs: number): Promise<void>;
+    _runLoop(periodInMs: number, targetFixedPeriod: boolean): Promise<void>;
 }

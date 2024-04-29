@@ -6158,11 +6158,6 @@ export class Trade extends jspb.Message {
   getIsCompleted(): boolean;
   setIsCompleted(value: boolean): Trade;
 
-  getImportedMultisigHexesList(): Array<string>;
-  setImportedMultisigHexesList(value: Array<string>): Trade;
-  clearImportedMultisigHexesList(): Trade;
-  addImportedMultisigHexes(value: string, index?: number): Trade;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Trade.AsObject;
   static toObject(includeInstance: boolean, msg: Trade): Trade.AsObject;
@@ -6201,7 +6196,6 @@ export namespace Trade {
     counterCurrencyExtraData: string,
     uid: string,
     isCompleted: boolean,
-    importedMultisigHexesList: Array<string>,
   }
 
   export enum State { 
