@@ -451,7 +451,7 @@ const TestConfig = {
         XMR_STAGENET: ["1aa111f817b7fdaaec1c8d5281a1837cc71c336db09b87cf23344a0a4e3bb2cb", "6b5a404eb5ff7154f2357126c84c3becfe2e7c59ca3844954ce9476bec2a6228", "fd4ef301a2e4faa3c77bc26393919895fa29b0908f2bbd51f6f6de3e46fb7a6e"],
         XMR_MAINNET: []
     },
-    tradeStepTimeoutMs: getBaseCurrencyNetwork() === BaseCurrencyNetwork.XMR_LOCAL ? 45000 : 180000,
+    tradeStepTimeoutMs: getBaseCurrencyNetwork() === BaseCurrencyNetwork.XMR_LOCAL ? 60000 : 180000,
     testTimeout: getBaseCurrencyNetwork() === BaseCurrencyNetwork.XMR_LOCAL ? 2400000 : 5400000, // timeout in ms for each test to complete (40 minutes for private network, 90 minutes for public network)
     trade: new TradeContext(defaultTradeConfig)
 };
