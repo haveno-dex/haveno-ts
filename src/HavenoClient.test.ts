@@ -144,7 +144,7 @@ const defaultTradeConfig: Partial<TradeContext> = {
   walletSyncPeriodMs: 5000,
   maxTimePeerNoticeMs: 5000,
   testChatMessages: true,
-  stopOnFailure: true,
+  stopOnFailure: false, // TODO: setting to true can cause error: Http response at 400 or 500 level, http status code: 503
   testPayoutConfirmed: true,
   testPayoutUnlocked: false,
   maxConcurrency: getMaxConcurrency()
