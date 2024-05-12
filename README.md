@@ -55,9 +55,9 @@ Alternatively, start a local Haveno network with docker:
 2. `sudo docker-compose up`. This will start docker and initialize the network.
 
 > **Docker Tips**
-> * Stop: `studo docker-compose stop`
+> * Stop: `sudo docker-compose stop`
 > * Rebuild: `sudo docker-compose build`
-> * Stop and delete contains: `studo docker-compose stop`
+> * Stop and delete contains: `sudo docker-compose stop`
 
 ### Run client tests
 
