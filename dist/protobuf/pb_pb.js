@@ -12730,7 +12730,8 @@ proto.io.haveno.protobuffer.InitMultisigRequest.toObject = function(includeInsta
     currentDate: jspb.Message.getFieldWithDefault(msg, 3, 0),
     preparedMultisigHex: jspb.Message.getFieldWithDefault(msg, 4, ""),
     madeMultisigHex: jspb.Message.getFieldWithDefault(msg, 5, ""),
-    exchangedMultisigHex: jspb.Message.getFieldWithDefault(msg, 6, "")
+    exchangedMultisigHex: jspb.Message.getFieldWithDefault(msg, 6, ""),
+    tradeFeeAddress: jspb.Message.getFieldWithDefault(msg, 7, "")
   };
 
   if (includeInstance) {
@@ -12790,6 +12791,10 @@ proto.io.haveno.protobuffer.InitMultisigRequest.deserializeBinaryFromReader = fu
     case 6:
       var value = /** @type {string} */ (reader.readString());
       msg.setExchangedMultisigHex(value);
+      break;
+    case 7:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setTradeFeeAddress(value);
       break;
     default:
       reader.skipField();
@@ -12859,6 +12864,13 @@ proto.io.haveno.protobuffer.InitMultisigRequest.serializeBinaryToWriter = functi
   if (f.length > 0) {
     writer.writeString(
       6,
+      f
+    );
+  }
+  f = message.getTradeFeeAddress();
+  if (f.length > 0) {
+    writer.writeString(
+      7,
       f
     );
   }
@@ -12970,6 +12982,24 @@ proto.io.haveno.protobuffer.InitMultisigRequest.prototype.getExchangedMultisigHe
  */
 proto.io.haveno.protobuffer.InitMultisigRequest.prototype.setExchangedMultisigHex = function(value) {
   return jspb.Message.setProto3StringField(this, 6, value);
+};
+
+
+/**
+ * optional string trade_fee_address = 7;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.InitMultisigRequest.prototype.getTradeFeeAddress = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.InitMultisigRequest} returns this
+ */
+proto.io.haveno.protobuffer.InitMultisigRequest.prototype.setTradeFeeAddress = function(value) {
+  return jspb.Message.setProto3StringField(this, 7, value);
 };
 
 
@@ -47961,7 +47991,8 @@ proto.io.haveno.protobuffer.Offer.State = {
   AVAILABLE: 3,
   NOT_AVAILABLE: 4,
   REMOVED: 5,
-  MAKER_OFFLINE: 6
+  MAKER_OFFLINE: 6,
+  INVALID: 7
 };
 
 /**
@@ -51601,7 +51632,8 @@ proto.io.haveno.protobuffer.ProcessModel.toObject = function(includeInstance, ms
     mediatedPayoutTxSignature: msg.getMediatedPayoutTxSignature_asB64(),
     buyerPayoutAmountFromMediation: jspb.Message.getFieldWithDefault(msg, 16, 0),
     sellerPayoutAmountFromMediation: jspb.Message.getFieldWithDefault(msg, 17, 0),
-    deleteBackupsHeight: jspb.Message.getFieldWithDefault(msg, 18, 0)
+    tradeProtocolErrorHeight: jspb.Message.getFieldWithDefault(msg, 18, 0),
+    tradeFeeAddress: jspb.Message.getFieldWithDefault(msg, 19, "")
   };
 
   if (includeInstance) {
@@ -51713,7 +51745,11 @@ proto.io.haveno.protobuffer.ProcessModel.deserializeBinaryFromReader = function(
       break;
     case 18:
       var value = /** @type {number} */ (reader.readInt64());
-      msg.setDeleteBackupsHeight(value);
+      msg.setTradeProtocolErrorHeight(value);
+      break;
+    case 19:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setTradeFeeAddress(value);
       break;
     default:
       reader.skipField();
@@ -51868,10 +51904,17 @@ proto.io.haveno.protobuffer.ProcessModel.serializeBinaryToWriter = function(mess
       f
     );
   }
-  f = message.getDeleteBackupsHeight();
+  f = message.getTradeProtocolErrorHeight();
   if (f !== 0) {
     writer.writeInt64(
       18,
+      f
+    );
+  }
+  f = message.getTradeFeeAddress();
+  if (f.length > 0) {
+    writer.writeString(
+      19,
       f
     );
   }
@@ -52352,10 +52395,10 @@ proto.io.haveno.protobuffer.ProcessModel.prototype.setSellerPayoutAmountFromMedi
 
 
 /**
- * optional int64 delete_backups_height = 18;
+ * optional int64 trade_protocol_error_height = 18;
  * @return {number}
  */
-proto.io.haveno.protobuffer.ProcessModel.prototype.getDeleteBackupsHeight = function() {
+proto.io.haveno.protobuffer.ProcessModel.prototype.getTradeProtocolErrorHeight = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 18, 0));
 };
 
@@ -52364,8 +52407,26 @@ proto.io.haveno.protobuffer.ProcessModel.prototype.getDeleteBackupsHeight = func
  * @param {number} value
  * @return {!proto.io.haveno.protobuffer.ProcessModel} returns this
  */
-proto.io.haveno.protobuffer.ProcessModel.prototype.setDeleteBackupsHeight = function(value) {
+proto.io.haveno.protobuffer.ProcessModel.prototype.setTradeProtocolErrorHeight = function(value) {
   return jspb.Message.setProto3IntField(this, 18, value);
+};
+
+
+/**
+ * optional string trade_fee_address = 19;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.ProcessModel.prototype.getTradeFeeAddress = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 19, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.ProcessModel} returns this
+ */
+proto.io.haveno.protobuffer.ProcessModel.prototype.setTradeFeeAddress = function(value) {
+  return jspb.Message.setProto3StringField(this, 19, value);
 };
 
 

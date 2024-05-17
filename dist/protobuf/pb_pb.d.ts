@@ -1133,6 +1133,9 @@ export class InitMultisigRequest extends jspb.Message {
   getExchangedMultisigHex(): string;
   setExchangedMultisigHex(value: string): InitMultisigRequest;
 
+  getTradeFeeAddress(): string;
+  setTradeFeeAddress(value: string): InitMultisigRequest;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): InitMultisigRequest.AsObject;
   static toObject(includeInstance: boolean, msg: InitMultisigRequest): InitMultisigRequest.AsObject;
@@ -1149,6 +1152,7 @@ export namespace InitMultisigRequest {
     preparedMultisigHex: string,
     madeMultisigHex: string,
     exchangedMultisigHex: string,
+    tradeFeeAddress: string,
   }
 }
 
@@ -5835,6 +5839,7 @@ export namespace Offer {
     NOT_AVAILABLE = 4,
     REMOVED = 5,
     MAKER_OFFLINE = 6,
+    INVALID = 7,
   }
 }
 
@@ -6440,8 +6445,11 @@ export class ProcessModel extends jspb.Message {
   getSellerPayoutAmountFromMediation(): number;
   setSellerPayoutAmountFromMediation(value: number): ProcessModel;
 
-  getDeleteBackupsHeight(): number;
-  setDeleteBackupsHeight(value: number): ProcessModel;
+  getTradeProtocolErrorHeight(): number;
+  setTradeProtocolErrorHeight(value: number): ProcessModel;
+
+  getTradeFeeAddress(): string;
+  setTradeFeeAddress(value: string): ProcessModel;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ProcessModel.AsObject;
@@ -6470,7 +6478,8 @@ export namespace ProcessModel {
     mediatedPayoutTxSignature: Uint8Array | string,
     buyerPayoutAmountFromMediation: number,
     sellerPayoutAmountFromMediation: number,
-    deleteBackupsHeight: number,
+    tradeProtocolErrorHeight: number,
+    tradeFeeAddress: string,
   }
 }
 
