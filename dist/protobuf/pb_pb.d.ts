@@ -1011,18 +1011,11 @@ export namespace PrefixedSealedAndSignedMessage {
 }
 
 export class InitTradeRequest extends jspb.Message {
+  getTradeProtocolVersion(): TradeProtocolVersion;
+  setTradeProtocolVersion(value: TradeProtocolVersion): InitTradeRequest;
+
   getOfferId(): string;
   setOfferId(value: string): InitTradeRequest;
-
-  getSenderNodeAddress(): NodeAddress | undefined;
-  setSenderNodeAddress(value?: NodeAddress): InitTradeRequest;
-  hasSenderNodeAddress(): boolean;
-  clearSenderNodeAddress(): InitTradeRequest;
-
-  getPubKeyRing(): PubKeyRing | undefined;
-  setPubKeyRing(value?: PubKeyRing): InitTradeRequest;
-  hasPubKeyRing(): boolean;
-  clearPubKeyRing(): InitTradeRequest;
 
   getTradeAmount(): number;
   setTradeAmount(value: number): InitTradeRequest;
@@ -1030,14 +1023,25 @@ export class InitTradeRequest extends jspb.Message {
   getTradePrice(): number;
   setTradePrice(value: number): InitTradeRequest;
 
-  getAccountId(): string;
-  setAccountId(value: string): InitTradeRequest;
-
-  getPaymentAccountId(): string;
-  setPaymentAccountId(value: string): InitTradeRequest;
-
   getPaymentMethodId(): string;
   setPaymentMethodId(value: string): InitTradeRequest;
+
+  getMakerAccountId(): string;
+  setMakerAccountId(value: string): InitTradeRequest;
+
+  getTakerAccountId(): string;
+  setTakerAccountId(value: string): InitTradeRequest;
+
+  getMakerPaymentAccountId(): string;
+  setMakerPaymentAccountId(value: string): InitTradeRequest;
+
+  getTakerPaymentAccountId(): string;
+  setTakerPaymentAccountId(value: string): InitTradeRequest;
+
+  getTakerPubKeyRing(): PubKeyRing | undefined;
+  setTakerPubKeyRing(value?: PubKeyRing): InitTradeRequest;
+  hasTakerPubKeyRing(): boolean;
+  clearTakerPubKeyRing(): InitTradeRequest;
 
   getUid(): string;
   setUid(value: string): InitTradeRequest;
@@ -1077,11 +1081,6 @@ export class InitTradeRequest extends jspb.Message {
   getPayoutAddress(): string;
   setPayoutAddress(value: string): InitTradeRequest;
 
-  getMakerSignature(): Uint8Array | string;
-  getMakerSignature_asU8(): Uint8Array;
-  getMakerSignature_asB64(): string;
-  setMakerSignature(value: Uint8Array | string): InitTradeRequest;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): InitTradeRequest.AsObject;
   static toObject(includeInstance: boolean, msg: InitTradeRequest): InitTradeRequest.AsObject;
@@ -1092,14 +1091,16 @@ export class InitTradeRequest extends jspb.Message {
 
 export namespace InitTradeRequest {
   export type AsObject = {
+    tradeProtocolVersion: TradeProtocolVersion,
     offerId: string,
-    senderNodeAddress?: NodeAddress.AsObject,
-    pubKeyRing?: PubKeyRing.AsObject,
     tradeAmount: number,
     tradePrice: number,
-    accountId: string,
-    paymentAccountId: string,
     paymentMethodId: string,
+    makerAccountId: string,
+    takerAccountId: string,
+    makerPaymentAccountId: string,
+    takerPaymentAccountId: string,
+    takerPubKeyRing?: PubKeyRing.AsObject,
     uid: string,
     accountAgeWitnessSignatureOfOfferId: Uint8Array | string,
     currentDate: number,
@@ -1110,7 +1111,6 @@ export namespace InitTradeRequest {
     reserveTxHex: string,
     reserveTxKey: string,
     payoutAddress: string,
-    makerSignature: Uint8Array | string,
   }
 }
 
@@ -7807,6 +7807,9 @@ export namespace PaymentAccountFormField {
   }
 }
 
+export enum TradeProtocolVersion { 
+  MULTISIG_2_3 = 0,
+}
 export enum SupportType { 
   ARBITRATION = 0,
   MEDIATION = 1,
