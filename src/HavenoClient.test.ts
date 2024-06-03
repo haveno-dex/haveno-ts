@@ -1663,7 +1663,7 @@ test("Can complete trades at the same time (CI, sanity check)", async () => {
 test("Can complete all trade combinations (stress)", async () => {
 
   // generate trade context for each combination (buyer/seller, maker/taker, dispute(s), dispute winner)
-  const ctxs: TradeContext[] = [];
+  let ctxs: TradeContext[] = [];
   const MAKER_OPTS = [TradeRole.MAKER, TradeRole.TAKER];
   const DIRECTION_OPTS = [OfferDirection.BUY, OfferDirection.SELL];
   const BUYER_DISPUTE_OPTS = [DisputeContext.NONE, DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK, DisputeContext.OPEN_AFTER_PAYMENT_SENT];
@@ -1695,6 +1695,8 @@ test("Can complete all trade combinations (stress)", async () => {
   }
 
   // execute trades
+  const ctxIdx = undefined; // run single index for debugging
+  if (ctxIdx !== undefined) ctxs = ctxs.slice(ctxIdx, ctxIdx + 1);
   HavenoUtils.log(0, "Executing " + ctxs.length + " trade configurations");
   await executeTrades(ctxs);
 });
