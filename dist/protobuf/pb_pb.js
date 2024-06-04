@@ -35808,7 +35808,8 @@ proto.io.haveno.protobuffer.AustraliaPayidPayload.prototype.toObject = function(
 proto.io.haveno.protobuffer.AustraliaPayidPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
     bankAccountName: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    payid: jspb.Message.getFieldWithDefault(msg, 2, "")
+    payid: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    extraInfo: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
   if (includeInstance) {
@@ -35853,6 +35854,10 @@ proto.io.haveno.protobuffer.AustraliaPayidPayload.deserializeBinaryFromReader = 
       var value = /** @type {string} */ (reader.readString());
       msg.setPayid(value);
       break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setExtraInfo(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -35896,6 +35901,13 @@ proto.io.haveno.protobuffer.AustraliaPayidPayload.serializeBinaryToWriter = func
       f
     );
   }
+  f = message.getExtraInfo();
+  if (f.length > 0) {
+    writer.writeString(
+      3,
+      f
+    );
+  }
 };
 
 
@@ -35932,6 +35944,24 @@ proto.io.haveno.protobuffer.AustraliaPayidPayload.prototype.getPayid = function(
  */
 proto.io.haveno.protobuffer.AustraliaPayidPayload.prototype.setPayid = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * optional string extra_info = 3;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.AustraliaPayidPayload.prototype.getExtraInfo = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.AustraliaPayidPayload} returns this
+ */
+proto.io.haveno.protobuffer.AustraliaPayidPayload.prototype.setExtraInfo = function(value) {
+  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
@@ -61478,7 +61508,8 @@ proto.io.haveno.protobuffer.PaymentAccountForm.FormId = {
   UPHOLD: 11,
   PAXUM: 12,
   PAY_BY_MAIL: 13,
-  CASH_AT_ATM: 14
+  CASH_AT_ATM: 14,
+  AUSTRALIA_PAYID: 15
 };
 
 /**
