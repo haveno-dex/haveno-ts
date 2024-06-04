@@ -4169,6 +4169,9 @@ export class AustraliaPayidPayload extends jspb.Message {
   getPayid(): string;
   setPayid(value: string): AustraliaPayidPayload;
 
+  getExtraInfo(): string;
+  setExtraInfo(value: string): AustraliaPayidPayload;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AustraliaPayidPayload.AsObject;
   static toObject(includeInstance: boolean, msg: AustraliaPayidPayload): AustraliaPayidPayload.AsObject;
@@ -4181,6 +4184,7 @@ export namespace AustraliaPayidPayload {
   export type AsObject = {
     bankAccountName: string,
     payid: string,
+    extraInfo: string,
   }
 }
 
@@ -7664,6 +7668,7 @@ export namespace PaymentAccountForm {
     PAXUM = 12,
     PAY_BY_MAIL = 13,
     CASH_AT_ATM = 14,
+    AUSTRALIA_PAYID = 15,
   }
 }
 

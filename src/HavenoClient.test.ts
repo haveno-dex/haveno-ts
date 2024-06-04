@@ -3923,7 +3923,7 @@ function getValidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountForm
     case PaymentAccountFormField.FieldId.ANSWER:
       throw new Error("Not implemented");
     case PaymentAccountFormField.FieldId.BANK_ACCOUNT_NAME:
-      throw new Error("Not implemented");
+      return "John Doe";
     case PaymentAccountFormField.FieldId.BANK_ACCOUNT_NUMBER:
       throw new Error("Not implemented");
     case PaymentAccountFormField.FieldId.BANK_ACCOUNT_TYPE:
@@ -3995,7 +3995,7 @@ function getValidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountForm
     case PaymentAccountFormField.FieldId.NATIONAL_ACCOUNT_ID:
       throw new Error("Not implemented");
     case PaymentAccountFormField.FieldId.PAYID:
-      throw new Error("Not implemented");
+      return "john.doe@example.com";
     case PaymentAccountFormField.FieldId.PIX_KEY:
       throw new Error("Not implemented");
     case PaymentAccountFormField.FieldId.POSTAL_ADDRESS:
@@ -4054,7 +4054,7 @@ function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFo
     case PaymentAccountFormField.FieldId.ANSWER:
       throw new Error("Not implemented");
     case PaymentAccountFormField.FieldId.BANK_ACCOUNT_NAME:
-      throw new Error("Not implemented");
+      return "F";
     case PaymentAccountFormField.FieldId.BANK_ACCOUNT_NUMBER:
       throw new Error("Not implemented");
     case PaymentAccountFormField.FieldId.BANK_ACCOUNT_TYPE:
@@ -4130,7 +4130,7 @@ function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFo
     case PaymentAccountFormField.FieldId.NATIONAL_ACCOUNT_ID:
       throw new Error("Not implemented");
     case PaymentAccountFormField.FieldId.PAYID:
-      throw new Error("Not implemented");
+      return "A";
     case PaymentAccountFormField.FieldId.PIX_KEY:
       throw new Error("Not implemented");
     case PaymentAccountFormField.FieldId.POSTAL_ADDRESS:
@@ -4253,6 +4253,11 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
         expect(account.getPaymentAccountPayload()!.getCashAtAtmAccountPayload()!.getExtraInfo()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.EXTRA_INFO).getValue());
         expect(account.getTradeCurrenciesList().length).toEqual(1);
         expect(account.getTradeCurrenciesList()[0].getCode()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.TRADE_CURRENCIES).getValue());
+        break;
+      case PaymentAccountForm.FormId.AUSTRALIA_PAYID:
+        expect(account.getPaymentAccountPayload()!.getAustraliaPayidPayload()!.getBankAccountName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.BANK_ACCOUNT_NAME).getValue());
+        expect(account.getPaymentAccountPayload()!.getAustraliaPayidPayload()!.getPayid()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.PAYID).getValue());
+        expect(account.getPaymentAccountPayload()!.getAustraliaPayidPayload()!.getExtraInfo()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.EXTRA_INFO).getValue());
         break;
       default:
         throw new Error("Unhandled payment method type: " + form.getId());
