@@ -1307,7 +1307,7 @@ test("Can create fiat payment accounts (CI)", async () => {
 
   // edit form
   HavenoUtils.setFormValue(accountForm, PaymentAccountFormField.FieldId.ACCOUNT_NAME, "Revolut account " + moneroTs.GenUtils.getUUID());
-  HavenoUtils.setFormValue(accountForm, PaymentAccountFormField.FieldId.USER_NAME, "user123");
+  HavenoUtils.setFormValue(accountForm, PaymentAccountFormField.FieldId.USERNAME, "user123");
   HavenoUtils.setFormValue(accountForm, PaymentAccountFormField.FieldId.TRADE_CURRENCIES, "gbp,eur,usd");
 
   // create payment account
@@ -1316,7 +1316,7 @@ test("Can create fiat payment accounts (CI)", async () => {
   expect(fiatAccount.getSelectedTradeCurrency()!.getCode()).toEqual("USD");
   expect(fiatAccount.getTradeCurrenciesList().length).toBeGreaterThan(0);
   expect(fiatAccount.getPaymentAccountPayload()!.getPaymentMethodId()).toEqual(paymentMethodId);
-  expect(fiatAccount.getPaymentAccountPayload()!.getRevolutAccountPayload()!.getUserName()).toEqual(HavenoUtils.getFormValue(accountForm, PaymentAccountFormField.FieldId.USER_NAME));
+  expect(fiatAccount.getPaymentAccountPayload()!.getRevolutAccountPayload()!.getUsername()).toEqual(HavenoUtils.getFormValue(accountForm, PaymentAccountFormField.FieldId.USERNAME));
 
   // payment account added
   let found = false;
@@ -3968,6 +3968,10 @@ function getValidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountForm
       return "jdoe@no.com";
     case PaymentAccountFormField.FieldId.EMAIL_OR_MOBILE_NR:
       return "876-512-7813";
+    case PaymentAccountFormField.FieldId.EMAIL_OR_MOBILE_NR_OR_USERNAME:
+      return "john.doe"
+    case PaymentAccountFormField.FieldId.EMAIL_OR_MOBILE_NR_OR_CASHTAG:
+      return "john.doe"
     case PaymentAccountFormField.FieldId.EXTRA_INFO:
       return "Please and thanks";
     case PaymentAccountFormField.FieldId.HOLDER_ADDRESS:
@@ -4022,7 +4026,7 @@ function getValidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountForm
         return field.getSupportedCurrenciesList()[0]!.getCode(); // TODO: randomly select?
       }
       else return field.getSupportedCurrenciesList().map(currency => currency.getCode()).join(',');
-    case PaymentAccountFormField.FieldId.USER_NAME:
+    case PaymentAccountFormField.FieldId.USERNAME:
       return "user123";
     case PaymentAccountFormField.FieldId.ADDRESS:
       const currencyCode = HavenoUtils.getFormValue(form, PaymentAccountFormField.FieldId.TRADE_CURRENCIES);
@@ -4101,6 +4105,10 @@ function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFo
       return "@no.com";
     case PaymentAccountFormField.FieldId.EMAIL_OR_MOBILE_NR:
       return ""; // TODO: validate phone numbers, e.g. 876
+    case PaymentAccountFormField.FieldId.EMAIL_OR_MOBILE_NR_OR_USERNAME:
+      return "A"
+    case PaymentAccountFormField.FieldId.EMAIL_OR_MOBILE_NR_OR_CASHTAG:
+      return "A"
     case PaymentAccountFormField.FieldId.EXTRA_INFO:
       throw new Error("Extra info has no invalid input");
     case PaymentAccountFormField.FieldId.HOLDER_ADDRESS:
@@ -4153,7 +4161,7 @@ function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFo
     }
     case PaymentAccountFormField.FieldId.TRADE_CURRENCIES:
       return "abc,def";
-    case PaymentAccountFormField.FieldId.USER_NAME:
+    case PaymentAccountFormField.FieldId.USERNAME:
       return "A";
     case PaymentAccountFormField.FieldId.ADDRESS:
       return "A123";
@@ -4164,7 +4172,7 @@ function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFo
 
 function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
     if (account.getPaymentAccountPayload()?.getCryptoCurrencyAccountPayload()) testCryptoPaymentAccount(account); // TODO: test non-crypto
-    expect(account.getAccountName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.ACCOUNT_NAME).getValue()); // TODO: using number as payment method, account payload's account name = user name
+    expect(account.getAccountName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.ACCOUNT_NAME).getValue()); // TODO: using number as payment method, account payload's account name = username
     const isCountryBased = account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload() !== undefined;
     if (isCountryBased) expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getCountryCode()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.COUNTRY).getValue());
     switch (form.getId()) {
@@ -4173,7 +4181,7 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
         expect(account.getTradeCurrenciesList().map(currency => currency.getCode()).join(",")).toEqual(getFormField(form, PaymentAccountFormField.FieldId.TRADE_CURRENCIES).getValue());
         break;
       case PaymentAccountForm.FormId.REVOLUT:
-        expect(account.getPaymentAccountPayload()!.getRevolutAccountPayload()!.getUserName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.USER_NAME).getValue());
+        expect(account.getPaymentAccountPayload()!.getRevolutAccountPayload()!.getUsername()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.USERNAME).getValue());
         expect(account.getTradeCurrenciesList().map(currency => currency.getCode()).join(",")).toEqual(getFormField(form, PaymentAccountFormField.FieldId.TRADE_CURRENCIES).getValue());
         break;
       case PaymentAccountForm.FormId.SEPA:
@@ -4195,6 +4203,8 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
       case PaymentAccountForm.FormId.ZELLE:
         expect(account.getPaymentAccountPayload()!.getZelleAccountPayload()!.getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
         expect(account.getPaymentAccountPayload()!.getZelleAccountPayload()!.getEmailOrMobileNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.EMAIL_OR_MOBILE_NR).getValue());
+        expect(account.getTradeCurrenciesList().length).toEqual(1);
+        expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("USD");
         break;
       case PaymentAccountForm.FormId.SWIFT:
         expect(account.getPaymentAccountPayload()!.getSwiftAccountPayload()!.getBankSwiftCode()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.BANK_SWIFT_CODE).getValue());
@@ -4258,6 +4268,20 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
         expect(account.getPaymentAccountPayload()!.getAustraliaPayidPayload()!.getBankAccountName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.BANK_ACCOUNT_NAME).getValue());
         expect(account.getPaymentAccountPayload()!.getAustraliaPayidPayload()!.getPayid()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.PAYID).getValue());
         expect(account.getPaymentAccountPayload()!.getAustraliaPayidPayload()!.getExtraInfo()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.EXTRA_INFO).getValue());
+        break;
+      case PaymentAccountForm.FormId.CASH_APP:
+        expect(account.getPaymentAccountPayload()!.getCashAppAccountPayload()!.getEmailOrMobileNrOrCashtag()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.EMAIL_OR_MOBILE_NR_OR_CASHTAG).getValue());
+        expect(account.getTradeCurrenciesList().length).toEqual(2);
+        expect(account.getTradeCurrenciesList().map(currency => currency.getCode()).join(",")).toEqual(getFormField(form, PaymentAccountFormField.FieldId.TRADE_CURRENCIES).getValue());
+        break;
+      case PaymentAccountForm.FormId.PAYPAL:
+        expect(account.getPaymentAccountPayload()!.getPaypalAccountPayload()!.getEmailOrMobileNrOrUsername()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.EMAIL_OR_MOBILE_NR_OR_USERNAME).getValue());
+        expect(account.getTradeCurrenciesList().map(currency => currency.getCode()).join(",")).toEqual(getFormField(form, PaymentAccountFormField.FieldId.TRADE_CURRENCIES).getValue());
+        break;
+      case PaymentAccountForm.FormId.VENMO:
+        expect(account.getPaymentAccountPayload()!.getVenmoAccountPayload()!.getEmailOrMobileNrOrUsername()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.EMAIL_OR_MOBILE_NR_OR_USERNAME).getValue());
+        expect(account.getTradeCurrenciesList().length).toEqual(1);
+        expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("USD");
         break;
       default:
         throw new Error("Unhandled payment method type: " + form.getId());
