@@ -3641,6 +3641,11 @@ export class PaymentAccountPayload extends jspb.Message {
   hasCashAtAtmAccountPayload(): boolean;
   clearCashAtAtmAccountPayload(): PaymentAccountPayload;
 
+  getPaypalAccountPayload(): PayPalAccountPayload | undefined;
+  setPaypalAccountPayload(value?: PayPalAccountPayload): PaymentAccountPayload;
+  hasPaypalAccountPayload(): boolean;
+  clearPaypalAccountPayload(): PaymentAccountPayload;
+
   getMessageCase(): PaymentAccountPayload.MessageCase;
 
   serializeBinary(): Uint8Array;
@@ -3693,6 +3698,7 @@ export namespace PaymentAccountPayload {
     moneseAccountPayload?: MoneseAccountPayload.AsObject,
     verseAccountPayload?: VerseAccountPayload.AsObject,
     cashAtAtmAccountPayload?: CashAtAtmAccountPayload.AsObject,
+    paypalAccountPayload?: PayPalAccountPayload.AsObject,
   }
 
   export enum MessageCase { 
@@ -3733,6 +3739,7 @@ export namespace PaymentAccountPayload {
     MONESE_ACCOUNT_PAYLOAD = 38,
     VERSE_ACCOUNT_PAYLOAD = 39,
     CASH_AT_ATM_ACCOUNT_PAYLOAD = 40,
+    PAYPAL_ACCOUNT_PAYLOAD = 41,
   }
 }
 
@@ -4551,8 +4558,8 @@ export namespace UpholdAccountPayload {
 }
 
 export class CashAppAccountPayload extends jspb.Message {
-  getCashTag(): string;
-  setCashTag(value: string): CashAppAccountPayload;
+  getEmailOrMobileNrOrCashtag(): string;
+  setEmailOrMobileNrOrCashtag(value: string): CashAppAccountPayload;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): CashAppAccountPayload.AsObject;
@@ -4564,7 +4571,7 @@ export class CashAppAccountPayload extends jspb.Message {
 
 export namespace CashAppAccountPayload {
   export type AsObject = {
-    cashTag: string,
+    emailOrMobileNrOrCashtag: string,
   }
 }
 
@@ -4587,11 +4594,8 @@ export namespace MoneyBeamAccountPayload {
 }
 
 export class VenmoAccountPayload extends jspb.Message {
-  getVenmoUserName(): string;
-  setVenmoUserName(value: string): VenmoAccountPayload;
-
-  getHolderName(): string;
-  setHolderName(value: string): VenmoAccountPayload;
+  getEmailOrMobileNrOrUsername(): string;
+  setEmailOrMobileNrOrUsername(value: string): VenmoAccountPayload;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): VenmoAccountPayload.AsObject;
@@ -4603,8 +4607,25 @@ export class VenmoAccountPayload extends jspb.Message {
 
 export namespace VenmoAccountPayload {
   export type AsObject = {
-    venmoUserName: string,
-    holderName: string,
+    emailOrMobileNrOrUsername: string,
+  }
+}
+
+export class PayPalAccountPayload extends jspb.Message {
+  getEmailOrMobileNrOrUsername(): string;
+  setEmailOrMobileNrOrUsername(value: string): PayPalAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PayPalAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: PayPalAccountPayload): PayPalAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: PayPalAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PayPalAccountPayload;
+  static deserializeBinaryFromReader(message: PayPalAccountPayload, reader: jspb.BinaryReader): PayPalAccountPayload;
+}
+
+export namespace PayPalAccountPayload {
+  export type AsObject = {
+    emailOrMobileNrOrUsername: string,
   }
 }
 
@@ -4631,8 +4652,8 @@ export namespace PopmoneyAccountPayload {
 }
 
 export class RevolutAccountPayload extends jspb.Message {
-  getUserName(): string;
-  setUserName(value: string): RevolutAccountPayload;
+  getUsername(): string;
+  setUsername(value: string): RevolutAccountPayload;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): RevolutAccountPayload.AsObject;
@@ -4644,7 +4665,7 @@ export class RevolutAccountPayload extends jspb.Message {
 
 export namespace RevolutAccountPayload {
   export type AsObject = {
-    userName: string,
+    username: string,
   }
 }
 
@@ -7669,6 +7690,9 @@ export namespace PaymentAccountForm {
     PAY_BY_MAIL = 13,
     CASH_AT_ATM = 14,
     AUSTRALIA_PAYID = 15,
+    CASH_APP = 16,
+    PAYPAL = 17,
+    VENMO = 18,
   }
 }
 
@@ -7801,7 +7825,9 @@ export namespace PaymentAccountFormField {
     SPECIAL_INSTRUCTIONS = 54,
     STATE = 55,
     TRADE_CURRENCIES = 56,
-    USER_NAME = 57,
+    USERNAME = 57,
+    EMAIL_OR_MOBILE_NR_OR_USERNAME = 58,
+    EMAIL_OR_MOBILE_NR_OR_CASHTAG = 59,
   }
 
   export enum Component { 
