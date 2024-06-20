@@ -502,6 +502,7 @@ beforeAll(async () => {
     HavenoUtils.setLogLevel(TestConfig.logLevel);
 
     // initialize funding wallet
+    HavenoUtils.log(0, "Initializing funding wallet");
     await initFundingWallet();
     HavenoUtils.log(0, "Funding wallet balance: " + await fundingWallet.getBalance());
     HavenoUtils.log(0, "Funding wallet unlocked balance: " + await fundingWallet.getUnlockedBalance());
