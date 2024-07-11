@@ -1414,6 +1414,10 @@ test("Can post and remove an offer (CI, sanity check)", async () => {
   // offer is removed from my offers
   if (getOffer(await user1.getMyOffers(assetCode, OfferDirection.BUY), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in my offers after removal");
 
+  // peer does not see offer
+  await wait(TestConfig.trade.maxTimePeerNoticeMs);
+  if (getOffer(await user2.getOffers(assetCode, TestConfig.trade.direction), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in peer's offers after removed");
+
   // reserved balance released
   expect(BigInt((await user1.getBalances()).getAvailableBalance())).toEqual(availableBalanceBefore);
 
@@ -1430,6 +1434,10 @@ test("Can post and remove an offer (CI, sanity check)", async () => {
   offer = await user1.getMyOffer(offer.getId());
   assert.equal(offer.getState(), "AVAILABLE");
 
+  // peer sees offer
+  await wait(TestConfig.trade.maxTimePeerNoticeMs);
+  if (!getOffer(await user2.getOffers(assetCode, TestConfig.trade.direction), offer.getId())) throw new Error("Offer " + offer.getId() + " was not found in peer's offers after posted");
+
   // cancel offer
   await user1.removeOffer(offer.getId());
 
@@ -1438,6 +1446,10 @@ test("Can post and remove an offer (CI, sanity check)", async () => {
 
   // reserved balance released
   expect(BigInt((await user1.getBalances()).getAvailableBalance())).toEqual(availableBalanceBefore);
+
+  // peer does not see offer
+  await wait(TestConfig.trade.maxTimePeerNoticeMs);
+  if (getOffer(await user2.getOffers(assetCode, TestConfig.trade.direction), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in peer's offers after removed");
 });
 
 // TODO: provide number of confirmations in offer status
