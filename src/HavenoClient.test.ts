@@ -1642,6 +1642,7 @@ test("Can complete a trade within a range", async () => {
   const offerAmount = HavenoUtils.xmrToAtomicUnits(2);
   const offerMinAmount = HavenoUtils.xmrToAtomicUnits(.15);
   const tradeAmount = getRandomBigIntWithinRange(offerMinAmount, offerAmount);
+  const tradeStatisticsPre = await arbitrator.getTradeStatistics();
   await executeTrade({
     price: 142.23,
     offerAmount: offerAmount,
@@ -1653,6 +1654,9 @@ test("Can complete a trade within a range", async () => {
     assetCode: assetCode,
     testBalanceChangeEndToEnd: true
   });
+  const tradeStatisticsPost = await arbitrator.getTradeStatistics();
+  HavenoUtils.log(0, "Trade statistics size before/after trade: " + tradeStatisticsPre.length + "/" + tradeStatisticsPost.length);
+  assert(tradeStatisticsPost.length - tradeStatisticsPre.length === 1);
 });
 
 test("Can complete trades at the same time (CI, sanity check)", async () => {
@@ -2215,6 +2219,14 @@ test("Selects arbitrators which are online, registered, and least used", async (
     await releaseHavenoProcess(arbitrator2, true);
     throw err;
   }
+});
+
+test("Can get trade statistics", async () => {
+  const tradeStatisticsArbitrator = await arbitrator.getTradeStatistics();
+  const tradeStatisticsUser1 = await user1.getTradeStatistics();
+  const tradeStatisticsUser2 = await user2.getTradeStatistics();
+  HavenoUtils.log(0, "Trade statistics size (arb/u1/u2): " + tradeStatisticsArbitrator.length + "/" + tradeStatisticsUser1.length + "/" + tradeStatisticsUser2.length);
+  assert(tradeStatisticsArbitrator.length === tradeStatisticsUser1.length && tradeStatisticsUser1.length === tradeStatisticsUser2.length);
 });
 
 // ----------------------------- TEST HELPERS ---------------------------------
