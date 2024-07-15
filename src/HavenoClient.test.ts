@@ -2217,6 +2217,29 @@ test("Selects arbitrators which are online, registered, and least used", async (
   }
 });
 
+test("Do all trades contain role property", async () => {
+  if ((await user1.getTrades()).length === 0) { // ensure there is at least one trade available
+    await executeTrade({
+      price: 150,
+      offerAmount: HavenoUtils.xmrToAtomicUnits(1.0 + (Math.random() * 1.0)),
+      offerMinAmount: HavenoUtils.xmrToAtomicUnits(.15),
+      tradeAmount: HavenoUtils.xmrToAtomicUnits(.92),
+      reserveExactAmount: true,
+      testBalanceChangeEndToEnd: false
+    });
+  }
+  const trades = (await user1.getTrades()).concat(await user2.getTrades());
+  HavenoUtils.log(0, "Trades size: " + trades.length);
+  assert(trades.length > 0);
+  let anyRolesEmpty = false;
+  for (const trade of trades) {
+    const role = trade.getRole();
+    HavenoUtils.log(0, "Trade: " + trade.getShortId() + " role: " + role);
+    if (role.length === 0) anyRolesEmpty = true;
+  }
+  assert(!anyRolesEmpty);
+});
+
 // ----------------------------- TEST HELPERS ---------------------------------
 
 function getTradeContexts(numConfigs: number): TradeContext[] {
