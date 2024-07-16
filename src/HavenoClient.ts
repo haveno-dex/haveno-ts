@@ -1173,13 +1173,13 @@ export default class HavenoClient {
    * 
    * @param {string} tradeId - the id of the trade
    */
-     async completeTrade(tradeId: string): Promise<void> {
-      try {
-        await this._tradesClient.completeTrade(new CompleteTradeRequest().setTradeId(tradeId), {password: this._password});
-      } catch (e: any) {
-        throw new HavenoError(e.message, e.code);
-      }
+    async completeTrade(tradeId: string): Promise<void> {
+    try {
+      await this._tradesClient.completeTrade(new CompleteTradeRequest().setTradeId(tradeId), {password: this._password});
+    } catch (e: any) {
+      throw new HavenoError(e.message, e.code);
     }
+  }
 
   /**
    * Get all chat messages for a trade.
