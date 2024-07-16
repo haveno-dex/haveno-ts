@@ -2217,29 +2217,6 @@ test("Selects arbitrators which are online, registered, and least used", async (
   }
 });
 
-test("Do all trades contain role property", async () => {
-  if ((await user1.getTrades()).length === 0) { // ensure there is at least one trade available
-    await executeTrade({
-      price: 150,
-      offerAmount: HavenoUtils.xmrToAtomicUnits(1.0 + (Math.random() * 1.0)),
-      offerMinAmount: HavenoUtils.xmrToAtomicUnits(.15),
-      tradeAmount: HavenoUtils.xmrToAtomicUnits(.92),
-      reserveExactAmount: true,
-      testBalanceChangeEndToEnd: false
-    });
-  }
-  const trades = (await user1.getTrades()).concat(await user2.getTrades());
-  HavenoUtils.log(0, "Trades size: " + trades.length);
-  assert(trades.length > 0);
-  let anyRolesEmpty = false;
-  for (const trade of trades) {
-    const role = trade.getRole();
-    HavenoUtils.log(0, "Trade: " + trade.getShortId() + " role: " + role);
-    if (role.length === 0) anyRolesEmpty = true;
-  }
-  assert(!anyRolesEmpty);
-});
-
 // ----------------------------- TEST HELPERS ---------------------------------
 
 function getTradeContexts(numConfigs: number): TradeContext[] {
@@ -2623,6 +2600,11 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
       ctx.taker.balancesAfterPayout = await ctx.taker.havenod?.getBalances();
     }
 
+    const trades = (await user1.getTrades()).concat(await user2.getTrades());
+    const tradesForThisOffer = trades.filter( (x) => x.getTradeId() === ctx.offerId);
+    for (const trade of tradesForThisOffer) HavenoUtils.log(0, "TradeInfo received from getTrades: " + trade.getShortId() + " role: " + trade.getRole());
+    for (const trade of tradesForThisOffer) testTrade(trade, ctx);
+
     // test balances after payout tx unless other trades can interfere
     if (ctx.isStopped) return ctx.offerId!;
     if (!ctx.concurrentTrades) await testAmountsAfterComplete(ctx);
@@ -2839,6 +2821,7 @@ async function takeOffer(ctxP: Partial<TradeContext>): Promise<TradeInfo> {
   }
 
   // test trade model
+  HavenoUtils.log(0, "TradeInfo received from havenod.takeOffer: " + trade.getShortId() + " role: " + trade.getRole());
   await testTrade(trade, ctx);
 
   // test buyer and seller balances after offer taken
@@ -2899,6 +2882,13 @@ async function testTrade(trade: TradeInfo, ctx: TradeContext) {
   const expectedSecurityDeposit = HavenoUtils.max(HavenoUtils.xmrToAtomicUnits(.1), HavenoUtils.multiply(ctx.tradeAmount!, ctx.securityDepositPct!));
   expect(BigInt(trade.getBuyerSecurityDeposit())).toEqual(expectedSecurityDeposit - ctx.getBuyer().depositTxFee);
   expect(BigInt(trade.getSellerSecurityDeposit())).toEqual(expectedSecurityDeposit - ctx.getSeller().depositTxFee);
+
+  HavenoUtils.log(0, "Trade: " + trade.getShortId() + " role: " + trade.getRole());
+  expect(trade.getRole().length > 0);
+  if (ctx.isBuyerMaker() && trade.getOffer().isMyOffer) assert.equal(trade.getRole(), "XMR buyer as maker");
+  if (ctx.isBuyerMaker() && !trade.getOffer().isMyOffer) assert.equal(trade.getRole(), "XMR seller as taker");
+  if (!ctx.isBuyerMaker() && trade.getOffer().isMyOffer) assert.equal(trade.getRole(), "XMR seller as maker");
+  if (!ctx.isBuyerMaker() && !trade.getOffer().isMyOffer) assert.equal(trade.getRole(), "XMR buyer as taker");
 
   // TODO: test more fields
 }
