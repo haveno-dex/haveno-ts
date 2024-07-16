@@ -1328,6 +1328,17 @@ test("Can create fiat payment accounts (CI)", async () => {
     }
   }
   assert(found, "Payment account not found after adding");
+
+  // delete payment account
+  await user1.deletePaymentAccount(fiatAccount.getId());
+
+  // no longer has payment account
+  try {
+    await user1.getPaymentAccount(fiatAccount.getId());
+    throw new Error("Should have thrown error getting deleted payment account");
+  } catch (err: any) {
+    if (err.message.indexOf("Should have thrown") >= 0) throw err;
+  }
 });
 
 test("Can create crypto payment accounts (CI)", async () => {
@@ -1352,6 +1363,17 @@ test("Can create crypto payment accounts (CI)", async () => {
     if (!fetchedAccount) throw new Error("Payment account not found after being added");
     testCryptoPaymentAccount(paymentAccount);
     testCryptoPaymentAccountEquals(fetchedAccount, testAccount, name);
+
+    // delete payment account
+    await user1.deletePaymentAccount(paymentAccount.getId());
+
+    // no longer has payment account
+    try {
+      await user1.getPaymentAccount(paymentAccount.getId());
+      throw new Error("Should have thrown error getting deleted payment account");
+    } catch (err: any) {
+      if (err.message.indexOf("Should have thrown") >= 0) throw err;
+    }
   }
 
   // test invalid currency code
