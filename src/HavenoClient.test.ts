@@ -2824,7 +2824,7 @@ async function takeOffer(ctxP: Partial<TradeContext>): Promise<TradeInfo> {
   expect(tradeNotifications[0].getTitle()).toEqual("Offer Taken");
   expect(tradeNotifications[0].getMessage()).toEqual("Your offer " + ctx.offerId + " has been accepted");
 
-  // record context after offer taken, once
+  // set context after offer taken, once
   if (ctx.getBuyer().balancesAfterTake === undefined) {
 
     // wait to observe deposit txs
@@ -2884,32 +2884,25 @@ async function takeOffer(ctxP: Partial<TradeContext>): Promise<TradeInfo> {
     expect(takerBalanceDiffReservedOffer).toEqual(0n);
   }
 
-  // maker is notified of balance change
+  // test getting trade for all parties
+  await testGetTrade(ctx);
 
-  // taker can get trade
-  let fetchedTrade: TradeInfo = await ctx.taker.havenod!.getTrade(trade.getTradeId());
-  await testTrade(fetchedTrade, ctx);
-  assert(moneroTs.GenUtils.arrayContains(["DEPOSITS_PUBLISHED", "DEPOSITS_CONFIRMED", "DEPOSITS_UNLOCKED"], fetchedTrade.getPhase()), "Unexpected trade phase: " + fetchedTrade.getPhase());
-  // TODO: more fetched trade tests
-  
   // market-priced offer amounts are unadjusted, fixed-priced offer amounts are adjusted (e.g. cash at atm is $10 increments)
   // TODO: adjustments are based on payment method, not fixed-price
-  if (fetchedTrade.getOffer()!.getUseMarketBasedPrice()) {
-    assert.equal(ctx.tradeAmount, BigInt(fetchedTrade.getAmount()));
+  if (trade.getOffer()!.getUseMarketBasedPrice()) {
+    assert.equal(ctx.tradeAmount, BigInt(trade.getAmount()));
   } else {
-    expect(Math.abs(HavenoUtils.percentageDiff(ctx.tradeAmount!, BigInt(fetchedTrade.getAmount())))).toBeLessThan(TestConfig.maxAdjustmentPct);
+    expect(Math.abs(HavenoUtils.percentageDiff(ctx.tradeAmount!, BigInt(trade.getAmount())))).toBeLessThan(TestConfig.maxAdjustmentPct);
   }
+
+  // maker is notified of balance change
 
   // taker is notified of balance change
 
-  // maker can get trade
-  fetchedTrade = await ctx.maker.havenod!.getTrade(trade.getTradeId());
-  await testTrade(fetchedTrade, ctx);
-  assert(moneroTs.GenUtils.arrayContains(["DEPOSITS_PUBLISHED", "DEPOSITS_CONFIRMED", "DEPOSITS_UNLOCKED"], fetchedTrade.getPhase()), "Unexpected trade phase: " + fetchedTrade.getPhase());
   return trade;
 }
 
-async function testTrade(trade: TradeInfo, ctx: TradeContext) {
+async function testTrade(trade: TradeInfo, ctx: TradeContext, havenod?: HavenoClient): Promise<void> {
   expect(BigInt(trade.getAmount())).toEqual(ctx!.tradeAmount);
 
   // test security deposit = max(.1, trade amount * security deposit pct)
@@ -2917,7 +2910,32 @@ async function testTrade(trade: TradeInfo, ctx: TradeContext) {
   expect(BigInt(trade.getBuyerSecurityDeposit())).toEqual(expectedSecurityDeposit - ctx.getBuyer().depositTxFee);
   expect(BigInt(trade.getSellerSecurityDeposit())).toEqual(expectedSecurityDeposit - ctx.getSeller().depositTxFee);
 
+  // test phase
+  if (!ctx.isPaymentSent) {
+    assert(moneroTs.GenUtils.arrayContains(["DEPOSITS_PUBLISHED", "DEPOSITS_CONFIRMED", "DEPOSITS_UNLOCKED"], trade.getPhase()), "Unexpected trade phase: " + trade.getPhase());
+  }
+
+  // test role
+  const role = trade.getRole();
+  assert(role.length > 0); // TODO: test role string based on context
+
+
   // TODO: test more fields
+}
+
+async function testGetTrade(ctx: TradeContext, havenod?: HavenoClient): Promise<void> {
+  if (havenod) {
+    const trade = await havenod.getTrade(ctx.offerId!);
+    await testTrade(trade, ctx);
+    const trades = await havenod.getTrades();
+    const foundTrade = trades.find((trade) => trade.getTradeId() === ctx.offerId);
+    assert(foundTrade);
+    await testTrade(foundTrade, ctx, havenod);
+  } else {
+    await testGetTrade(ctx, ctx.maker.havenod);
+    await testGetTrade(ctx, ctx.taker.havenod);
+    await testGetTrade(ctx, ctx.arbitrator.havenod);
+  }
 }
 
 async function testOpenDispute(ctxP: Partial<TradeContext>) {
