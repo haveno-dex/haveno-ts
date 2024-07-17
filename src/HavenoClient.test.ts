@@ -1497,11 +1497,11 @@ test("Can schedule offers with locked funds (CI)", async () => {
     const direction = OfferDirection.BUY;
     const ctx = new TradeContext({maker: {havenod: user3}, assetCode: assetCode, direction: direction, awaitFundsToMakeOffer: false, reserveExactAmount: true});
     let offer: OfferInfo = await makeOffer(ctx);
-    assert.equal(offer.getState(), "SCHEDULED");
+    assert.equal(offer.getState(), "PENDING");
 
     // has offer
     offer = await user3.getMyOffer(offer.getId());
-    assert.equal(offer.getState(), "SCHEDULED");
+    assert.equal(offer.getState(), "PENDING");
 
     // balances unchanged
     expect(BigInt((await user3.getBalances()).getPendingBalance())).toEqual(outputAmt * 2n);
@@ -1521,7 +1521,7 @@ test("Can schedule offers with locked funds (CI)", async () => {
 
     // schedule offer
     offer = await makeOffer({maker: {havenod: user3}, assetCode: assetCode, direction: direction, awaitFundsToMakeOffer: false, reserveExactAmount: true});
-    assert.equal(offer.getState(), "SCHEDULED");
+    assert.equal(offer.getState(), "PENDING");
 
     // peer does not see offer because it's scheduled
     await wait(TestConfig.trade.maxTimePeerNoticeMs);
@@ -1541,7 +1541,7 @@ test("Can schedule offers with locked funds (CI)", async () => {
     // awaiting split output
     await waitForAvailableBalance(outputAmt, user3);
     offer = await user3.getMyOffer(offer.getId());
-    assert.equal(offer.getState(), "SCHEDULED");
+    assert.equal(offer.getState(), "PENDING");
 
     // stop user3
     user3Config = {appName: user3.getAppName()};
@@ -1750,17 +1750,17 @@ test("Can go offline while completing a trade (CI, sanity check)", async () => {
     HavenoUtils.log(1, "Starting trader processes");
     traders = await initHavenos(2);
 
+    // fund traders
+    HavenoUtils.log(1, "Funding traders");
+    const tradeAmount = 250000000000n;
+    await waitForAvailableBalance(tradeAmount * 2n, ...traders);
+
     // create trade config
     ctx.maker.havenod = traders[0];
     ctx.taker.havenod = traders[1];
     ctx.buyerOfflineAfterTake = true;
     ctx.sellerOfflineAfterTake = true;
     ctx.buyerOfflineAfterPaymentSent = true;
-
-    // fund traders
-    HavenoUtils.log(1, "Funding traders");
-    const tradeAmount = 250000000000n;
-    await waitForAvailableBalance(tradeAmount * 2n, ...traders);
 
     // execute trade
     await executeTrade(ctx);
@@ -2353,7 +2353,7 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
     if (ctx.isStopped) return ctx.offerId!;
     if (makingOffer) {
       ctx.offer = await makeOffer(ctx);
-      expect(ctx.offer.getState()).toEqual(ctx.reserveExactAmount ? "SCHEDULED" : "AVAILABLE");
+      expect(ctx.offer.getState()).toEqual(ctx.reserveExactAmount ? "PENDING" : "AVAILABLE");
       ctx.offerId = ctx.offer.getId();
       await wait(ctx.maxTimePeerNoticeMs);
     } else {
@@ -2757,7 +2757,7 @@ async function makeOffer(ctxP?: Partial<TradeContext>): Promise<OfferInfo> {
 
   // unlocked balance has decreased
   let unlockedBalanceAfter = BigInt((await ctx.maker.havenod!.getBalances()).getAvailableBalance());
-  if (offer.getState() === "SCHEDULED") {
+  if (offer.getState() === "PENDING") {
     if (!ctx.reserveExactAmount && unlockedBalanceAfter !== unlockedBalanceBefore) throw new Error("Unlocked balance should not change for scheduled offer " + offer.getId());
   } else if (offer.getState() === "AVAILABLE") {
     if (unlockedBalanceAfter === unlockedBalanceBefore) {
