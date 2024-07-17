@@ -1660,12 +1660,14 @@ test("Can complete a trade within a range", async () => {
   let makerPaymentAccount = await createPaymentAccount(user1, assetCode, paymentMethodId); // TODO: support getPaymentAccount() which gets or creates
   let takerPaymentAccount = await createPaymentAccount(user2, assetCode, paymentMethodId);
 
+  // get trade statistics before
+  const tradeStatisticsPre = await arbitrator.getTradeStatistics();
+
   // execute trade
   const offerAmount = HavenoUtils.xmrToAtomicUnits(2);
   const offerMinAmount = HavenoUtils.xmrToAtomicUnits(.15);
   const tradeAmount = getRandomBigIntWithinRange(offerMinAmount, offerAmount);
-  const tradeStatisticsPre = await arbitrator.getTradeStatistics();
-  await executeTrade({
+  const ctx: Partial<TradeContext> = {
     price: 142.23,
     offerAmount: offerAmount,
     offerMinAmount: offerMinAmount,
@@ -1675,10 +1677,14 @@ test("Can complete a trade within a range", async () => {
     takerPaymentAccountId: takerPaymentAccount.getId(),
     assetCode: assetCode,
     testBalanceChangeEndToEnd: true
-  });
-  const tradeStatisticsPost = await arbitrator.getTradeStatistics();
-  HavenoUtils.log(0, "Trade statistics size before/after trade: " + tradeStatisticsPre.length + "/" + tradeStatisticsPost.length);
-  assert(tradeStatisticsPost.length - tradeStatisticsPre.length === 1);
+  }
+  await executeTrade(ctx);
+
+  // test trade statistics after
+  if (ctx.buyerSendsPayment && ctx.sellerReceivesPayment) {
+    const tradeStatisticsPost = await arbitrator.getTradeStatistics();
+    assert(tradeStatisticsPost.length - tradeStatisticsPre.length === 1);
+  }
 });
 
 test("Can complete trades at the same time (CI, sanity check)", async () => {
