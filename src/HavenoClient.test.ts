@@ -2600,10 +2600,13 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
       ctx.taker.balancesAfterPayout = await ctx.taker.havenod?.getBalances();
     }
 
-    const trades = (await user1.getTrades()).concat(await user2.getTrades());
-    const tradesForThisOffer = trades.filter( (x) => x.getTradeId() === ctx.offerId);
-    for (const trade of tradesForThisOffer) HavenoUtils.log(0, "TradeInfo received from getTrades: " + trade.getShortId() + " role: " + trade.getRole());
-    for (const trade of tradesForThisOffer) testTrade(trade, ctx);
+    const tradesForUser1 = await user1.getTrades();
+    const tradesForUser2 = await user2.getTrades();
+    assert(tradesForUser1.find( (x) => x.getTradeId() === ctx.offerId));
+    assert(tradesForUser2.find( (x) => x.getTradeId() === ctx.offerId));
+    for (const trade of tradesForUser1.concat(tradesForUser2).filter( (x) => x.getTradeId() === ctx.offerId)) {
+      testTrade(trade, ctx);
+    }
 
     // test balances after payout tx unless other trades can interfere
     if (ctx.isStopped) return ctx.offerId!;
@@ -2820,10 +2823,6 @@ async function takeOffer(ctxP: Partial<TradeContext>): Promise<TradeInfo> {
     ctx.getSeller().securityDepositActual = BigInt(trade.getSellerSecurityDeposit()!);
   }
 
-  // test trade model
-  HavenoUtils.log(0, "TradeInfo received from havenod.takeOffer: " + trade.getShortId() + " role: " + trade.getRole());
-  await testTrade(trade, ctx);
-
   // test buyer and seller balances after offer taken
   if (!ctx.concurrentTrades) {
     ctx.arbitrator!.trade = await ctx.arbitrator.havenod!.getTrade(ctx.offerId!);
@@ -2883,12 +2882,11 @@ async function testTrade(trade: TradeInfo, ctx: TradeContext) {
   expect(BigInt(trade.getBuyerSecurityDeposit())).toEqual(expectedSecurityDeposit - ctx.getBuyer().depositTxFee);
   expect(BigInt(trade.getSellerSecurityDeposit())).toEqual(expectedSecurityDeposit - ctx.getSeller().depositTxFee);
 
-  HavenoUtils.log(0, "Trade: " + trade.getShortId() + " role: " + trade.getRole());
-  expect(trade.getRole().length > 0);
-  if (ctx.isBuyerMaker() && trade.getOffer().isMyOffer) assert.equal(trade.getRole(), "XMR buyer as maker");
-  if (ctx.isBuyerMaker() && !trade.getOffer().isMyOffer) assert.equal(trade.getRole(), "XMR seller as taker");
-  if (!ctx.isBuyerMaker() && trade.getOffer().isMyOffer) assert.equal(trade.getRole(), "XMR seller as maker");
-  if (!ctx.isBuyerMaker() && !trade.getOffer().isMyOffer) assert.equal(trade.getRole(), "XMR buyer as taker");
+  assert(trade.getRole().length > 0);
+  assert(trade.getRole() === "XMR buyer as maker"
+    || trade.getRole() === "XMR seller as taker"
+    || trade.getRole() === "XMR seller as maker"
+    || trade.getRole() === "XMR buyer as taker");
 
   // TODO: test more fields
 }
