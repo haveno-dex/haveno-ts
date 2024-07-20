@@ -4561,6 +4561,9 @@ export class CashAppAccountPayload extends jspb.Message {
   getEmailOrMobileNrOrCashtag(): string;
   setEmailOrMobileNrOrCashtag(value: string): CashAppAccountPayload;
 
+  getExtraInfo(): string;
+  setExtraInfo(value: string): CashAppAccountPayload;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): CashAppAccountPayload.AsObject;
   static toObject(includeInstance: boolean, msg: CashAppAccountPayload): CashAppAccountPayload.AsObject;
@@ -4572,6 +4575,7 @@ export class CashAppAccountPayload extends jspb.Message {
 export namespace CashAppAccountPayload {
   export type AsObject = {
     emailOrMobileNrOrCashtag: string,
+    extraInfo: string,
   }
 }
 
@@ -4615,6 +4619,9 @@ export class PayPalAccountPayload extends jspb.Message {
   getEmailOrMobileNrOrUsername(): string;
   setEmailOrMobileNrOrUsername(value: string): PayPalAccountPayload;
 
+  getExtraInfo(): string;
+  setExtraInfo(value: string): PayPalAccountPayload;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PayPalAccountPayload.AsObject;
   static toObject(includeInstance: boolean, msg: PayPalAccountPayload): PayPalAccountPayload.AsObject;
@@ -4626,6 +4633,7 @@ export class PayPalAccountPayload extends jspb.Message {
 export namespace PayPalAccountPayload {
   export type AsObject = {
     emailOrMobileNrOrUsername: string,
+    extraInfo: string,
   }
 }
 
@@ -6009,7 +6017,7 @@ export namespace OpenOffer {
 
   export enum State { 
     PB_ERROR = 0,
-    SCHEDULED = 1,
+    PENDING = 1,
     AVAILABLE = 2,
     RESERVED = 3,
     CLOSED = 4,

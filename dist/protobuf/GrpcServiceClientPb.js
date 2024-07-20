@@ -638,6 +638,9 @@ class PaymentAccountsClient {
         this.methodDescriptorCreateCryptoCurrencyPaymentAccount = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.PaymentAccounts/CreateCryptoCurrencyPaymentAccount', grpcWeb.MethodType.UNARY, grpc_pb.CreateCryptoCurrencyPaymentAccountRequest, grpc_pb.CreateCryptoCurrencyPaymentAccountReply, (request) => {
             return request.serializeBinary();
         }, grpc_pb.CreateCryptoCurrencyPaymentAccountReply.deserializeBinary);
+        this.methodDescriptorDeletePaymentAccount = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.PaymentAccounts/DeletePaymentAccount', grpcWeb.MethodType.UNARY, grpc_pb.DeletePaymentAccountRequest, grpc_pb.DeletePaymentAccountReply, (request) => {
+            return request.serializeBinary();
+        }, grpc_pb.DeletePaymentAccountReply.deserializeBinary);
         this.methodDescriptorGetCryptoCurrencyPaymentMethods = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.PaymentAccounts/GetCryptoCurrencyPaymentMethods', grpcWeb.MethodType.UNARY, grpc_pb.GetCryptoCurrencyPaymentMethodsRequest, grpc_pb.GetCryptoCurrencyPaymentMethodsReply, (request) => {
             return request.serializeBinary();
         }, grpc_pb.GetCryptoCurrencyPaymentMethodsReply.deserializeBinary);
@@ -701,6 +704,14 @@ class PaymentAccountsClient {
         }
         return this.client_.unaryCall(this.hostname_ +
             '/io.haveno.protobuffer.PaymentAccounts/CreateCryptoCurrencyPaymentAccount', request, metadata || {}, this.methodDescriptorCreateCryptoCurrencyPaymentAccount);
+    }
+    deletePaymentAccount(request, metadata, callback) {
+        if (callback !== undefined) {
+            return this.client_.rpcCall(this.hostname_ +
+                '/io.haveno.protobuffer.PaymentAccounts/DeletePaymentAccount', request, metadata || {}, this.methodDescriptorDeletePaymentAccount, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/io.haveno.protobuffer.PaymentAccounts/DeletePaymentAccount', request, metadata || {}, this.methodDescriptorDeletePaymentAccount);
     }
     getCryptoCurrencyPaymentMethods(request, metadata, callback) {
         if (callback !== undefined) {
