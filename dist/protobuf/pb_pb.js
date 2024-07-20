@@ -38727,7 +38727,8 @@ proto.io.haveno.protobuffer.CashAppAccountPayload.prototype.toObject = function(
  */
 proto.io.haveno.protobuffer.CashAppAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    emailOrMobileNrOrCashtag: jspb.Message.getFieldWithDefault(msg, 1, "")
+    emailOrMobileNrOrCashtag: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    extraInfo: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -38768,6 +38769,10 @@ proto.io.haveno.protobuffer.CashAppAccountPayload.deserializeBinaryFromReader = 
       var value = /** @type {string} */ (reader.readString());
       msg.setEmailOrMobileNrOrCashtag(value);
       break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setExtraInfo(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -38804,6 +38809,13 @@ proto.io.haveno.protobuffer.CashAppAccountPayload.serializeBinaryToWriter = func
       f
     );
   }
+  f = message.getExtraInfo();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
 };
 
 
@@ -38822,6 +38834,24 @@ proto.io.haveno.protobuffer.CashAppAccountPayload.prototype.getEmailOrMobileNrOr
  */
 proto.io.haveno.protobuffer.CashAppAccountPayload.prototype.setEmailOrMobileNrOrCashtag = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional string extra_info = 2;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.CashAppAccountPayload.prototype.getExtraInfo = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.CashAppAccountPayload} returns this
+ */
+proto.io.haveno.protobuffer.CashAppAccountPayload.prototype.setExtraInfo = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
@@ -39117,7 +39147,8 @@ proto.io.haveno.protobuffer.PayPalAccountPayload.prototype.toObject = function(o
  */
 proto.io.haveno.protobuffer.PayPalAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    emailOrMobileNrOrUsername: jspb.Message.getFieldWithDefault(msg, 1, "")
+    emailOrMobileNrOrUsername: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    extraInfo: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -39158,6 +39189,10 @@ proto.io.haveno.protobuffer.PayPalAccountPayload.deserializeBinaryFromReader = f
       var value = /** @type {string} */ (reader.readString());
       msg.setEmailOrMobileNrOrUsername(value);
       break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setExtraInfo(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -39194,6 +39229,13 @@ proto.io.haveno.protobuffer.PayPalAccountPayload.serializeBinaryToWriter = funct
       f
     );
   }
+  f = message.getExtraInfo();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
 };
 
 
@@ -39212,6 +39254,24 @@ proto.io.haveno.protobuffer.PayPalAccountPayload.prototype.getEmailOrMobileNrOrU
  */
 proto.io.haveno.protobuffer.PayPalAccountPayload.prototype.setEmailOrMobileNrOrUsername = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional string extra_info = 2;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.PayPalAccountPayload.prototype.getExtraInfo = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.PayPalAccountPayload} returns this
+ */
+proto.io.haveno.protobuffer.PayPalAccountPayload.prototype.setExtraInfo = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
@@ -49078,7 +49138,7 @@ proto.io.haveno.protobuffer.OpenOffer.serializeBinaryToWriter = function(message
  */
 proto.io.haveno.protobuffer.OpenOffer.State = {
   PB_ERROR: 0,
-  SCHEDULED: 1,
+  PENDING: 1,
   AVAILABLE: 2,
   RESERVED: 3,
   CLOSED: 4,
