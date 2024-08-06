@@ -1014,7 +1014,7 @@ test("Has a Monero wallet (CI)", async () => {
   // relay withdraw tx
   const txHash = await user1.relayXmrTx(tx.getMetadata());
   expect(txHash.length).toEqual(64);
-  await wait(TestConfig.trade.maxTimePeerNoticeMs); // TODO: this is necessary for wallets with many subaddresses so something is async
+  await wait(TestConfig.trade.walletSyncPeriodMs * 2); // wait for wallet to sync relayed tx
 
   // balances decreased
   const balancesAfter = await user1.getBalances();
