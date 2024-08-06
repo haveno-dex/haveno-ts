@@ -336,7 +336,7 @@ class TradeContext {
       if (this.payoutTxId) {
         str += "\nPayout fee: " + (await monerod.getTx(this.payoutTxId!)).getFee()!;
         if (this.getBuyer().havenod) str += "\nBuyer payout: " + (await this.getBuyer().havenod!.getXmrTx(this.payoutTxId!))?.getIncomingTransfersList()[0].getAmount()!;
-        if (this.getSeller().havenod) str += "\nSeller payout: " + (await this.getSeller().havenod!.getXmrTx(this.payoutTxId!))!.getIncomingTransfersList()[0].getAmount()!;
+        if (this.getSeller().havenod) str += "\nSeller payout: " + (await this.getSeller().havenod!.getXmrTx(this.payoutTxId!))?.getIncomingTransfersList()[0].getAmount()!;
       }
     }
     str += "\nOffer json: " + JSON.stringify(this.offer?.toObject());
@@ -3037,8 +3037,15 @@ async function testOpenDispute(ctxP: Partial<TradeContext>) {
     let dispute = await ctx.getDisputeOpener()!.havenod!.getDispute(ctx.offerId!);
     let messages = dispute.getChatMessageList();
     expect(messages.length).toBeGreaterThanOrEqual(3); // last messages are chat, first messages are system message and possibly DisputeOpenedMessage acks
-    expect(messages[messages.length - 2].getMessage()).toEqual("Arbitrator chat message to dispute opener");
-    expect(messages[messages.length - 1].getMessage()).toEqual("Dispute opener chat message");
+    try {
+      expect(messages[messages.length - 2].getMessage()).toEqual("Arbitrator chat message to dispute opener");
+      expect(messages[messages.length - 1].getMessage()).toEqual("Dispute opener chat message");
+    } catch (err) {
+      console.log("Dispute peer chat messages length: " + messages.length);
+      console.log("Dispute peer chat messages : " + JSON.stringify(messages));
+      throw err;
+    }
+
     let attachments = messages[messages.length - 1].getAttachmentsList();
     expect(attachments.length).toEqual(2);
     expect(attachments[0].getFileName()).toEqual("proof.txt");
@@ -3048,8 +3055,14 @@ async function testOpenDispute(ctxP: Partial<TradeContext>) {
     dispute = await ctx.getDisputePeer()!.havenod!.getDispute(ctx.offerId!);
     messages = dispute.getChatMessageList();
     expect(messages.length).toBeGreaterThanOrEqual(3);
-    expect(messages[messages.length - 2].getMessage()).toEqual("Arbitrator chat message to dispute peer");
-    expect(messages[messages.length - 1].getMessage()).toEqual("Dispute peer chat message");
+    try {
+      expect(messages[messages.length - 2].getMessage()).toEqual("Arbitrator chat message to dispute peer");
+      expect(messages[messages.length - 1].getMessage()).toEqual("Dispute peer chat message");
+    } catch (err) {
+      console.log("Dispute peer chat messages length: " + messages.length);
+      console.log("Dispute peer chat messages : " + JSON.stringify(messages));
+      throw err;
+    }
 
     // test notifications of chat messages
     let chatNotifications = getNotifications(disputeOpenerNotifications, NotificationMessage.NotificationType.CHAT_MESSAGE, ctx.offerId);
