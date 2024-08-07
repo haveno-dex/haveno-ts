@@ -1963,6 +1963,38 @@ export namespace CreateCryptoCurrencyPaymentAccountRequest {
   }
 }
 
+export class DeletePaymentAccountRequest extends jspb.Message {
+  getPaymentAccountId(): string;
+  setPaymentAccountId(value: string): DeletePaymentAccountRequest;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): DeletePaymentAccountRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: DeletePaymentAccountRequest): DeletePaymentAccountRequest.AsObject;
+  static serializeBinaryToWriter(message: DeletePaymentAccountRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): DeletePaymentAccountRequest;
+  static deserializeBinaryFromReader(message: DeletePaymentAccountRequest, reader: jspb.BinaryReader): DeletePaymentAccountRequest;
+}
+
+export namespace DeletePaymentAccountRequest {
+  export type AsObject = {
+    paymentAccountId: string,
+  }
+}
+
+export class DeletePaymentAccountReply extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): DeletePaymentAccountReply.AsObject;
+  static toObject(includeInstance: boolean, msg: DeletePaymentAccountReply): DeletePaymentAccountReply.AsObject;
+  static serializeBinaryToWriter(message: DeletePaymentAccountReply, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): DeletePaymentAccountReply;
+  static deserializeBinaryFromReader(message: DeletePaymentAccountReply, reader: jspb.BinaryReader): DeletePaymentAccountReply;
+}
+
+export namespace DeletePaymentAccountReply {
+  export type AsObject = {
+  }
+}
+
 export class CreateCryptoCurrencyPaymentAccountReply extends jspb.Message {
   getPaymentAccount(): pb_pb.PaymentAccount | undefined;
   setPaymentAccount(value?: pb_pb.PaymentAccount): CreateCryptoCurrencyPaymentAccountReply;

@@ -296,6 +296,9 @@ export declare class PaymentAccountsClient {
     methodDescriptorCreateCryptoCurrencyPaymentAccount: grpcWeb.MethodDescriptor<grpc_pb.CreateCryptoCurrencyPaymentAccountRequest, grpc_pb.CreateCryptoCurrencyPaymentAccountReply>;
     createCryptoCurrencyPaymentAccount(request: grpc_pb.CreateCryptoCurrencyPaymentAccountRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.CreateCryptoCurrencyPaymentAccountReply>;
     createCryptoCurrencyPaymentAccount(request: grpc_pb.CreateCryptoCurrencyPaymentAccountRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.CreateCryptoCurrencyPaymentAccountReply) => void): grpcWeb.ClientReadableStream<grpc_pb.CreateCryptoCurrencyPaymentAccountReply>;
+    methodDescriptorDeletePaymentAccount: grpcWeb.MethodDescriptor<grpc_pb.DeletePaymentAccountRequest, grpc_pb.DeletePaymentAccountReply>;
+    deletePaymentAccount(request: grpc_pb.DeletePaymentAccountRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.DeletePaymentAccountReply>;
+    deletePaymentAccount(request: grpc_pb.DeletePaymentAccountRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.DeletePaymentAccountReply) => void): grpcWeb.ClientReadableStream<grpc_pb.DeletePaymentAccountReply>;
     methodDescriptorGetCryptoCurrencyPaymentMethods: grpcWeb.MethodDescriptor<grpc_pb.GetCryptoCurrencyPaymentMethodsRequest, grpc_pb.GetCryptoCurrencyPaymentMethodsReply>;
     getCryptoCurrencyPaymentMethods(request: grpc_pb.GetCryptoCurrencyPaymentMethodsRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.GetCryptoCurrencyPaymentMethodsReply>;
     getCryptoCurrencyPaymentMethods(request: grpc_pb.GetCryptoCurrencyPaymentMethodsRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.GetCryptoCurrencyPaymentMethodsReply) => void): grpcWeb.ClientReadableStream<grpc_pb.GetCryptoCurrencyPaymentMethodsReply>;

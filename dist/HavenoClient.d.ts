@@ -1,12 +1,13 @@
 import type * as grpcWeb from "grpc-web";
-import { GetVersionClient, AccountClient, XmrConnectionsClient, DisputesClient, DisputeAgentsClient, NotificationsClient, WalletsClient, PriceClient, OffersClient, PaymentAccountsClient, TradesClient, ShutdownServerClient, XmrNodeClient } from './protobuf/GrpcServiceClientPb';
+import { GetTradeStatisticsClient, GetVersionClient, AccountClient, XmrConnectionsClient, DisputesClient, DisputeAgentsClient, NotificationsClient, WalletsClient, PriceClient, OffersClient, PaymentAccountsClient, TradesClient, ShutdownServerClient, XmrNodeClient } from './protobuf/GrpcServiceClientPb';
 import { MarketPriceInfo, MarketDepthInfo, XmrBalanceInfo, OfferInfo, TradeInfo, XmrTx, XmrDestination, NotificationMessage, UrlConnection } from "./protobuf/grpc_pb";
-import { OfferDirection, PaymentMethod, PaymentAccountForm, PaymentAccountFormField, PaymentAccount, PaymentAccountPayload, Attachment, DisputeResult, Dispute, ChatMessage, XmrNodeSettings } from "./protobuf/pb_pb";
+import { TradeStatistics3, OfferDirection, PaymentMethod, PaymentAccountForm, PaymentAccountFormField, PaymentAccount, PaymentAccountPayload, Attachment, DisputeResult, Dispute, ChatMessage, XmrNodeSettings } from "./protobuf/pb_pb";
 /**
  * Haveno daemon client.
  */
 export default class HavenoClient {
     /** @private */ _appName: string | undefined;
+    /** @private */ _getTradeStatisticsClient: GetTradeStatisticsClient;
     /** @private */ _getVersionClient: GetVersionClient;
     /** @private */ _disputeAgentsClient: DisputeAgentsClient;
     /** @private */ _disputesClient: DisputesClient;
@@ -389,6 +390,12 @@ export default class HavenoClient {
      */
     createCryptoPaymentAccount(accountName: string, assetCode: string, address: string): Promise<PaymentAccount>;
     /**
+     * Delete a payment account.
+     *
+     * @param paymentAccountId {string} the id of the payment account to delete
+     */
+    deletePaymentAccount(paymentAccountId: string): Promise<void>;
+    /**
      * Get available offers to buy or sell XMR.
      *
      * @param {string} assetCode - traded asset code
@@ -449,6 +456,12 @@ export default class HavenoClient {
      * @return {TradeInfo} the trade with the given id
      */
     getTrade(tradeId: string): Promise<TradeInfo>;
+    /**
+     * Get all trade statistics.
+     *
+     * @return {TradeStatistics3[]} all user trades
+     */
+    getTradeStatistics(): Promise<TradeStatistics3[]>;
     /**
      * Get all trades.
      *

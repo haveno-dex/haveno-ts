@@ -58,6 +58,7 @@ class HavenoClient {
         HavenoUtils_1.default.log(2, "Creating Haveno client connected to " + url);
         this._url = url;
         this._password = password;
+        this._getTradeStatisticsClient = new GrpcServiceClientPb_1.GetTradeStatisticsClient(this._url);
         this._getVersionClient = new GrpcServiceClientPb_1.GetVersionClient(this._url);
         this._accountClient = new GrpcServiceClientPb_1.AccountClient(this._url);
         this._xmrConnectionsClient = new GrpcServiceClientPb_1.XmrConnectionsClient(this._url);
@@ -934,6 +935,19 @@ class HavenoClient {
         }
     }
     /**
+     * Delete a payment account.
+     *
+     * @param paymentAccountId {string} the id of the payment account to delete
+     */
+    async deletePaymentAccount(paymentAccountId) {
+        try {
+            await this._paymentAccountsClient.deletePaymentAccount(new grpc_pb_1.DeletePaymentAccountRequest().setPaymentAccountId(paymentAccountId), { password: this._password });
+        }
+        catch (e) {
+            throw new HavenoError_1.default(e.message, e.code);
+        }
+    }
+    /**
      * Get available offers to buy or sell XMR.
      *
      * @param {string} assetCode - traded asset code
@@ -1070,6 +1084,19 @@ class HavenoClient {
     async getTrade(tradeId) {
         try {
             return (await this._tradesClient.getTrade(new grpc_pb_1.GetTradeRequest().setTradeId(tradeId), { password: this._password })).getTrade();
+        }
+        catch (e) {
+            throw new HavenoError_1.default(e.message, e.code);
+        }
+    }
+    /**
+     * Get all trade statistics.
+     *
+     * @return {TradeStatistics3[]} all user trades
+     */
+    async getTradeStatistics() {
+        try {
+            return (await this._getTradeStatisticsClient.getTradeStatistics(new grpc_pb_1.GetTradeStatisticsRequest(), { password: this._password })).getTradeStatisticsList();
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
