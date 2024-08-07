@@ -25,7 +25,7 @@ jobs:
         run: sudo killall mono
 
       - name: Start containers
-        run: docker-compose -f "./docker/docker-compose.yml" up -d --build
+        run: docker compose -f "./docker/docker-compose.yml" up -d --build
 
       - name: Install node
         uses: actions/setup-node@v4
@@ -64,4 +64,4 @@ jobs:
 
       - name: Stop containers
         if: always()
-        run: docker-compose -f "./docker/docker-compose.yml" down
+        run: docker compose -f "./docker/docker-compose.yml" down
