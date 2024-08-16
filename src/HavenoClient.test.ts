@@ -334,7 +334,7 @@ class TradeContext {
       if (this.disputeWinner) str += "\nDispute winner: " + (this.disputeWinner == DisputeResult.Winner.BUYER ? "Buyer" : "Seller");
       str += "\nPayout tx id: " + this.payoutTxId;
       if (this.payoutTxId) {
-        str += "\nPayout fee: " + (await monerod.getTx(this.payoutTxId!)).getFee()!;
+        str += "\nPayout fee: " + (await monerod.getTx(this.payoutTxId!))!.getFee()!;
         if (this.getBuyer().havenod) str += "\nBuyer payout: " + (await this.getBuyer().havenod!.getXmrTx(this.payoutTxId!))?.getIncomingTransfersList()[0].getAmount()!;
         if (this.getSeller().havenod) str += "\nSeller payout: " + (await this.getSeller().havenod!.getXmrTx(this.payoutTxId!))?.getIncomingTransfersList()[0].getAmount()!;
       }
