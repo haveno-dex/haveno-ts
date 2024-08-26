@@ -15,10 +15,17 @@
     "typedoc": "typedoc ./src/index.ts --entryPointStrategy expand src/ --exclude **/*.test.ts --excludePrivate"
   },
   "jest": {
+    "testURL": "http://localhost:8080",
     "testPathIgnorePatterns": [
       "<rootDir>/dist/",
       "/node_modules/"
     ],
+    "transformIgnorePatterns": [
+      "/node_modules/(?!axios|monero-ts).+\\.js$"
+    ],
+    "transform": {
+      "^.+\\.(js|jsx|ts|tsx)$": "babel-jest"
+    },
     "globals": {
       "window": {}
     }
