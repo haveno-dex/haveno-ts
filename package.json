@@ -9,13 +9,16 @@
   ],
   "scripts": {
     "prepare": "scripts/build_protobuf.sh",
-    "test": "node --no-experimental-fetch ./node_modules/.bin/jest",
+    "test": "node ./node_modules/.bin/jest",
     "eslint": "eslint .",
     "eslintfix": "eslint src/* --fix",
     "typedoc": "typedoc ./src/index.ts --entryPointStrategy expand src/ --exclude **/*.test.ts --excludePrivate"
   },
   "jest": {
-    "testURL": "http://localhost:8080",
+    "testEnvironment": "jsdom",
+    "testEnvironmentOptions": {
+      "url": "http://localhost:8080"
+    },
     "testPathIgnorePatterns": [
       "<rootDir>/dist/",
       "/node_modules/"
@@ -48,20 +51,21 @@
     "grpc-web": "^1.4.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.21.0",
-    "@babel/preset-env": "^7.20.2",
-    "@babel/preset-typescript": "^7.21.0",
-    "@types/jest": "^29.4.0",
+    "@babel/core": "^7.25.2",
+    "@babel/preset-env": "^7.25.4",
+    "@babel/preset-typescript": "^7.24.7",
+    "@types/jest": "^29.5.12",
     "@typescript-eslint/eslint-plugin": "5.53.0",
     "@typescript-eslint/parser": "^5.53.0",
-    "babel-jest": "^29.4.3",
+    "babel-jest": "^29.7.0",
     "decimal.js": "^10.4.3",
     "eslint": "^8.35.0",
     "eslint-config-prettier": "^8.6.0",
     "eslint-import-resolver-typescript": "^3.5.3",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-jsx-a11y": "^6.7.1",
-    "jest": "^26.6.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
     "monero-ts": "^0.10.1",
     "typedoc": "^0.23.26",
     "typedoc-plugin-missing-exports": "^1.0.0",
