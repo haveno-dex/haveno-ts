@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 /*
  * Copyright Haveno
  *
@@ -34,9 +32,10 @@ import {
   Attachment,
   DisputeResult,
   PaymentMethod,
+  PaymentAccount,
   PaymentAccountForm,
   PaymentAccountFormField,
-  PaymentAccount,
+  PaymentAccountPayload,
   XmrDestination,
   XmrNodeSettings,
   XmrTx,
@@ -93,23 +92,23 @@ enum DisputeContext {
  * Test context for a single peer in a trade.
  */
 class PeerContext {
-  havenod: HavenoClient;
-  wallet: moneroTs.MoneroWallet;
-  trade: TradeInfo;
+  havenod?: HavenoClient;
+  wallet?: moneroTs.MoneroWallet;
+  trade?: TradeInfo;
 
   // context to test balances after trade
-  balancesBeforeOffer: XmrBalanceInfo;
-  splitOutputTxFee: bigint;
-  balancesBeforeTake: XmrBalanceInfo;
-  balancesAfterTake: XmrBalanceInfo;
-  balancesBeforePayout: XmrBalanceInfo;
-  balancesAfterPayout: XmrBalanceInfo;
-  tradeFee: bigint;
-  depositTx: moneroTs.MoneroTx;
-  depositTxFee: bigint;
-  securityDepositActual: bigint;
-  payoutTxFee: bigint;
-  payoutAmount: bigint;
+  balancesBeforeOffer?: XmrBalanceInfo;
+  splitOutputTxFee?: bigint;
+  balancesBeforeTake?: XmrBalanceInfo;
+  balancesAfterTake?: XmrBalanceInfo;
+  balancesBeforePayout?: XmrBalanceInfo;
+  balancesAfterPayout?: XmrBalanceInfo;
+  tradeFee?: bigint;
+  depositTx?: moneroTs.MoneroTx;
+  depositTxFee?: bigint;
+  securityDepositActual?: bigint;
+  payoutTxFee?: bigint;
+  payoutAmount?: bigint;
 
   constructor(ctx?: Partial<PeerContext>) {
     Object.assign(this, ctx);
@@ -158,9 +157,9 @@ const defaultTradeConfig: Partial<TradeContext> = {
 class TradeContext {
 
   // trade peers
-  arbitrator: Partial<PeerContext>;
-  maker: Partial<PeerContext>;
-  taker: Partial<PeerContext>;
+  arbitrator!: Partial<PeerContext>;
+  maker!: Partial<PeerContext>;
+  taker!: Partial<PeerContext>;
 
   // trade flow
   concurrentTrades?: boolean; // testing trades at same time
@@ -219,9 +218,9 @@ class TradeContext {
   isPayoutUnlocked?: boolean
   buyerOpenedDispute?: boolean;
   sellerOpenedDispute?: boolean;
-  walletSyncPeriodMs: number;
-  maxTimePeerNoticeMs: number;
-  testChatMessages: boolean;
+  walletSyncPeriodMs!: number;
+  maxTimePeerNoticeMs!: number;
+  testChatMessages!: boolean;
   stopOnFailure?: boolean;
   buyerAppName?: string;
   sellerAppName?: string;
@@ -230,8 +229,8 @@ class TradeContext {
   testPayoutUnlocked?: boolean;
   payoutTxId?: string
   testBalanceChangeEndToEnd?: boolean;
-  isStopped: boolean;
-  maxConcurrency: number;
+  isStopped!: boolean;
+  maxConcurrency!: number;
 
   constructor(ctx?: Partial<TradeContext>) {
     Object.assign(this, ctx);
@@ -518,7 +517,7 @@ beforeAll(async () => {
     try {
       monerod = await moneroTs.connectToDaemonRpc(TestConfig.monerod.url, TestConfig.monerod.username, TestConfig.monerod.password);
       await mineToHeight(160); // initialize blockchain to latest block type
-    } catch (err) {
+    } catch (err: any) {
       HavenoUtils.log(0, "Error initializing internal monerod: " + err.message); // allowed in order to test starting and stopping local node
     }
 
@@ -1625,7 +1624,7 @@ test("Cannot post offer exceeding trade limit (CI, sanity check)", async () => {
       takeOffer: false
     });
     throw new Error("Should have rejected posting offer above trade limit")
-  } catch (err) {
+  } catch (err: any) {
     assert(err.message.indexOf("amount is larger than") === 0);
   }
 
@@ -1639,7 +1638,7 @@ test("Cannot post offer exceeding trade limit (CI, sanity check)", async () => {
       takeOffer: false
     });
     throw new Error("Should have rejected posting offer above trade limit")
-  } catch (err) {
+  } catch (err: any) {
     assert(err.message.indexOf("amount is larger than") === 0);
   }
 
@@ -2014,7 +2013,7 @@ test("Invalidates offers when reserved funds are spent (CI)", async () => {
     if (!reservedKeyImages.length) throw new Error("No reserved key images detected");
     await user1Wallet.thawOutput(reservedKeyImages[0]);
     tx = await user1Wallet.sweepOutput({keyImage: reservedKeyImages[0], address: await user1Wallet.getPrimaryAddress(), relay: false});
-    await monerod.submitTxHex(tx.getFullHex(), true);
+    await monerod.submitTxHex(tx.getFullHex()!, true);
 
     // mine block so spend is confirmed
     await mineBlocks(1);
@@ -2216,7 +2215,7 @@ test("Selects arbitrators which are online, registered, and least used", async (
     try {
     await executeTrade({maker: {havenod: user1}, taker: {havenod: user2}, offerId: offer2.getId()});
       throw new Error("Should have failed taking offer signed by unregistered arbitrator");
-    } catch (e2) {
+    } catch (e2: any) {
       assert (e2.message.indexOf("not found") > 0);
     }
 
@@ -2321,7 +2320,7 @@ async function executeTrades(ctxs: Partial<TradeContext>[], executionCtx?: Parti
         if (executionCtx.stopOnFailure) for (const ctx of ctxs) ctx.isStopped = true; // stop trades on failure
         try {
           await Promise.allSettled(tradePromises); // wait for other trades to complete
-        } catch (e3) {
+        } catch (e3: any) {
           HavenoUtils.log(0, "Error awaiting other trades to stop after error: " + e3.message);
           HavenoUtils.log(0, e3.stack);
         }
@@ -2479,7 +2478,7 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
 
     // buyer has seller's payment account payload after first confirmation
     if (ctx.isStopped) return ctx.offerId!;
-    let sellerPaymentAccountPayload;
+    let sellerPaymentAccountPayload: PaymentAccountPayload | undefined;
     let form;
     let expectedForm;
     if (ctx.getBuyer().havenod) {
@@ -2651,7 +2650,7 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
     await testTradePayoutUnlock(ctx);
     if (ctx.offer!.getId() !== ctx.offerId) throw new Error("Expected offer ids to match");
     return ctx.offer!.getId();
-  } catch (err) {
+  } catch (err: any) {
     HavenoUtils.log(0, "Error executing trade " + ctx!.offerId + (ctx!.index === undefined ? "" : " at index " + ctx!.index) + ": " + err.message);
     HavenoUtils.log(0, await ctx.toSummary());
     throw err;
@@ -2869,13 +2868,13 @@ async function takeOffer(ctxP: Partial<TradeContext>): Promise<TradeInfo> {
     const buyerBalanceDiffReservedTrade = BigInt(ctx.getBuyer().balancesAfterTake!.getReservedTradeBalance()) - BigInt(ctx.getBuyer().balancesBeforeTake!.getReservedTradeBalance());
     const buyerBalanceDiffReservedOffer = BigInt(ctx.getBuyer().balancesAfterTake!.getReservedOfferBalance()) - BigInt(ctx.getBuyer().balancesBeforeTake!.getReservedOfferBalance());
     expect(buyerBalanceDiffReservedTrade).toEqual(BigInt(trade.getBuyerSecurityDeposit()!));
-    expect(buyerBalanceDiff).toEqual(-1n * buyerBalanceDiffReservedOffer - buyerBalanceDiffReservedTrade - ctx.getBuyer().depositTxFee - ctx.getBuyer().tradeFee);
+    expect(buyerBalanceDiff).toEqual(-1n * buyerBalanceDiffReservedOffer - buyerBalanceDiffReservedTrade - ctx.getBuyer().depositTxFee! - ctx.getBuyer().tradeFee!);
 
     // test seller balances after offer taken
     const sellerBalanceDiff = BigInt(ctx.getSeller().balancesAfterTake!.getBalance()) - BigInt(ctx.getSeller().balancesBeforeTake!.getBalance());
     const sellerBalanceDiffReservedTrade = BigInt(ctx.getSeller().balancesAfterTake!.getReservedTradeBalance()) - BigInt(ctx.getSeller().balancesBeforeTake!.getReservedTradeBalance());
     expect(sellerBalanceDiffReservedTrade).toEqual(BigInt(trade.getAmount()) + BigInt(trade.getSellerSecurityDeposit()!));
-    expect(sellerBalanceDiff).toEqual(0n - ctx.getSeller().depositTxFee - ctx.getSeller().tradeFee! - ctx.getSeller().securityDepositActual - ctx.tradeAmount!);
+    expect(sellerBalanceDiff).toEqual(0n - ctx.getSeller().depositTxFee! - ctx.getSeller().tradeFee! - ctx.getSeller().securityDepositActual! - ctx.tradeAmount!);
 
     // test maker balances after offer taken
     const makerBalanceDiffReservedOffer = BigInt(ctx.getMaker().balancesAfterTake!.getReservedOfferBalance()) - BigInt(ctx.getMaker().balancesBeforeTake!.getReservedOfferBalance());
@@ -2909,8 +2908,8 @@ async function testTrade(trade: TradeInfo, ctx: TradeContext, havenod?: HavenoCl
 
   // test security deposit = max(.1, trade amount * security deposit pct)
   const expectedSecurityDeposit = HavenoUtils.max(HavenoUtils.xmrToAtomicUnits(.1), HavenoUtils.multiply(ctx.tradeAmount!, ctx.securityDepositPct!));
-  expect(BigInt(trade.getBuyerSecurityDeposit())).toEqual(expectedSecurityDeposit - ctx.getBuyer().depositTxFee);
-  expect(BigInt(trade.getSellerSecurityDeposit())).toEqual(expectedSecurityDeposit - ctx.getSeller().depositTxFee);
+  expect(BigInt(trade.getBuyerSecurityDeposit())).toEqual(expectedSecurityDeposit - ctx.getBuyer().depositTxFee!);
+  expect(BigInt(trade.getSellerSecurityDeposit())).toEqual(expectedSecurityDeposit - ctx.getSeller().depositTxFee!);
 
   // test phase
   if (!ctx.isPaymentSent) {
@@ -3194,23 +3193,23 @@ async function testAmountsAfterComplete(tradeCtx: TradeContext) {
   const isDisputedTrade = tradeCtx.getDisputeOpener() !== undefined;
   if (!isDisputedTrade) {
     tradeCtx.getBuyer().payoutTxFee = payoutTxFee / 2n;
-    tradeCtx.getBuyer().payoutAmount = tradeCtx.getBuyer().securityDepositActual + tradeCtx.tradeAmount! - tradeCtx.getBuyer().payoutTxFee;
+    tradeCtx.getBuyer().payoutAmount = tradeCtx.getBuyer().securityDepositActual! + tradeCtx.tradeAmount! - tradeCtx.getBuyer().payoutTxFee!;
     tradeCtx.getSeller().payoutTxFee = payoutTxFee / 2n;
-    tradeCtx.getSeller().payoutAmount = tradeCtx.getSeller().securityDepositActual - tradeCtx.getSeller().payoutTxFee;
+    tradeCtx.getSeller().payoutAmount = tradeCtx.getSeller().securityDepositActual! - tradeCtx.getSeller().payoutTxFee!;
   } else {
 
     // get expected payouts for disputed trade
     const winnerGetsAll = tradeCtx.disputeWinnerAmount === tradeCtx.maker.securityDepositActual! + tradeCtx.taker.securityDepositActual! + tradeCtx.tradeAmount!;
     if (tradeCtx.disputeWinnerAmount) {
       tradeCtx.getDisputeWinner()!.payoutTxFee = winnerGetsAll ? payoutTxFee : 0n;
-      tradeCtx.getDisputeWinner()!.payoutAmount = tradeCtx.disputeWinnerAmount - tradeCtx.getDisputeWinner()!.payoutTxFee;
+      tradeCtx.getDisputeWinner()!.payoutAmount = tradeCtx.disputeWinnerAmount - tradeCtx.getDisputeWinner()!.payoutTxFee!;
       tradeCtx.getDisputeLoser()!.payoutTxFee = winnerGetsAll ? 0n : payoutTxFee;
-      tradeCtx.getDisputeLoser()!.payoutAmount = tradeCtx.maker.securityDepositActual! + tradeCtx.taker.securityDepositActual! + tradeCtx.tradeAmount! - tradeCtx.disputeWinnerAmount - tradeCtx.getDisputeLoser()!.payoutTxFee;
+      tradeCtx.getDisputeLoser()!.payoutAmount = tradeCtx.maker.securityDepositActual! + tradeCtx.taker.securityDepositActual! + tradeCtx.tradeAmount! - tradeCtx.disputeWinnerAmount - tradeCtx.getDisputeLoser()!.payoutTxFee!;
     } else {
       tradeCtx.getDisputeWinner()!.payoutTxFee = payoutTxFee / 2n;
-      tradeCtx.getDisputeWinner()!.payoutAmount = tradeCtx.tradeAmount! + tradeCtx.getDisputeWinner()!.securityDepositActual - tradeCtx.getDisputeWinner()!.payoutTxFee;
+      tradeCtx.getDisputeWinner()!.payoutAmount = tradeCtx.tradeAmount! + tradeCtx.getDisputeWinner()!.securityDepositActual! - tradeCtx.getDisputeWinner()!.payoutTxFee!;
       tradeCtx.getDisputeLoser()!.payoutTxFee = payoutTxFee / 2n;
-      tradeCtx.getDisputeLoser()!.payoutAmount = tradeCtx.getDisputeLoser()!.securityDepositActual - tradeCtx.getDisputeLoser()!.payoutTxFee;
+      tradeCtx.getDisputeLoser()!.payoutAmount = tradeCtx.getDisputeLoser()!.securityDepositActual! - tradeCtx.getDisputeLoser()!.payoutTxFee!;
     }
   }
 
@@ -3228,7 +3227,7 @@ async function testAmountsAfterComplete(tradeCtx: TradeContext) {
 async function testPeerAmountsAfterComplete(tradeCtx: TradeContext, peerCtx: PeerContext) {
 
   // get trade
-  const trade = await peerCtx.havenod.getTrade(tradeCtx.offerId!);
+  const trade = await peerCtx.havenod!.getTrade(tradeCtx.offerId!);
 
   // test trade amounts
   const isBuyer = tradeCtx.getBuyer() === peerCtx;
@@ -3248,7 +3247,7 @@ async function testPeerAmountsAfterComplete(tradeCtx: TradeContext, peerCtx: Pee
 
     // calculate expected balance from before offer
     const sendTradeAmount = tradeCtx.getBuyer() === peerCtx ? 0n : BigInt(trade.getAmount());
-    const expectedBalanceAfterComplete = BigInt(peerCtx.balancesBeforeOffer?.getBalance()!) - peerCtx.splitOutputTxFee - peerCtx.tradeFee! - sendTradeAmount - peerCtx.depositTxFee - peerCtx.securityDepositActual + peerCtx.payoutAmount;
+    const expectedBalanceAfterComplete = BigInt(peerCtx.balancesBeforeOffer?.getBalance()!) - peerCtx.splitOutputTxFee! - peerCtx.tradeFee! - sendTradeAmount - peerCtx.depositTxFee! - peerCtx.securityDepositActual! + peerCtx.payoutAmount!;
 
     // log the math
     HavenoUtils.log(1, "Testing end-to-end balance change:");
