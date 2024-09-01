@@ -44,8 +44,8 @@ services:
     ports:
       - "127.0.0.1:48080:48080"
       - "127.0.0.1:48081:48081"
-    # volumes:
-    #   - ./data:/home/haveno/haveno/.localnet/xmr_local
+    volumes:
+      - ./data:/home/haveno/haveno/.localnet/xmr_local
 
   node2:
     build: haveno/
@@ -72,8 +72,8 @@ services:
       - "127.0.0.1:28081:28081"
     depends_on:
       - node1
-    # volumes:
-    #   - ./data:/home/haveno/haveno/.localnet/xmr_local
+    volumes:
+      - ./data:/home/haveno/haveno/.localnet/xmr_local
 
   seed1:
     build: haveno/
@@ -192,5 +192,5 @@ services:
       - node2
     ports:
       - "127.0.0.1:28084:28084"
-    # volumes:
-    #   - ./data:/home/haveno/haveno/.localnet/funding_wallet
+    volumes:
+      - ./data:/home/haveno/haveno/.localnet/funding_wallet
