@@ -4,15 +4,17 @@ services:
   envoy:
     image: envoyproxy/envoy-dev:latest
     container_name: envoy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
-      - "127.0.0.1:8079:8079"
-      - "127.0.0.1:8080:8080"
-      - "127.0.0.1:8081:8081"
-      - "127.0.0.1:8082:8082"
-      - "127.0.0.1:8083:8083"
-      - "127.0.0.1:8084:8084"
-      - "127.0.0.1:8085:8085"
-      - "127.0.0.1:8086:8086"
+      - "8079:8079"
+      - "8080:8080"
+      - "8081:8081"
+      - "8082:8082"
+      - "8083:8083"
+      - "8084:8084"
+      - "8085:8085"
+      - "8086:8086"
     volumes:
       - ./../config/envoy.test.yaml:/config/envoy.test.yaml
     command:
