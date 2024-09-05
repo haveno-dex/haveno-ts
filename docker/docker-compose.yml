@@ -109,65 +109,65 @@ services:
     ports:
       - "127.0.0.1:3002:3002"
 
-  # arbitrator:
-  #   build: haveno/
-  #   container_name: arbitrator
-  #   entrypoint: [ "./haveno-daemon" ]
-  #   command: [
-  #     "--baseCurrencyNetwork=XMR_LOCAL",
-  #     "--useLocalhostForP2P=true",
-  #     "--useDevPrivilegeKeys=true",
-  #     "--nodePort=4444",
-  #     "--appName=haveno-XMR_LOCAL_arbitrator",
-  #     "--apiPassword=apitest",
-  #     "--apiPort=9998",
-  #     "--walletRpcBindPort=38090",
-  #     "--passwordRequired=false",
-  #   ]
-  #   depends_on:
-  #     - seed1
-  #   # ports:
-  #   #   - "127.0.0.1:38090:38090"
+  arbitrator:
+    build: haveno/
+    container_name: arbitrator
+    entrypoint: [ "./haveno-daemon" ]
+    command: [
+      "--baseCurrencyNetwork=XMR_LOCAL",
+      "--useLocalhostForP2P=true",
+      "--useDevPrivilegeKeys=true",
+      "--nodePort=4444",
+      "--appName=haveno-XMR_LOCAL_arbitrator",
+      "--apiPassword=apitest",
+      "--apiPort=9998",
+      "--walletRpcBindPort=38090",
+      "--passwordRequired=false",
+    ]
+    depends_on:
+      - seed1
+    ports:
+      - "127.0.0.1:38090:38090"
 
-  # user1:
-  #   build: haveno/
-  #   container_name: user1
-  #   entrypoint: [ "./haveno-daemon" ]
-  #   command: [
-  #     "--baseCurrencyNetwork=XMR_LOCAL",
-  #     "--useLocalhostForP2P=true",
-  #     "--useDevPrivilegeKeys=true",
-  #     "--nodePort=5555",
-  #     "--appName=haveno_user1",
-  #     "--apiPassword=apitest",
-  #     "--apiPort=9999",
-  #     "--walletRpcBindPort=38091",
-  #     "--passwordRequired=false",
-  #   ]
-  #   depends_on:
-  #     - seed1
-  #   # ports:
-  #   #   - "127.0.0.1:38091:38091"
+  user1:
+    build: haveno/
+    container_name: user1
+    entrypoint: [ "./haveno-daemon" ]
+    command: [
+      "--baseCurrencyNetwork=XMR_LOCAL",
+      "--useLocalhostForP2P=true",
+      "--useDevPrivilegeKeys=true",
+      "--nodePort=5555",
+      "--appName=haveno_user1",
+      "--apiPassword=apitest",
+      "--apiPort=9999",
+      "--walletRpcBindPort=38091",
+      "--passwordRequired=false",
+    ]
+    depends_on:
+      - seed1
+    ports:
+      - "127.0.0.1:38091:38091"
 
-  # user2:
-  #   build: haveno/
-  #   container_name: user2
-  #   entrypoint: [ "./haveno-daemon" ]
-  #   command: [
-  #     "--baseCurrencyNetwork=XMR_LOCAL",
-  #     "--useLocalhostForP2P=true",
-  #     "--useDevPrivilegeKeys=true",
-  #     "--nodePort=6666",
-  #     "--appName=haveno_user2",
-  #     "--apiPassword=apitest",
-  #     "--apiPort=10000",
-  #     "--walletRpcBindPort=38092",
-  #     "--passwordRequired=false",
-  #   ]
-  #   depends_on:
-  #     - seed1
-  #   # ports:
-  #   #   - "127.0.0.1:38092:38092"
+  user2:
+    build: haveno/
+    container_name: user2
+    entrypoint: [ "./haveno-daemon" ]
+    command: [
+      "--baseCurrencyNetwork=XMR_LOCAL",
+      "--useLocalhostForP2P=true",
+      "--useDevPrivilegeKeys=true",
+      "--nodePort=6666",
+      "--appName=haveno_user2",
+      "--apiPassword=apitest",
+      "--apiPort=10000",
+      "--walletRpcBindPort=38092",
+      "--passwordRequired=false",
+    ]
+    depends_on:
+      - seed1
+    ports:
+      - "127.0.0.1:38092:38092"
 
   pricenode:
     build: pricenode/
