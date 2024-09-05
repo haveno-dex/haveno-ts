@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "prepare": "scripts/build_protobuf.sh",
-    "test": "node --no-experimental-fetch ./node_modules/.bin/jest --forceExit --detectOpenHandles",
+    "test": "node ./node_modules/.bin/jest --forceExit --detectOpenHandles",
     "eslint": "eslint .",
     "eslintfix": "eslint src/* --fix",
     "typedoc": "typedoc ./src/index.ts --entryPointStrategy expand src/ --exclude **/*.test.ts --excludePrivate"
