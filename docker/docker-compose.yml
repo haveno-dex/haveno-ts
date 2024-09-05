@@ -126,8 +126,8 @@ services:
     ]
     depends_on:
       - seed1
-    ports:
-      - "127.0.0.1:38090:38090"
+    # ports:
+    #   - "127.0.0.1:38090:38090"
 
   user1:
     build: haveno/
@@ -146,8 +146,8 @@ services:
     ]
     depends_on:
       - seed1
-    ports:
-      - "127.0.0.1:38091:38091"
+    # ports:
+    #   - "127.0.0.1:38091:38091"
 
   user2:
     build: haveno/
@@ -166,8 +166,8 @@ services:
     ]
     depends_on:
       - seed1
-    ports:
-      - "127.0.0.1:38092:38092"
+    # ports:
+    #   - "127.0.0.1:38092:38092"
 
   pricenode:
     build: pricenode/
