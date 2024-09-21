@@ -49,17 +49,20 @@
 <a href="#start-local-haveno-network-manually" id="start-local-haveno-network-manually" style="color: inherit; text-decoration: none;">
   <h3>Start local Haveno network manually</h3>
 </a>
+<p>This workflow is useful for local development of <code>haveno</code> and <code>haveno-ts</code></p>
 <ol>
 <li><a href="https://github.com/haveno-dex/haveno/blob/master/docs/installing.md">Run a local Haveno test network</a> and then shut down the arbitrator, user1, and user2 or run them as daemons, e.g. <code>make user1-daemon-local</code>. You may omit the arbitrator registration steps since it&#39;s done automatically in the tests.</li>
 <li>Clone this project to the same parent directory as the haveno project: <code>git clone https://github.com/haveno-dex/haveno-ts</code></li>
-<li>In a new terminal, start envoy with the config in haveno-ts/config/envoy.test.yaml.<br>For example (change absolute path for your system): <code>docker run --network host --rm --add-host host.docker.internal:host-gateway -it -v ~/git/haveno-ts/config/envoy.test.yaml:/envoy.test.yaml -p 8079:8079 -p 8080:8080 -p 8081:8081 -p 8082:8082 -p 8083:8083 -p 8084:8084 -p 8085:8085 -p 8086:8086 envoyproxy/envoy-dev:latest -c /envoy.test.yaml</code></li>
+<li>Install <code>envoy</code> proxy from your package manager of choice, for example <code>brew install envoy</code>.</li>
+<li>In a new terminal, start envoy with the config in haveno-ts/config/envoy.local.yaml: <code>envoy -c config/envoy.local.yaml</code></li>
 <li>In a new terminal, start the funding wallet. This wallet will be funded automatically in order to fund the tests.<br>For example: <code>cd ~/git/haveno &amp;&amp; make funding-wallet-local</code>.</li>
 </ol>
 
 <a href="#start-local-haveno-network-with-docker" id="start-local-haveno-network-with-docker" style="color: inherit; text-decoration: none;">
   <h3>Start local Haveno network with docker</h3>
 </a>
-<p>Alternatively, start a local Haveno network with docker:</p>
+<p>Alternatively use this wokflow to develop <code>haveno-ts</code> or run tests with dockerized setup:</p>
+<p>Start a local Haveno network with docker:</p>
 <ol>
 <li><code>cd ~/git/haveno-ts/docker</code></li>
 <li><code>sudo docker-compose up</code>. This will start docker and initialize the network.</li>
