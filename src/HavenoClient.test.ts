@@ -2635,10 +2635,13 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
     // record balances on completion
     if (ctx.isStopped) return ctx.offerId!;
     if (!ctx.maker.balancesAfterPayout) {
-      ctx.payoutTxId = (await ctx.getBuyer().havenod!.getTrade(ctx.offerId!)).getPayoutTxId();
-      if (!ctx.payoutTxId) ctx.payoutTxId = (await ctx.arbitrator.havenod!.getTrade(ctx.offerId!)).getPayoutTxId(); // TODO: arbitrator will sign and publish payout tx id if buyer is offline; detect payout tx id on 0 conf
       ctx.maker.balancesAfterPayout = await ctx.maker.havenod?.getBalances();
       ctx.taker.balancesAfterPayout = await ctx.taker.havenod?.getBalances();
+
+      // record payout tx id
+      ctx.payoutTxId = (await ctx.getSeller().havenod!.getTrade(ctx.offerId!)).getPayoutTxId();
+      if (!ctx.payoutTxId) ctx.payoutTxId = (await ctx.arbitrator.havenod!.getTrade(ctx.offerId!)).getPayoutTxId(); // TODO: arbitrator will sign and publish payout tx id if buyer is offline; detect payout tx id on 0 conf
+      if (!ctx.payoutTxId) ctx.payoutTxId = (await ctx.getBuyer().havenod!.getTrade(ctx.offerId!)).getPayoutTxId(); // TODO: arbitrator does not have payout tx id until first confirmation because they defer publishing
     }
 
     // test balances after payout tx unless other trades can interfere
