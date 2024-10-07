@@ -821,6 +821,7 @@ test("Can manage Monero daemon connections (CI)", async () => {
 
     // enable auto switch
     await user3.setAutoSwitch(true);
+    assert.equal(true, await user3.getAutoSwitch());
 
     // stop monerod
     //await monerod3.stopProcess(); // TODO (monero-ts): monerod remains available after await monerod.stopProcess() for up to 40 seconds
@@ -834,6 +835,7 @@ test("Can manage Monero daemon connections (CI)", async () => {
 
     // stop auto switch and checking connection periodically
     await user3.setAutoSwitch(false);
+    assert.equal(false, await user3.getAutoSwitch());
     await user3.stopCheckingConnection();
 
     // remove current connection
