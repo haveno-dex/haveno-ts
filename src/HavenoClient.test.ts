@@ -732,6 +732,10 @@ test("Can manage Monero daemon connections (CI)", async () => {
     // start user3
     user3 = await initHaveno();
 
+    // disable auto switch for tests
+    assert.equal(true, await user3.getAutoSwitch());
+    await user3.setAutoSwitch(false);
+
     // test default connections
     const monerodUrl1 = "http://127.0.0.1:" + getNetworkStartPort() + "8081"; // TODO: (woodser): move to config
     let connections: UrlConnection[] = await user3.getMoneroConnections();
