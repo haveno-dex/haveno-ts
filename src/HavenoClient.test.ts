@@ -898,7 +898,7 @@ test("Can manage Monero daemon connections (CI)", async () => {
 // - user1-daemon-local must be running and own its monerod process (so it can be stopped)
 test("Can start and stop a local Monero node (CI)", async() => {
 
-  // expect error stopping local node
+  // expect error stopping stopped local node
   try {
     await user1.stopMoneroNode();
     HavenoUtils.log(1, "Running local Monero node stopped");
@@ -911,8 +911,7 @@ test("Can start and stop a local Monero node (CI)", async() => {
     }
   }
 
-  let isMoneroNodeOnline = await user1.isMoneroNodeOnline();
-  if (isMoneroNodeOnline) {
+  if (await user1.isMoneroNodeOnline()) {
     HavenoUtils.log(0, "Warning: local Monero node is already running, skipping start and stop local Monero node tests");
 
     // expect error due to existing running node
@@ -944,8 +943,7 @@ test("Can start and stop a local Monero node (CI)", async() => {
     settings.setBlockchainPath(dataDir);
     settings.setStartupFlagsList(["--log-file", logFile, "--no-zmq"]);
     await user1.startMoneroNode(settings);
-    isMoneroNodeOnline = await user1.isMoneroNodeOnline();
-    assert(isMoneroNodeOnline);
+    assert(await user1.isMoneroNodeOnline());
 
     // expect settings are updated
     const settingsAfter = await user1.getMoneroNodeSettings();
@@ -967,16 +965,19 @@ test("Can start and stop a local Monero node (CI)", async() => {
 
     // expect stopped node
     await user1.stopMoneroNode();
-    isMoneroNodeOnline = await user1.isMoneroNodeOnline();
-    assert(!isMoneroNodeOnline);
+    assert(!(await user1.isMoneroNodeOnline()));
     try {
       daemon = await moneroTs.connectToDaemonRpc(TestConfig.monerod.url);
       height = await daemon.getHeight();
       console.log("GOT HEIGHT: " + height);
       throw new Error("should have thrown"); 
     } catch (err: any) {
-      if (err.message !== "RequestError: Error: connect ECONNREFUSED 127.0.0.1:28081") throw new Error("Unexpected error: " + err.message);
+      if (err.message.indexOf("connect ECONNREFUSED 127.0.0.1:28081") <= 0) throw new Error("Unexpected error: " + err.message);
     }
+
+    // start local node again
+    await user1.startMoneroNode(settings);
+    assert(await user1.isMoneroNodeOnline());
   }
 });
 
