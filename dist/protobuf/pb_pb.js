@@ -55416,7 +55416,9 @@ proto.io.haveno.protobuffer.PreferencesPayload.toObject = function(includeInstan
     clearDataAfterDays: jspb.Message.getFieldWithDefault(msg, 59, 0),
     buyScreenCryptoCurrencyCode: jspb.Message.getFieldWithDefault(msg, 60, ""),
     sellScreenCryptoCurrencyCode: jspb.Message.getFieldWithDefault(msg, 61, ""),
-    splitOfferOutput: jspb.Message.getBooleanFieldWithDefault(msg, 62, false)
+    splitOfferOutput: jspb.Message.getBooleanFieldWithDefault(msg, 62, false),
+    useSoundForNotifications: jspb.Message.getBooleanFieldWithDefault(msg, 63, false),
+    useSoundForNotificationsInitialized: jspb.Message.getBooleanFieldWithDefault(msg, 64, false)
   };
 
   if (includeInstance) {
@@ -55713,6 +55715,14 @@ proto.io.haveno.protobuffer.PreferencesPayload.deserializeBinaryFromReader = fun
     case 62:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setSplitOfferOutput(value);
+      break;
+    case 63:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setUseSoundForNotifications(value);
+      break;
+    case 64:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setUseSoundForNotificationsInitialized(value);
       break;
     default:
       reader.skipField();
@@ -56177,6 +56187,20 @@ proto.io.haveno.protobuffer.PreferencesPayload.serializeBinaryToWriter = functio
   if (f) {
     writer.writeBool(
       62,
+      f
+    );
+  }
+  f = message.getUseSoundForNotifications();
+  if (f) {
+    writer.writeBool(
+      63,
+      f
+    );
+  }
+  f = message.getUseSoundForNotificationsInitialized();
+  if (f) {
+    writer.writeBool(
+      64,
       f
     );
   }
@@ -57519,6 +57543,42 @@ proto.io.haveno.protobuffer.PreferencesPayload.prototype.setSplitOfferOutput = f
 };
 
 
+/**
+ * optional bool use_sound_for_notifications = 63;
+ * @return {boolean}
+ */
+proto.io.haveno.protobuffer.PreferencesPayload.prototype.getUseSoundForNotifications = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 63, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.io.haveno.protobuffer.PreferencesPayload} returns this
+ */
+proto.io.haveno.protobuffer.PreferencesPayload.prototype.setUseSoundForNotifications = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 63, value);
+};
+
+
+/**
+ * optional bool use_sound_for_notifications_initialized = 64;
+ * @return {boolean}
+ */
+proto.io.haveno.protobuffer.PreferencesPayload.prototype.getUseSoundForNotificationsInitialized = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 64, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.io.haveno.protobuffer.PreferencesPayload} returns this
+ */
+proto.io.haveno.protobuffer.PreferencesPayload.prototype.setUseSoundForNotificationsInitialized = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 64, value);
+};
+
+
 
 /**
  * List of repeated fields within this message type.
@@ -57836,7 +57896,8 @@ proto.io.haveno.protobuffer.XmrNodeSettings.toObject = function(includeInstance,
   var f, obj = {
     blockchainPath: jspb.Message.getFieldWithDefault(msg, 1, ""),
     bootstrapUrl: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    startupFlagsList: (f = jspb.Message.getRepeatedField(msg, 3)) == null ? undefined : f
+    startupFlagsList: (f = jspb.Message.getRepeatedField(msg, 3)) == null ? undefined : f,
+    syncBlockchain: jspb.Message.getBooleanFieldWithDefault(msg, 4, false)
   };
 
   if (includeInstance) {
@@ -57885,6 +57946,10 @@ proto.io.haveno.protobuffer.XmrNodeSettings.deserializeBinaryFromReader = functi
       var value = /** @type {string} */ (reader.readString());
       msg.addStartupFlags(value);
       break;
+    case 4:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setSyncBlockchain(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -57932,6 +57997,13 @@ proto.io.haveno.protobuffer.XmrNodeSettings.serializeBinaryToWriter = function(m
   if (f.length > 0) {
     writer.writeRepeatedString(
       3,
+      f
+    );
+  }
+  f = message.getSyncBlockchain();
+  if (f) {
+    writer.writeBool(
+      4,
       f
     );
   }
@@ -58008,6 +58080,24 @@ proto.io.haveno.protobuffer.XmrNodeSettings.prototype.addStartupFlags = function
  */
 proto.io.haveno.protobuffer.XmrNodeSettings.prototype.clearStartupFlagsList = function() {
   return this.setStartupFlagsList([]);
+};
+
+
+/**
+ * optional bool sync_blockchain = 4;
+ * @return {boolean}
+ */
+proto.io.haveno.protobuffer.XmrNodeSettings.prototype.getSyncBlockchain = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 4, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.io.haveno.protobuffer.XmrNodeSettings} returns this
+ */
+proto.io.haveno.protobuffer.XmrNodeSettings.prototype.setSyncBlockchain = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 4, value);
 };
 
 

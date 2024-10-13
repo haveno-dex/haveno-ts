@@ -1183,6 +1183,38 @@ export namespace SetAutoSwitchReply {
   }
 }
 
+export class GetAutoSwitchRequest extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GetAutoSwitchRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: GetAutoSwitchRequest): GetAutoSwitchRequest.AsObject;
+  static serializeBinaryToWriter(message: GetAutoSwitchRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GetAutoSwitchRequest;
+  static deserializeBinaryFromReader(message: GetAutoSwitchRequest, reader: jspb.BinaryReader): GetAutoSwitchRequest;
+}
+
+export namespace GetAutoSwitchRequest {
+  export type AsObject = {
+  }
+}
+
+export class GetAutoSwitchReply extends jspb.Message {
+  getAutoSwitch(): boolean;
+  setAutoSwitch(value: boolean): GetAutoSwitchReply;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GetAutoSwitchReply.AsObject;
+  static toObject(includeInstance: boolean, msg: GetAutoSwitchReply): GetAutoSwitchReply.AsObject;
+  static serializeBinaryToWriter(message: GetAutoSwitchReply, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GetAutoSwitchReply;
+  static deserializeBinaryFromReader(message: GetAutoSwitchReply, reader: jspb.BinaryReader): GetAutoSwitchReply;
+}
+
+export namespace GetAutoSwitchReply {
+  export type AsObject = {
+    autoSwitch: boolean,
+  }
+}
+
 export class IsXmrNodeOnlineRequest extends jspb.Message {
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): IsXmrNodeOnlineRequest.AsObject;
