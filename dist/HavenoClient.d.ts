@@ -231,6 +231,12 @@ export default class HavenoClient {
      */
     setAutoSwitch(autoSwitch: boolean): Promise<void>;
     /**
+     * Get the current auto switch setting.
+     *
+     * @return {boolean} whether auto switch is enabled or disabled
+     */
+    getAutoSwitch(): Promise<boolean>;
+    /**
      * Returns whether daemon is running a local monero node.
      */
     isMoneroNodeOnline(): Promise<boolean>;

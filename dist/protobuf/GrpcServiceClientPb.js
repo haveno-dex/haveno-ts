@@ -380,6 +380,9 @@ class XmrConnectionsClient {
         this.methodDescriptorSetAutoSwitch = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.XmrConnections/SetAutoSwitch', grpcWeb.MethodType.UNARY, grpc_pb.SetAutoSwitchRequest, grpc_pb.SetAutoSwitchReply, (request) => {
             return request.serializeBinary();
         }, grpc_pb.SetAutoSwitchReply.deserializeBinary);
+        this.methodDescriptorGetAutoSwitch = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.XmrConnections/GetAutoSwitch', grpcWeb.MethodType.UNARY, grpc_pb.GetAutoSwitchRequest, grpc_pb.GetAutoSwitchReply, (request) => {
+            return request.serializeBinary();
+        }, grpc_pb.GetAutoSwitchReply.deserializeBinary);
         if (!options)
             options = {};
         if (!credentials)
@@ -477,6 +480,14 @@ class XmrConnectionsClient {
         }
         return this.client_.unaryCall(this.hostname_ +
             '/io.haveno.protobuffer.XmrConnections/SetAutoSwitch', request, metadata || {}, this.methodDescriptorSetAutoSwitch);
+    }
+    getAutoSwitch(request, metadata, callback) {
+        if (callback !== undefined) {
+            return this.client_.rpcCall(this.hostname_ +
+                '/io.haveno.protobuffer.XmrConnections/GetAutoSwitch', request, metadata || {}, this.methodDescriptorGetAutoSwitch, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/io.haveno.protobuffer.XmrConnections/GetAutoSwitch', request, metadata || {}, this.methodDescriptorGetAutoSwitch);
     }
 }
 exports.XmrConnectionsClient = XmrConnectionsClient;

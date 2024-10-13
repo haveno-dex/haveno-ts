@@ -7053,6 +7053,12 @@ export class PreferencesPayload extends jspb.Message {
   getSplitOfferOutput(): boolean;
   setSplitOfferOutput(value: boolean): PreferencesPayload;
 
+  getUseSoundForNotifications(): boolean;
+  setUseSoundForNotifications(value: boolean): PreferencesPayload;
+
+  getUseSoundForNotificationsInitialized(): boolean;
+  setUseSoundForNotificationsInitialized(value: boolean): PreferencesPayload;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PreferencesPayload.AsObject;
   static toObject(includeInstance: boolean, msg: PreferencesPayload): PreferencesPayload.AsObject;
@@ -7125,6 +7131,8 @@ export namespace PreferencesPayload {
     buyScreenCryptoCurrencyCode: string,
     sellScreenCryptoCurrencyCode: string,
     splitOfferOutput: boolean,
+    useSoundForNotifications: boolean,
+    useSoundForNotificationsInitialized: boolean,
   }
 }
 
@@ -7176,6 +7184,9 @@ export class XmrNodeSettings extends jspb.Message {
   clearStartupFlagsList(): XmrNodeSettings;
   addStartupFlags(value: string, index?: number): XmrNodeSettings;
 
+  getSyncBlockchain(): boolean;
+  setSyncBlockchain(value: boolean): XmrNodeSettings;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): XmrNodeSettings.AsObject;
   static toObject(includeInstance: boolean, msg: XmrNodeSettings): XmrNodeSettings.AsObject;
@@ -7189,6 +7200,7 @@ export namespace XmrNodeSettings {
     blockchainPath: string,
     bootstrapUrl: string,
     startupFlagsList: Array<string>,
+    syncBlockchain: boolean,
   }
 }
 

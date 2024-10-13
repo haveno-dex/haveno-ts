@@ -563,6 +563,19 @@ class HavenoClient {
         }
     }
     /**
+     * Get the current auto switch setting.
+     *
+     * @return {boolean} whether auto switch is enabled or disabled
+     */
+    async getAutoSwitch() {
+        try {
+            return (await this._xmrConnectionsClient.getAutoSwitch(new grpc_pb_1.GetAutoSwitchRequest(), { password: this._password })).getAutoSwitch();
+        }
+        catch (e) {
+            throw new HavenoError_1.default(e.message, e.code);
+        }
+    }
+    /**
      * Returns whether daemon is running a local monero node.
      */
     async isMoneroNodeOnline() {

@@ -203,6 +203,9 @@ export declare class XmrConnectionsClient {
     methodDescriptorSetAutoSwitch: grpcWeb.MethodDescriptor<grpc_pb.SetAutoSwitchRequest, grpc_pb.SetAutoSwitchReply>;
     setAutoSwitch(request: grpc_pb.SetAutoSwitchRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.SetAutoSwitchReply>;
     setAutoSwitch(request: grpc_pb.SetAutoSwitchRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.SetAutoSwitchReply) => void): grpcWeb.ClientReadableStream<grpc_pb.SetAutoSwitchReply>;
+    methodDescriptorGetAutoSwitch: grpcWeb.MethodDescriptor<grpc_pb.GetAutoSwitchRequest, grpc_pb.GetAutoSwitchReply>;
+    getAutoSwitch(request: grpc_pb.GetAutoSwitchRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.GetAutoSwitchReply>;
+    getAutoSwitch(request: grpc_pb.GetAutoSwitchRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.GetAutoSwitchReply) => void): grpcWeb.ClientReadableStream<grpc_pb.GetAutoSwitchReply>;
 }
 export declare class XmrNodeClient {
     client_: grpcWeb.AbstractClientBase;
