@@ -975,7 +975,7 @@ export default class HavenoClient {
   /**
    * Delete a payment account.
    * 
-   * @param paymentAccountId {string} the id of the payment account to delete
+   * @param {string} paymentAccountId the id of the payment account to delete
    */
   async deletePaymentAccount(paymentAccountId: string): Promise<void> {
     try {
