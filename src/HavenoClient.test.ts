@@ -3936,8 +3936,15 @@ function getCryptoAddress(currencyCode: string): string|undefined {
 async function createPaymentAccount(trader: HavenoClient, assetCodes: string, paymentMethodId?: string | PaymentAccountForm.FormId) {
   if (!paymentMethodId) paymentMethodId = isCrypto(assetCodes!) ? PaymentAccountForm.FormId.BLOCK_CHAINS : PaymentAccountForm.FormId.PAY_BY_MAIL;
   const accountForm = await trader.getPaymentAccountForm(paymentMethodId);
-  for (const field of accountForm.getFieldsList()) field.setValue(getValidFormInput(accountForm, field.getId()));
+
+  // set trade currencies
   if (HavenoUtils.hasFormField(accountForm, PaymentAccountFormField.FieldId.TRADE_CURRENCIES)) HavenoUtils.setFormValue(accountForm, PaymentAccountFormField.FieldId.TRADE_CURRENCIES, assetCodes);
+
+  // initialize remaining fields
+  for (const field of accountForm.getFieldsList()) {
+    if (field.getValue() !== "") continue; // skip if already set
+    field.setValue(getValidFormInput(accountForm, field.getId()));
+  }
   return await trader.createPaymentAccount(accountForm);
 }
 
