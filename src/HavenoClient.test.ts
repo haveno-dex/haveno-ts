@@ -1632,7 +1632,7 @@ test("Cannot post offer exceeding trade limit (CI, sanity check)", async () => {
     });
     throw new Error("Should have rejected posting offer above trade limit")
   } catch (err: any) {
-    assert(err.message.indexOf("amount is larger than") === 0);
+    if (err.message.indexOf("amount is larger than") < 0) throw err;
   }
 
   // test posting sell offer above limit
@@ -1646,7 +1646,7 @@ test("Cannot post offer exceeding trade limit (CI, sanity check)", async () => {
     });
     throw new Error("Should have rejected posting offer above trade limit")
   } catch (err: any) {
-    assert(err.message.indexOf("amount is larger than") === 0);
+    if (err.message.indexOf("amount is larger than") < 0) throw err;
   }
 
   // test that sell limit is higher than buy limit
