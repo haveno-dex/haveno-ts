@@ -421,7 +421,7 @@ const TestConfig = {
     maxWalletStartupMs: 10000, // TODO (woodser): make shorter by switching to jni
     maxCpuPct: 0.25,
     paymentMethods: Object.keys(PaymentAccountForm.FormId), // all supported payment methods
-    assetCodes: ["USD", "GBP", "EUR", "ETH", "BTC", "BCH", "LTC"], // primary asset codes
+    assetCodes: ["USD", "GBP", "EUR", "ETH", "BTC", "BCH", "LTC", "USDT-ERC20", "USDT-TRC20"], // primary asset codes
     fixedPriceAssetCodes: ["XAG", "XAU", "XGB"],
     cryptoAddresses: [{
             currencyCode: "ETH",
@@ -435,6 +435,12 @@ const TestConfig = {
         }, {
             currencyCode: "LTC",
             address: "LXUTUN5mTPc2LsS7cEjkyjTRcfYyJGoUuQ"
+        }, {
+            currencyCode: "USDT-ERC20",
+            address: "0x9Fc17f65060080491c09e879dE8C7cc6dC72Fed7"
+        }, {
+            currencyCode: "USDT-TRC20",
+            address: "TVnmu3E6DYVL4bpAoZnPNEPVUrgC7eSWaX"
         }
     ],
     ports: new Map<string, string[]>([ // map http ports to havenod api and p2p ports
