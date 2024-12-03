@@ -1692,6 +1692,7 @@ test("Can complete a trade within a range", async () => {
     testPayoutUnlocked: true, // override to test unlock
     makerPaymentAccountId: makerPaymentAccount.getId(),
     takerPaymentAccountId: takerPaymentAccount.getId(),
+    direction: OfferDirection.SELL,
     assetCode: assetCode,
     testBalanceChangeEndToEnd: true
   }
@@ -2883,17 +2884,18 @@ async function takeOffer(ctxP: Partial<TradeContext>): Promise<TradeInfo> {
     ctx.arbitrator!.trade = await ctx.arbitrator.havenod!.getTrade(ctx.offerId!);
 
     // test buyer balances after offer taken
-    const buyerBalanceDiff = BigInt(ctx.getBuyer().balancesAfterTake!.getBalance()) - BigInt(ctx.getBuyer().balancesBeforeTake!.getBalance());
     const buyerBalanceDiffReservedTrade = BigInt(ctx.getBuyer().balancesAfterTake!.getReservedTradeBalance()) - BigInt(ctx.getBuyer().balancesBeforeTake!.getReservedTradeBalance());
-    const buyerBalanceDiffReservedOffer = BigInt(ctx.getBuyer().balancesAfterTake!.getReservedOfferBalance()) - BigInt(ctx.getBuyer().balancesBeforeTake!.getReservedOfferBalance());
     expect(buyerBalanceDiffReservedTrade).toEqual(BigInt(trade.getBuyerSecurityDeposit()!));
+    const buyerBalanceDiffReservedOffer = BigInt(ctx.getBuyer().balancesAfterTake!.getReservedOfferBalance()) - BigInt(ctx.getBuyer().balancesBeforeTake!.getReservedOfferBalance());
+    const buyerBalanceDiff = BigInt(ctx.getBuyer().balancesAfterTake!.getBalance()) - BigInt(ctx.getBuyer().balancesBeforeTake!.getBalance());
     expect(buyerBalanceDiff).toEqual(-1n * buyerBalanceDiffReservedOffer - buyerBalanceDiffReservedTrade - ctx.getBuyer().depositTxFee! - ctx.getBuyer().tradeFee!);
 
     // test seller balances after offer taken
-    const sellerBalanceDiff = BigInt(ctx.getSeller().balancesAfterTake!.getBalance()) - BigInt(ctx.getSeller().balancesBeforeTake!.getBalance());
     const sellerBalanceDiffReservedTrade = BigInt(ctx.getSeller().balancesAfterTake!.getReservedTradeBalance()) - BigInt(ctx.getSeller().balancesBeforeTake!.getReservedTradeBalance());
     expect(sellerBalanceDiffReservedTrade).toEqual(BigInt(trade.getAmount()) + BigInt(trade.getSellerSecurityDeposit()!));
-    expect(sellerBalanceDiff).toEqual(0n - ctx.getSeller().depositTxFee! - ctx.getSeller().tradeFee! - ctx.getSeller().securityDepositActual! - ctx.tradeAmount!);
+    const sellerBalanceDiffReservedOffer = BigInt(ctx.getSeller().balancesAfterTake!.getReservedOfferBalance()) - BigInt(ctx.getSeller().balancesBeforeTake!.getReservedOfferBalance());
+    const sellerBalanceDiff = BigInt(ctx.getSeller().balancesAfterTake!.getBalance()) - BigInt(ctx.getSeller().balancesBeforeTake!.getBalance());
+    expect(sellerBalanceDiff).toEqual(-1n * sellerBalanceDiffReservedOffer - sellerBalanceDiffReservedTrade - ctx.getSeller().depositTxFee! - ctx.getSeller().tradeFee!);
 
     // test maker balances after offer taken
     const makerBalanceDiffReservedOffer = BigInt(ctx.getMaker().balancesAfterTake!.getReservedOfferBalance()) - BigInt(ctx.getMaker().balancesBeforeTake!.getReservedOfferBalance());
