@@ -354,6 +354,7 @@ const TestConfig = {
     networkType: getBaseCurrencyNetwork() == BaseCurrencyNetwork.XMR_MAINNET ? moneroTs.MoneroNetworkType.MAINNET : getBaseCurrencyNetwork() == BaseCurrencyNetwork.XMR_LOCAL ? moneroTs.MoneroNetworkType.TESTNET : moneroTs.MoneroNetworkType.STAGENET,
     moneroBinsDir: "../haveno/.localnet",
     testDataDir: "./testdata",
+    deferralMs: 25000,
     haveno: {
         path: "../haveno",
         version: "1.0.14"
@@ -3177,6 +3178,12 @@ async function resolveDispute(ctxP: Partial<TradeContext>) {
   if (ctx.getDisputePeer()!.havenod) {
     const dispute = await ctx.getDisputePeer()!.havenod!.getDispute(ctx.offerId!);
     assert(dispute.getIsClosed(), "Dispute is not closed for opener's peer, trade " + ctx.offerId);
+  }
+
+  // wait for deferral of payout publish if applicable
+  if (ctx.getDisputeOpener() && ctx.disputeWinner === DisputeResult.Winner.SELLER && ctx.sellerOfflineAfterDisputeOpened || ctx.disputeWinner === DisputeResult.Winner.BUYER && ctx.buyerOfflineAfterDisputeOpened) {
+    HavenoUtils.log(0, "Awaiting deferral of publishing dispute payout tx");
+    await wait(TestConfig.deferralMs); // wait for deferral
   }
 
   // test trade state
