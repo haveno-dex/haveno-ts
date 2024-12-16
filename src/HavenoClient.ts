@@ -1046,6 +1046,8 @@ export default class HavenoClient {
    * @param {number} triggerPrice - price to remove offer (optional)
    * @param {bigint} minAmount - minimum amount to trade (optional, default to fixed amount)
    * @param {number} reserveExactAmount - reserve exact amount needed for offer, incurring on-chain transaction and 10 confirmations before the offer goes live (default = false)
+   * @param {boolean} isPrivateOffer - whether the offer is private (default = false)
+   * @param {boolean} buyerAsTakerWithoutDeposit - waive buyer as taker deposit and fee (default false)
    * @return {OfferInfo} the posted offer
    */
   async postOffer(direction: OfferDirection,
@@ -1057,7 +1059,9 @@ export default class HavenoClient {
                   marketPriceMarginPct?: number,
                   triggerPrice?: number,
                   minAmount?: bigint,
-                  reserveExactAmount?: boolean): Promise<OfferInfo> {
+                  reserveExactAmount?: boolean,
+                  isPrivateOffer?: boolean,
+                  buyerAsTakerWithoutDeposit?: boolean): Promise<OfferInfo> {
     console.log("Posting offer with security deposit %: " + securityDepositPct)
     try {
       const request = new PostOfferRequest()
@@ -1065,13 +1069,15 @@ export default class HavenoClient {
           .setAmount(amount.toString())
           .setCurrencyCode(assetCode)
           .setPaymentAccountId(paymentAccountId)
-          .setBuyerSecurityDepositPct(securityDepositPct)
+          .setSecurityDepositPct(securityDepositPct)
           .setUseMarketBasedPrice(price === undefined)
           .setMinAmount(minAmount ? minAmount.toString() : amount.toString());
       if (price) request.setPrice(price.toString());
       if (marketPriceMarginPct) request.setMarketPriceMarginPct(marketPriceMarginPct);
       if (triggerPrice) request.setTriggerPrice(triggerPrice.toString());
-      if (reserveExactAmount) request.setReserveExactAmount(reserveExactAmount);
+      if (reserveExactAmount) request.setReserveExactAmount(true);
+      if (isPrivateOffer) request.setIsPrivateOffer(true);
+      if (buyerAsTakerWithoutDeposit) request.setBuyerAsTakerWithoutDeposit(true);
       return (await this._offersClient.postOffer(request, {password: this._password})).getOffer()!;
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);
@@ -1097,16 +1103,19 @@ export default class HavenoClient {
    * @param {string} offerId - id of the offer to take
    * @param {string} paymentAccountId - id of the payment account
    * @param {bigint|undefined} amount - amount the taker chooses to buy or sell within the offer range (default is max offer amount)
+   * @param {string|undefined} challenge - the challenge to use for the private offer
    * @return {TradeInfo} the initialized trade
    */
   async takeOffer(offerId: string,
                   paymentAccountId: string,
-                  amount?: bigint): Promise<TradeInfo> {
+                  amount?: bigint,
+                  challenge?: string): Promise<TradeInfo> {
     try {
       const request = new TakeOfferRequest()
           .setOfferId(offerId)
           .setPaymentAccountId(paymentAccountId);
       if (amount) request.setAmount(amount.toString());
+      if (challenge) request.setChallenge(challenge);
       const resp = await this._tradesClient.takeOffer(request, {password: this._password});
       if (resp.getTrade()) return resp.getTrade()!;
       throw new HavenoError(resp.getFailureReason()?.getDescription()!, resp.getFailureReason()?.getAvailabilityResult());
@@ -1319,7 +1328,7 @@ export default class HavenoClient {
     try {
       await this.disconnect();
       await this._shutdownServerClient.stop(new StopRequest(), {password: this._password}); // process receives 'exit' event
-      if (this._process) return HavenoUtils.kill(this._process);
+      if (this._process) await HavenoUtils.kill(this._process);
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);
     }
