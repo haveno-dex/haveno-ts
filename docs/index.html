@@ -38,23 +38,53 @@
 <a href="#typedocs" id="typedocs" style="color: inherit; text-decoration: none;">
   <h2>TypeDocs</h2>
 </a>
-<p>See <a href="https://haveno-dex.github.io/haveno-ts/classes/HavenoClient.HavenoClient.html">typedocs</a>.</p>
+<p>See <a href="https://haveno-dex.github.io/haveno-ts/classes/HavenoClient.HavenoClient.html">TypeDocs</a>.</p>
 
 <a href="#run-tests" id="run-tests" style="color: inherit; text-decoration: none;">
   <h2>Run tests</h2>
 </a>
-<p>Running the <a href="./src/HavenoClient.test.ts">API tests</a> is the best way to develop and test Haveno end-to-end.</p>
-<p><a href="./src/HavenoClient.ts"><code>HavenoClient.ts</code></a> provides the client interface to Haveno&#39;s backend daemon.</p>
+<p>Running the <a href="./src/HavenoClient.test.ts">API tests</a> is the best way to develop and test Haveno end-to-end. <a href="./src/HavenoClient.ts"><code>HavenoClient.ts</code></a> provides the client interface to Haveno&#39;s backend daemon.</p>
+<p>You first need to start a local Haveno network which can be done manually or using docker.</p>
+
+<a href="#start-local-haveno-network-manually" id="start-local-haveno-network-manually" style="color: inherit; text-decoration: none;">
+  <h3>Start local Haveno network manually</h3>
+</a>
+<p>This workflow is useful for local development of <code>haveno</code> and <code>haveno-ts</code></p>
 <ol>
 <li><a href="https://github.com/haveno-dex/haveno/blob/master/docs/installing.md">Run a local Haveno test network</a> and then shut down the arbitrator, user1, and user2 or run them as daemons, e.g. <code>make user1-daemon-local</code>. You may omit the arbitrator registration steps since it&#39;s done automatically in the tests.</li>
 <li>Clone this project to the same parent directory as the haveno project: <code>git clone https://github.com/haveno-dex/haveno-ts</code></li>
-<li>In a new terminal, start envoy with the config in haveno-ts/config/envoy.test.yaml.<br>For example (change absolute path for your system): <code>docker run --rm --add-host host.docker.internal:host-gateway -it -v ~/git/haveno-ts/config/envoy.test.yaml:/envoy.test.yaml -p 8079:8079 -p 8080:8080 -p 8081:8081 -p 8082:8082 -p 8083:8083 -p 8084:8084 -p 8085:8085 -p 8086:8086 envoyproxy/envoy-dev:latest -c /envoy.test.yaml</code></li>
+<li>Install <code>envoy</code> proxy from your package manager of choice, for example <code>brew install envoy</code>.</li>
+<li>In a new terminal, start envoy with the config in haveno-ts/config/envoy.local.yaml: <code>envoy -c config/envoy.local.yaml</code></li>
 <li>In a new terminal, start the funding wallet. This wallet will be funded automatically in order to fund the tests.<br>For example: <code>cd ~/git/haveno &amp;&amp; make funding-wallet-local</code>.</li>
+</ol>
+
+<a href="#start-local-haveno-network-with-docker" id="start-local-haveno-network-with-docker" style="color: inherit; text-decoration: none;">
+  <h3>Start local Haveno network with docker</h3>
+</a>
+<p>Alternatively use this wokflow to develop <code>haveno-ts</code> or run tests with dockerized setup:</p>
+<p>Start a local Haveno network with docker:</p>
+<ol>
+<li><code>cd ~/git/haveno-ts/docker</code></li>
+<li><code>sudo docker-compose up</code>. This will start docker and initialize the network.</li>
+</ol>
+<blockquote>
+<p><strong>Docker Tips</strong></p>
+<ul>
+<li>Stop: <code>sudo docker-compose stop</code></li>
+<li>Rebuild: <code>sudo docker-compose build</code></li>
+<li>Stop and delete contains: <code>sudo docker-compose stop</code></li>
+</ul>
+</blockquote>
+
+<a href="#run-client-tests" id="run-client-tests" style="color: inherit; text-decoration: none;">
+  <h3>Run client tests</h3>
+</a>
+<ol start="5">
 <li>Install protobuf compiler <a href="https://github.com/protocolbuffers/protobuf/releases/tag/v3.20.3">v3.20.3</a> for your system.</li>
 <li>Download <code>protoc-gen-grpc-web</code> plugin and make executable as <a href="https://github.com/grpc/grpc-web#code-generator-plugin">shown here</a>.</li>
 <li><code>cd haveno-ts</code></li>
 <li><code>npm install</code></li>
-<li><code>npm run test -- --baseCurrencyNetwork=XMR_LOCAL</code> to run all tests or <code>npm run test -- --baseCurrencyNetwork=XMR_LOCAL -t &quot;my test&quot;</code> to run tests by name.</li>
+<li><code>npm run test -- --baseCurrencyNetwork=XMR_LOCAL</code> to run all tests or <code>npm run test -- --baseCurrencyNetwork=XMR_LOCAL -t &quot;Can get the version&quot;</code> to run tests by name.</li>
 </ol>
 </div></div>
 <div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -124,8 +154,12 @@
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.CreateXmrTxRequest.html">Create<wbr/>Xmr<wbr/>Tx<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.DeleteAccountReply.html">Delete<wbr/>Account<wbr/>Reply</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.DeleteAccountRequest.html">Delete<wbr/>Account<wbr/>Request</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.DeletePaymentAccountReply.html">Delete<wbr/>Payment<wbr/>Account<wbr/>Reply</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.DeletePaymentAccountRequest.html">Delete<wbr/>Payment<wbr/>Account<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetAddressBalanceReply.html">Get<wbr/>Address<wbr/>Balance<wbr/>Reply</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetAddressBalanceRequest.html">Get<wbr/>Address<wbr/>Balance<wbr/>Request</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetAutoSwitchReply.html">Get<wbr/>Auto<wbr/>Switch<wbr/>Reply</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetAutoSwitchRequest.html">Get<wbr/>Auto<wbr/>Switch<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetBalancesReply.html">Get<wbr/>Balances<wbr/>Reply</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetBalancesRequest.html">Get<wbr/>Balances<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetBestAvailableConnectionReply.html">Get<wbr/>Best<wbr/>Available<wbr/>Connection<wbr/>Reply</a></li>
@@ -146,8 +180,6 @@
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetFundingAddressesRequest.html">Get<wbr/>Funding<wbr/>Addresses<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetMethodHelpReply.html">Get<wbr/>Method<wbr/>Help<wbr/>Reply</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetMethodHelpRequest.html">Get<wbr/>Method<wbr/>Help<wbr/>Request</a></li>
-<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetMoneroNodeSettingsReply.html">Get<wbr/>Monero<wbr/>Node<wbr/>Settings<wbr/>Reply</a></li>
-<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetMoneroNodeSettingsRequest.html">Get<wbr/>Monero<wbr/>Node<wbr/>Settings<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetMyOfferReply.html">Get<wbr/>My<wbr/>Offer<wbr/>Reply</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetMyOfferRequest.html">Get<wbr/>My<wbr/>Offer<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetMyOffersReply.html">Get<wbr/>My<wbr/>Offers<wbr/>Reply</a></li>
@@ -174,6 +206,8 @@
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetVersionRequest.html">Get<wbr/>Version<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetXmrNewSubaddressReply.html">Get<wbr/>Xmr<wbr/>New<wbr/>Subaddress<wbr/>Reply</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetXmrNewSubaddressRequest.html">Get<wbr/>Xmr<wbr/>New<wbr/>Subaddress<wbr/>Request</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetXmrNodeSettingsReply.html">Get<wbr/>Xmr<wbr/>Node<wbr/>Settings<wbr/>Reply</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetXmrNodeSettingsRequest.html">Get<wbr/>Xmr<wbr/>Node<wbr/>Settings<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetXmrPrimaryAddressReply.html">Get<wbr/>Xmr<wbr/>Primary<wbr/>Address<wbr/>Reply</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetXmrPrimaryAddressRequest.html">Get<wbr/>Xmr<wbr/>Primary<wbr/>Address<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetXmrSeedReply.html">Get<wbr/>Xmr<wbr/>Seed<wbr/>Reply</a></li>
@@ -184,8 +218,8 @@
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.IsAccountOpenRequest.html">Is<wbr/>Account<wbr/>Open<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.IsAppInitializedReply.html">Is<wbr/>App<wbr/>Initialized<wbr/>Reply</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.IsAppInitializedRequest.html">Is<wbr/>App<wbr/>Initialized<wbr/>Request</a></li>
-<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.IsMoneroNodeOnlineReply.html">Is<wbr/>Monero<wbr/>Node<wbr/>Online<wbr/>Reply</a></li>
-<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.IsMoneroNodeOnlineRequest.html">Is<wbr/>Monero<wbr/>Node<wbr/>Online<wbr/>Request</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.IsXmrNodeOnlineReply.html">Is<wbr/>Xmr<wbr/>Node<wbr/>Online<wbr/>Reply</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.IsXmrNodeOnlineRequest.html">Is<wbr/>Xmr<wbr/>Node<wbr/>Online<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.LockWalletReply.html">Lock<wbr/>Wallet<wbr/>Reply</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.LockWalletRequest.html">Lock<wbr/>Wallet<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.MarketDepthInfo.html">Market<wbr/>Depth<wbr/>Info</a></li>
@@ -230,16 +264,16 @@
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.SetConnectionRequest.html">Set<wbr/>Connection<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.SetWalletPasswordReply.html">Set<wbr/>Wallet<wbr/>Password<wbr/>Reply</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.SetWalletPasswordRequest.html">Set<wbr/>Wallet<wbr/>Password<wbr/>Request</a></li>
-<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.StartCheckingConnectionsReply.html">Start<wbr/>Checking<wbr/>Connections<wbr/>Reply</a></li>
-<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.StartCheckingConnectionsRequest.html">Start<wbr/>Checking<wbr/>Connections<wbr/>Request</a></li>
-<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.StartMoneroNodeReply.html">Start<wbr/>Monero<wbr/>Node<wbr/>Reply</a></li>
-<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.StartMoneroNodeRequest.html">Start<wbr/>Monero<wbr/>Node<wbr/>Request</a></li>
-<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.StopCheckingConnectionsReply.html">Stop<wbr/>Checking<wbr/>Connections<wbr/>Reply</a></li>
-<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.StopCheckingConnectionsRequest.html">Stop<wbr/>Checking<wbr/>Connections<wbr/>Request</a></li>
-<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.StopMoneroNodeReply.html">Stop<wbr/>Monero<wbr/>Node<wbr/>Reply</a></li>
-<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.StopMoneroNodeRequest.html">Stop<wbr/>Monero<wbr/>Node<wbr/>Request</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.StartCheckingConnectionReply.html">Start<wbr/>Checking<wbr/>Connection<wbr/>Reply</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.StartCheckingConnectionRequest.html">Start<wbr/>Checking<wbr/>Connection<wbr/>Request</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.StartXmrNodeReply.html">Start<wbr/>Xmr<wbr/>Node<wbr/>Reply</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.StartXmrNodeRequest.html">Start<wbr/>Xmr<wbr/>Node<wbr/>Request</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.StopCheckingConnectionReply.html">Stop<wbr/>Checking<wbr/>Connection<wbr/>Reply</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.StopCheckingConnectionRequest.html">Stop<wbr/>Checking<wbr/>Connection<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.StopReply.html">Stop<wbr/>Reply</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.StopRequest.html">Stop<wbr/>Request</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.StopXmrNodeReply.html">Stop<wbr/>Xmr<wbr/>Node<wbr/>Reply</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.StopXmrNodeRequest.html">Stop<wbr/>Xmr<wbr/>Node<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.TakeOfferReply.html">Take<wbr/>Offer<wbr/>Reply</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.TakeOfferRequest.html">Take<wbr/>Offer<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.TradeInfo.html">Trade<wbr/>Info</a></li>
@@ -257,6 +291,7 @@
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.XmrIncomingTransfer.html">Xmr<wbr/>Incoming<wbr/>Transfer</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.XmrOutgoingTransfer.html">Xmr<wbr/>Outgoing<wbr/>Transfer</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.XmrTx.html">Xmr<wbr/>Tx</a></li></ul></li>
+<li class="tsd-kind-module"><a href="modules/protobuf_grpc_pb-1.html">protobuf/grpc_<wbr/>pb</a></li>
 <li class="tsd-kind-module"><a href="modules/protobuf_pb_pb.html">protobuf/pb_<wbr/>pb</a>
 <ul>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.AccountAgeWitness.html">Account<wbr/>Age<wbr/>Witness</a></li>
@@ -286,6 +321,7 @@
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.ByteArray.html">Byte<wbr/>Array</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.CapitualAccountPayload.html">Capitual<wbr/>Account<wbr/>Payload</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.CashAppAccountPayload.html">Cash<wbr/>App<wbr/>Account<wbr/>Payload</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.CashAtAtmAccountPayload.html">Cash<wbr/>At<wbr/>Atm<wbr/>Account<wbr/>Payload</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.CashDepositAccountPayload.html">Cash<wbr/>Deposit<wbr/>Account<wbr/>Payload</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.CelPayAccountPayload.html">Cel<wbr/>Pay<wbr/>Account<wbr/>Payload</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.ChaseQuickPayAccountPayload.html">Chase<wbr/>Quick<wbr/>Pay<wbr/>Account<wbr/>Payload</a></li>
@@ -311,6 +347,7 @@
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.EncryptedConnectionList.html">Encrypted<wbr/>Connection<wbr/>List</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.F2FAccountPayload.html">F2FAccount<wbr/>Payload</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.FasterPaymentsAccountPayload.html">Faster<wbr/>Payments<wbr/>Account<wbr/>Payload</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.FileTransferPart.html">File<wbr/>Transfer<wbr/>Part</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.Filter.html">Filter</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.GetDataResponse.html">Get<wbr/>Data<wbr/>Response</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.GetInventoryRequest.html">Get<wbr/>Inventory<wbr/>Request</a></li>
@@ -338,7 +375,6 @@
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.Mediator.html">Mediator</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.MockMailboxPayload.html">Mock<wbr/>Mailbox<wbr/>Payload</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.MockPayload.html">Mock<wbr/>Payload</a></li>
-<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.MoneroNodeSettings.html">Monero<wbr/>Node<wbr/>Settings</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.MoneseAccountPayload.html">Monese<wbr/>Account<wbr/>Payload</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.MoneyBeamAccountPayload.html">Money<wbr/>Beam<wbr/>Account<wbr/>Payload</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.MoneyGramAccountPayload.html">Money<wbr/>Gram<wbr/>Account<wbr/>Payload</a></li>
@@ -356,6 +392,7 @@
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.OpenOffer.html">Open<wbr/>Offer</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.PaxumAccountPayload.html">Paxum<wbr/>Account<wbr/>Payload</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.PayByMailAccountPayload.html">Pay<wbr/>By<wbr/>Mail<wbr/>Account<wbr/>Payload</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.PayPalAccountPayload.html">Pay<wbr/>Pal<wbr/>Account<wbr/>Payload</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.PaymentAccount.html">Payment<wbr/>Account</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.PaymentAccountFilter.html">Payment<wbr/>Account<wbr/>Filter</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.PaymentAccountForm.html">Payment<wbr/>Account<wbr/>Form</a></li>
@@ -441,11 +478,11 @@
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.WesternUnionAccountPayload.html">Western<wbr/>Union<wbr/>Account<wbr/>Payload</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.XmrAddressEntry.html">Xmr<wbr/>Address<wbr/>Entry</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.XmrAddressEntryList.html">Xmr<wbr/>Address<wbr/>Entry<wbr/>List</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.XmrNodeSettings.html">Xmr<wbr/>Node<wbr/>Settings</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.ZelleAccountPayload.html">Zelle<wbr/>Account<wbr/>Payload</a></li></ul></li>
-<li class="tsd-kind-module"><a href="modules/utils_HavenoError.html">utils/<wbr/>Haveno<wbr/>Error</a></li>
-<li class="tsd-kind-module"><a href="modules/utils_HavenoUtils.html">utils/<wbr/>Haveno<wbr/>Utils</a>
-<ul>
-<li class="tsd-kind-module tsd-parent-kind-module"><a href="modules/utils_HavenoUtils._internal_.html">&lt;internal&gt;</a></li></ul></li>
+<li class="tsd-kind-module"><a href="modules/protobuf_pb_pb-1.html">protobuf/pb_<wbr/>pb</a></li>
+<li class="tsd-kind-module"><a href="modules/types_HavenoError.html">types/<wbr/>Haveno<wbr/>Error</a></li>
+<li class="tsd-kind-module"><a href="modules/utils_HavenoUtils.html">utils/<wbr/>Haveno<wbr/>Utils</a></li>
 <li class="tsd-kind-module"><a href="modules/utils_TaskLooper.html">utils/<wbr/>Task<wbr/>Looper</a>
 <ul>
 <li class="tsd-kind-module tsd-parent-kind-module"><a href="modules/utils_TaskLooper._internal_.html">&lt;internal&gt;</a></li></ul></li></ul></li></ul></div></details></nav></div></div>

@@ -8,23 +8,29 @@ on:
 
 jobs:
   haveno-ts-e2e:
-    timeout-minutes: 60
+    timeout-minutes: 90
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      - name: Setup Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
 
       - name: Stop Mono service
         run: sudo killall mono
 
       - name: Start containers
-        run: docker-compose -f "./docker/docker-compose.yml" up -d --build
+        run: docker compose -f "./docker/docker-compose.yml" up -d --build
 
       - name: Install node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 18
 
       - name: Install protoc-gen-grpc-web
         run: |
@@ -58,4 +64,4 @@ jobs:
 
       - name: Stop containers
         if: always()
-        run: docker-compose -f "./docker/docker-compose.yml" down
+        run: docker compose -f "./docker/docker-compose.yml" down

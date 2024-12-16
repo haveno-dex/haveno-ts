@@ -1,4 +1,4 @@
-FROM gradle:jdk11
+FROM gradle:jdk21
 
 RUN set -ex && \
     apt update && \
@@ -15,6 +15,8 @@ USER pricenode
 RUN set -ex && git clone --recursive https://github.com/haveno-dex/haveno-pricenode.git /home/pricenode
 
 WORKDIR /home/pricenode
+
+RUN set -ex && git fetch origin && git checkout origin/main
 
 RUN ./gradlew clean build -x test
 

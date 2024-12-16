@@ -191,6 +191,11 @@ export class NetworkEnvelope extends jspb.Message {
   hasMediatedPayoutTxPublishedMessage(): boolean;
   clearMediatedPayoutTxPublishedMessage(): NetworkEnvelope;
 
+  getFileTransferPart(): FileTransferPart | undefined;
+  setFileTransferPart(value?: FileTransferPart): NetworkEnvelope;
+  hasFileTransferPart(): boolean;
+  clearFileTransferPart(): NetworkEnvelope;
+
   getMessageCase(): NetworkEnvelope.MessageCase;
 
   serializeBinary(): Uint8Array;
@@ -241,6 +246,7 @@ export namespace NetworkEnvelope {
     chatMessage?: ChatMessage.AsObject,
     mediatedPayoutTxSignatureMessage?: MediatedPayoutTxSignatureMessage.AsObject,
     mediatedPayoutTxPublishedMessage?: MediatedPayoutTxPublishedMessage.AsObject,
+    fileTransferPart?: FileTransferPart.AsObject,
   }
 
   export enum MessageCase { 
@@ -282,6 +288,7 @@ export namespace NetworkEnvelope {
     CHAT_MESSAGE = 36,
     MEDIATED_PAYOUT_TX_SIGNATURE_MESSAGE = 37,
     MEDIATED_PAYOUT_TX_PUBLISHED_MESSAGE = 38,
+    FILE_TRANSFER_PART = 39,
   }
 }
 
@@ -414,6 +421,48 @@ export namespace GetUpdatedDataRequest {
     nonce: number,
     excludedKeysList: Array<Uint8Array | string>,
     version: string,
+  }
+}
+
+export class FileTransferPart extends jspb.Message {
+  getSenderNodeAddress(): NodeAddress | undefined;
+  setSenderNodeAddress(value?: NodeAddress): FileTransferPart;
+  hasSenderNodeAddress(): boolean;
+  clearSenderNodeAddress(): FileTransferPart;
+
+  getUid(): string;
+  setUid(value: string): FileTransferPart;
+
+  getTradeId(): string;
+  setTradeId(value: string): FileTransferPart;
+
+  getTraderId(): number;
+  setTraderId(value: number): FileTransferPart;
+
+  getSeqNumOrFileLength(): number;
+  setSeqNumOrFileLength(value: number): FileTransferPart;
+
+  getMessageData(): Uint8Array | string;
+  getMessageData_asU8(): Uint8Array;
+  getMessageData_asB64(): string;
+  setMessageData(value: Uint8Array | string): FileTransferPart;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): FileTransferPart.AsObject;
+  static toObject(includeInstance: boolean, msg: FileTransferPart): FileTransferPart.AsObject;
+  static serializeBinaryToWriter(message: FileTransferPart, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): FileTransferPart;
+  static deserializeBinaryFromReader(message: FileTransferPart, reader: jspb.BinaryReader): FileTransferPart;
+}
+
+export namespace FileTransferPart {
+  export type AsObject = {
+    senderNodeAddress?: NodeAddress.AsObject,
+    uid: string,
+    tradeId: string,
+    traderId: number,
+    seqNumOrFileLength: number,
+    messageData: Uint8Array | string,
   }
 }
 
@@ -962,18 +1011,11 @@ export namespace PrefixedSealedAndSignedMessage {
 }
 
 export class InitTradeRequest extends jspb.Message {
-  getTradeId(): string;
-  setTradeId(value: string): InitTradeRequest;
+  getTradeProtocolVersion(): TradeProtocolVersion;
+  setTradeProtocolVersion(value: TradeProtocolVersion): InitTradeRequest;
 
-  getSenderNodeAddress(): NodeAddress | undefined;
-  setSenderNodeAddress(value?: NodeAddress): InitTradeRequest;
-  hasSenderNodeAddress(): boolean;
-  clearSenderNodeAddress(): InitTradeRequest;
-
-  getPubKeyRing(): PubKeyRing | undefined;
-  setPubKeyRing(value?: PubKeyRing): InitTradeRequest;
-  hasPubKeyRing(): boolean;
-  clearPubKeyRing(): InitTradeRequest;
+  getOfferId(): string;
+  setOfferId(value: string): InitTradeRequest;
 
   getTradeAmount(): number;
   setTradeAmount(value: number): InitTradeRequest;
@@ -981,17 +1023,25 @@ export class InitTradeRequest extends jspb.Message {
   getTradePrice(): number;
   setTradePrice(value: number): InitTradeRequest;
 
-  getTradeFee(): number;
-  setTradeFee(value: number): InitTradeRequest;
-
-  getAccountId(): string;
-  setAccountId(value: string): InitTradeRequest;
-
-  getPaymentAccountId(): string;
-  setPaymentAccountId(value: string): InitTradeRequest;
-
   getPaymentMethodId(): string;
   setPaymentMethodId(value: string): InitTradeRequest;
+
+  getMakerAccountId(): string;
+  setMakerAccountId(value: string): InitTradeRequest;
+
+  getTakerAccountId(): string;
+  setTakerAccountId(value: string): InitTradeRequest;
+
+  getMakerPaymentAccountId(): string;
+  setMakerPaymentAccountId(value: string): InitTradeRequest;
+
+  getTakerPaymentAccountId(): string;
+  setTakerPaymentAccountId(value: string): InitTradeRequest;
+
+  getTakerPubKeyRing(): PubKeyRing | undefined;
+  setTakerPubKeyRing(value?: PubKeyRing): InitTradeRequest;
+  hasTakerPubKeyRing(): boolean;
+  clearTakerPubKeyRing(): InitTradeRequest;
 
   getUid(): string;
   setUid(value: string): InitTradeRequest;
@@ -1031,11 +1081,6 @@ export class InitTradeRequest extends jspb.Message {
   getPayoutAddress(): string;
   setPayoutAddress(value: string): InitTradeRequest;
 
-  getMakerSignature(): Uint8Array | string;
-  getMakerSignature_asU8(): Uint8Array;
-  getMakerSignature_asB64(): string;
-  setMakerSignature(value: Uint8Array | string): InitTradeRequest;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): InitTradeRequest.AsObject;
   static toObject(includeInstance: boolean, msg: InitTradeRequest): InitTradeRequest.AsObject;
@@ -1046,15 +1091,16 @@ export class InitTradeRequest extends jspb.Message {
 
 export namespace InitTradeRequest {
   export type AsObject = {
-    tradeId: string,
-    senderNodeAddress?: NodeAddress.AsObject,
-    pubKeyRing?: PubKeyRing.AsObject,
+    tradeProtocolVersion: TradeProtocolVersion,
+    offerId: string,
     tradeAmount: number,
     tradePrice: number,
-    tradeFee: number,
-    accountId: string,
-    paymentAccountId: string,
     paymentMethodId: string,
+    makerAccountId: string,
+    takerAccountId: string,
+    makerPaymentAccountId: string,
+    takerPaymentAccountId: string,
+    takerPubKeyRing?: PubKeyRing.AsObject,
     uid: string,
     accountAgeWitnessSignatureOfOfferId: Uint8Array | string,
     currentDate: number,
@@ -1065,7 +1111,6 @@ export namespace InitTradeRequest {
     reserveTxHex: string,
     reserveTxKey: string,
     payoutAddress: string,
-    makerSignature: Uint8Array | string,
   }
 }
 
@@ -1088,6 +1133,9 @@ export class InitMultisigRequest extends jspb.Message {
   getExchangedMultisigHex(): string;
   setExchangedMultisigHex(value: string): InitMultisigRequest;
 
+  getTradeFeeAddress(): string;
+  setTradeFeeAddress(value: string): InitMultisigRequest;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): InitMultisigRequest.AsObject;
   static toObject(includeInstance: boolean, msg: InitMultisigRequest): InitMultisigRequest.AsObject;
@@ -1104,6 +1152,7 @@ export namespace InitMultisigRequest {
     preparedMultisigHex: string,
     madeMultisigHex: string,
     exchangedMultisigHex: string,
+    tradeFeeAddress: string,
   }
 }
 
@@ -1258,6 +1307,12 @@ export class DepositResponse extends jspb.Message {
   getErrorMessage(): string;
   setErrorMessage(value: string): DepositResponse;
 
+  getBuyersecuritydeposit(): number;
+  setBuyersecuritydeposit(value: number): DepositResponse;
+
+  getSellersecuritydeposit(): number;
+  setSellersecuritydeposit(value: number): DepositResponse;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): DepositResponse.AsObject;
   static toObject(includeInstance: boolean, msg: DepositResponse): DepositResponse.AsObject;
@@ -1272,6 +1327,8 @@ export namespace DepositResponse {
     uid: string,
     currentDate: number,
     errorMessage: string,
+    buyersecuritydeposit: number,
+    sellersecuritydeposit: number,
   }
 }
 
@@ -2501,13 +2558,13 @@ export class Filter extends jspb.Message {
   clearPriceRelayNodesList(): Filter;
   addPriceRelayNodes(value: string, index?: number): Filter;
 
-  getPreventPublicBtcNetwork(): boolean;
-  setPreventPublicBtcNetwork(value: boolean): Filter;
+  getPreventPublicXmrNetwork(): boolean;
+  setPreventPublicXmrNetwork(value: boolean): Filter;
 
-  getBtcNodesList(): Array<string>;
-  setBtcNodesList(value: Array<string>): Filter;
-  clearBtcNodesList(): Filter;
-  addBtcNodes(value: string, index?: number): Filter;
+  getXmrNodesList(): Array<string>;
+  setXmrNodesList(value: Array<string>): Filter;
+  clearXmrNodesList(): Filter;
+  addXmrNodes(value: string, index?: number): Filter;
 
   getDisableTradeBelowVersion(): string;
   setDisableTradeBelowVersion(value: string): Filter;
@@ -2527,10 +2584,10 @@ export class Filter extends jspb.Message {
   clearBannedsignerpubkeysList(): Filter;
   addBannedsignerpubkeys(value: string, index?: number): Filter;
 
-  getBtcFeeReceiverAddressesList(): Array<string>;
-  setBtcFeeReceiverAddressesList(value: Array<string>): Filter;
-  clearBtcFeeReceiverAddressesList(): Filter;
-  addBtcFeeReceiverAddresses(value: string, index?: number): Filter;
+  getXmrFeeReceiverAddressesList(): Array<string>;
+  setXmrFeeReceiverAddressesList(value: Array<string>): Filter;
+  clearXmrFeeReceiverAddressesList(): Filter;
+  addXmrFeeReceiverAddresses(value: string, index?: number): Filter;
 
   getCreationDate(): number;
   setCreationDate(value: number): Filter;
@@ -2583,13 +2640,13 @@ export namespace Filter {
     arbitratorsList: Array<string>,
     seedNodesList: Array<string>,
     priceRelayNodesList: Array<string>,
-    preventPublicBtcNetwork: boolean,
-    btcNodesList: Array<string>,
+    preventPublicXmrNetwork: boolean,
+    xmrNodesList: Array<string>,
     disableTradeBelowVersion: string,
     mediatorsList: Array<string>,
     refundagentsList: Array<string>,
     bannedsignerpubkeysList: Array<string>,
-    btcFeeReceiverAddressesList: Array<string>,
+    xmrFeeReceiverAddressesList: Array<string>,
     creationDate: number,
     signerPubKeyAsHex: string,
     bannedprivilegeddevpubkeysList: Array<string>,
@@ -2728,6 +2785,21 @@ export class OfferPayload extends jspb.Message {
   getMinAmount(): number;
   setMinAmount(value: number): OfferPayload;
 
+  getMakerFeePct(): number;
+  setMakerFeePct(value: number): OfferPayload;
+
+  getTakerFeePct(): number;
+  setTakerFeePct(value: number): OfferPayload;
+
+  getPenaltyFeePct(): number;
+  setPenaltyFeePct(value: number): OfferPayload;
+
+  getBuyerSecurityDepositPct(): number;
+  setBuyerSecurityDepositPct(value: number): OfferPayload;
+
+  getSellerSecurityDepositPct(): number;
+  setSellerSecurityDepositPct(value: number): OfferPayload;
+
   getBaseCurrencyCode(): string;
   setBaseCurrencyCode(value: string): OfferPayload;
 
@@ -2739,9 +2811,6 @@ export class OfferPayload extends jspb.Message {
 
   getMakerPaymentAccountId(): string;
   setMakerPaymentAccountId(value: string): OfferPayload;
-
-  getOfferFeeTxId(): string;
-  setOfferFeeTxId(value: string): OfferPayload;
 
   getCountryCode(): string;
   setCountryCode(value: string): OfferPayload;
@@ -2764,15 +2833,6 @@ export class OfferPayload extends jspb.Message {
 
   getBlockHeightAtOfferCreation(): number;
   setBlockHeightAtOfferCreation(value: number): OfferPayload;
-
-  getMakerFee(): number;
-  setMakerFee(value: number): OfferPayload;
-
-  getBuyerSecurityDeposit(): number;
-  setBuyerSecurityDeposit(value: number): OfferPayload;
-
-  getSellerSecurityDeposit(): number;
-  setSellerSecurityDeposit(value: number): OfferPayload;
 
   getMaxTradeLimit(): number;
   setMaxTradeLimit(value: number): OfferPayload;
@@ -2839,20 +2899,21 @@ export namespace OfferPayload {
     useMarketBasedPrice: boolean,
     amount: number,
     minAmount: number,
+    makerFeePct: number,
+    takerFeePct: number,
+    penaltyFeePct: number,
+    buyerSecurityDepositPct: number,
+    sellerSecurityDepositPct: number,
     baseCurrencyCode: string,
     counterCurrencyCode: string,
     paymentMethodId: string,
     makerPaymentAccountId: string,
-    offerFeeTxId: string,
     countryCode: string,
     acceptedCountryCodesList: Array<string>,
     bankId: string,
     acceptedBankIdsList: Array<string>,
     versionNr: string,
     blockHeightAtOfferCreation: number,
-    makerFee: number,
-    buyerSecurityDeposit: number,
-    sellerSecurityDeposit: number,
     maxTradeLimit: number,
     maxTradePeriod: number,
     useAutoClose: boolean,
@@ -2989,18 +3050,10 @@ export class Dispute extends jspb.Message {
   getContractHash_asB64(): string;
   setContractHash(value: Uint8Array | string): Dispute;
 
-  getDepositTxSerialized(): Uint8Array | string;
-  getDepositTxSerialized_asU8(): Uint8Array;
-  getDepositTxSerialized_asB64(): string;
-  setDepositTxSerialized(value: Uint8Array | string): Dispute;
-
   getPayoutTxSerialized(): Uint8Array | string;
   getPayoutTxSerialized_asU8(): Uint8Array;
   getPayoutTxSerialized_asB64(): string;
   setPayoutTxSerialized(value: Uint8Array | string): Dispute;
-
-  getDepositTxId(): string;
-  setDepositTxId(value: string): Dispute;
 
   getPayoutTxId(): string;
   setPayoutTxId(value: string): Dispute;
@@ -3094,9 +3147,7 @@ export namespace Dispute {
     tradeDate: number,
     contract?: Contract.AsObject,
     contractHash: Uint8Array | string,
-    depositTxSerialized: Uint8Array | string,
     payoutTxSerialized: Uint8Array | string,
-    depositTxId: string,
     payoutTxId: string,
     contractAsJson: string,
     makerContractSignature: Uint8Array | string,
@@ -3186,11 +3237,14 @@ export class DisputeResult extends jspb.Message {
   getArbitratorSignature_asB64(): string;
   setArbitratorSignature(value: Uint8Array | string): DisputeResult;
 
-  getBuyerPayoutAmount(): number;
-  setBuyerPayoutAmount(value: number): DisputeResult;
+  getBuyerPayoutAmountBeforeCost(): number;
+  setBuyerPayoutAmountBeforeCost(value: number): DisputeResult;
 
-  getSellerPayoutAmount(): number;
-  setSellerPayoutAmount(value: number): DisputeResult;
+  getSellerPayoutAmountBeforeCost(): number;
+  setSellerPayoutAmountBeforeCost(value: number): DisputeResult;
+
+  getSubtractFeeFrom(): DisputeResult.SubtractFeeFrom;
+  setSubtractFeeFrom(value: DisputeResult.SubtractFeeFrom): DisputeResult;
 
   getArbitratorPubKey(): Uint8Array | string;
   getArbitratorPubKey_asU8(): Uint8Array;
@@ -3223,8 +3277,9 @@ export namespace DisputeResult {
     summaryNotes: string,
     chatMessage?: ChatMessage.AsObject,
     arbitratorSignature: Uint8Array | string,
-    buyerPayoutAmount: number,
-    sellerPayoutAmount: number,
+    buyerPayoutAmountBeforeCost: number,
+    sellerPayoutAmountBeforeCost: number,
+    subtractFeeFrom: DisputeResult.SubtractFeeFrom,
     arbitratorPubKey: Uint8Array | string,
     closeDate: number,
     isLoserPublisher: boolean,
@@ -3250,6 +3305,12 @@ export namespace DisputeResult {
     WRONG_SENDER_ACCOUNT = 10,
     TRADE_ALREADY_SETTLED = 11,
     PEER_WAS_LATE = 12,
+  }
+
+  export enum SubtractFeeFrom { 
+    BUYER_ONLY = 0,
+    SELLER_ONLY = 1,
+    BUYER_AND_SELLER = 2,
   }
 }
 
@@ -3575,6 +3636,16 @@ export class PaymentAccountPayload extends jspb.Message {
   hasVerseAccountPayload(): boolean;
   clearVerseAccountPayload(): PaymentAccountPayload;
 
+  getCashAtAtmAccountPayload(): CashAtAtmAccountPayload | undefined;
+  setCashAtAtmAccountPayload(value?: CashAtAtmAccountPayload): PaymentAccountPayload;
+  hasCashAtAtmAccountPayload(): boolean;
+  clearCashAtAtmAccountPayload(): PaymentAccountPayload;
+
+  getPaypalAccountPayload(): PayPalAccountPayload | undefined;
+  setPaypalAccountPayload(value?: PayPalAccountPayload): PaymentAccountPayload;
+  hasPaypalAccountPayload(): boolean;
+  clearPaypalAccountPayload(): PaymentAccountPayload;
+
   getMessageCase(): PaymentAccountPayload.MessageCase;
 
   serializeBinary(): Uint8Array;
@@ -3626,6 +3697,8 @@ export namespace PaymentAccountPayload {
     celPayAccountPayload?: CelPayAccountPayload.AsObject,
     moneseAccountPayload?: MoneseAccountPayload.AsObject,
     verseAccountPayload?: VerseAccountPayload.AsObject,
+    cashAtAtmAccountPayload?: CashAtAtmAccountPayload.AsObject,
+    paypalAccountPayload?: PayPalAccountPayload.AsObject,
   }
 
   export enum MessageCase { 
@@ -3665,6 +3738,8 @@ export namespace PaymentAccountPayload {
     CEL_PAY_ACCOUNT_PAYLOAD = 37,
     MONESE_ACCOUNT_PAYLOAD = 38,
     VERSE_ACCOUNT_PAYLOAD = 39,
+    CASH_AT_ATM_ACCOUNT_PAYLOAD = 40,
+    PAYPAL_ACCOUNT_PAYLOAD = 41,
   }
 }
 
@@ -4101,6 +4176,9 @@ export class AustraliaPayidPayload extends jspb.Message {
   getPayid(): string;
   setPayid(value: string): AustraliaPayidPayload;
 
+  getExtraInfo(): string;
+  setExtraInfo(value: string): AustraliaPayidPayload;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AustraliaPayidPayload.AsObject;
   static toObject(includeInstance: boolean, msg: AustraliaPayidPayload): AustraliaPayidPayload.AsObject;
@@ -4113,6 +4191,7 @@ export namespace AustraliaPayidPayload {
   export type AsObject = {
     bankAccountName: string,
     payid: string,
+    extraInfo: string,
   }
 }
 
@@ -4479,8 +4558,11 @@ export namespace UpholdAccountPayload {
 }
 
 export class CashAppAccountPayload extends jspb.Message {
-  getCashTag(): string;
-  setCashTag(value: string): CashAppAccountPayload;
+  getEmailOrMobileNrOrCashtag(): string;
+  setEmailOrMobileNrOrCashtag(value: string): CashAppAccountPayload;
+
+  getExtraInfo(): string;
+  setExtraInfo(value: string): CashAppAccountPayload;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): CashAppAccountPayload.AsObject;
@@ -4492,7 +4574,8 @@ export class CashAppAccountPayload extends jspb.Message {
 
 export namespace CashAppAccountPayload {
   export type AsObject = {
-    cashTag: string,
+    emailOrMobileNrOrCashtag: string,
+    extraInfo: string,
   }
 }
 
@@ -4515,11 +4598,8 @@ export namespace MoneyBeamAccountPayload {
 }
 
 export class VenmoAccountPayload extends jspb.Message {
-  getVenmoUserName(): string;
-  setVenmoUserName(value: string): VenmoAccountPayload;
-
-  getHolderName(): string;
-  setHolderName(value: string): VenmoAccountPayload;
+  getEmailOrMobileNrOrUsername(): string;
+  setEmailOrMobileNrOrUsername(value: string): VenmoAccountPayload;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): VenmoAccountPayload.AsObject;
@@ -4531,8 +4611,29 @@ export class VenmoAccountPayload extends jspb.Message {
 
 export namespace VenmoAccountPayload {
   export type AsObject = {
-    venmoUserName: string,
-    holderName: string,
+    emailOrMobileNrOrUsername: string,
+  }
+}
+
+export class PayPalAccountPayload extends jspb.Message {
+  getEmailOrMobileNrOrUsername(): string;
+  setEmailOrMobileNrOrUsername(value: string): PayPalAccountPayload;
+
+  getExtraInfo(): string;
+  setExtraInfo(value: string): PayPalAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PayPalAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: PayPalAccountPayload): PayPalAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: PayPalAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PayPalAccountPayload;
+  static deserializeBinaryFromReader(message: PayPalAccountPayload, reader: jspb.BinaryReader): PayPalAccountPayload;
+}
+
+export namespace PayPalAccountPayload {
+  export type AsObject = {
+    emailOrMobileNrOrUsername: string,
+    extraInfo: string,
   }
 }
 
@@ -4559,11 +4660,8 @@ export namespace PopmoneyAccountPayload {
 }
 
 export class RevolutAccountPayload extends jspb.Message {
-  getAccountId(): string;
-  setAccountId(value: string): RevolutAccountPayload;
-
-  getUserName(): string;
-  setUserName(value: string): RevolutAccountPayload;
+  getUsername(): string;
+  setUsername(value: string): RevolutAccountPayload;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): RevolutAccountPayload.AsObject;
@@ -4575,8 +4673,7 @@ export class RevolutAccountPayload extends jspb.Message {
 
 export namespace RevolutAccountPayload {
   export type AsObject = {
-    accountId: string,
-    userName: string,
+    username: string,
   }
 }
 
@@ -4821,6 +4918,24 @@ export namespace PayByMailAccountPayload {
   export type AsObject = {
     postalAddress: string,
     contact: string,
+    extraInfo: string,
+  }
+}
+
+export class CashAtAtmAccountPayload extends jspb.Message {
+  getExtraInfo(): string;
+  setExtraInfo(value: string): CashAtAtmAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): CashAtAtmAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: CashAtAtmAccountPayload): CashAtAtmAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: CashAtAtmAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): CashAtAtmAccountPayload;
+  static deserializeBinaryFromReader(message: CashAtAtmAccountPayload, reader: jspb.BinaryReader): CashAtAtmAccountPayload;
+}
+
+export namespace CashAtAtmAccountPayload {
+  export type AsObject = {
     extraInfo: string,
   }
 }
@@ -5361,9 +5476,9 @@ export namespace PersistableEnvelope {
     MAILBOX_MESSAGE_LIST = 15,
     IGNORED_MAILBOX_MAP = 16,
     REMOVED_PAYLOADS_MAP = 17,
-    XMR_ADDRESS_ENTRY_LIST = 1001,
-    SIGNED_OFFER_LIST = 1002,
-    ENCRYPTED_CONNECTION_LIST = 1003,
+    XMR_ADDRESS_ENTRY_LIST = 18,
+    SIGNED_OFFER_LIST = 19,
+    ENCRYPTED_CONNECTION_LIST = 20,
   }
 }
 
@@ -5663,11 +5778,10 @@ export namespace XmrAddressEntry {
   export enum Context { 
     PB_ERROR = 0,
     ARBITRATOR = 1,
-    AVAILABLE = 2,
-    OFFER_FUNDING = 3,
-    RESERVED_FOR_TRADE = 4,
-    MULTI_SIG = 5,
-    TRADE_PAYOUT = 6,
+    BASE_ADDRESS = 2,
+    AVAILABLE = 3,
+    OFFER_FUNDING = 4,
+    TRADE_PAYOUT = 5,
   }
 }
 
@@ -5758,6 +5872,7 @@ export namespace Offer {
     NOT_AVAILABLE = 4,
     REMOVED = 5,
     MAKER_OFFLINE = 6,
+    INVALID = 7,
   }
 }
 
@@ -5851,8 +5966,14 @@ export class OpenOffer extends jspb.Message {
   getTriggerPrice(): number;
   setTriggerPrice(value: number): OpenOffer;
 
-  getAutoSplit(): boolean;
-  setAutoSplit(value: boolean): OpenOffer;
+  getReserveExactAmount(): boolean;
+  setReserveExactAmount(value: boolean): OpenOffer;
+
+  getSplitOutputTxHash(): string;
+  setSplitOutputTxHash(value: string): OpenOffer;
+
+  getSplitOutputTxFee(): number;
+  setSplitOutputTxFee(value: number): OpenOffer;
 
   getScheduledTxHashesList(): Array<string>;
   setScheduledTxHashesList(value: Array<string>): OpenOffer;
@@ -5884,7 +6005,9 @@ export namespace OpenOffer {
     offer?: Offer.AsObject,
     state: OpenOffer.State,
     triggerPrice: number,
-    autoSplit: boolean,
+    reserveExactAmount: boolean,
+    splitOutputTxHash: string,
+    splitOutputTxFee: number,
     scheduledTxHashesList: Array<string>,
     scheduledAmount: string,
     reserveTxHash: string,
@@ -5894,7 +6017,7 @@ export namespace OpenOffer {
 
   export enum State { 
     PB_ERROR = 0,
-    SCHEDULED = 1,
+    PENDING = 1,
     AVAILABLE = 2,
     RESERVED = 3,
     CLOSED = 4,
@@ -5908,6 +6031,11 @@ export class Tradable extends jspb.Message {
   setOpenOffer(value?: OpenOffer): Tradable;
   hasOpenOffer(): boolean;
   clearOpenOffer(): Tradable;
+
+  getSignedOffer(): SignedOffer | undefined;
+  setSignedOffer(value?: SignedOffer): Tradable;
+  hasSignedOffer(): boolean;
+  clearSignedOffer(): Tradable;
 
   getBuyerAsMakerTrade(): BuyerAsMakerTrade | undefined;
   setBuyerAsMakerTrade(value?: BuyerAsMakerTrade): Tradable;
@@ -5934,11 +6062,6 @@ export class Tradable extends jspb.Message {
   hasArbitratorTrade(): boolean;
   clearArbitratorTrade(): Tradable;
 
-  getSignedOffer(): SignedOffer | undefined;
-  setSignedOffer(value?: SignedOffer): Tradable;
-  hasSignedOffer(): boolean;
-  clearSignedOffer(): Tradable;
-
   getMessageCase(): Tradable.MessageCase;
 
   serializeBinary(): Uint8Array;
@@ -5952,23 +6075,23 @@ export class Tradable extends jspb.Message {
 export namespace Tradable {
   export type AsObject = {
     openOffer?: OpenOffer.AsObject,
+    signedOffer?: SignedOffer.AsObject,
     buyerAsMakerTrade?: BuyerAsMakerTrade.AsObject,
     buyerAsTakerTrade?: BuyerAsTakerTrade.AsObject,
     sellerAsMakerTrade?: SellerAsMakerTrade.AsObject,
     sellerAsTakerTrade?: SellerAsTakerTrade.AsObject,
     arbitratorTrade?: ArbitratorTrade.AsObject,
-    signedOffer?: SignedOffer.AsObject,
   }
 
   export enum MessageCase { 
     MESSAGE_NOT_SET = 0,
     OPEN_OFFER = 1,
-    BUYER_AS_MAKER_TRADE = 2,
-    BUYER_AS_TAKER_TRADE = 3,
-    SELLER_AS_MAKER_TRADE = 4,
-    SELLER_AS_TAKER_TRADE = 5,
-    ARBITRATOR_TRADE = 6,
-    SIGNED_OFFER = 1001,
+    SIGNED_OFFER = 2,
+    BUYER_AS_MAKER_TRADE = 3,
+    BUYER_AS_TAKER_TRADE = 4,
+    SELLER_AS_MAKER_TRADE = 5,
+    SELLER_AS_TAKER_TRADE = 6,
+    ARBITRATOR_TRADE = 7,
   }
 }
 
@@ -5994,12 +6117,6 @@ export class Trade extends jspb.Message {
 
   getAmount(): number;
   setAmount(value: number): Trade;
-
-  getTakerFee(): number;
-  setTakerFee(value: number): Trade;
-
-  getTotalTxFee(): number;
-  setTotalTxFee(value: number): Trade;
 
   getTakeOfferDate(): number;
   setTakeOfferDate(value: number): Trade;
@@ -6076,6 +6193,9 @@ export class Trade extends jspb.Message {
   getUid(): string;
   setUid(value: string): Trade;
 
+  getIsCompleted(): boolean;
+  setIsCompleted(value: boolean): Trade;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Trade.AsObject;
   static toObject(includeInstance: boolean, msg: Trade): Trade.AsObject;
@@ -6092,8 +6212,6 @@ export namespace Trade {
     payoutTxHex: string,
     payoutTxKey: string,
     amount: number,
-    takerFee: number,
-    totalTxFee: number,
     takeOfferDate: number,
     price: number,
     state: Trade.State,
@@ -6115,6 +6233,7 @@ export namespace Trade {
     refundResultState: RefundResultState,
     counterCurrencyExtraData: string,
     uid: string,
+    isCompleted: boolean,
   }
 
   export enum State { 
@@ -6134,18 +6253,17 @@ export namespace Trade {
     DEPOSIT_TXS_SEEN_IN_NETWORK = 13,
     DEPOSIT_TXS_CONFIRMED_IN_BLOCKCHAIN = 14,
     DEPOSIT_TXS_UNLOCKED_IN_BLOCKCHAIN = 15,
-    BUYER_CONFIRMED_IN_UI_PAYMENT_SENT = 16,
+    BUYER_CONFIRMED_PAYMENT_SENT = 16,
     BUYER_SENT_PAYMENT_SENT_MSG = 17,
     BUYER_SEND_FAILED_PAYMENT_SENT_MSG = 18,
     BUYER_STORED_IN_MAILBOX_PAYMENT_SENT_MSG = 19,
     BUYER_SAW_ARRIVED_PAYMENT_SENT_MSG = 20,
     SELLER_RECEIVED_PAYMENT_SENT_MSG = 21,
-    SELLER_CONFIRMED_IN_UI_PAYMENT_RECEIPT = 22,
+    SELLER_CONFIRMED_PAYMENT_RECEIPT = 22,
     SELLER_SENT_PAYMENT_RECEIVED_MSG = 23,
     SELLER_SEND_FAILED_PAYMENT_RECEIVED_MSG = 24,
     SELLER_STORED_IN_MAILBOX_PAYMENT_RECEIVED_MSG = 25,
     SELLER_SAW_ARRIVED_PAYMENT_RECEIVED_MSG = 26,
-    TRADE_COMPLETED = 27,
   }
 
   export enum Phase { 
@@ -6157,7 +6275,6 @@ export namespace Trade {
     DEPOSITS_UNLOCKED = 5,
     PAYMENT_SENT = 6,
     PAYMENT_RECEIVED = 7,
-    COMPLETED = 8,
   }
 
   export enum PayoutState { 
@@ -6305,9 +6422,6 @@ export class ProcessModel extends jspb.Message {
   hasPubKeyRing(): boolean;
   clearPubKeyRing(): ProcessModel;
 
-  getTakeOfferFeeTxId(): string;
-  setTakeOfferFeeTxId(value: string): ProcessModel;
-
   getPayoutTxSignature(): Uint8Array | string;
   getPayoutTxSignature_asU8(): Uint8Array;
   getPayoutTxSignature_asB64(): string;
@@ -6321,6 +6435,9 @@ export class ProcessModel extends jspb.Message {
 
   getPaymentSentMessageState(): string;
   setPaymentSentMessageState(value: string): ProcessModel;
+
+  getPaymentSentMessageStateArbitrator(): string;
+  setPaymentSentMessageStateArbitrator(value: string): ProcessModel;
 
   getMakerSignature(): Uint8Array | string;
   getMakerSignature_asU8(): Uint8Array;
@@ -6350,21 +6467,6 @@ export class ProcessModel extends jspb.Message {
   getMultisigAddress(): string;
   setMultisigAddress(value: string): ProcessModel;
 
-  getPaymentSentMessage(): PaymentSentMessage | undefined;
-  setPaymentSentMessage(value?: PaymentSentMessage): ProcessModel;
-  hasPaymentSentMessage(): boolean;
-  clearPaymentSentMessage(): ProcessModel;
-
-  getPaymentReceivedMessage(): PaymentReceivedMessage | undefined;
-  setPaymentReceivedMessage(value?: PaymentReceivedMessage): ProcessModel;
-  hasPaymentReceivedMessage(): boolean;
-  clearPaymentReceivedMessage(): ProcessModel;
-
-  getDisputeClosedMessage(): DisputeClosedMessage | undefined;
-  setDisputeClosedMessage(value?: DisputeClosedMessage): ProcessModel;
-  hasDisputeClosedMessage(): boolean;
-  clearDisputeClosedMessage(): ProcessModel;
-
   getMediatedPayoutTxSignature(): Uint8Array | string;
   getMediatedPayoutTxSignature_asU8(): Uint8Array;
   getMediatedPayoutTxSignature_asB64(): string;
@@ -6375,6 +6477,12 @@ export class ProcessModel extends jspb.Message {
 
   getSellerPayoutAmountFromMediation(): number;
   setSellerPayoutAmountFromMediation(value: number): ProcessModel;
+
+  getTradeProtocolErrorHeight(): number;
+  setTradeProtocolErrorHeight(value: number): ProcessModel;
+
+  getTradeFeeAddress(): string;
+  setTradeFeeAddress(value: string): ProcessModel;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ProcessModel.AsObject;
@@ -6389,23 +6497,22 @@ export namespace ProcessModel {
     offerId: string,
     accountId: string,
     pubKeyRing?: PubKeyRing.AsObject,
-    takeOfferFeeTxId: string,
     payoutTxSignature: Uint8Array | string,
     useSavingsWallet: boolean,
     fundsNeededForTrade: number,
     paymentSentMessageState: string,
+    paymentSentMessageStateArbitrator: string,
     makerSignature: Uint8Array | string,
     maker?: TradePeer.AsObject,
     taker?: TradePeer.AsObject,
     arbitrator?: TradePeer.AsObject,
     tempTradePeerNodeAddress?: NodeAddress.AsObject,
     multisigAddress: string,
-    paymentSentMessage?: PaymentSentMessage.AsObject,
-    paymentReceivedMessage?: PaymentReceivedMessage.AsObject,
-    disputeClosedMessage?: DisputeClosedMessage.AsObject,
     mediatedPayoutTxSignature: Uint8Array | string,
     buyerPayoutAmountFromMediation: number,
     sellerPayoutAmountFromMediation: number,
+    tradeProtocolErrorHeight: number,
+    tradeFeeAddress: string,
   }
 }
 
@@ -6483,6 +6590,21 @@ export class TradePeer extends jspb.Message {
   getMediatedPayoutTxSignature_asB64(): string;
   setMediatedPayoutTxSignature(value: Uint8Array | string): TradePeer;
 
+  getPaymentSentMessage(): PaymentSentMessage | undefined;
+  setPaymentSentMessage(value?: PaymentSentMessage): TradePeer;
+  hasPaymentSentMessage(): boolean;
+  clearPaymentSentMessage(): TradePeer;
+
+  getPaymentReceivedMessage(): PaymentReceivedMessage | undefined;
+  setPaymentReceivedMessage(value?: PaymentReceivedMessage): TradePeer;
+  hasPaymentReceivedMessage(): boolean;
+  clearPaymentReceivedMessage(): TradePeer;
+
+  getDisputeClosedMessage(): DisputeClosedMessage | undefined;
+  setDisputeClosedMessage(value?: DisputeClosedMessage): TradePeer;
+  hasDisputeClosedMessage(): boolean;
+  clearDisputeClosedMessage(): TradePeer;
+
   getReserveTxHash(): string;
   setReserveTxHash(value: string): TradePeer;
 
@@ -6506,6 +6628,12 @@ export class TradePeer extends jspb.Message {
   getExchangedMultisigHex(): string;
   setExchangedMultisigHex(value: string): TradePeer;
 
+  getUpdatedMultisigHex(): string;
+  setUpdatedMultisigHex(value: string): TradePeer;
+
+  getDepositsConfirmedMessageAcked(): boolean;
+  setDepositsConfirmedMessageAcked(value: boolean): TradePeer;
+
   getDepositTxHash(): string;
   setDepositTxHash(value: string): TradePeer;
 
@@ -6515,14 +6643,20 @@ export class TradePeer extends jspb.Message {
   getDepositTxKey(): string;
   setDepositTxKey(value: string): TradePeer;
 
+  getDepositTxFee(): number;
+  setDepositTxFee(value: number): TradePeer;
+
   getSecurityDeposit(): number;
   setSecurityDeposit(value: number): TradePeer;
 
-  getUpdatedMultisigHex(): string;
-  setUpdatedMultisigHex(value: string): TradePeer;
+  getUnsignedPayoutTxHex(): string;
+  setUnsignedPayoutTxHex(value: string): TradePeer;
 
-  getDepositsConfirmedMessageAcked(): boolean;
-  setDepositsConfirmedMessageAcked(value: boolean): TradePeer;
+  getPayoutTxFee(): number;
+  setPayoutTxFee(value: number): TradePeer;
+
+  getPayoutAmount(): number;
+  setPayoutAmount(value: number): TradePeer;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): TradePeer.AsObject;
@@ -6551,6 +6685,9 @@ export namespace TradePeer {
     accountAgeWitness?: AccountAgeWitness.AsObject,
     currentDate: number,
     mediatedPayoutTxSignature: Uint8Array | string,
+    paymentSentMessage?: PaymentSentMessage.AsObject,
+    paymentReceivedMessage?: PaymentReceivedMessage.AsObject,
+    disputeClosedMessage?: DisputeClosedMessage.AsObject,
     reserveTxHash: string,
     reserveTxHex: string,
     reserveTxKey: string,
@@ -6558,12 +6695,16 @@ export namespace TradePeer {
     preparedMultisigHex: string,
     madeMultisigHex: string,
     exchangedMultisigHex: string,
+    updatedMultisigHex: string,
+    depositsConfirmedMessageAcked: boolean,
     depositTxHash: string,
     depositTxHex: string,
     depositTxKey: string,
+    depositTxFee: number,
     securityDeposit: number,
-    updatedMultisigHex: string,
-    depositsConfirmedMessageAcked: boolean,
+    unsignedPayoutTxHex: string,
+    payoutTxFee: number,
+    payoutAmount: number,
   }
 }
 
@@ -6744,8 +6885,8 @@ export class PreferencesPayload extends jspb.Message {
   getTacAccepted(): boolean;
   setTacAccepted(value: boolean): PreferencesPayload;
 
-  getUseTorForBitcoinJ(): boolean;
-  setUseTorForBitcoinJ(value: boolean): PreferencesPayload;
+  getUseTorForXmrOrdinal(): number;
+  setUseTorForXmrOrdinal(value: number): PreferencesPayload;
 
   getShowOwnOffersInOfferBook(): boolean;
   setShowOwnOffersInOfferBook(value: boolean): PreferencesPayload;
@@ -6791,8 +6932,8 @@ export class PreferencesPayload extends jspb.Message {
   getPeerTagMapMap(): jspb.Map<string, string>;
   clearPeerTagMapMap(): PreferencesPayload;
 
-  getBitcoinNodes(): string;
-  setBitcoinNodes(value: string): PreferencesPayload;
+  getMoneroNodes(): string;
+  setMoneroNodes(value: string): PreferencesPayload;
 
   getIgnoreTradersListList(): Array<string>;
   setIgnoreTradersListList(value: Array<string>): PreferencesPayload;
@@ -6824,8 +6965,8 @@ export class PreferencesPayload extends jspb.Message {
   getCustomBridges(): string;
   setCustomBridges(value: string): PreferencesPayload;
 
-  getBitcoinNodesOptionOrdinal(): number;
-  setBitcoinNodesOptionOrdinal(value: number): PreferencesPayload;
+  getMoneroNodesOptionOrdinal(): number;
+  setMoneroNodesOptionOrdinal(value: number): PreferencesPayload;
 
   getReferralId(): string;
   setReferralId(value: string): PreferencesPayload;
@@ -6895,10 +7036,10 @@ export class PreferencesPayload extends jspb.Message {
   getNotifyOnPreRelease(): boolean;
   setNotifyOnPreRelease(value: boolean): PreferencesPayload;
 
-  getMoneroNodeSettings(): MoneroNodeSettings | undefined;
-  setMoneroNodeSettings(value?: MoneroNodeSettings): PreferencesPayload;
-  hasMoneroNodeSettings(): boolean;
-  clearMoneroNodeSettings(): PreferencesPayload;
+  getXmrNodeSettings(): XmrNodeSettings | undefined;
+  setXmrNodeSettings(value?: XmrNodeSettings): PreferencesPayload;
+  hasXmrNodeSettings(): boolean;
+  clearXmrNodeSettings(): PreferencesPayload;
 
   getClearDataAfterDays(): number;
   setClearDataAfterDays(value: number): PreferencesPayload;
@@ -6908,6 +7049,15 @@ export class PreferencesPayload extends jspb.Message {
 
   getSellScreenCryptoCurrencyCode(): string;
   setSellScreenCryptoCurrencyCode(value: string): PreferencesPayload;
+
+  getSplitOfferOutput(): boolean;
+  setSplitOfferOutput(value: boolean): PreferencesPayload;
+
+  getUseSoundForNotifications(): boolean;
+  setUseSoundForNotifications(value: boolean): PreferencesPayload;
+
+  getUseSoundForNotificationsInitialized(): boolean;
+  setUseSoundForNotificationsInitialized(value: boolean): PreferencesPayload;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PreferencesPayload.AsObject;
@@ -6929,7 +7079,7 @@ export namespace PreferencesPayload {
     autoSelectArbitrators: boolean,
     dontShowAgainMapMap: Array<[string, boolean]>,
     tacAccepted: boolean,
-    useTorForBitcoinJ: boolean,
+    useTorForXmrOrdinal: number,
     showOwnOffersInOfferBook: boolean,
     preferredTradeCurrency?: TradeCurrency.AsObject,
     withdrawalTxFeeInVbytes: number,
@@ -6944,7 +7094,7 @@ export namespace PreferencesPayload {
     sortMarketCurrenciesNumerically: boolean,
     usePercentageBasedPrice: boolean,
     peerTagMapMap: Array<[string, string]>,
-    bitcoinNodes: string,
+    moneroNodes: string,
     ignoreTradersListList: Array<string>,
     directoryChooserPath: string,
     useAnimations: boolean,
@@ -6953,7 +7103,7 @@ export namespace PreferencesPayload {
     bridgeOptionOrdinal: number,
     torTransportOrdinal: number,
     customBridges: string,
-    bitcoinNodesOptionOrdinal: number,
+    moneroNodesOptionOrdinal: number,
     referralId: string,
     phoneKeyAndToken: string,
     useSoundForMobileNotifications: boolean,
@@ -6976,10 +7126,13 @@ export namespace PreferencesPayload {
     showOffersMatchingMyAccounts: boolean,
     denyApiTaker: boolean,
     notifyOnPreRelease: boolean,
-    moneroNodeSettings?: MoneroNodeSettings.AsObject,
+    xmrNodeSettings?: XmrNodeSettings.AsObject,
     clearDataAfterDays: number,
     buyScreenCryptoCurrencyCode: string,
     sellScreenCryptoCurrencyCode: string,
+    splitOfferOutput: boolean,
+    useSoundForNotifications: boolean,
+    useSoundForNotificationsInitialized: boolean,
   }
 }
 
@@ -7019,31 +7172,35 @@ export namespace AutoConfirmSettings {
   }
 }
 
-export class MoneroNodeSettings extends jspb.Message {
+export class XmrNodeSettings extends jspb.Message {
   getBlockchainPath(): string;
-  setBlockchainPath(value: string): MoneroNodeSettings;
+  setBlockchainPath(value: string): XmrNodeSettings;
 
   getBootstrapUrl(): string;
-  setBootstrapUrl(value: string): MoneroNodeSettings;
+  setBootstrapUrl(value: string): XmrNodeSettings;
 
   getStartupFlagsList(): Array<string>;
-  setStartupFlagsList(value: Array<string>): MoneroNodeSettings;
-  clearStartupFlagsList(): MoneroNodeSettings;
-  addStartupFlags(value: string, index?: number): MoneroNodeSettings;
+  setStartupFlagsList(value: Array<string>): XmrNodeSettings;
+  clearStartupFlagsList(): XmrNodeSettings;
+  addStartupFlags(value: string, index?: number): XmrNodeSettings;
+
+  getSyncBlockchain(): boolean;
+  setSyncBlockchain(value: boolean): XmrNodeSettings;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): MoneroNodeSettings.AsObject;
-  static toObject(includeInstance: boolean, msg: MoneroNodeSettings): MoneroNodeSettings.AsObject;
-  static serializeBinaryToWriter(message: MoneroNodeSettings, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): MoneroNodeSettings;
-  static deserializeBinaryFromReader(message: MoneroNodeSettings, reader: jspb.BinaryReader): MoneroNodeSettings;
+  toObject(includeInstance?: boolean): XmrNodeSettings.AsObject;
+  static toObject(includeInstance: boolean, msg: XmrNodeSettings): XmrNodeSettings.AsObject;
+  static serializeBinaryToWriter(message: XmrNodeSettings, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): XmrNodeSettings;
+  static deserializeBinaryFromReader(message: XmrNodeSettings, reader: jspb.BinaryReader): XmrNodeSettings;
 }
 
-export namespace MoneroNodeSettings {
+export namespace XmrNodeSettings {
   export type AsObject = {
     blockchainPath: string,
     bootstrapUrl: string,
     startupFlagsList: Array<string>,
+    syncBlockchain: boolean,
   }
 }
 
@@ -7124,6 +7281,9 @@ export class UserPayload extends jspb.Message {
   getCookieMap(): jspb.Map<string, string>;
   clearCookieMap(): UserPayload;
 
+  getWalletCreationDate(): number;
+  setWalletCreationDate(value: number): UserPayload;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UserPayload.AsObject;
   static toObject(includeInstance: boolean, msg: UserPayload): UserPayload.AsObject;
@@ -7150,6 +7310,7 @@ export namespace UserPayload {
     acceptedRefundAgentsList: Array<RefundAgent.AsObject>,
     registeredRefundAgent?: RefundAgent.AsObject,
     cookieMap: Array<[string, string]>,
+    walletCreationDate: number,
   }
 }
 
@@ -7159,9 +7320,6 @@ export class BlockChainExplorer extends jspb.Message {
 
   getTxUrl(): string;
   setTxUrl(value: string): BlockChainExplorer;
-
-  getAddressUrl(): string;
-  setAddressUrl(value: string): BlockChainExplorer;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): BlockChainExplorer.AsObject;
@@ -7175,7 +7333,6 @@ export namespace BlockChainExplorer {
   export type AsObject = {
     name: string,
     txUrl: string,
-    addressUrl: string,
   }
 }
 
@@ -7340,11 +7497,6 @@ export namespace CryptoCurrency {
 }
 
 export class TraditionalCurrency extends jspb.Message {
-  getCurrency(): Currency | undefined;
-  setCurrency(value?: Currency): TraditionalCurrency;
-  hasCurrency(): boolean;
-  clearCurrency(): TraditionalCurrency;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): TraditionalCurrency.AsObject;
   static toObject(includeInstance: boolean, msg: TraditionalCurrency): TraditionalCurrency.AsObject;
@@ -7355,7 +7507,6 @@ export class TraditionalCurrency extends jspb.Message {
 
 export namespace TraditionalCurrency {
   export type AsObject = {
-    currency?: Currency.AsObject,
   }
 }
 
@@ -7556,6 +7707,12 @@ export namespace PaymentAccountForm {
     FASTER_PAYMENTS = 10,
     UPHOLD = 11,
     PAXUM = 12,
+    PAY_BY_MAIL = 13,
+    CASH_AT_ATM = 14,
+    AUSTRALIA_PAYID = 15,
+    CASH_APP = 16,
+    PAYPAL = 17,
+    VENMO = 18,
   }
 }
 
@@ -7688,7 +7845,9 @@ export namespace PaymentAccountFormField {
     SPECIAL_INSTRUCTIONS = 54,
     STATE = 55,
     TRADE_CURRENCIES = 56,
-    USER_NAME = 57,
+    USERNAME = 57,
+    EMAIL_OR_MOBILE_NR_OR_USERNAME = 58,
+    EMAIL_OR_MOBILE_NR_OR_CASHTAG = 59,
   }
 
   export enum Component { 
@@ -7699,6 +7858,9 @@ export namespace PaymentAccountFormField {
   }
 }
 
+export enum TradeProtocolVersion { 
+  MULTISIG_2_3 = 0,
+}
 export enum SupportType { 
   ARBITRATION = 0,
   MEDIATION = 1,
@@ -7706,7 +7868,7 @@ export enum SupportType {
   REFUND = 3,
 }
 export enum OfferDirection { 
-  OFFER_DIRECTION_ERROR = 0,
+  OFFER_DIRECTION_UNDEFINED = 0,
   BUY = 1,
   SELL = 2,
 }

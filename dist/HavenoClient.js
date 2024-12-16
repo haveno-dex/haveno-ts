@@ -1,14 +1,30 @@
 "use strict";
+/*
+ * Copyright Haveno
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const console_1 = __importDefault(require("console"));
-const HavenoError_1 = __importDefault(require("./utils/HavenoError"));
+const HavenoError_1 = __importDefault(require("./types/HavenoError"));
 const HavenoUtils_1 = __importDefault(require("./utils/HavenoUtils"));
 const TaskLooper_1 = __importDefault(require("./utils/TaskLooper"));
 const GrpcServiceClientPb_1 = require("./protobuf/GrpcServiceClientPb");
 const grpc_pb_1 = require("./protobuf/grpc_pb");
+const pb_pb_1 = require("./protobuf/pb_pb");
 /**
  * Haveno daemon client.
  */
@@ -42,10 +58,11 @@ class HavenoClient {
         HavenoUtils_1.default.log(2, "Creating Haveno client connected to " + url);
         this._url = url;
         this._password = password;
+        this._getTradeStatisticsClient = new GrpcServiceClientPb_1.GetTradeStatisticsClient(this._url);
         this._getVersionClient = new GrpcServiceClientPb_1.GetVersionClient(this._url);
         this._accountClient = new GrpcServiceClientPb_1.AccountClient(this._url);
-        this._moneroConnectionsClient = new GrpcServiceClientPb_1.MoneroConnectionsClient(this._url);
-        this._moneroNodeClient = new GrpcServiceClientPb_1.MoneroNodeClient(this._url);
+        this._xmrConnectionsClient = new GrpcServiceClientPb_1.XmrConnectionsClient(this._url);
+        this._xmrNodeClient = new GrpcServiceClientPb_1.XmrNodeClient(this._url);
         this._disputeAgentsClient = new GrpcServiceClientPb_1.DisputeAgentsClient(this._url);
         this._disputesClient = new GrpcServiceClientPb_1.DisputesClient(this._url);
         this._walletsClient = new GrpcServiceClientPb_1.WalletsClient(this._url);
@@ -399,7 +416,7 @@ class HavenoClient {
      */
     async addMoneroConnection(connection) {
         try {
-            await this._moneroConnectionsClient.addConnection(new grpc_pb_1.AddConnectionRequest().setConnection(typeof connection === "string" ? new grpc_pb_1.UrlConnection().setUrl(connection) : connection), { password: this._password });
+            await this._xmrConnectionsClient.addConnection(new grpc_pb_1.AddConnectionRequest().setConnection(typeof connection === "string" ? new grpc_pb_1.UrlConnection().setUrl(connection) : connection), { password: this._password });
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
@@ -412,7 +429,7 @@ class HavenoClient {
      */
     async removeMoneroConnection(url) {
         try {
-            await this._moneroConnectionsClient.removeConnection(new grpc_pb_1.RemoveConnectionRequest().setUrl(url), { password: this._password });
+            await this._xmrConnectionsClient.removeConnection(new grpc_pb_1.RemoveConnectionRequest().setUrl(url), { password: this._password });
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
@@ -425,7 +442,7 @@ class HavenoClient {
      */
     async getMoneroConnection() {
         try {
-            return await (await this._moneroConnectionsClient.getConnection(new grpc_pb_1.GetConnectionRequest(), { password: this._password })).getConnection();
+            return await (await this._xmrConnectionsClient.getConnection(new grpc_pb_1.GetConnectionRequest(), { password: this._password })).getConnection();
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
@@ -438,7 +455,7 @@ class HavenoClient {
      */
     async getMoneroConnections() {
         try {
-            return (await this._moneroConnectionsClient.getConnections(new grpc_pb_1.GetConnectionsRequest(), { password: this._password })).getConnectionsList();
+            return (await this._xmrConnectionsClient.getConnections(new grpc_pb_1.GetConnectionsRequest(), { password: this._password })).getConnectionsList();
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
@@ -461,7 +478,7 @@ class HavenoClient {
         else
             request.setConnection(connection);
         try {
-            await this._moneroConnectionsClient.setConnection(request, { password: this._password });
+            await this._xmrConnectionsClient.setConnection(request, { password: this._password });
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
@@ -476,7 +493,7 @@ class HavenoClient {
      */
     async checkMoneroConnection() {
         try {
-            return (await this._moneroConnectionsClient.checkConnection(new grpc_pb_1.CheckConnectionRequest(), { password: this._password })).getConnection();
+            return (await this._xmrConnectionsClient.checkConnection(new grpc_pb_1.CheckConnectionRequest(), { password: this._password })).getConnection();
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
@@ -489,7 +506,7 @@ class HavenoClient {
      */
     async checkMoneroConnections() {
         try {
-            return (await this._moneroConnectionsClient.checkConnections(new grpc_pb_1.CheckConnectionsRequest(), { password: this._password })).getConnectionsList();
+            return (await this._xmrConnectionsClient.checkConnections(new grpc_pb_1.CheckConnectionsRequest(), { password: this._password })).getConnectionsList();
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
@@ -502,7 +519,7 @@ class HavenoClient {
      */
     async startCheckingConnection(refreshPeriod) {
         try {
-            await this._moneroConnectionsClient.startCheckingConnections(new grpc_pb_1.StartCheckingConnectionsRequest().setRefreshPeriod(refreshPeriod), { password: this._password });
+            await this._xmrConnectionsClient.startCheckingConnection(new grpc_pb_1.StartCheckingConnectionRequest().setRefreshPeriod(refreshPeriod), { password: this._password });
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
@@ -513,7 +530,7 @@ class HavenoClient {
      */
     async stopCheckingConnection() {
         try {
-            await this._moneroConnectionsClient.stopCheckingConnections(new grpc_pb_1.StopCheckingConnectionsRequest(), { password: this._password });
+            await this._xmrConnectionsClient.stopCheckingConnection(new grpc_pb_1.StopCheckingConnectionRequest(), { password: this._password });
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
@@ -526,7 +543,7 @@ class HavenoClient {
      */
     async getBestAvailableConnection() {
         try {
-            return (await this._moneroConnectionsClient.getBestAvailableConnection(new grpc_pb_1.GetBestAvailableConnectionRequest(), { password: this._password })).getConnection();
+            return (await this._xmrConnectionsClient.getBestAvailableConnection(new grpc_pb_1.GetBestAvailableConnectionRequest(), { password: this._password })).getConnection();
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
@@ -539,7 +556,20 @@ class HavenoClient {
      */
     async setAutoSwitch(autoSwitch) {
         try {
-            await this._moneroConnectionsClient.setAutoSwitch(new grpc_pb_1.SetAutoSwitchRequest().setAutoSwitch(autoSwitch), { password: this._password });
+            await this._xmrConnectionsClient.setAutoSwitch(new grpc_pb_1.SetAutoSwitchRequest().setAutoSwitch(autoSwitch), { password: this._password });
+        }
+        catch (e) {
+            throw new HavenoError_1.default(e.message, e.code);
+        }
+    }
+    /**
+     * Get the current auto switch setting.
+     *
+     * @return {boolean} whether auto switch is enabled or disabled
+     */
+    async getAutoSwitch() {
+        try {
+            return (await this._xmrConnectionsClient.getAutoSwitch(new grpc_pb_1.GetAutoSwitchRequest(), { password: this._password })).getAutoSwitch();
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
@@ -550,7 +580,7 @@ class HavenoClient {
      */
     async isMoneroNodeOnline() {
         try {
-            return (await this._moneroNodeClient.isMoneroNodeOnline(new grpc_pb_1.IsMoneroNodeOnlineRequest(), { password: this._password })).getIsRunning();
+            return (await this._xmrNodeClient.isXmrNodeOnline(new grpc_pb_1.IsXmrNodeOnlineRequest(), { password: this._password })).getIsRunning();
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
@@ -561,8 +591,8 @@ class HavenoClient {
      */
     async getMoneroNodeSettings() {
         try {
-            const request = new grpc_pb_1.GetMoneroNodeSettingsRequest();
-            return (await this._moneroNodeClient.getMoneroNodeSettings(request, { password: this._password })).getSettings();
+            const request = new grpc_pb_1.GetXmrNodeSettingsRequest();
+            return (await this._xmrNodeClient.getXmrNodeSettings(request, { password: this._password })).getSettings();
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
@@ -575,8 +605,8 @@ class HavenoClient {
      */
     async startMoneroNode(settings) {
         try {
-            const request = new grpc_pb_1.StartMoneroNodeRequest().setSettings(settings);
-            await this._moneroNodeClient.startMoneroNode(request, { password: this._password });
+            const request = new grpc_pb_1.StartXmrNodeRequest().setSettings(settings);
+            await this._xmrNodeClient.startXmrNode(request, { password: this._password });
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
@@ -587,7 +617,7 @@ class HavenoClient {
      */
     async stopMoneroNode() {
         try {
-            await this._moneroNodeClient.stopMoneroNode(new grpc_pb_1.StopMoneroNodeRequest(), { password: this._password });
+            await this._xmrNodeClient.stopXmrNode(new grpc_pb_1.StopXmrNodeRequest(), { password: this._password });
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
@@ -729,13 +759,13 @@ class HavenoClient {
         }
     }
     /**
-     * Get all supported assets codes.
+     * Get all asset codes with price information.
      *
      * TODO: replace this with getSupportedAssetCodes(): Promise<TradeCurrency[]>)
      *
      * @return {Promise<string[]>} all supported trade assets
      */
-    async getSupportedAssetCodes() {
+    async getPricedAssetCodes() {
         const assetCodes = [];
         for (const price of await this.getPrices())
             assetCodes.push(price.getCurrencyCode());
@@ -837,11 +867,12 @@ class HavenoClient {
     /**
      * Get a form for the given payment method to complete and create a new payment account.
      *
-     * @param {string} paymentMethodId - the id of the payment method
+     * @param {string | PaymentAccountForm.FormId} paymentMethodId - the id of the payment method
      * @return {PaymentAccountForm} the payment account form
      */
     async getPaymentAccountForm(paymentMethodId) {
         try {
+            paymentMethodId = HavenoUtils_1.default.getPaymentMethodId(paymentMethodId); // validate and normalize
             return (await this._paymentAccountsClient.getPaymentAccountForm(new grpc_pb_1.GetPaymentAccountFormRequest().setPaymentMethodId(paymentMethodId), { password: this._password })).getPaymentAccountForm();
         }
         catch (e) {
@@ -917,17 +948,30 @@ class HavenoClient {
         }
     }
     /**
+     * Delete a payment account.
+     *
+     * @param paymentAccountId {string} the id of the payment account to delete
+     */
+    async deletePaymentAccount(paymentAccountId) {
+        try {
+            await this._paymentAccountsClient.deletePaymentAccount(new grpc_pb_1.DeletePaymentAccountRequest().setPaymentAccountId(paymentAccountId), { password: this._password });
+        }
+        catch (e) {
+            throw new HavenoError_1.default(e.message, e.code);
+        }
+    }
+    /**
      * Get available offers to buy or sell XMR.
      *
      * @param {string} assetCode - traded asset code
-     * @param {string|undefined} direction - "buy" or "sell" (default all)
+     * @param {OfferDirection|undefined} direction - "buy" or "sell" (default all)
      * @return {OfferInfo[]} the available offers
      */
     async getOffers(assetCode, direction) {
         try {
-            if (!direction)
-                return (await this.getOffers(assetCode, "buy")).concat(await this.getOffers(assetCode, "sell")); // TODO: implement in backend
-            return (await this._offersClient.getOffers(new grpc_pb_1.GetOffersRequest().setDirection(direction).setCurrencyCode(assetCode), { password: this._password })).getOffersList();
+            if (direction === undefined)
+                return (await this.getOffers(assetCode, pb_pb_1.OfferDirection.BUY)).concat(await this.getOffers(assetCode, pb_pb_1.OfferDirection.SELL)); // TODO: implement in backend
+            return (await this._offersClient.getOffers(new grpc_pb_1.GetOffersRequest().setDirection(direction === pb_pb_1.OfferDirection.BUY ? "buy" : "sell").setCurrencyCode(assetCode), { password: this._password })).getOffersList();
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
@@ -937,7 +981,7 @@ class HavenoClient {
      * Get the user's posted offers to buy or sell XMR.
      *
      * @param {string|undefined} assetCode - traded asset code
-     * @param {string|undefined} direction - "buy" or "sell" XMR (default all)
+     * @param {OfferDirection|undefined} direction - get offers to buy or sell XMR (default all)
      * @return {OfferInfo[]} the user's created offers
      */
     async getMyOffers(assetCode, direction) {
@@ -945,8 +989,8 @@ class HavenoClient {
             const req = new grpc_pb_1.GetOffersRequest();
             if (assetCode)
                 req.setCurrencyCode(assetCode);
-            if (direction)
-                req.setDirection(direction);
+            if (direction !== undefined)
+                req.setDirection(direction === pb_pb_1.OfferDirection.BUY ? "buy" : "sell"); // TODO: request should use OfferDirection too?
             return (await this._offersClient.getMyOffers(req, { password: this._password })).getOffersList();
         }
         catch (e) {
@@ -970,25 +1014,27 @@ class HavenoClient {
     /**
      * Post an offer.
      *
-     * @param {string} direction - "buy" or "sell" XMR
+     * @param {OfferDirection} direction - "buy" or "sell" XMR
      * @param {bigint} amount - amount of XMR to trade
      * @param {string} assetCode - asset code to trade for XMR
      * @param {string} paymentAccountId - payment account id
-     * @param {number} buyerSecurityDepositPct - buyer security deposit as % of trade amount
+     * @param {number} securityDepositPct - security deposit as % of trade amount for buyer and seller
      * @param {number} price - trade price (optional, default to market price)
      * @param {number} marketPriceMarginPct - if using market price, % from market price to accept (optional, default 0%)
-     * @param {bigint} minAmount - minimum amount to trade (optional, default to fixed amount)
      * @param {number} triggerPrice - price to remove offer (optional)
+     * @param {bigint} minAmount - minimum amount to trade (optional, default to fixed amount)
+     * @param {number} reserveExactAmount - reserve exact amount needed for offer, incurring on-chain transaction and 10 confirmations before the offer goes live (default = false)
      * @return {OfferInfo} the posted offer
      */
-    async postOffer(direction, amount, assetCode, paymentAccountId, buyerSecurityDepositPct, price, marketPriceMarginPct, triggerPrice, minAmount) {
+    async postOffer(direction, amount, assetCode, paymentAccountId, securityDepositPct, price, marketPriceMarginPct, triggerPrice, minAmount, reserveExactAmount) {
+        console_1.default.log("Posting offer with security deposit %: " + securityDepositPct);
         try {
             const request = new grpc_pb_1.PostOfferRequest()
-                .setDirection(direction)
+                .setDirection(direction === pb_pb_1.OfferDirection.BUY ? "buy" : "sell")
                 .setAmount(amount.toString())
                 .setCurrencyCode(assetCode)
                 .setPaymentAccountId(paymentAccountId)
-                .setBuyerSecurityDepositPct(buyerSecurityDepositPct)
+                .setBuyerSecurityDepositPct(securityDepositPct)
                 .setUseMarketBasedPrice(price === undefined)
                 .setMinAmount(minAmount ? minAmount.toString() : amount.toString());
             if (price)
@@ -997,6 +1043,8 @@ class HavenoClient {
                 request.setMarketPriceMarginPct(marketPriceMarginPct);
             if (triggerPrice)
                 request.setTriggerPrice(triggerPrice.toString());
+            if (reserveExactAmount)
+                request.setReserveExactAmount(reserveExactAmount);
             return (await this._offersClient.postOffer(request, { password: this._password })).getOffer();
         }
         catch (e) {
@@ -1021,14 +1069,20 @@ class HavenoClient {
      *
      * @param {string} offerId - id of the offer to take
      * @param {string} paymentAccountId - id of the payment account
+     * @param {bigint|undefined} amount - amount the taker chooses to buy or sell within the offer range (default is max offer amount)
      * @return {TradeInfo} the initialized trade
      */
-    async takeOffer(offerId, paymentAccountId) {
+    async takeOffer(offerId, paymentAccountId, amount) {
         try {
             const request = new grpc_pb_1.TakeOfferRequest()
                 .setOfferId(offerId)
                 .setPaymentAccountId(paymentAccountId);
-            return (await this._tradesClient.takeOffer(request, { password: this._password })).getTrade();
+            if (amount)
+                request.setAmount(amount.toString());
+            const resp = await this._tradesClient.takeOffer(request, { password: this._password });
+            if (resp.getTrade())
+                return resp.getTrade();
+            throw new HavenoError_1.default(resp.getFailureReason()?.getDescription(), resp.getFailureReason()?.getAvailabilityResult());
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
@@ -1043,6 +1097,19 @@ class HavenoClient {
     async getTrade(tradeId) {
         try {
             return (await this._tradesClient.getTrade(new grpc_pb_1.GetTradeRequest().setTradeId(tradeId), { password: this._password })).getTrade();
+        }
+        catch (e) {
+            throw new HavenoError_1.default(e.message, e.code);
+        }
+    }
+    /**
+     * Get all trade statistics.
+     *
+     * @return {TradeStatistics3[]} all user trades
+     */
+    async getTradeStatistics() {
+        try {
+            return (await this._getTradeStatisticsClient.getTradeStatistics(new grpc_pb_1.GetTradeStatisticsRequest(), { password: this._password })).getTradeStatisticsList();
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);

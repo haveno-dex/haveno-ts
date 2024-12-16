@@ -1,10 +1,27 @@
 "use strict";
+/*
+ * Copyright Haveno
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const assert_1 = __importDefault(require("assert"));
 const console_1 = __importDefault(require("console"));
+const decimal_js_1 = __importDefault(require("decimal.js"));
+const pb_pb_1 = require("../protobuf/pb_pb");
 /**
  * Collection of utilities for working with Haveno.
  */
@@ -54,7 +71,7 @@ class HavenoUtils {
     /**
      * Kill the given process.
      *
-     * TODO (woodser): move this to monero-javascript GenUtils.js as common utility
+     * TODO (woodser): move this to monero-ts GenUtils.ts as common utility
      *
      * @param {Process} process - the nodejs child process to child
      * @param {String} signal - the kill signal, e.g. SIGTERM, SIGKILL, SIGINT (default)
@@ -65,6 +82,102 @@ class HavenoUtils {
             process.on("error", function (err) { reject(err); });
             process.kill(signal ? signal : "SIGINT");
         });
+    }
+    /**
+     * Wait for the duration.
+     *
+     * @param {number} durationMs - the duration to wait for in milliseconds
+     */
+    static async waitFor(durationMs) {
+        return new Promise(function (resolve) { setTimeout(resolve, durationMs); });
+    }
+    /**
+     * Convert XMR to atomic units.
+     *
+     * @param {number | string} amountXmr - amount in XMR to convert to atomic units
+     * @return {bigint} amount in atomic units
+     */
+    static xmrToAtomicUnits(amountXmr) {
+        return BigInt(new decimal_js_1.default(amountXmr).mul(HavenoUtils.AU_PER_XMR.toString()).toFixed(0));
+    }
+    /**
+     * Convert atomic units to XMR.
+     *
+     * @param {bigint | string} amountAtomicUnits - amount in atomic units to convert to XMR
+     * @return {number} amount in XMR
+     */
+    static atomicUnitsToXmr(amountAtomicUnits) {
+        return new decimal_js_1.default(amountAtomicUnits.toString()).div(HavenoUtils.AU_PER_XMR.toString()).toNumber();
+    }
+    /**
+     * Divide one atomic units by another.
+     *
+     * @param {bigint} au1 dividend
+     * @param {bigint} au2 divisor
+     * @returns {number} the result
+     */
+    static divide(au1, au2) {
+        return this.atomicUnitsToXmr(au1) / this.atomicUnitsToXmr(au2);
+    }
+    /**
+     * Multiply a bigint by a number or bigint.
+     *
+     * @param a bigint to multiply
+     * @param b bigint or number to multiply by
+     * @returns the product as a bigint
+     */
+    static multiply(a, b) {
+        return BigInt((new decimal_js_1.default(a.toString()).mul(new decimal_js_1.default(b.toString())).toFixed(0)));
+    }
+    /**
+     * Calculate the difference from a first bigint to a second, as a percentage (float).
+     *
+     * @param {bigint} a first bigint to get the difference from
+     * @param {bigint} b second bigint to get the difference from
+     * @returns {number} the percentage difference as a float
+     */
+    static percentageDiff(a, b) {
+        return HavenoUtils.divide(a - b, a);
+    }
+    /**
+     * Return the absolute value of the given bigint.
+     *
+     * @param {bigint} a the bigint to get the absolute value of
+     * @returns {bigint} the absolute value of the given bigint
+     */
+    static abs(a) {
+        return a < 0 ? -a : a;
+    }
+    /**
+     * Return the maximum of two bigints.
+     *
+     * @param {bigint} bi1 first bigint
+     * @param {bigint} bi2 second bigint
+     * @returns {bigint} the maximum of the two bigints
+     */
+    static max(bi1, bi2) {
+        return bi1 > bi2 ? bi1 : bi2;
+    }
+    // ------------------------- PAYMENT ACCOUNT FORMS --------------------------
+    /**
+     * Get a validated payment method id from a string or form id.
+     *
+     * @param {string |  PaymentAccountForm.FormId} id - identifies the payment method
+     * @returns {string} the payment method id
+     */
+    static getPaymentMethodId(id) {
+        if (typeof id === "string") {
+            id = id.toUpperCase();
+            if (!(id in pb_pb_1.PaymentAccountForm.FormId))
+                throw Error("Invalid payment method: " + id);
+            return id;
+        }
+        else {
+            let keyByValue = getKeyByValue(pb_pb_1.PaymentAccountForm.FormId, id);
+            if (!keyByValue)
+                throw Error("No payment method id with form id " + id);
+            return keyByValue;
+        }
     }
     /**
      * Stringify a payment account form.
@@ -78,6 +191,20 @@ class HavenoUtils {
             str += field.getId() + ": " + this.getFormValue(form, field.getId()) + "\n";
         }
         return str.trim();
+    }
+    /**
+     * Determine if a form has a field.
+     *
+     * @param {PaymentAccountForm} form - form to check
+     * @param {PaymentAccountFormField.FieldId} fieldId - id of the field to check for
+     * @return {boolean} true if the form has the field, false otherwise
+     */
+    static hasFormField(form, fieldId) {
+        for (const field of form.getFieldsList()) {
+            if (field.getId() === fieldId)
+                return true;
+        }
+        return false;
     }
     /**
      * Get a form field value.
@@ -97,12 +224,12 @@ class HavenoUtils {
     /**
      * Set a form field value.
      *
+     * @param {PaymentAccountForm} form - form to get the field from
      * @param {PaymentAccountFormField.FieldId} fieldId - id of the field to set the value of
      * @param {string} value - field value to set
-     * @param {PaymentAccountForm} form - form to get the field from
      * @return {string} the form field value
      */
-    static setFormValue(fieldId, value, form) {
+    static setFormValue(form, fieldId, value) {
         for (const field of form.getFieldsList()) {
             if (field.getId() === fieldId) {
                 field.setValue(value);
@@ -111,62 +238,18 @@ class HavenoUtils {
         }
         throw new Error("PaymentAccountForm does not have field " + fieldId);
     }
-    /**
-     * Wait for the duration.
-     *
-     * @param {number} durationMs - the duration to wait for in milliseconds
-     */
-    static async waitFor(durationMs) {
-        return new Promise(function (resolve) { setTimeout(resolve, durationMs); });
-    }
-    /**
-     * Divide one bigint by another.
-     *
-     * @param {bigint} a dividend
-     * @param {bigint} b divisor
-     * @returns {number} the result
-     */
-    static divideBI(a, b) {
-        return Number(a * 100n / b) / 100;
-    }
-    /**
-     * Convert XMR to atomic units.
-     *
-     * @param {number|string} amountXmr - amount in XMR to convert to atomic units
-     * @return {BigInt} amount in atomic units
-     */
-    static xmrToAtomicUnits(amountXmr) {
-        if (typeof amountXmr === "number")
-            amountXmr = "" + amountXmr;
-        else if (typeof amountXmr !== "string")
-            throw new Error("Must provide XMR amount as a string or js number to convert to atomic units");
-        let decimalDivisor = 1;
-        let decimalIdx = amountXmr.indexOf('.');
-        if (decimalIdx > -1) {
-            decimalDivisor = Math.pow(10, amountXmr.length - decimalIdx - 1);
-            amountXmr = amountXmr.slice(0, decimalIdx) + amountXmr.slice(decimalIdx + 1);
-        }
-        return BigInt(amountXmr) * BigInt(HavenoUtils.AU_PER_XMR) / BigInt(decimalDivisor);
-    }
-    /**
-     * Convert atomic units to XMR.
-     *
-     * @param {BigInt|string} amountAtomicUnits - amount in atomic units to convert to XMR
-     * @return {number} amount in XMR
-     */
-    static atomicUnitsToXmr(amountAtomicUnits) {
-        if (typeof amountAtomicUnits === "string")
-            amountAtomicUnits = BigInt(amountAtomicUnits);
-        else if (typeof amountAtomicUnits !== "bigint")
-            throw new Error("Must provide atomic units as BigInt or string to convert to XMR");
-        const quotient = amountAtomicUnits / HavenoUtils.AU_PER_XMR;
-        const remainder = amountAtomicUnits % HavenoUtils.AU_PER_XMR;
-        return Number(quotient) + Number(remainder) / Number(HavenoUtils.AU_PER_XMR);
-    }
 }
 exports.default = HavenoUtils;
 HavenoUtils.logLevel = 0;
 HavenoUtils.months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 HavenoUtils.lastLogTimeMs = 0;
 HavenoUtils.AU_PER_XMR = 1000000000000n;
+function getKeyByValue(object, value) {
+    for (const key in object) {
+        if (object.hasOwnProperty(key) && object[key] === value) {
+            return key;
+        }
+    }
+    return undefined;
+}
 //# sourceMappingURL=HavenoUtils.js.map
