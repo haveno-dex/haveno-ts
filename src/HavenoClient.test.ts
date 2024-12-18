@@ -2909,7 +2909,7 @@ async function takeOffer(ctxP: Partial<TradeContext>): Promise<TradeInfo> {
   // maker is notified that offer is taken
   await wait(ctx.maxTimePeerNoticeMs);
   const tradeNotifications = getNotifications(makerNotifications, NotificationMessage.NotificationType.TRADE_UPDATE, takerTrade.getTradeId());
-  expect(tradeNotifications.length).toBe(1);
+  expect(tradeNotifications.length).toBeGreaterThanOrEqual(1); // we get notification of deposits published at least
   assert(moneroTs.GenUtils.arrayContains(["DEPOSITS_PUBLISHED", "DEPOSITS_CONFIRMED", "DEPOSITS_UNLOCKED"], tradeNotifications[0].getTrade()!.getPhase()), "Unexpected trade phase: " + tradeNotifications[0].getTrade()!.getPhase());
   expect(tradeNotifications[0].getTitle()).toEqual("Offer Taken");
   expect(tradeNotifications[0].getMessage()).toEqual("Your offer " + ctx.offerId + " has been accepted");
