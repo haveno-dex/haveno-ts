@@ -31,7 +31,8 @@
     "console": "^0.7.2",
     "decimal.js": "^10.4.3",
     "google-protobuf": "^3.20.3",
-    "grpc-web": "^1.4.2"
+    "grpc-web": "^1.4.2",
+    "xhr2": "^0.2.1"
   },
   "devDependencies": {
     "@babel/core": "^7.21.0",
