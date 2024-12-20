@@ -950,7 +950,7 @@ class HavenoClient {
     /**
      * Delete a payment account.
      *
-     * @param paymentAccountId {string} the id of the payment account to delete
+     * @param {string} paymentAccountId the id of the payment account to delete
      */
     async deletePaymentAccount(paymentAccountId) {
         try {
@@ -1024,9 +1024,11 @@ class HavenoClient {
      * @param {number} triggerPrice - price to remove offer (optional)
      * @param {bigint} minAmount - minimum amount to trade (optional, default to fixed amount)
      * @param {number} reserveExactAmount - reserve exact amount needed for offer, incurring on-chain transaction and 10 confirmations before the offer goes live (default = false)
+     * @param {boolean} isPrivateOffer - whether the offer is private (default = false)
+     * @param {boolean} buyerAsTakerWithoutDeposit - waive buyer as taker deposit and fee (default false)
      * @return {OfferInfo} the posted offer
      */
-    async postOffer(direction, amount, assetCode, paymentAccountId, securityDepositPct, price, marketPriceMarginPct, triggerPrice, minAmount, reserveExactAmount) {
+    async postOffer(direction, amount, assetCode, paymentAccountId, securityDepositPct, price, marketPriceMarginPct, triggerPrice, minAmount, reserveExactAmount, isPrivateOffer, buyerAsTakerWithoutDeposit) {
         console_1.default.log("Posting offer with security deposit %: " + securityDepositPct);
         try {
             const request = new grpc_pb_1.PostOfferRequest()
@@ -1034,7 +1036,7 @@ class HavenoClient {
                 .setAmount(amount.toString())
                 .setCurrencyCode(assetCode)
                 .setPaymentAccountId(paymentAccountId)
-                .setBuyerSecurityDepositPct(securityDepositPct)
+                .setSecurityDepositPct(securityDepositPct)
                 .setUseMarketBasedPrice(price === undefined)
                 .setMinAmount(minAmount ? minAmount.toString() : amount.toString());
             if (price)
@@ -1044,7 +1046,11 @@ class HavenoClient {
             if (triggerPrice)
                 request.setTriggerPrice(triggerPrice.toString());
             if (reserveExactAmount)
-                request.setReserveExactAmount(reserveExactAmount);
+                request.setReserveExactAmount(true);
+            if (isPrivateOffer)
+                request.setIsPrivateOffer(true);
+            if (buyerAsTakerWithoutDeposit)
+                request.setBuyerAsTakerWithoutDeposit(true);
             return (await this._offersClient.postOffer(request, { password: this._password })).getOffer();
         }
         catch (e) {
@@ -1070,15 +1076,18 @@ class HavenoClient {
      * @param {string} offerId - id of the offer to take
      * @param {string} paymentAccountId - id of the payment account
      * @param {bigint|undefined} amount - amount the taker chooses to buy or sell within the offer range (default is max offer amount)
+     * @param {string|undefined} challenge - the challenge to use for the private offer
      * @return {TradeInfo} the initialized trade
      */
-    async takeOffer(offerId, paymentAccountId, amount) {
+    async takeOffer(offerId, paymentAccountId, amount, challenge) {
         try {
             const request = new grpc_pb_1.TakeOfferRequest()
                 .setOfferId(offerId)
                 .setPaymentAccountId(paymentAccountId);
             if (amount)
                 request.setAmount(amount.toString());
+            if (challenge)
+                request.setChallenge(challenge);
             const resp = await this._tradesClient.takeOffer(request, { password: this._password });
             if (resp.getTrade())
                 return resp.getTrade();
@@ -1293,7 +1302,7 @@ class HavenoClient {
             await this.disconnect();
             await this._shutdownServerClient.stop(new grpc_pb_1.StopRequest(), { password: this._password }); // process receives 'exit' event
             if (this._process)
-                return HavenoUtils_1.default.kill(this._process);
+                await HavenoUtils_1.default.kill(this._process);
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);

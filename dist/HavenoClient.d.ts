@@ -398,7 +398,7 @@ export default class HavenoClient {
     /**
      * Delete a payment account.
      *
-     * @param paymentAccountId {string} the id of the payment account to delete
+     * @param {string} paymentAccountId the id of the payment account to delete
      */
     deletePaymentAccount(paymentAccountId: string): Promise<void>;
     /**
@@ -437,9 +437,11 @@ export default class HavenoClient {
      * @param {number} triggerPrice - price to remove offer (optional)
      * @param {bigint} minAmount - minimum amount to trade (optional, default to fixed amount)
      * @param {number} reserveExactAmount - reserve exact amount needed for offer, incurring on-chain transaction and 10 confirmations before the offer goes live (default = false)
+     * @param {boolean} isPrivateOffer - whether the offer is private (default = false)
+     * @param {boolean} buyerAsTakerWithoutDeposit - waive buyer as taker deposit and fee (default false)
      * @return {OfferInfo} the posted offer
      */
-    postOffer(direction: OfferDirection, amount: bigint, assetCode: string, paymentAccountId: string, securityDepositPct: number, price?: number, marketPriceMarginPct?: number, triggerPrice?: number, minAmount?: bigint, reserveExactAmount?: boolean): Promise<OfferInfo>;
+    postOffer(direction: OfferDirection, amount: bigint, assetCode: string, paymentAccountId: string, securityDepositPct: number, price?: number, marketPriceMarginPct?: number, triggerPrice?: number, minAmount?: bigint, reserveExactAmount?: boolean, isPrivateOffer?: boolean, buyerAsTakerWithoutDeposit?: boolean): Promise<OfferInfo>;
     /**
      * Remove a posted offer, releasing its reserved funds.
      *
@@ -452,9 +454,10 @@ export default class HavenoClient {
      * @param {string} offerId - id of the offer to take
      * @param {string} paymentAccountId - id of the payment account
      * @param {bigint|undefined} amount - amount the taker chooses to buy or sell within the offer range (default is max offer amount)
+     * @param {string|undefined} challenge - the challenge to use for the private offer
      * @return {TradeInfo} the initialized trade
      */
-    takeOffer(offerId: string, paymentAccountId: string, amount?: bigint): Promise<TradeInfo>;
+    takeOffer(offerId: string, paymentAccountId: string, amount?: bigint, challenge?: string): Promise<TradeInfo>;
     /**
      * Get a trade by id.
      *

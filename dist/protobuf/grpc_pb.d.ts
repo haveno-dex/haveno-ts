@@ -1525,8 +1525,8 @@ export class PostOfferRequest extends jspb.Message {
   getMinAmount(): string;
   setMinAmount(value: string): PostOfferRequest;
 
-  getBuyerSecurityDepositPct(): number;
-  setBuyerSecurityDepositPct(value: number): PostOfferRequest;
+  getSecurityDepositPct(): number;
+  setSecurityDepositPct(value: number): PostOfferRequest;
 
   getTriggerPrice(): string;
   setTriggerPrice(value: string): PostOfferRequest;
@@ -1536,6 +1536,12 @@ export class PostOfferRequest extends jspb.Message {
 
   getPaymentAccountId(): string;
   setPaymentAccountId(value: string): PostOfferRequest;
+
+  getIsPrivateOffer(): boolean;
+  setIsPrivateOffer(value: boolean): PostOfferRequest;
+
+  getBuyerAsTakerWithoutDeposit(): boolean;
+  setBuyerAsTakerWithoutDeposit(value: boolean): PostOfferRequest;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PostOfferRequest.AsObject;
@@ -1554,10 +1560,12 @@ export namespace PostOfferRequest {
     marketPriceMarginPct: number,
     amount: string,
     minAmount: string,
-    buyerSecurityDepositPct: number,
+    securityDepositPct: number,
     triggerPrice: string,
     reserveExactAmount: boolean,
     paymentAccountId: string,
+    isPrivateOffer: boolean,
+    buyerAsTakerWithoutDeposit: boolean,
   }
 }
 
@@ -1707,6 +1715,12 @@ export class OfferInfo extends jspb.Message {
   getSplitOutputTxFee(): string;
   setSplitOutputTxFee(value: string): OfferInfo;
 
+  getIsPrivateOffer(): boolean;
+  setIsPrivateOffer(value: boolean): OfferInfo;
+
+  getChallenge(): string;
+  setChallenge(value: string): OfferInfo;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): OfferInfo.AsObject;
   static toObject(includeInstance: boolean, msg: OfferInfo): OfferInfo.AsObject;
@@ -1748,6 +1762,8 @@ export namespace OfferInfo {
     arbitratorSigner: string,
     splitOutputTxHash: string,
     splitOutputTxFee: string,
+    isPrivateOffer: boolean,
+    challenge: string,
   }
 }
 
@@ -2367,6 +2383,9 @@ export class TakeOfferRequest extends jspb.Message {
   getAmount(): string;
   setAmount(value: string): TakeOfferRequest;
 
+  getChallenge(): string;
+  setChallenge(value: string): TakeOfferRequest;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): TakeOfferRequest.AsObject;
   static toObject(includeInstance: boolean, msg: TakeOfferRequest): TakeOfferRequest.AsObject;
@@ -2380,6 +2399,7 @@ export namespace TakeOfferRequest {
     offerId: string,
     paymentAccountId: string,
     amount: string,
+    challenge: string,
   }
 }
 

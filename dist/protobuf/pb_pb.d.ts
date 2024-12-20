@@ -1081,6 +1081,9 @@ export class InitTradeRequest extends jspb.Message {
   getPayoutAddress(): string;
   setPayoutAddress(value: string): InitTradeRequest;
 
+  getChallenge(): string;
+  setChallenge(value: string): InitTradeRequest;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): InitTradeRequest.AsObject;
   static toObject(includeInstance: boolean, msg: InitTradeRequest): InitTradeRequest.AsObject;
@@ -1111,6 +1114,7 @@ export namespace InitTradeRequest {
     reserveTxHex: string,
     reserveTxKey: string,
     payoutAddress: string,
+    challenge: string,
   }
 }
 
@@ -2855,8 +2859,8 @@ export class OfferPayload extends jspb.Message {
   getIsPrivateOffer(): boolean;
   setIsPrivateOffer(value: boolean): OfferPayload;
 
-  getHashOfChallenge(): string;
-  setHashOfChallenge(value: string): OfferPayload;
+  getChallengeHash(): string;
+  setChallengeHash(value: string): OfferPayload;
 
   getExtraDataMap(): jspb.Map<string, string>;
   clearExtraDataMap(): OfferPayload;
@@ -2921,7 +2925,7 @@ export namespace OfferPayload {
     lowerClosePrice: number,
     upperClosePrice: number,
     isPrivateOffer: boolean,
-    hashOfChallenge: string,
+    challengeHash: string,
     extraDataMap: Array<[string, string]>,
     protocolVersion: number,
     arbitratorSigner?: NodeAddress.AsObject,
@@ -5992,6 +5996,9 @@ export class OpenOffer extends jspb.Message {
   getReserveTxKey(): string;
   setReserveTxKey(value: string): OpenOffer;
 
+  getChallenge(): string;
+  setChallenge(value: string): OpenOffer;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): OpenOffer.AsObject;
   static toObject(includeInstance: boolean, msg: OpenOffer): OpenOffer.AsObject;
@@ -6013,6 +6020,7 @@ export namespace OpenOffer {
     reserveTxHash: string,
     reserveTxHex: string,
     reserveTxKey: string,
+    challenge: string,
   }
 
   export enum State { 
@@ -6196,6 +6204,9 @@ export class Trade extends jspb.Message {
   getIsCompleted(): boolean;
   setIsCompleted(value: boolean): Trade;
 
+  getChallenge(): string;
+  setChallenge(value: string): Trade;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Trade.AsObject;
   static toObject(includeInstance: boolean, msg: Trade): Trade.AsObject;
@@ -6234,6 +6245,7 @@ export namespace Trade {
     counterCurrencyExtraData: string,
     uid: string,
     isCompleted: boolean,
+    challenge: string,
   }
 
   export enum State { 
@@ -6998,14 +7010,14 @@ export class PreferencesPayload extends jspb.Message {
   getTakeOfferSelectedPaymentAccountId(): string;
   setTakeOfferSelectedPaymentAccountId(value: string): PreferencesPayload;
 
-  getBuyerSecurityDepositAsPercent(): number;
-  setBuyerSecurityDepositAsPercent(value: number): PreferencesPayload;
+  getSecurityDepositAsPercent(): number;
+  setSecurityDepositAsPercent(value: number): PreferencesPayload;
 
   getIgnoreDustThreshold(): number;
   setIgnoreDustThreshold(value: number): PreferencesPayload;
 
-  getBuyerSecurityDepositAsPercentForCrypto(): number;
-  setBuyerSecurityDepositAsPercentForCrypto(value: number): PreferencesPayload;
+  getSecurityDepositAsPercentForCrypto(): number;
+  setSecurityDepositAsPercentForCrypto(value: number): PreferencesPayload;
 
   getBlockNotifyPort(): number;
   setBlockNotifyPort(value: number): PreferencesPayload;
@@ -7058,6 +7070,15 @@ export class PreferencesPayload extends jspb.Message {
 
   getUseSoundForNotificationsInitialized(): boolean;
   setUseSoundForNotificationsInitialized(value: boolean): PreferencesPayload;
+
+  getBuyScreenOtherCurrencyCode(): string;
+  setBuyScreenOtherCurrencyCode(value: string): PreferencesPayload;
+
+  getSellScreenOtherCurrencyCode(): string;
+  setSellScreenOtherCurrencyCode(value: string): PreferencesPayload;
+
+  getShowPrivateOffers(): boolean;
+  setShowPrivateOffers(value: boolean): PreferencesPayload;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PreferencesPayload.AsObject;
@@ -7114,9 +7135,9 @@ export namespace PreferencesPayload {
     rpcUser: string,
     rpcPw: string,
     takeOfferSelectedPaymentAccountId: string,
-    buyerSecurityDepositAsPercent: number,
+    securityDepositAsPercent: number,
     ignoreDustThreshold: number,
-    buyerSecurityDepositAsPercentForCrypto: number,
+    securityDepositAsPercentForCrypto: number,
     blockNotifyPort: number,
     cssTheme: number,
     tacAcceptedV120: boolean,
@@ -7133,6 +7154,9 @@ export namespace PreferencesPayload {
     splitOfferOutput: boolean,
     useSoundForNotifications: boolean,
     useSoundForNotificationsInitialized: boolean,
+    buyScreenOtherCurrencyCode: string,
+    sellScreenOtherCurrencyCode: string,
+    showPrivateOffers: boolean,
   }
 }
 
