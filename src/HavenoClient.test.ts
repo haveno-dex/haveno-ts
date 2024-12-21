@@ -366,7 +366,7 @@ const TestConfig = {
     deferralMs: 25000,
     haveno: {
         path: "../haveno",
-        version: "1.0.16"
+        version: "1.0.17"
     },
     monerod: {
         url: "http://localhost:" + getNetworkStartPort() + "8081", // 18081, 28081, 38081 for mainnet, testnet, and stagenet, respectively
@@ -1995,7 +1995,7 @@ test("Can go offline while resolving a dispute (CI)", async () => {
   if (err) throw err;
 });
 
-test("Cannot make or take offer with insufficient unlocked funds (CI, sanity check)", async () => {
+test("Cannot make or take offer with insufficient funds (CI, sanity check)", async () => {
   let user3: HavenoClient|undefined;
   let err: any;
   try {
@@ -2011,7 +2011,7 @@ test("Cannot make or take offer with insufficient unlocked funds (CI, sanity che
       await makeOffer({maker: {havenod: user3}, makerPaymentAccountId: paymentAccount.getId(), awaitFundsToMakeOffer: false});
       throw new Error("Should have failed making offer with insufficient funds")
     } catch (err: any) {
-      if (!err.message.includes("not enough money")) throw err;
+      if (!err.message.includes("not enough funds")) throw err;
       const errTyped = err as HavenoError;
       assert.equal(errTyped.code, 2);
     }
