@@ -18,6 +18,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HavenoUtils = exports.HavenoError = exports.HavenoClient = void 0;
+try {
+    new XMLHttpRequest();
+}
+catch {
+    const xhr = require('node-xmlhttprequest');
+    //@ts-ignore
+    global.ProgressEvent = xhr.ProgressEvent;
+    //@ts-ignore
+    global.XMLHttpRequestEventTarget = xhr.XMLHttpRequestEventTarget;
+    //@ts-ignore
+    global.XMLHttpRequestUpload = xhr.XMLHttpRequestUpload;
+    //@ts-ignore
+    global.XMLHttpRequest = xhr.XMLHttpRequest;
+}
 const HavenoClient_1 = __importDefault(require("./HavenoClient"));
 exports.HavenoClient = HavenoClient_1.default;
 const HavenoError_1 = __importDefault(require("./types/HavenoError"));
