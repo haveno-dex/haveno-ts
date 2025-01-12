@@ -1330,7 +1330,15 @@ export default class HavenoClient {
       await this._shutdownServerClient.stop(new StopRequest(), {password: this._password}); // process receives 'exit' event
       if (this._process) await HavenoUtils.kill(this._process);
     } catch (e: any) {
-      throw new HavenoError(e.message, e.code);
+      console.error("Error gracefully shutting down havenod: " + e.message);
+      if (this._process) {
+        try {
+          await HavenoUtils.kill(this._process);
+        } catch (e: any) {
+          console.error("Error terminating havenod process: " + e.message + ". Stopping forcefully");
+          await HavenoUtils.kill(this._process, "SIGKILL");
+        }
+      }
     }
   }
   
