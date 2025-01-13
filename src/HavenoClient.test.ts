@@ -550,10 +550,10 @@ beforeAll(async () => {
   for (const config of TestConfig.startupHavenods) promises.push(initHaveno(config));
   for (const settledPromise of await Promise.allSettled(promises)) {
     if (settledPromise.status === "fulfilled") {
-      startupHavenods.push((settledPromise as PromiseFulfilledResult<HavenoClient>).value);
-      startupHavenodUrls.push(startupHavenods[startupHavenods.length - 1].getUrl());
+      startupHavenods.push(settledPromise.value);
+      startupHavenodUrls.push(settledPromise.value.getUrl());
     } else if (!err) {
-      err = new Error((settledPromise as PromiseRejectedResult).reason);
+      err = settledPromise.reason instanceof Error ? settledPromise.reason : new Error(String(settledPromise.reason));
     }
   }
   if (err) throw err;
