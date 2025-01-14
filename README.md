@@ -67,7 +67,7 @@ Start a local Haveno network with docker:
 ### Run client tests
 
 5. Install protobuf compiler [v3.20.3](https://github.com/protocolbuffers/protobuf/releases/tag/v3.20.3) for your system.
-6. Download `protoc-gen-grpc-web` plugin and make executable as [shown here](https://github.com/grpc/grpc-web#code-generator-plugin).
+6. Download `protoc-gen-js` and `protoc-gen-grpc-web` plugins and make executable as [shown here](https://github.com/grpc/grpc-web#code-generator-plugins).
 7. `cd haveno-ts`
 8. `npm install`
 9. `npm run test -- --baseCurrencyNetwork=XMR_LOCAL` to run all tests or `npm run test -- --baseCurrencyNetwork=XMR_LOCAL -t "Can get the version"` to run tests by name.
