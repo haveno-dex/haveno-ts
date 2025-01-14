@@ -369,12 +369,12 @@ const TestConfig = {
         version: "1.0.17"
     },
     monerod: {
-        url: "http://localhost:" + getNetworkStartPort() + "8081", // 18081, 28081, 38081 for mainnet, testnet, and stagenet, respectively
+        url: "http://127.0.0.1:" + getNetworkStartPort() + "8081", // 18081, 28081, 38081 for mainnet, testnet, and stagenet, respectively
         username: "",
         password: ""
     },
     monerod3: { // corresponds to monerod3-local in Makefile
-        url: "http://localhost:58081",
+        url: "http://127.0.0.1:58081",
         username: "superuser",
         password: "abctesting123",
         p2pBindPort: "58080",
@@ -382,7 +382,7 @@ const TestConfig = {
         zmqRpcBindPort: "58082"
     },
     fundingWallet: {
-        url: "http://localhost:" + getNetworkStartPort() + "8084", // 18084, 28084, 38084 for mainnet, testnet, stagenet respectively
+        url: "http://127.0.0.1:" + getNetworkStartPort() + "8084", // 18084, 28084, 38084 for mainnet, testnet, stagenet respectively
         username: "rpc_user",
         password: "abc123",
         walletPassword: "abc123",
@@ -819,7 +819,7 @@ test("Can manage Monero daemon connections (CI)", async () => {
       "--zmq-rpc-bind-port", TestConfig.monerod3.zmqRpcBindPort,
       "--log-level", "0",
       "--confirm-external-bind",
-      "--rpc-access-control-origins", "http://localhost:8080",
+      "--rpc-access-control-origins", "http://127.0.0.1:8080",
       "--fixed-difficulty", "500",
       "--disable-rpc-ban"
     ];
@@ -2143,7 +2143,7 @@ test("Can handle unexpected errors during trade initialization", async () => {
     let paymentAccount = await createCryptoPaymentAccount(traders[1]);
     wait(3000).then(async function() {
       try {
-        const traderWallet = await moneroTs.connectToWalletRpc("http://localhost:" + traders[1].getWalletRpcPort(), TestConfig.defaultHavenod.walletUsername, TestConfig.defaultHavenod.accountPassword);
+        const traderWallet = await moneroTs.connectToWalletRpc("http://127.0.0.1:" + traders[1].getWalletRpcPort(), TestConfig.defaultHavenod.walletUsername, TestConfig.defaultHavenod.accountPassword);
         for (const frozenOutput of await traderWallet.getOutputs({isFrozen: true})) await traderWallet.thawOutput(frozenOutput.getKeyImage().getHex());
         HavenoUtils.log(1, "Sweeping trade funds");
         await traderWallet.sweepUnlocked({address: await traderWallet.getPrimaryAddress(), relay: true});
@@ -2177,7 +2177,7 @@ test("Can handle unexpected errors during trade initialization", async () => {
     // trader 0 spends trade funds after trader 2 takes offer
     wait(3000).then(async function() {
       try {
-        const traderWallet = await moneroTs.connectToWalletRpc("http://localhost:" + traders[0].getWalletRpcPort(), TestConfig.defaultHavenod.walletUsername, TestConfig.defaultHavenod.accountPassword);
+        const traderWallet = await moneroTs.connectToWalletRpc("http://127.0.0.1:" + traders[0].getWalletRpcPort(), TestConfig.defaultHavenod.walletUsername, TestConfig.defaultHavenod.accountPassword);
         for (const frozenOutput of await traderWallet.getOutputs({isFrozen: true})) await traderWallet.thawOutput(frozenOutput.getKeyImage().getHex());
         HavenoUtils.log(1, "Sweeping offer funds");
         await traderWallet.sweepUnlocked({address: await traderWallet.getPrimaryAddress(), relay: true});
@@ -2237,8 +2237,8 @@ test("Selects arbitrators which are online, registered, and least used", async (
   await wait(TestConfig.trade.walletSyncPeriodMs * 2);
 
   // get internal api addresses
-  const arbitrator1ApiUrl = "localhost:" + TestConfig.ports.get(getPort(arbitrator.getUrl()))![1]; // TODO: havenod.getApiUrl()?
-  const arbitrator2ApiUrl = "localhost:" + TestConfig.ports.get(getPort(arbitrator2.getUrl()))![1];
+  const arbitrator1ApiUrl = "127.0.0.1:" + TestConfig.ports.get(getPort(arbitrator.getUrl()))![1]; // TODO: havenod.getApiUrl()?
+  const arbitrator2ApiUrl = "127.0.0.1:" + TestConfig.ports.get(getPort(arbitrator2.getUrl()))![1];
 
   let err = undefined;
   try {
@@ -3489,7 +3489,7 @@ async function initHaveno(ctx?: HavenodContext): Promise<HavenoClient> {
 
     // try to connect to existing server
     if (!ctx.port) throw new Error("Cannot connect without port");
-    havenod = new HavenoClient("http://localhost:" + ctx.port, ctx.apiPassword!);
+    havenod = new HavenoClient("http://127.0.0.1:" + ctx.port, ctx.apiPassword!);
     await havenod.getVersion();
   } catch (err: any) {
 
@@ -3520,7 +3520,7 @@ async function initHaveno(ctx?: HavenodContext): Promise<HavenoClient> {
       "--passwordRequired", (ctx.accountPasswordRequired ? "true" : "false"),
       "--logLevel", ctx.logLevel!
     ];
-    havenod = await HavenoClient.startProcess(TestConfig.haveno.path, cmd, "http://localhost:" + ctx.port, ctx.logProcessOutput!);
+    havenod = await HavenoClient.startProcess(TestConfig.haveno.path, cmd, "http://127.0.0.1:" + ctx.port, ctx.logProcessOutput!);
 
     // wait to process network notifications
     await wait(3000);
