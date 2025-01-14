@@ -22,7 +22,10 @@ jobs:
           distribution: 'temurin'
 
       - name: Stop Mono service
-        run: sudo killall mono
+        run: |
+          if pgrep mono > /dev/null; then
+            sudo killall mono;
+          fi
 
       - name: Start containers
         run: docker compose -f "./docker/docker-compose.yml" up -d --build
