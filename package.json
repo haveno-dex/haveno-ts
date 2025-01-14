@@ -30,8 +30,8 @@
     "@types/node": "^18.14.2",
     "console": "^0.7.2",
     "decimal.js": "^10.4.3",
-    "google-protobuf": "^3.20.3",
-    "grpc-web": "^1.4.2",
+    "google-protobuf": "^3.21.4",
+    "grpc-web": "^1.5.0",
     "node-xmlhttprequest": "^1.0.6"
   },
   "devDependencies": {
