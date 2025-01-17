@@ -138,6 +138,8 @@ const defaultTradeConfig: Partial<TradeContext> = {
   takerPaymentAccountId: undefined,
   buyerSendsPayment: true,
   sellerReceivesPayment: true,
+  buyerDisputeContext: DisputeContext.NONE,
+  sellerDisputeContext: DisputeContext.NONE,
   resolveDispute: true, // resolve dispute after opening
   disputeWinner: DisputeResult.Winner.SELLER,
   disputeReason: DisputeResult.Reason.PEER_WAS_LATE,
@@ -2394,7 +2396,7 @@ test("Can bootstrap a network", async () => {
     if (ctxP.sellerDisputeContext === undefined) ctxP.sellerDisputeContext = getRandomOutcome(1/14) ? DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK : undefined;
     if (ctxP.sellerDisputeContext === undefined) ctxP.sellerDisputeContext = getRandomOutcome(1/14) ? DisputeContext.OPEN_AFTER_PAYMENT_SENT : undefined;
     if (ctxP.resolveDispute === undefined) ctxP.resolveDispute = getRandomOutcome(5/7);
-  
+
     return TradeContext.init(ctxP);
   }
 
@@ -2923,19 +2925,13 @@ async function makeOffer(ctxP?: Partial<TradeContext>): Promise<OfferInfo> {
   ctx.taker.splitOutputTxFee = 0n;
   ctx.challenge = offer.getChallenge();
 
-  // market-priced offer amounts are unadjusted, fixed-priced offer amounts are adjusted (e.g. cash at atm is $10 increments)
-  // TODO: adjustments should be based on currency and payment method, not fixed-price
+  // offer amounts are adjusted to 4 decimals
   if (!ctx.offerMinAmount) ctx.offerMinAmount = ctx.offerAmount;
-  if (offer.getUseMarketBasedPrice()) {
-    expect(BigInt(offer.getAmount())).toEqual(ctx.offerAmount!);
-    expect(BigInt(offer.getMinAmount())).toEqual(ctx.offerMinAmount!);
-  } else {
-    expect(Math.abs(HavenoUtils.percentageDiff(ctx.offerAmount!, BigInt(offer.getAmount())))).toBeLessThan(TestConfig.maxAdjustmentPct);
-    expect(Math.abs(HavenoUtils.percentageDiff(ctx.offerMinAmount!, BigInt(offer.getMinAmount())))).toBeLessThan(TestConfig.maxAdjustmentPct);
-    if (ctx.tradeAmount === ctx.offerAmount) ctx.tradeAmount = BigInt(offer.getAmount()); // adjust trade amount
-    ctx.offerAmount = BigInt(offer.getAmount());
-    ctx.offerMinAmount = BigInt(offer.getMinAmount());
-  }
+  expect(Math.abs(HavenoUtils.percentageDiff(ctx.offerAmount!, BigInt(offer.getAmount())))).toBeLessThan(TestConfig.maxAdjustmentPct);
+  expect(Math.abs(HavenoUtils.percentageDiff(ctx.offerMinAmount!, BigInt(offer.getMinAmount())))).toBeLessThan(TestConfig.maxAdjustmentPct);
+  if (ctx.tradeAmount === ctx.offerAmount) ctx.tradeAmount = BigInt(offer.getAmount()); // adjust trade amount
+  ctx.offerAmount = BigInt(offer.getAmount());
+  ctx.offerMinAmount = BigInt(offer.getMinAmount());
 
   // unlocked balance has decreased
   let unlockedBalanceAfter = BigInt((await ctx.maker.havenod!.getBalances()).getAvailableBalance());
