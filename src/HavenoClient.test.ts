@@ -180,6 +180,7 @@ class TradeContext {
   // make offer
   awaitFundsToMakeOffer?: boolean
   direction?: OfferDirection;
+  paymentMethodId?: string;
   assetCode?: string;
   offerAmount?: bigint; // offer amount or max
   offerMinAmount?: bigint;
@@ -341,6 +342,8 @@ class TradeContext {
         str += "\nTaker deposit tx fee: " + (tx ? tx?.getFee() : undefined);
       }
       str += "\nTaker security deposit received: " + (this.direction == OfferDirection.BUY ? this.arbitrator!.trade!.getSellerSecurityDeposit() : this.arbitrator!.trade!.getBuyerSecurityDeposit());
+      str += "\nBuyer dispute context: " + disputeContextToString(this.buyerDisputeContext);
+      str += "\nSeller dispute context: " + disputeContextToString(this.sellerDisputeContext);
       if (this.disputeWinner) str += "\nDispute winner: " + (this.disputeWinner == DisputeResult.Winner.BUYER ? "Buyer" : "Seller");
       str += "\nPayout tx id: " + this.payoutTxId;
       if (this.payoutTxId) {
@@ -351,6 +354,11 @@ class TradeContext {
     }
     str += "\nOffer json: " + JSON.stringify(this.offer?.toObject());
     return str;
+
+    function disputeContextToString(disputeContext: DisputeContext | undefined): string {
+      if (!disputeContext) return "undefined";
+      return disputeContext === DisputeContext.NONE ? "NONE" : disputeContext === DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK ? "OPEN_AFTER_DEPOSITS_UNLOCK" : "OPEN_AFTER_PAYMENT_SENT";
+    }
   }
 }
 
@@ -433,6 +441,7 @@ const TestConfig = {
     paymentMethods: Object.keys(PaymentAccountForm.FormId), // all supported payment methods
     assetCodes: ["USD", "GBP", "EUR", "ETH", "BTC", "BCH", "LTC", "USDT-ERC20", "USDT-TRC20", "USDC-ERC20"], // crypto asset codes
     fixedPriceAssetCodes: ["XAG", "XAU", "XGB"],
+    fixedPricePaymentMethods: ["CASH_AT_ATM"],
     cryptoAddresses: [{
             currencyCode: "ETH",
             address: "0xdBdAb835Acd6fC84cF5F9aDD3c0B5a1E25fbd99f"
@@ -619,18 +628,18 @@ async function shutDown() {
 
 // ----------------------------------- TESTS ----------------------------------
 
-test("Can get the version (CI)", async () => {
+test("Can get the version (Test, CI)", async () => {
   const version = await arbitrator.getVersion();
   expect(version).toEqual(TestConfig.haveno.version);
 });
 
-test("Can convert between XMR and atomic units (CI)", async () => {
+test("Can convert between XMR and atomic units (Test, CI)", async () => {
   expect(BigInt(250000000000)).toEqual(HavenoUtils.xmrToAtomicUnits(0.25));
   expect(HavenoUtils.atomicUnitsToXmr("250000000000")).toEqual(.25);
   expect(HavenoUtils.atomicUnitsToXmr(250000000000n)).toEqual(.25);
 });
 
-test("Can manage an account (CI)", async () => {
+test("Can manage an account (Test, CI)", async () => {
   let user3: HavenoClient|undefined;
   let err: any;
   try {
@@ -765,7 +774,7 @@ test("Can manage an account (CI)", async () => {
   }
 });
 
-test("Can manage Monero daemon connections (CI)", async () => {
+test("Can manage Monero daemon connections (Test, CI)", async () => {
   let monerod3: moneroTs.MoneroDaemonRpc | undefined = undefined;
   let user3: HavenoClient|undefined;
   let err: any;
@@ -938,7 +947,7 @@ test("Can manage Monero daemon connections (CI)", async () => {
 // - monerod1-local must be stopped
 // - monerod2-local must be running
 // - user1-daemon-local must be running and own its monerod process (so it can be stopped)
-test("Can start and stop a local Monero node (CI)", async() => {
+test("Can start and stop a local Monero node (Test, CI)", async() => {
 
   // expect error stopping stopped local node
   try {
@@ -1024,7 +1033,7 @@ test("Can start and stop a local Monero node (CI)", async() => {
 });
 
 // test wallet balances, transactions, deposit addresses, create and relay txs
-test("Has a Monero wallet (CI)", async () => {
+test("Has a Monero wallet (Test, CI)", async () => {
 
   // get seed phrase
   const seed = await user1.getXmrSeed();
@@ -1084,7 +1093,7 @@ test("Has a Monero wallet (CI)", async () => {
   }
 });
 
-test("Can get balances (CI, sanity check)", async () => {
+test("Can get balances (Test, CI, sanity check)", async () => {
   const balances: XmrBalanceInfo = await user1.getBalances();
   expect(BigInt(balances.getAvailableBalance())).toBeGreaterThanOrEqual(0);
   expect(BigInt(balances.getPendingBalance())).toBeGreaterThanOrEqual(0);
@@ -1092,7 +1101,7 @@ test("Can get balances (CI, sanity check)", async () => {
   expect(BigInt(balances.getReservedTradeBalance())).toBeGreaterThanOrEqual(0);
 });
 
-test("Can send and receive push notifications (CI, sanity check)", async () => {
+test("Can send and receive push notifications (Test, CI, sanity check)", async () => {
 
   // add notification listener
   const notifications: NotificationMessage[] = [];
@@ -1118,7 +1127,7 @@ test("Can send and receive push notifications (CI, sanity check)", async () => {
   }
 });
 
-test("Can get asset codes with prices and their payment methods (CI, sanity check)", async() => {
+test("Can get asset codes with prices and their payment methods (Test, CI, sanity check)", async() => {
   const assetCodes = await user1.getPricedAssetCodes();
   for (const assetCode of assetCodes) {
     const paymentMethods = await user1.getPaymentMethods(assetCode);
@@ -1126,7 +1135,7 @@ test("Can get asset codes with prices and their payment methods (CI, sanity chec
   }
 });
 
-test("Can get market prices (CI, sanity check)", async () => {
+test("Can get market prices (Test, CI, sanity check)", async () => {
 
   // get all market prices
   const prices: MarketPriceInfo[] = await user1.getPrices();
@@ -1154,12 +1163,10 @@ test("Can get market prices (CI, sanity check)", async () => {
   expect(btc).toBeLessThan(0.4);
 
   // test invalid currency
-  await expect(async () => { await user1.getPrice("INVALID_CURRENCY") })
-    .rejects
-    .toThrow('Currency not found: INVALID_CURRENCY');
+  expect(await user1.getPrice("INVALID_CURRENCY")).toEqual(undefined);
 });
 
-test("Can get market depth (CI, sanity check)", async () => {
+test("Can get market depth (Test, CI, sanity check)", async () => {
     const assetCode = "eth";
 
     // clear offers
@@ -1228,7 +1235,7 @@ test("Can get market depth (CI, sanity check)", async () => {
         .toThrow('Currency not found: INVALID_CURRENCY');
 });
 
-test("Can register as an arbitrator (CI)", async () => {
+test("Can register as an arbitrator (Test, CI)", async () => {
 
   // test bad dispute agent type
   try {
@@ -1250,14 +1257,14 @@ test("Can register as an arbitrator (CI)", async () => {
   await arbitrator.registerDisputeAgent("arbitrator", getArbitratorPrivKey(0));
 });
 
-test("Can get offers (CI)", async () => {
+test("Can get offers (Test, CI)", async () => {
   for (const assetCode of TestConfig.assetCodes) {
     const offers: OfferInfo[] = await user1.getOffers(assetCode);
     for (const offer of offers) testOffer(offer);
   }
 });
 
-test("Can get my offers (CI)", async () => {
+test("Can get my offers (Test, CI)", async () => {
 
   // get all offers
   const offers: OfferInfo[] = await user1.getMyOffers();
@@ -1273,7 +1280,7 @@ test("Can get my offers (CI)", async () => {
   }
 });
 
-test("Can get payment methods (CI)", async () => {
+test("Can get payment methods (Test, CI)", async () => {
   const paymentMethods: PaymentMethod[] = await user1.getPaymentMethods();
   expect(paymentMethods.length).toBeGreaterThan(0);
   for (const paymentMethod of paymentMethods) {
@@ -1284,7 +1291,7 @@ test("Can get payment methods (CI)", async () => {
   }
 });
 
-test("Can get payment accounts (CI)", async () => {
+test("Can get payment accounts (Test, CI)", async () => {
   const paymentAccounts: PaymentAccount[] = await user1.getPaymentAccounts();
   for (const paymentAccount of paymentAccounts) {
     if (paymentAccount.getPaymentAccountPayload()!.getCryptoCurrencyAccountPayload()) { // TODO (woodser): test non-crypto
@@ -1294,7 +1301,7 @@ test("Can get payment accounts (CI)", async () => {
 });
 
 // TODO: FieldId represented as number
-test("Can validate payment account forms (CI, sanity check)", async () => {
+test("Can validate payment account forms (Test, CI, sanity check)", async () => {
 
   // get payment methods
   const paymentMethods = await user1.getPaymentMethods();
@@ -1345,12 +1352,16 @@ test("Can validate payment account forms (CI, sanity check)", async () => {
     expect(paymentAccount.getPaymentMethod()!.getId()).toEqual(paymentMethod.getId());
     testPaymentAccount(paymentAccount, accountForm);
 
+    // convert to payment account payload form
+    const accountPayloadForm = await user1.getPaymentAccountPayloadForm(paymentAccount.getPaymentAccountPayload()!);
+    expect(accountPayloadForm.toObject()).toBeDefined();
+
     // delete payment account
     // await user1.deletePaymentAccount(paymentAccount.getId()); // TODO: support deleting payment accounts over grpc
   }
 });
 
-test("Can create fiat payment accounts (CI)", async () => {
+test("Can create fiat payment accounts (Test, CI)", async () => {
 
   // get payment account form
   const paymentMethodId = HavenoUtils.getPaymentMethodId(PaymentAccountForm.FormId.REVOLUT);
@@ -1391,7 +1402,7 @@ test("Can create fiat payment accounts (CI)", async () => {
   }
 });
 
-test("Can create crypto payment accounts (CI)", async () => {
+test("Can create crypto payment accounts (Test, CI)", async () => {
 
   // test each crypto
   for (const testAccount of TestConfig.cryptoAddresses) {
@@ -1450,11 +1461,11 @@ test("Can create crypto payment accounts (CI)", async () => {
   }
 });
 
-test("Can prepare for trading (CI)", async () => {
+test("Can prepare for trading (Test, CI)", async () => {
   await prepareForTrading(5, user1, user2);
 });
 
-test("Can post and remove an offer (CI, sanity check)", async () => {
+test("Can post and remove an offer (Test, CI, sanity check)", async () => {
 
   // wait for user1 to have unlocked balance to post offer
   await waitForAvailableBalance(250000000000n * 2n, user1);
@@ -1525,7 +1536,7 @@ test("Can post and remove an offer (CI, sanity check)", async () => {
 });
 
 // TODO: provide number of confirmations in offer status
-test("Can schedule offers with locked funds (CI)", async () => {
+test("Can schedule offers with locked funds (Test, CI)", async () => {
   let user3: HavenoClient|undefined;
   let err: any;
   try {
@@ -1647,7 +1658,7 @@ test("Can schedule offers with locked funds (CI)", async () => {
   if (err) throw err;
 });
 
-test("Can reserve exact amount needed for offer (CI)", async () => {
+test("Can reserve exact amount needed for offer (Test, CI)", async () => {
   let randomOfferAmount = 1.0 + (Math.random() * 1.0); // random amount between 1 and 2 xmr
   await executeTrade({
     price: 150,
@@ -1659,7 +1670,7 @@ test("Can reserve exact amount needed for offer (CI)", async () => {
   });
 });
 
-test("Cannot post offer exceeding trade limit (CI, sanity check)", async () => {
+test("Cannot post offer exceeding trade limit (Test, CI, sanity check)", async () => {
   let assetCode = "USD";
   const account = await createPaymentAccount(user1, assetCode, "zelle");
 
@@ -1720,7 +1731,7 @@ test("Cannot post offer exceeding trade limit (CI, sanity check)", async () => {
   await user1.removeOffer(offerId);
 });
 
-test("Can complete a trade within a range and without a buyer deposit", async () => {
+test("Can complete a trade within a range and without a buyer deposit (Test, CI)", async () => {
 
   // create payment accounts
   let paymentMethodId = "cash_at_atm";
@@ -1758,7 +1769,7 @@ test("Can complete a trade within a range and without a buyer deposit", async ()
   }
 });
 
-test("Can complete trades at the same time (CI, sanity check)", async () => {
+test("Can complete trades at the same time (Test, CI, sanity check)", async () => {
 
   // create trade contexts with customized payment methods and random amounts
   const ctxs = getTradeContexts(TestConfig.assetCodes.length);
@@ -1776,7 +1787,7 @@ test("Can complete trades at the same time (CI, sanity check)", async () => {
   await executeTrades(ctxs);
 });
 
-test("Can complete all trade combinations (stress)", async () => {
+test("Can complete all trade combinations (Test, stress)", async () => {
 
   // generate trade context for each combination (buyer/seller, maker/taker, dispute(s), dispute winner)
   let ctxs: TradeContext[] = [];
@@ -1822,7 +1833,7 @@ test("Can complete all trade combinations (stress)", async () => {
   await executeTrades(ctxs);
 });
 
-test("Can go offline while completing a trade (CI, sanity check)", async () => {
+test("Can go offline while completing a trade (Test, CI, sanity check)", async () => {
   let traders: HavenoClient[] = [];
   let ctx: TradeContext = new TradeContext(TestConfig.trade);
   let err: any;
@@ -1856,7 +1867,7 @@ test("Can go offline while completing a trade (CI, sanity check)", async () => {
   if (err) throw err;
 });
 
-test("Can resolve a dispute (CI)", async () => {
+test("Can resolve a dispute (Test, CI)", async () => {
 
   // create payment accounts
   let paymentMethodId = "revolut";
@@ -1885,7 +1896,7 @@ test("Can resolve a dispute (CI)", async () => {
   // TODO: test receiver = BUYER
 });
 
-test("Can resolve disputes (CI)", async () => {
+test("Can resolve disputes (Test, CI)", async () => {
   
   // execute all configs unless config index given
   let configIdx = undefined;
@@ -1950,7 +1961,7 @@ test("Can resolve disputes (CI)", async () => {
   await executeTrades(ctxs.slice(configIdx, configIdx === undefined ? undefined : configIdx + 1), {concurrentTrades: !testBalancesSequentially});
 });
 
-test("Can go offline while resolving a dispute (CI)", async () => {
+test("Can go offline while resolving a dispute (Test, CI)", async () => {
   let traders: HavenoClient[] = [];
   let ctx: Partial<TradeContext> = {};
   let err: any;
@@ -1991,7 +2002,7 @@ test("Can go offline while resolving a dispute (CI)", async () => {
   if (err) throw err;
 });
 
-test("Cannot make or take offer with insufficient funds (CI, sanity check)", async () => {
+test("Cannot make or take offer with insufficient funds (Test, CI, sanity check)", async () => {
   let user3: HavenoClient|undefined;
   let err: any;
   try {
@@ -2054,7 +2065,7 @@ test("Cannot make or take offer with insufficient funds (CI, sanity check)", asy
   if (err) throw err;
 });
 
-test("Invalidates offers when reserved funds are spent (CI)", async () => {
+test("Invalidates offers when reserved funds are spent (Test, CI)", async () => {
   let err;
   let tx;
   try {
@@ -2118,7 +2129,7 @@ test("Invalidates offers when reserved funds are spent (CI)", async () => {
 
 // TODO (woodser): test arbitrator state too
 // TODO (woodser): test breaking protocol after depositing to multisig (e.g. don't send payment account payload by deleting it)
-test("Can handle unexpected errors during trade initialization", async () => {
+test("Can handle unexpected errors during trade initialization (Test)", async () => {
   let traders: HavenoClient[] = [];
   let err: any;
   try {
@@ -2221,7 +2232,7 @@ test("Can handle unexpected errors during trade initialization", async () => {
 });
 
 // TODO: test opening and resolving dispute as arbitrator and traders go offline
-test("Selects arbitrators which are online, registered, and least used", async () => {
+test("Selects arbitrators which are online, registered, and least used (Test)", async () => {
 
   // complete 2 trades using main arbitrator so it's most used
   // TODO: these trades are not registered with seednode until it's restarted
@@ -2325,12 +2336,88 @@ test("Selects arbitrators which are online, registered, and least used", async (
   }
 });
 
-test("Can get trade statistics", async () => {
+test("Can get trade statistics (Test, CI)", async () => {
   const tradeStatisticsArbitrator = await arbitrator.getTradeStatistics();
   const tradeStatisticsUser1 = await user1.getTradeStatistics();
   const tradeStatisticsUser2 = await user2.getTradeStatistics();
   HavenoUtils.log(0, "Trade statistics size (arb/u1/u2): " + tradeStatisticsArbitrator.length + "/" + tradeStatisticsUser1.length + "/" + tradeStatisticsUser2.length);
   assert(tradeStatisticsArbitrator.length === tradeStatisticsUser1.length && tradeStatisticsUser1.length === tradeStatisticsUser2.length);
+});
+
+// specialty test to bootstrap a network with random offers, trades, and disputes
+// TODO: this bootstrap test encounters errors
+// TODO: paymentMethodId config only used here
+test("Can bootstrap a network", async () => {
+
+  // get random trade configs
+  const ctxs: TradeContext[] = [];
+  for (let i = 0; i < 20; i++) {
+    ctxs.push(await getRandomBootstrapConfig());
+  }
+
+  // execute trades
+  HavenoUtils.log(0, "Executing " + ctxs.length + " random bootstrap configurations");
+  await executeTrades(ctxs);
+
+  async function getRandomBootstrapConfig(ctxP?: Partial<TradeContext>): Promise<TradeContext> {
+    if (!ctxP) ctxP = {};
+  
+    // randomize offer config
+    const user1AsMaker = getRandomOutcome(1/2);
+    if (ctxP.maker === undefined) ctxP.maker = {};
+    if (ctxP.taker === undefined) ctxP.taker = {};
+    if (ctxP.maker.havenod === undefined) ctxP.maker.havenod = user1AsMaker ? user1 : user2;
+    if (ctxP.taker.havenod === undefined) ctxP.taker.havenod = user1AsMaker ? user2 : user1;
+    if (ctxP.direction === undefined) ctxP.direction = getRandomOutcome(1/2) ? OfferDirection.BUY : OfferDirection.SELL;
+    const offerAmountAnchor = HavenoUtils.xmrToAtomicUnits(1.5);
+    const minAmountAnchor = HavenoUtils.xmrToAtomicUnits(0.3);
+    const isRangeOffer = getRandomOutcome(1/2);
+    if (ctxP.offerAmount === undefined) ctxP.offerAmount = getRandomBigIntWithinPercent(offerAmountAnchor, 0.15);
+    if (isRangeOffer && ctxP.offerMinAmount === undefined) ctxP.offerMinAmount = getRandomBigIntWithinPercent(minAmountAnchor, 0.15);
+    if (ctxP.reserveExactAmount === undefined) ctxP.reserveExactAmount = getRandomOutcome(3/4);
+
+    // randomize payment method and asset code
+    if (ctxP.assetCode && (!ctxP.makerPaymentAccountId || !ctxP.paymentMethodId)) throw new Error("Cannot specify asset code without payment account or method ID");
+    if (!ctxP.paymentMethodId) ctxP.paymentMethodId = getRandomPaymentMethodId();
+    if (!ctxP.makerPaymentAccountId) ctxP.makerPaymentAccountId = (await createPaymentAccount2(ctxP.maker.havenod!, ctxP.paymentMethodId)).getId();
+    if (!ctxP.takerPaymentAccountId) ctxP.takerPaymentAccountId = (await createPaymentAccount2(ctxP.taker.havenod!, ctxP.paymentMethodId)).getId();
+    if (!ctxP.assetCode) ctxP.assetCode = getRandomAssetCodeForPaymentAccount(await ctxP.maker.havenod.getPaymentAccount(ctxP.makerPaymentAccountId));
+    if (await isFixedPrice(ctxP)) ctxP.price = 142.23;
+  
+    // randomize trade config
+    if (ctxP.takeOffer === undefined) ctxP.takeOffer = getRandomOutcome(4/5);
+    if (ctxP.tradeAmount === undefined) ctxP.tradeAmount = isRangeOffer ? getRandomBigIntWithinRange(ctxP.offerMinAmount!, ctxP.offerAmount) : ctxP.offerAmount;
+    if (ctxP.buyerSendsPayment === undefined) ctxP.buyerSendsPayment = getRandomOutcome(5/7);
+    if (ctxP.sellerReceivesPayment === undefined) ctxP.sellerReceivesPayment = getRandomOutcome(6/7);
+    if (ctxP.buyerDisputeContext === undefined) ctxP.buyerDisputeContext = getRandomOutcome(1/14) ? DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK : undefined;
+    if (ctxP.buyerDisputeContext === undefined) ctxP.buyerDisputeContext = getRandomOutcome(1/14) ? DisputeContext.OPEN_AFTER_PAYMENT_SENT : undefined;
+    if (ctxP.sellerDisputeContext === undefined) ctxP.sellerDisputeContext = getRandomOutcome(1/14) ? DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK : undefined;
+    if (ctxP.sellerDisputeContext === undefined) ctxP.sellerDisputeContext = getRandomOutcome(1/14) ? DisputeContext.OPEN_AFTER_PAYMENT_SENT : undefined;
+    if (ctxP.resolveDispute === undefined) ctxP.resolveDispute = getRandomOutcome(5/7);
+  
+    return TradeContext.init(ctxP);
+  }
+
+  async function isFixedPrice(ctxP: Partial<TradeContext>): Promise<boolean> {
+    if (moneroTs.GenUtils.arrayContains(TestConfig.fixedPriceAssetCodes, ctxP.assetCode)) return true;
+    if (moneroTs.GenUtils.arrayContains(TestConfig.fixedPricePaymentMethods, ctxP.paymentMethodId?.toUpperCase())) return true;
+    const marketPrice = await user1.getPrice(ctxP.assetCode!);
+    if (marketPrice === undefined) return true;
+    return false;
+  }
+
+  // TODO: reconcile with createPaymentAccount
+  async function createPaymentAccount2(trader: HavenoClient, paymentMethodId?: string, assetCodes?: string[]): Promise<PaymentAccount> {
+    if (assetCodes && !paymentMethodId) throw new Error("Cannot create payment account with asset codes and no payment method ID");
+    if (!paymentMethodId) paymentMethodId = getRandomPaymentMethodId();
+    const accountForm = await trader.getPaymentAccountForm(paymentMethodId);
+    if (assetCodes) HavenoUtils.setFormValue(accountForm, PaymentAccountFormField.FieldId.TRADE_CURRENCIES, assetCodes.join(","));
+    for (const field of accountForm.getFieldsList()) {
+      if (field.getValue() !== "") continue; // skip if already set
+      field.setValue(getValidFormInput(accountForm, field.getId()));
+    }
+    return await trader.createPaymentAccount(accountForm);
+  }
 });
 
 // ----------------------------- TEST HELPERS ---------------------------------
@@ -2845,6 +2932,9 @@ async function makeOffer(ctxP?: Partial<TradeContext>): Promise<OfferInfo> {
   } else {
     expect(Math.abs(HavenoUtils.percentageDiff(ctx.offerAmount!, BigInt(offer.getAmount())))).toBeLessThan(TestConfig.maxAdjustmentPct);
     expect(Math.abs(HavenoUtils.percentageDiff(ctx.offerMinAmount!, BigInt(offer.getMinAmount())))).toBeLessThan(TestConfig.maxAdjustmentPct);
+    if (ctx.tradeAmount === ctx.offerAmount) ctx.tradeAmount = BigInt(offer.getAmount()); // adjust trade amount
+    ctx.offerAmount = BigInt(offer.getAmount());
+    ctx.offerMinAmount = BigInt(offer.getMinAmount());
   }
 
   // unlocked balance has decreased
@@ -4009,6 +4099,21 @@ function testOutgoingTransfer(transfer: XmrOutgoingTransfer, ctx: TxContext) {
 function testDestination(destination: XmrDestination) {
   assert(destination.getAddress());
   expect(BigInt(destination.getAmount())).toBeGreaterThan(0n);
+}
+
+function getRandomPaymentMethodId(): string {
+  if (getRandomOutcome(1/5)) return "BLOCK_CHAINS";
+  let allPaymentMethodIds = Object.keys(PaymentAccountForm.FormId);
+  return allPaymentMethodIds[moneroTs.GenUtils.getRandomInt(0, allPaymentMethodIds.length - 1)];
+}
+
+function getRandomAssetCodeForPaymentAccount(paymentAccount: PaymentAccount): string {
+  const allTradeCurrencies = paymentAccount.getTradeCurrenciesList();
+  return allTradeCurrencies[moneroTs.GenUtils.getRandomInt(0, allTradeCurrencies.length - 1)].getCode();
+}
+
+function getRandomOutcome(percentChance: number): boolean {
+  return Math.random() <= percentChance;
 }
 
 function getRandomBigIntWithinPercent(base: bigint, percent: number): bigint {

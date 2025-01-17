@@ -802,12 +802,13 @@ export default class HavenoClient {
    * Get the current market price per 1 XMR in the given currency.
    *
    * @param {string} assetCode - asset code to get the price of
-   * @return {number} the price of the asset per 1 XMR
+   * @return {number|undefined} the price of the asset per 1 XMR
    */
-  async getPrice(assetCode: string): Promise<number> {
+  async getPrice(assetCode: string): Promise<number|undefined> {
     try {
       return (await this._priceClient.getMarketPrice(new MarketPriceRequest().setCurrencyCode(assetCode), {password: this._password})).getPrice();
     } catch (e: any) {
+      if (e.message.indexOf("not found") >= 0) return undefined;
       throw new HavenoError(e.message, e.code);
     }
   }
