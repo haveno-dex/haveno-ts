@@ -108,7 +108,7 @@ export default class HavenoUtils {
    * @return {bigint} amount in atomic units
    */
   static xmrToAtomicUnits(amountXmr: number | string): bigint {
-    return BigInt(new Decimal(amountXmr).mul(HavenoUtils.AU_PER_XMR.toString()).toFixed(0));
+    return BigInt(new Decimal(amountXmr).mul(HavenoUtils.AU_PER_XMR.toString()).toDecimalPlaces(0, Decimal.ROUND_HALF_UP).toFixed(0));
   }
   
   /**
@@ -118,7 +118,7 @@ export default class HavenoUtils {
    * @return {number} amount in XMR 
    */
   static atomicUnitsToXmr(amountAtomicUnits: bigint | string): number {
-    return new Decimal(amountAtomicUnits.toString()).div(HavenoUtils.AU_PER_XMR.toString()).toNumber();
+    return new Decimal(amountAtomicUnits.toString()).div(HavenoUtils.AU_PER_XMR.toString()).toDecimalPlaces(12, Decimal.ROUND_HALF_UP).toNumber();
   }
 
   /**
