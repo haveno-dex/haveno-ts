@@ -1745,14 +1745,13 @@ test("Can complete a trade within a range and without a buyer deposit (Test, CI)
   const tradeStatisticsPre = await arbitrator.getTradeStatistics();
 
   // execute trade
-  const offerAmount = HavenoUtils.xmrToAtomicUnits(1);
-  const offerMinAmount = HavenoUtils.xmrToAtomicUnits(.15);
-  const tradeAmount = getRandomBigIntWithinRange(offerMinAmount, offerAmount);
+  const offerAmount = getRandomBigIntWithinPercent(HavenoUtils.xmrToAtomicUnits(1), 0.15);
+  const offerMinAmount = getRandomBigIntWithinPercent(HavenoUtils.xmrToAtomicUnits(0.3), 0.15);
   const ctx: Partial<TradeContext> = {
     price: 142.23,
     offerAmount: offerAmount,
     offerMinAmount: offerMinAmount,
-    tradeAmount: tradeAmount,
+    tradeAmount: getRandomBigIntWithinRange(offerMinAmount, offerAmount),
     testPayoutUnlocked: true, // override to test unlock
     makerPaymentAccountId: makerPaymentAccount.getId(),
     takerPaymentAccountId: takerPaymentAccount.getId(),
@@ -2371,11 +2370,9 @@ test("Can bootstrap a network", async () => {
     if (ctxP.maker.havenod === undefined) ctxP.maker.havenod = user1AsMaker ? user1 : user2;
     if (ctxP.taker.havenod === undefined) ctxP.taker.havenod = user1AsMaker ? user2 : user1;
     if (ctxP.direction === undefined) ctxP.direction = getRandomOutcome(1/2) ? OfferDirection.BUY : OfferDirection.SELL;
-    const offerAmountAnchor = HavenoUtils.xmrToAtomicUnits(1.5);
-    const minAmountAnchor = HavenoUtils.xmrToAtomicUnits(0.3);
     const isRangeOffer = getRandomOutcome(1/2);
-    if (ctxP.offerAmount === undefined) ctxP.offerAmount = getRandomBigIntWithinPercent(offerAmountAnchor, 0.15);
-    if (isRangeOffer && ctxP.offerMinAmount === undefined) ctxP.offerMinAmount = getRandomBigIntWithinPercent(minAmountAnchor, 0.15);
+    if (ctxP.offerAmount === undefined) ctxP.offerAmount = getRandomBigIntWithinPercent(HavenoUtils.xmrToAtomicUnits(1), 0.15);
+    if (isRangeOffer && ctxP.offerMinAmount === undefined) ctxP.offerMinAmount = getRandomBigIntWithinPercent(HavenoUtils.xmrToAtomicUnits(0.3), 0.15);
     if (ctxP.reserveExactAmount === undefined) ctxP.reserveExactAmount = getRandomOutcome(3/4);
 
     // randomize payment method and asset code
