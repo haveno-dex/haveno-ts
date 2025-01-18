@@ -1707,7 +1707,7 @@ test("Cannot post offer exceeding trade limit (Test, CI, sanity check)", async (
     // test posting sell offer above limit without buyer deposit
     try {
       await executeTrade({
-        offerAmount: moneroTs.MoneroUtils.xmrToAtomicUnits(1.1), // limit is 1 xmr without deposit or fee
+        offerAmount: moneroTs.MoneroUtils.xmrToAtomicUnits(1.6), // limit is 1.5 xmr without deposit or fee
         offerMinAmount: moneroTs.MoneroUtils.xmrToAtomicUnits(0.25),
         direction: OfferDirection.SELL,
         assetCode: assetCode,
