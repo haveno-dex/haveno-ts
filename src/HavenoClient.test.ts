@@ -443,7 +443,7 @@ const TestConfig = {
     paymentMethods: Object.keys(PaymentAccountForm.FormId), // all supported payment methods
     assetCodes: ["USD", "GBP", "EUR", "ETH", "BTC", "BCH", "LTC", "USDT-ERC20", "USDT-TRC20", "USDC-ERC20"], // crypto asset codes
     fixedPriceAssetCodes: ["XAG", "XAU", "XGB"],
-    fixedPricePaymentMethods: ["CASH_AT_ATM"],
+    fixedPricePaymentMethods: [HavenoUtils.getPaymentMethodId(PaymentAccountForm.FormId.CASH_AT_ATM)],
     cryptoAddresses: [{
             currencyCode: "ETH",
             address: "0xdBdAb835Acd6fC84cF5F9aDD3c0B5a1E25fbd99f"
@@ -1736,7 +1736,7 @@ test("Cannot post offer exceeding trade limit (Test, CI, sanity check)", async (
 test("Can complete a trade within a range and without a buyer deposit (Test, CI)", async () => {
 
   // create payment accounts
-  let paymentMethodId = "cash_at_atm";
+  let paymentMethodId = HavenoUtils.getPaymentMethodId(PaymentAccountForm.FormId.CASH_AT_ATM);
   let assetCode = "aud";
   let makerPaymentAccount = await createPaymentAccount(user1, assetCode, paymentMethodId); // TODO: support getPaymentAccount() which gets or creates
   let takerPaymentAccount = await createPaymentAccount(user2, assetCode, paymentMethodId);
