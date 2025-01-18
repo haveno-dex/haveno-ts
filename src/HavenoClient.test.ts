@@ -3062,13 +3062,8 @@ async function takeOffer(ctxP: Partial<TradeContext>): Promise<TradeInfo> {
   // test getting trade for all parties
   await testGetTrade(ctx);
 
-  // market-priced offer amounts are unadjusted, fixed-priced offer amounts are adjusted (e.g. cash at atm is $10 increments)
-  // TODO: adjustments are based on payment method, not fixed-price
-  if (takerTrade.getOffer()!.getUseMarketBasedPrice()) {
-    assert.equal(ctx.tradeAmount, BigInt(takerTrade.getAmount()));
-  } else {
-    expect(Math.abs(HavenoUtils.percentageDiff(ctx.tradeAmount!, BigInt(takerTrade.getAmount())))).toBeLessThan(TestConfig.maxAdjustmentPct);
-  }
+  // offer amounts are adjusted to 4 decimals
+  expect(Math.abs(HavenoUtils.percentageDiff(ctx.tradeAmount!, BigInt(takerTrade.getAmount())))).toBeLessThan(TestConfig.maxAdjustmentPct);
 
   // maker is notified of balance change
 
