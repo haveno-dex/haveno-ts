@@ -129,7 +129,7 @@ export default class HavenoUtils {
    * @returns {number} the result
    */
   static divide(au1: bigint, au2: bigint): number {
-    return this.atomicUnitsToXmr(au1) / this.atomicUnitsToXmr(au2);
+    return new Decimal(au1.toString()).div(new Decimal(au2.toString())).toDecimalPlaces(12, Decimal.ROUND_HALF_UP).toNumber();
   }
 
   /**
@@ -140,7 +140,7 @@ export default class HavenoUtils {
    * @returns the product as a bigint
    */
   static multiply(a: bigint, b: number | bigint): bigint {
-    return BigInt((new Decimal(a.toString()).mul(new Decimal(b.toString())).toFixed(0)));
+    return BigInt(new Decimal(a.toString()).mul(new Decimal(b.toString())).toDecimalPlaces(0, Decimal.ROUND_HALF_UP).toString());
   }
 
   /**
