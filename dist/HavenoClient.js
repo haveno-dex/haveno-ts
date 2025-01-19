@@ -537,13 +537,13 @@ class HavenoClient {
         }
     }
     /**
-     * Get the best available connection in order of priority then response time.
+     * Get the best connection in order of priority then response time.
      *
-     * @return {UrlConnection | undefined} the best available connection in order of priority then response time, undefined if no connections available
+     * @return {UrlConnection | undefined} the best connection in order of priority then response time, undefined if no connections
      */
-    async getBestAvailableConnection() {
+    async getBestConnection() {
         try {
-            return (await this._xmrConnectionsClient.getBestAvailableConnection(new grpc_pb_1.GetBestAvailableConnectionRequest(), { password: this._password })).getConnection();
+            return (await this._xmrConnectionsClient.getBestConnection(new grpc_pb_1.GetBestConnectionRequest(), { password: this._password })).getConnection();
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
@@ -775,13 +775,15 @@ class HavenoClient {
      * Get the current market price per 1 XMR in the given currency.
      *
      * @param {string} assetCode - asset code to get the price of
-     * @return {number} the price of the asset per 1 XMR
+     * @return {number|undefined} the price of the asset per 1 XMR
      */
     async getPrice(assetCode) {
         try {
             return (await this._priceClient.getMarketPrice(new grpc_pb_1.MarketPriceRequest().setCurrencyCode(assetCode), { password: this._password })).getPrice();
         }
         catch (e) {
+            if (e.message.indexOf("not found") >= 0)
+                return undefined; // TODO: return unknown price server side (0?)
             throw new HavenoError_1.default(e.message, e.code);
         }
     }
@@ -1305,7 +1307,16 @@ class HavenoClient {
                 await HavenoUtils_1.default.kill(this._process);
         }
         catch (e) {
-            throw new HavenoError_1.default(e.message, e.code);
+            console_1.default.error("Error gracefully shutting down havenod: " + e.message);
+            if (this._process) {
+                try {
+                    await HavenoUtils_1.default.kill(this._process);
+                }
+                catch (e) {
+                    console_1.default.error("Error terminating havenod process: " + e.message + ". Stopping forcefully");
+                    await HavenoUtils_1.default.kill(this._process, "SIGKILL");
+                }
+            }
         }
     }
     // ------------------------------- HELPERS ----------------------------------

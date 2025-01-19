@@ -1117,35 +1117,35 @@ export namespace StopCheckingConnectionReply {
   }
 }
 
-export class GetBestAvailableConnectionRequest extends jspb.Message {
+export class GetBestConnectionRequest extends jspb.Message {
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): GetBestAvailableConnectionRequest.AsObject;
-  static toObject(includeInstance: boolean, msg: GetBestAvailableConnectionRequest): GetBestAvailableConnectionRequest.AsObject;
-  static serializeBinaryToWriter(message: GetBestAvailableConnectionRequest, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): GetBestAvailableConnectionRequest;
-  static deserializeBinaryFromReader(message: GetBestAvailableConnectionRequest, reader: jspb.BinaryReader): GetBestAvailableConnectionRequest;
+  toObject(includeInstance?: boolean): GetBestConnectionRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: GetBestConnectionRequest): GetBestConnectionRequest.AsObject;
+  static serializeBinaryToWriter(message: GetBestConnectionRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GetBestConnectionRequest;
+  static deserializeBinaryFromReader(message: GetBestConnectionRequest, reader: jspb.BinaryReader): GetBestConnectionRequest;
 }
 
-export namespace GetBestAvailableConnectionRequest {
+export namespace GetBestConnectionRequest {
   export type AsObject = {
   }
 }
 
-export class GetBestAvailableConnectionReply extends jspb.Message {
+export class GetBestConnectionReply extends jspb.Message {
   getConnection(): UrlConnection | undefined;
-  setConnection(value?: UrlConnection): GetBestAvailableConnectionReply;
+  setConnection(value?: UrlConnection): GetBestConnectionReply;
   hasConnection(): boolean;
-  clearConnection(): GetBestAvailableConnectionReply;
+  clearConnection(): GetBestConnectionReply;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): GetBestAvailableConnectionReply.AsObject;
-  static toObject(includeInstance: boolean, msg: GetBestAvailableConnectionReply): GetBestAvailableConnectionReply.AsObject;
-  static serializeBinaryToWriter(message: GetBestAvailableConnectionReply, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): GetBestAvailableConnectionReply;
-  static deserializeBinaryFromReader(message: GetBestAvailableConnectionReply, reader: jspb.BinaryReader): GetBestAvailableConnectionReply;
+  toObject(includeInstance?: boolean): GetBestConnectionReply.AsObject;
+  static toObject(includeInstance: boolean, msg: GetBestConnectionReply): GetBestConnectionReply.AsObject;
+  static serializeBinaryToWriter(message: GetBestConnectionReply, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GetBestConnectionReply;
+  static deserializeBinaryFromReader(message: GetBestConnectionReply, reader: jspb.BinaryReader): GetBestConnectionReply;
 }
 
-export namespace GetBestAvailableConnectionReply {
+export namespace GetBestConnectionReply {
   export type AsObject = {
     connection?: UrlConnection.AsObject,
   }
