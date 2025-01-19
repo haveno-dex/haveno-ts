@@ -197,9 +197,9 @@ export declare class XmrConnectionsClient {
     methodDescriptorStopCheckingConnection: grpcWeb.MethodDescriptor<grpc_pb.StopCheckingConnectionRequest, grpc_pb.StopCheckingConnectionReply>;
     stopCheckingConnection(request: grpc_pb.StopCheckingConnectionRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.StopCheckingConnectionReply>;
     stopCheckingConnection(request: grpc_pb.StopCheckingConnectionRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.StopCheckingConnectionReply) => void): grpcWeb.ClientReadableStream<grpc_pb.StopCheckingConnectionReply>;
-    methodDescriptorGetBestAvailableConnection: grpcWeb.MethodDescriptor<grpc_pb.GetBestAvailableConnectionRequest, grpc_pb.GetBestAvailableConnectionReply>;
-    getBestAvailableConnection(request: grpc_pb.GetBestAvailableConnectionRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.GetBestAvailableConnectionReply>;
-    getBestAvailableConnection(request: grpc_pb.GetBestAvailableConnectionRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.GetBestAvailableConnectionReply) => void): grpcWeb.ClientReadableStream<grpc_pb.GetBestAvailableConnectionReply>;
+    methodDescriptorGetBestConnection: grpcWeb.MethodDescriptor<grpc_pb.GetBestConnectionRequest, grpc_pb.GetBestConnectionReply>;
+    getBestConnection(request: grpc_pb.GetBestConnectionRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.GetBestConnectionReply>;
+    getBestConnection(request: grpc_pb.GetBestConnectionRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.GetBestConnectionReply) => void): grpcWeb.ClientReadableStream<grpc_pb.GetBestConnectionReply>;
     methodDescriptorSetAutoSwitch: grpcWeb.MethodDescriptor<grpc_pb.SetAutoSwitchRequest, grpc_pb.SetAutoSwitchReply>;
     setAutoSwitch(request: grpc_pb.SetAutoSwitchRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.SetAutoSwitchReply>;
     setAutoSwitch(request: grpc_pb.SetAutoSwitchRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.SetAutoSwitchReply) => void): grpcWeb.ClientReadableStream<grpc_pb.SetAutoSwitchReply>;

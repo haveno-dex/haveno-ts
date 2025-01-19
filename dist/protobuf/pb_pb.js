@@ -13,7 +13,13 @@
 
 var jspb = require('google-protobuf');
 var goog = jspb;
-var global = (function() { return this || window || global || self || Function('return this')(); }).call(null);
+var global =
+    (typeof globalThis !== 'undefined' && globalThis) ||
+    (typeof window !== 'undefined' && window) ||
+    (typeof global !== 'undefined' && global) ||
+    (typeof self !== 'undefined' && self) ||
+    (function () { return this; }).call(null) ||
+    Function('return this')();
 
 goog.exportSymbol('proto.io.haveno.protobuffer.AccountAgeWitness', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.AccountAgeWitnessStore', null, global);
@@ -4235,45 +4241,45 @@ proto.io.haveno.protobuffer.NetworkEnvelope.prototype.toObject = function(opt_in
  */
 proto.io.haveno.protobuffer.NetworkEnvelope.toObject = function(includeInstance, msg) {
   var f, obj = {
-    messageVersion: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    preliminaryGetDataRequest: (f = msg.getPreliminaryGetDataRequest()) && proto.io.haveno.protobuffer.PreliminaryGetDataRequest.toObject(includeInstance, f),
-    getDataResponse: (f = msg.getGetDataResponse()) && proto.io.haveno.protobuffer.GetDataResponse.toObject(includeInstance, f),
-    getUpdatedDataRequest: (f = msg.getGetUpdatedDataRequest()) && proto.io.haveno.protobuffer.GetUpdatedDataRequest.toObject(includeInstance, f),
-    getPeersRequest: (f = msg.getGetPeersRequest()) && proto.io.haveno.protobuffer.GetPeersRequest.toObject(includeInstance, f),
-    getPeersResponse: (f = msg.getGetPeersResponse()) && proto.io.haveno.protobuffer.GetPeersResponse.toObject(includeInstance, f),
-    ping: (f = msg.getPing()) && proto.io.haveno.protobuffer.Ping.toObject(includeInstance, f),
-    pong: (f = msg.getPong()) && proto.io.haveno.protobuffer.Pong.toObject(includeInstance, f),
-    offerAvailabilityRequest: (f = msg.getOfferAvailabilityRequest()) && proto.io.haveno.protobuffer.OfferAvailabilityRequest.toObject(includeInstance, f),
-    offerAvailabilityResponse: (f = msg.getOfferAvailabilityResponse()) && proto.io.haveno.protobuffer.OfferAvailabilityResponse.toObject(includeInstance, f),
-    refreshOfferMessage: (f = msg.getRefreshOfferMessage()) && proto.io.haveno.protobuffer.RefreshOfferMessage.toObject(includeInstance, f),
-    addDataMessage: (f = msg.getAddDataMessage()) && proto.io.haveno.protobuffer.AddDataMessage.toObject(includeInstance, f),
-    removeDataMessage: (f = msg.getRemoveDataMessage()) && proto.io.haveno.protobuffer.RemoveDataMessage.toObject(includeInstance, f),
-    removeMailboxDataMessage: (f = msg.getRemoveMailboxDataMessage()) && proto.io.haveno.protobuffer.RemoveMailboxDataMessage.toObject(includeInstance, f),
-    closeConnectionMessage: (f = msg.getCloseConnectionMessage()) && proto.io.haveno.protobuffer.CloseConnectionMessage.toObject(includeInstance, f),
-    prefixedSealedAndSignedMessage: (f = msg.getPrefixedSealedAndSignedMessage()) && proto.io.haveno.protobuffer.PrefixedSealedAndSignedMessage.toObject(includeInstance, f),
-    privateNotificationMessage: (f = msg.getPrivateNotificationMessage()) && proto.io.haveno.protobuffer.PrivateNotificationMessage.toObject(includeInstance, f),
-    addPersistableNetworkPayloadMessage: (f = msg.getAddPersistableNetworkPayloadMessage()) && proto.io.haveno.protobuffer.AddPersistableNetworkPayloadMessage.toObject(includeInstance, f),
-    ackMessage: (f = msg.getAckMessage()) && proto.io.haveno.protobuffer.AckMessage.toObject(includeInstance, f),
-    bundleOfEnvelopes: (f = msg.getBundleOfEnvelopes()) && proto.io.haveno.protobuffer.BundleOfEnvelopes.toObject(includeInstance, f),
-    getInventoryRequest: (f = msg.getGetInventoryRequest()) && proto.io.haveno.protobuffer.GetInventoryRequest.toObject(includeInstance, f),
-    getInventoryResponse: (f = msg.getGetInventoryResponse()) && proto.io.haveno.protobuffer.GetInventoryResponse.toObject(includeInstance, f),
-    signOfferRequest: (f = msg.getSignOfferRequest()) && proto.io.haveno.protobuffer.SignOfferRequest.toObject(includeInstance, f),
-    signOfferResponse: (f = msg.getSignOfferResponse()) && proto.io.haveno.protobuffer.SignOfferResponse.toObject(includeInstance, f),
-    initTradeRequest: (f = msg.getInitTradeRequest()) && proto.io.haveno.protobuffer.InitTradeRequest.toObject(includeInstance, f),
-    initMultisigRequest: (f = msg.getInitMultisigRequest()) && proto.io.haveno.protobuffer.InitMultisigRequest.toObject(includeInstance, f),
-    signContractRequest: (f = msg.getSignContractRequest()) && proto.io.haveno.protobuffer.SignContractRequest.toObject(includeInstance, f),
-    signContractResponse: (f = msg.getSignContractResponse()) && proto.io.haveno.protobuffer.SignContractResponse.toObject(includeInstance, f),
-    depositRequest: (f = msg.getDepositRequest()) && proto.io.haveno.protobuffer.DepositRequest.toObject(includeInstance, f),
-    depositResponse: (f = msg.getDepositResponse()) && proto.io.haveno.protobuffer.DepositResponse.toObject(includeInstance, f),
-    depositsConfirmedMessage: (f = msg.getDepositsConfirmedMessage()) && proto.io.haveno.protobuffer.DepositsConfirmedMessage.toObject(includeInstance, f),
-    paymentSentMessage: (f = msg.getPaymentSentMessage()) && proto.io.haveno.protobuffer.PaymentSentMessage.toObject(includeInstance, f),
-    paymentReceivedMessage: (f = msg.getPaymentReceivedMessage()) && proto.io.haveno.protobuffer.PaymentReceivedMessage.toObject(includeInstance, f),
-    disputeOpenedMessage: (f = msg.getDisputeOpenedMessage()) && proto.io.haveno.protobuffer.DisputeOpenedMessage.toObject(includeInstance, f),
-    disputeClosedMessage: (f = msg.getDisputeClosedMessage()) && proto.io.haveno.protobuffer.DisputeClosedMessage.toObject(includeInstance, f),
-    chatMessage: (f = msg.getChatMessage()) && proto.io.haveno.protobuffer.ChatMessage.toObject(includeInstance, f),
-    mediatedPayoutTxSignatureMessage: (f = msg.getMediatedPayoutTxSignatureMessage()) && proto.io.haveno.protobuffer.MediatedPayoutTxSignatureMessage.toObject(includeInstance, f),
-    mediatedPayoutTxPublishedMessage: (f = msg.getMediatedPayoutTxPublishedMessage()) && proto.io.haveno.protobuffer.MediatedPayoutTxPublishedMessage.toObject(includeInstance, f),
-    fileTransferPart: (f = msg.getFileTransferPart()) && proto.io.haveno.protobuffer.FileTransferPart.toObject(includeInstance, f)
+messageVersion: jspb.Message.getFieldWithDefault(msg, 1, ""),
+preliminaryGetDataRequest: (f = msg.getPreliminaryGetDataRequest()) && proto.io.haveno.protobuffer.PreliminaryGetDataRequest.toObject(includeInstance, f),
+getDataResponse: (f = msg.getGetDataResponse()) && proto.io.haveno.protobuffer.GetDataResponse.toObject(includeInstance, f),
+getUpdatedDataRequest: (f = msg.getGetUpdatedDataRequest()) && proto.io.haveno.protobuffer.GetUpdatedDataRequest.toObject(includeInstance, f),
+getPeersRequest: (f = msg.getGetPeersRequest()) && proto.io.haveno.protobuffer.GetPeersRequest.toObject(includeInstance, f),
+getPeersResponse: (f = msg.getGetPeersResponse()) && proto.io.haveno.protobuffer.GetPeersResponse.toObject(includeInstance, f),
+ping: (f = msg.getPing()) && proto.io.haveno.protobuffer.Ping.toObject(includeInstance, f),
+pong: (f = msg.getPong()) && proto.io.haveno.protobuffer.Pong.toObject(includeInstance, f),
+offerAvailabilityRequest: (f = msg.getOfferAvailabilityRequest()) && proto.io.haveno.protobuffer.OfferAvailabilityRequest.toObject(includeInstance, f),
+offerAvailabilityResponse: (f = msg.getOfferAvailabilityResponse()) && proto.io.haveno.protobuffer.OfferAvailabilityResponse.toObject(includeInstance, f),
+refreshOfferMessage: (f = msg.getRefreshOfferMessage()) && proto.io.haveno.protobuffer.RefreshOfferMessage.toObject(includeInstance, f),
+addDataMessage: (f = msg.getAddDataMessage()) && proto.io.haveno.protobuffer.AddDataMessage.toObject(includeInstance, f),
+removeDataMessage: (f = msg.getRemoveDataMessage()) && proto.io.haveno.protobuffer.RemoveDataMessage.toObject(includeInstance, f),
+removeMailboxDataMessage: (f = msg.getRemoveMailboxDataMessage()) && proto.io.haveno.protobuffer.RemoveMailboxDataMessage.toObject(includeInstance, f),
+closeConnectionMessage: (f = msg.getCloseConnectionMessage()) && proto.io.haveno.protobuffer.CloseConnectionMessage.toObject(includeInstance, f),
+prefixedSealedAndSignedMessage: (f = msg.getPrefixedSealedAndSignedMessage()) && proto.io.haveno.protobuffer.PrefixedSealedAndSignedMessage.toObject(includeInstance, f),
+privateNotificationMessage: (f = msg.getPrivateNotificationMessage()) && proto.io.haveno.protobuffer.PrivateNotificationMessage.toObject(includeInstance, f),
+addPersistableNetworkPayloadMessage: (f = msg.getAddPersistableNetworkPayloadMessage()) && proto.io.haveno.protobuffer.AddPersistableNetworkPayloadMessage.toObject(includeInstance, f),
+ackMessage: (f = msg.getAckMessage()) && proto.io.haveno.protobuffer.AckMessage.toObject(includeInstance, f),
+bundleOfEnvelopes: (f = msg.getBundleOfEnvelopes()) && proto.io.haveno.protobuffer.BundleOfEnvelopes.toObject(includeInstance, f),
+getInventoryRequest: (f = msg.getGetInventoryRequest()) && proto.io.haveno.protobuffer.GetInventoryRequest.toObject(includeInstance, f),
+getInventoryResponse: (f = msg.getGetInventoryResponse()) && proto.io.haveno.protobuffer.GetInventoryResponse.toObject(includeInstance, f),
+signOfferRequest: (f = msg.getSignOfferRequest()) && proto.io.haveno.protobuffer.SignOfferRequest.toObject(includeInstance, f),
+signOfferResponse: (f = msg.getSignOfferResponse()) && proto.io.haveno.protobuffer.SignOfferResponse.toObject(includeInstance, f),
+initTradeRequest: (f = msg.getInitTradeRequest()) && proto.io.haveno.protobuffer.InitTradeRequest.toObject(includeInstance, f),
+initMultisigRequest: (f = msg.getInitMultisigRequest()) && proto.io.haveno.protobuffer.InitMultisigRequest.toObject(includeInstance, f),
+signContractRequest: (f = msg.getSignContractRequest()) && proto.io.haveno.protobuffer.SignContractRequest.toObject(includeInstance, f),
+signContractResponse: (f = msg.getSignContractResponse()) && proto.io.haveno.protobuffer.SignContractResponse.toObject(includeInstance, f),
+depositRequest: (f = msg.getDepositRequest()) && proto.io.haveno.protobuffer.DepositRequest.toObject(includeInstance, f),
+depositResponse: (f = msg.getDepositResponse()) && proto.io.haveno.protobuffer.DepositResponse.toObject(includeInstance, f),
+depositsConfirmedMessage: (f = msg.getDepositsConfirmedMessage()) && proto.io.haveno.protobuffer.DepositsConfirmedMessage.toObject(includeInstance, f),
+paymentSentMessage: (f = msg.getPaymentSentMessage()) && proto.io.haveno.protobuffer.PaymentSentMessage.toObject(includeInstance, f),
+paymentReceivedMessage: (f = msg.getPaymentReceivedMessage()) && proto.io.haveno.protobuffer.PaymentReceivedMessage.toObject(includeInstance, f),
+disputeOpenedMessage: (f = msg.getDisputeOpenedMessage()) && proto.io.haveno.protobuffer.DisputeOpenedMessage.toObject(includeInstance, f),
+disputeClosedMessage: (f = msg.getDisputeClosedMessage()) && proto.io.haveno.protobuffer.DisputeClosedMessage.toObject(includeInstance, f),
+chatMessage: (f = msg.getChatMessage()) && proto.io.haveno.protobuffer.ChatMessage.toObject(includeInstance, f),
+mediatedPayoutTxSignatureMessage: (f = msg.getMediatedPayoutTxSignatureMessage()) && proto.io.haveno.protobuffer.MediatedPayoutTxSignatureMessage.toObject(includeInstance, f),
+mediatedPayoutTxPublishedMessage: (f = msg.getMediatedPayoutTxPublishedMessage()) && proto.io.haveno.protobuffer.MediatedPayoutTxPublishedMessage.toObject(includeInstance, f),
+fileTransferPart: (f = msg.getFileTransferPart()) && proto.io.haveno.protobuffer.FileTransferPart.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -6310,7 +6316,7 @@ proto.io.haveno.protobuffer.BundleOfEnvelopes.prototype.toObject = function(opt_
  */
 proto.io.haveno.protobuffer.BundleOfEnvelopes.toObject = function(includeInstance, msg) {
   var f, obj = {
-    envelopesList: jspb.Message.toObjectList(msg.getEnvelopesList(),
+envelopesList: jspb.Message.toObjectList(msg.getEnvelopesList(),
     proto.io.haveno.protobuffer.NetworkEnvelope.toObject, includeInstance)
   };
 
@@ -6470,10 +6476,10 @@ proto.io.haveno.protobuffer.PreliminaryGetDataRequest.prototype.toObject = funct
  */
 proto.io.haveno.protobuffer.PreliminaryGetDataRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
-    nonce: jspb.Message.getFieldWithDefault(msg, 21, 0),
-    excludedKeysList: msg.getExcludedKeysList_asB64(),
-    supportedCapabilitiesList: (f = jspb.Message.getRepeatedField(msg, 3)) == null ? undefined : f,
-    version: jspb.Message.getFieldWithDefault(msg, 4, "")
+nonce: jspb.Message.getFieldWithDefault(msg, 21, 0),
+excludedKeysList: msg.getExcludedKeysList_asB64(),
+supportedCapabilitiesList: (f = jspb.Message.getRepeatedField(msg, 3)) == null ? undefined : f,
+version: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
 
   if (includeInstance) {
@@ -6761,14 +6767,14 @@ proto.io.haveno.protobuffer.GetDataResponse.prototype.toObject = function(opt_in
  */
 proto.io.haveno.protobuffer.GetDataResponse.toObject = function(includeInstance, msg) {
   var f, obj = {
-    requestNonce: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    isGetUpdatedDataResponse: jspb.Message.getBooleanFieldWithDefault(msg, 2, false),
-    dataSetList: jspb.Message.toObjectList(msg.getDataSetList(),
+requestNonce: jspb.Message.getFieldWithDefault(msg, 1, 0),
+isGetUpdatedDataResponse: jspb.Message.getBooleanFieldWithDefault(msg, 2, false),
+dataSetList: jspb.Message.toObjectList(msg.getDataSetList(),
     proto.io.haveno.protobuffer.StorageEntryWrapper.toObject, includeInstance),
-    supportedCapabilitiesList: (f = jspb.Message.getRepeatedField(msg, 4)) == null ? undefined : f,
-    persistableNetworkPayloadItemsList: jspb.Message.toObjectList(msg.getPersistableNetworkPayloadItemsList(),
+supportedCapabilitiesList: (f = jspb.Message.getRepeatedField(msg, 4)) == null ? undefined : f,
+persistableNetworkPayloadItemsList: jspb.Message.toObjectList(msg.getPersistableNetworkPayloadItemsList(),
     proto.io.haveno.protobuffer.PersistableNetworkPayload.toObject, includeInstance),
-    wasTruncated: jspb.Message.getBooleanFieldWithDefault(msg, 6, false)
+wasTruncated: jspb.Message.getBooleanFieldWithDefault(msg, 6, false)
   };
 
   if (includeInstance) {
@@ -7115,10 +7121,10 @@ proto.io.haveno.protobuffer.GetUpdatedDataRequest.prototype.toObject = function(
  */
 proto.io.haveno.protobuffer.GetUpdatedDataRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
-    senderNodeAddress: (f = msg.getSenderNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
-    nonce: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    excludedKeysList: msg.getExcludedKeysList_asB64(),
-    version: jspb.Message.getFieldWithDefault(msg, 4, "")
+senderNodeAddress: (f = msg.getSenderNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
+nonce: jspb.Message.getFieldWithDefault(msg, 2, 0),
+excludedKeysList: msg.getExcludedKeysList_asB64(),
+version: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
 
   if (includeInstance) {
@@ -7399,12 +7405,12 @@ proto.io.haveno.protobuffer.FileTransferPart.prototype.toObject = function(opt_i
  */
 proto.io.haveno.protobuffer.FileTransferPart.toObject = function(includeInstance, msg) {
   var f, obj = {
-    senderNodeAddress: (f = msg.getSenderNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
-    uid: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    tradeId: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    traderId: jspb.Message.getFieldWithDefault(msg, 4, 0),
-    seqNumOrFileLength: jspb.Message.getFieldWithDefault(msg, 5, 0),
-    messageData: msg.getMessageData_asB64()
+senderNodeAddress: (f = msg.getSenderNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
+uid: jspb.Message.getFieldWithDefault(msg, 2, ""),
+tradeId: jspb.Message.getFieldWithDefault(msg, 3, ""),
+traderId: jspb.Message.getFieldWithDefault(msg, 4, 0),
+seqNumOrFileLength: jspb.Message.getFieldWithDefault(msg, 5, 0),
+messageData: msg.getMessageData_asB64()
   };
 
   if (includeInstance) {
@@ -7731,10 +7737,10 @@ proto.io.haveno.protobuffer.GetPeersRequest.prototype.toObject = function(opt_in
  */
 proto.io.haveno.protobuffer.GetPeersRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
-    senderNodeAddress: (f = msg.getSenderNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
-    nonce: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    supportedCapabilitiesList: (f = jspb.Message.getRepeatedField(msg, 3)) == null ? undefined : f,
-    reportedPeersList: jspb.Message.toObjectList(msg.getReportedPeersList(),
+senderNodeAddress: (f = msg.getSenderNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
+nonce: jspb.Message.getFieldWithDefault(msg, 2, 0),
+supportedCapabilitiesList: (f = jspb.Message.getRepeatedField(msg, 3)) == null ? undefined : f,
+reportedPeersList: jspb.Message.toObjectList(msg.getReportedPeersList(),
     proto.io.haveno.protobuffer.Peer.toObject, includeInstance)
   };
 
@@ -8023,10 +8029,10 @@ proto.io.haveno.protobuffer.GetPeersResponse.prototype.toObject = function(opt_i
  */
 proto.io.haveno.protobuffer.GetPeersResponse.toObject = function(includeInstance, msg) {
   var f, obj = {
-    requestNonce: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    reportedPeersList: jspb.Message.toObjectList(msg.getReportedPeersList(),
+requestNonce: jspb.Message.getFieldWithDefault(msg, 1, 0),
+reportedPeersList: jspb.Message.toObjectList(msg.getReportedPeersList(),
     proto.io.haveno.protobuffer.Peer.toObject, includeInstance),
-    supportedCapabilitiesList: (f = jspb.Message.getRepeatedField(msg, 3)) == null ? undefined : f
+supportedCapabilitiesList: (f = jspb.Message.getRepeatedField(msg, 3)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -8257,8 +8263,8 @@ proto.io.haveno.protobuffer.Ping.prototype.toObject = function(opt_includeInstan
  */
 proto.io.haveno.protobuffer.Ping.toObject = function(includeInstance, msg) {
   var f, obj = {
-    nonce: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    lastRoundTripTime: jspb.Message.getFieldWithDefault(msg, 2, 0)
+nonce: jspb.Message.getFieldWithDefault(msg, 1, 0),
+lastRoundTripTime: jspb.Message.getFieldWithDefault(msg, 2, 0)
   };
 
   if (includeInstance) {
@@ -8417,7 +8423,7 @@ proto.io.haveno.protobuffer.Pong.prototype.toObject = function(opt_includeInstan
  */
 proto.io.haveno.protobuffer.Pong.toObject = function(includeInstance, msg) {
   var f, obj = {
-    requestNonce: jspb.Message.getFieldWithDefault(msg, 1, 0)
+requestNonce: jspb.Message.getFieldWithDefault(msg, 1, 0)
   };
 
   if (includeInstance) {
@@ -8547,7 +8553,7 @@ proto.io.haveno.protobuffer.GetInventoryRequest.prototype.toObject = function(op
  */
 proto.io.haveno.protobuffer.GetInventoryRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
-    version: jspb.Message.getFieldWithDefault(msg, 1, "")
+version: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -8677,7 +8683,7 @@ proto.io.haveno.protobuffer.GetInventoryResponse.prototype.toObject = function(o
  */
 proto.io.haveno.protobuffer.GetInventoryResponse.toObject = function(includeInstance, msg) {
   var f, obj = {
-    inventoryMap: (f = msg.getInventoryMap()) ? f.toObject(includeInstance, undefined) : []
+inventoryMap: (f = msg.getInventoryMap()) ? f.toObject(includeInstance, undefined) : []
   };
 
   if (includeInstance) {
@@ -8775,7 +8781,8 @@ proto.io.haveno.protobuffer.GetInventoryResponse.prototype.getInventoryMap = fun
  */
 proto.io.haveno.protobuffer.GetInventoryResponse.prototype.clearInventoryMap = function() {
   this.getInventoryMap().clear();
-  return this;};
+  return this;
+};
 
 
 
@@ -8817,18 +8824,18 @@ proto.io.haveno.protobuffer.SignOfferRequest.prototype.toObject = function(opt_i
  */
 proto.io.haveno.protobuffer.SignOfferRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
-    offerId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    senderNodeAddress: (f = msg.getSenderNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
-    pubKeyRing: (f = msg.getPubKeyRing()) && proto.io.haveno.protobuffer.PubKeyRing.toObject(includeInstance, f),
-    senderAccountId: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    offerPayload: (f = msg.getOfferPayload()) && proto.io.haveno.protobuffer.OfferPayload.toObject(includeInstance, f),
-    uid: jspb.Message.getFieldWithDefault(msg, 6, ""),
-    currentDate: jspb.Message.getFieldWithDefault(msg, 7, 0),
-    reserveTxHash: jspb.Message.getFieldWithDefault(msg, 8, ""),
-    reserveTxHex: jspb.Message.getFieldWithDefault(msg, 9, ""),
-    reserveTxKey: jspb.Message.getFieldWithDefault(msg, 10, ""),
-    reserveTxKeyImagesList: (f = jspb.Message.getRepeatedField(msg, 11)) == null ? undefined : f,
-    payoutAddress: jspb.Message.getFieldWithDefault(msg, 12, "")
+offerId: jspb.Message.getFieldWithDefault(msg, 1, ""),
+senderNodeAddress: (f = msg.getSenderNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
+pubKeyRing: (f = msg.getPubKeyRing()) && proto.io.haveno.protobuffer.PubKeyRing.toObject(includeInstance, f),
+senderAccountId: jspb.Message.getFieldWithDefault(msg, 4, ""),
+offerPayload: (f = msg.getOfferPayload()) && proto.io.haveno.protobuffer.OfferPayload.toObject(includeInstance, f),
+uid: jspb.Message.getFieldWithDefault(msg, 6, ""),
+currentDate: jspb.Message.getFieldWithDefault(msg, 7, 0),
+reserveTxHash: jspb.Message.getFieldWithDefault(msg, 8, ""),
+reserveTxHex: jspb.Message.getFieldWithDefault(msg, 9, ""),
+reserveTxKey: jspb.Message.getFieldWithDefault(msg, 10, ""),
+reserveTxKeyImagesList: (f = jspb.Message.getRepeatedField(msg, 11)) == null ? undefined : f,
+payoutAddress: jspb.Message.getFieldWithDefault(msg, 12, "")
   };
 
   if (includeInstance) {
@@ -9359,9 +9366,9 @@ proto.io.haveno.protobuffer.SignOfferResponse.prototype.toObject = function(opt_
  */
 proto.io.haveno.protobuffer.SignOfferResponse.toObject = function(includeInstance, msg) {
   var f, obj = {
-    offerId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    uid: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    signedOfferPayload: (f = msg.getSignedOfferPayload()) && proto.io.haveno.protobuffer.OfferPayload.toObject(includeInstance, f)
+offerId: jspb.Message.getFieldWithDefault(msg, 1, ""),
+uid: jspb.Message.getFieldWithDefault(msg, 2, ""),
+signedOfferPayload: (f = msg.getSignedOfferPayload()) && proto.io.haveno.protobuffer.OfferPayload.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -9577,13 +9584,13 @@ proto.io.haveno.protobuffer.OfferAvailabilityRequest.prototype.toObject = functi
  */
 proto.io.haveno.protobuffer.OfferAvailabilityRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
-    offerId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    pubKeyRing: (f = msg.getPubKeyRing()) && proto.io.haveno.protobuffer.PubKeyRing.toObject(includeInstance, f),
-    takersTradePrice: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    supportedCapabilitiesList: (f = jspb.Message.getRepeatedField(msg, 4)) == null ? undefined : f,
-    uid: jspb.Message.getFieldWithDefault(msg, 5, ""),
-    isTakerApiUser: jspb.Message.getBooleanFieldWithDefault(msg, 6, false),
-    tradeRequest: (f = msg.getTradeRequest()) && proto.io.haveno.protobuffer.InitTradeRequest.toObject(includeInstance, f)
+offerId: jspb.Message.getFieldWithDefault(msg, 1, ""),
+pubKeyRing: (f = msg.getPubKeyRing()) && proto.io.haveno.protobuffer.PubKeyRing.toObject(includeInstance, f),
+takersTradePrice: jspb.Message.getFieldWithDefault(msg, 3, 0),
+supportedCapabilitiesList: (f = jspb.Message.getRepeatedField(msg, 4)) == null ? undefined : f,
+uid: jspb.Message.getFieldWithDefault(msg, 5, ""),
+isTakerApiUser: jspb.Message.getBooleanFieldWithDefault(msg, 6, false),
+tradeRequest: (f = msg.getTradeRequest()) && proto.io.haveno.protobuffer.InitTradeRequest.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -9957,11 +9964,11 @@ proto.io.haveno.protobuffer.OfferAvailabilityResponse.prototype.toObject = funct
  */
 proto.io.haveno.protobuffer.OfferAvailabilityResponse.toObject = function(includeInstance, msg) {
   var f, obj = {
-    offerId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    availabilityResult: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    supportedCapabilitiesList: (f = jspb.Message.getRepeatedField(msg, 3)) == null ? undefined : f,
-    uid: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    makerSignature: msg.getMakerSignature_asB64()
+offerId: jspb.Message.getFieldWithDefault(msg, 1, ""),
+availabilityResult: jspb.Message.getFieldWithDefault(msg, 2, 0),
+supportedCapabilitiesList: (f = jspb.Message.getRepeatedField(msg, 3)) == null ? undefined : f,
+uid: jspb.Message.getFieldWithDefault(msg, 4, ""),
+makerSignature: msg.getMakerSignature_asB64()
   };
 
   if (includeInstance) {
@@ -10252,10 +10259,10 @@ proto.io.haveno.protobuffer.RefreshOfferMessage.prototype.toObject = function(op
  */
 proto.io.haveno.protobuffer.RefreshOfferMessage.toObject = function(includeInstance, msg) {
   var f, obj = {
-    hashOfDataAndSeqNr: msg.getHashOfDataAndSeqNr_asB64(),
-    signature: msg.getSignature_asB64(),
-    hashOfPayload: msg.getHashOfPayload_asB64(),
-    sequenceNumber: jspb.Message.getFieldWithDefault(msg, 4, 0)
+hashOfDataAndSeqNr: msg.getHashOfDataAndSeqNr_asB64(),
+signature: msg.getSignature_asB64(),
+hashOfPayload: msg.getHashOfPayload_asB64(),
+sequenceNumber: jspb.Message.getFieldWithDefault(msg, 4, 0)
   };
 
   if (includeInstance) {
@@ -10544,7 +10551,7 @@ proto.io.haveno.protobuffer.AddDataMessage.prototype.toObject = function(opt_inc
  */
 proto.io.haveno.protobuffer.AddDataMessage.toObject = function(includeInstance, msg) {
   var f, obj = {
-    entry: (f = msg.getEntry()) && proto.io.haveno.protobuffer.StorageEntryWrapper.toObject(includeInstance, f)
+entry: (f = msg.getEntry()) && proto.io.haveno.protobuffer.StorageEntryWrapper.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -10695,7 +10702,7 @@ proto.io.haveno.protobuffer.RemoveDataMessage.prototype.toObject = function(opt_
  */
 proto.io.haveno.protobuffer.RemoveDataMessage.toObject = function(includeInstance, msg) {
   var f, obj = {
-    protectedStorageEntry: (f = msg.getProtectedStorageEntry()) && proto.io.haveno.protobuffer.ProtectedStorageEntry.toObject(includeInstance, f)
+protectedStorageEntry: (f = msg.getProtectedStorageEntry()) && proto.io.haveno.protobuffer.ProtectedStorageEntry.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -10846,7 +10853,7 @@ proto.io.haveno.protobuffer.RemoveMailboxDataMessage.prototype.toObject = functi
  */
 proto.io.haveno.protobuffer.RemoveMailboxDataMessage.toObject = function(includeInstance, msg) {
   var f, obj = {
-    protectedStorageEntry: (f = msg.getProtectedStorageEntry()) && proto.io.haveno.protobuffer.ProtectedMailboxStorageEntry.toObject(includeInstance, f)
+protectedStorageEntry: (f = msg.getProtectedStorageEntry()) && proto.io.haveno.protobuffer.ProtectedMailboxStorageEntry.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -10997,7 +11004,7 @@ proto.io.haveno.protobuffer.AddPersistableNetworkPayloadMessage.prototype.toObje
  */
 proto.io.haveno.protobuffer.AddPersistableNetworkPayloadMessage.toObject = function(includeInstance, msg) {
   var f, obj = {
-    payload: (f = msg.getPayload()) && proto.io.haveno.protobuffer.PersistableNetworkPayload.toObject(includeInstance, f)
+payload: (f = msg.getPayload()) && proto.io.haveno.protobuffer.PersistableNetworkPayload.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -11148,7 +11155,7 @@ proto.io.haveno.protobuffer.CloseConnectionMessage.prototype.toObject = function
  */
 proto.io.haveno.protobuffer.CloseConnectionMessage.toObject = function(includeInstance, msg) {
   var f, obj = {
-    reason: jspb.Message.getFieldWithDefault(msg, 1, "")
+reason: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -11278,14 +11285,14 @@ proto.io.haveno.protobuffer.AckMessage.prototype.toObject = function(opt_include
  */
 proto.io.haveno.protobuffer.AckMessage.toObject = function(includeInstance, msg) {
   var f, obj = {
-    uid: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    senderNodeAddress: (f = msg.getSenderNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
-    sourceType: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    sourceMsgClassName: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    sourceUid: jspb.Message.getFieldWithDefault(msg, 5, ""),
-    sourceId: jspb.Message.getFieldWithDefault(msg, 6, ""),
-    success: jspb.Message.getBooleanFieldWithDefault(msg, 7, false),
-    errorMessage: jspb.Message.getFieldWithDefault(msg, 8, "")
+uid: jspb.Message.getFieldWithDefault(msg, 1, ""),
+senderNodeAddress: (f = msg.getSenderNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
+sourceType: jspb.Message.getFieldWithDefault(msg, 3, ""),
+sourceMsgClassName: jspb.Message.getFieldWithDefault(msg, 4, ""),
+sourceUid: jspb.Message.getFieldWithDefault(msg, 5, ""),
+sourceId: jspb.Message.getFieldWithDefault(msg, 6, ""),
+success: jspb.Message.getBooleanFieldWithDefault(msg, 7, false),
+errorMessage: jspb.Message.getFieldWithDefault(msg, 8, "")
   };
 
   if (includeInstance) {
@@ -11639,10 +11646,10 @@ proto.io.haveno.protobuffer.PrefixedSealedAndSignedMessage.prototype.toObject = 
  */
 proto.io.haveno.protobuffer.PrefixedSealedAndSignedMessage.toObject = function(includeInstance, msg) {
   var f, obj = {
-    nodeAddress: (f = msg.getNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
-    sealedAndSigned: (f = msg.getSealedAndSigned()) && proto.io.haveno.protobuffer.SealedAndSigned.toObject(includeInstance, f),
-    addressPrefixHash: msg.getAddressPrefixHash_asB64(),
-    uid: jspb.Message.getFieldWithDefault(msg, 4, "")
+nodeAddress: (f = msg.getNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
+sealedAndSigned: (f = msg.getSealedAndSigned()) && proto.io.haveno.protobuffer.SealedAndSigned.toObject(includeInstance, f),
+addressPrefixHash: msg.getAddressPrefixHash_asB64(),
+uid: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
 
   if (includeInstance) {
@@ -11925,27 +11932,27 @@ proto.io.haveno.protobuffer.InitTradeRequest.prototype.toObject = function(opt_i
  */
 proto.io.haveno.protobuffer.InitTradeRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
-    tradeProtocolVersion: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    offerId: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    tradeAmount: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    tradePrice: jspb.Message.getFieldWithDefault(msg, 4, 0),
-    paymentMethodId: jspb.Message.getFieldWithDefault(msg, 5, ""),
-    makerAccountId: jspb.Message.getFieldWithDefault(msg, 6, ""),
-    takerAccountId: jspb.Message.getFieldWithDefault(msg, 7, ""),
-    makerPaymentAccountId: jspb.Message.getFieldWithDefault(msg, 8, ""),
-    takerPaymentAccountId: jspb.Message.getFieldWithDefault(msg, 9, ""),
-    takerPubKeyRing: (f = msg.getTakerPubKeyRing()) && proto.io.haveno.protobuffer.PubKeyRing.toObject(includeInstance, f),
-    uid: jspb.Message.getFieldWithDefault(msg, 11, ""),
-    accountAgeWitnessSignatureOfOfferId: msg.getAccountAgeWitnessSignatureOfOfferId_asB64(),
-    currentDate: jspb.Message.getFieldWithDefault(msg, 13, 0),
-    makerNodeAddress: (f = msg.getMakerNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
-    takerNodeAddress: (f = msg.getTakerNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
-    arbitratorNodeAddress: (f = msg.getArbitratorNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
-    reserveTxHash: jspb.Message.getFieldWithDefault(msg, 17, ""),
-    reserveTxHex: jspb.Message.getFieldWithDefault(msg, 18, ""),
-    reserveTxKey: jspb.Message.getFieldWithDefault(msg, 19, ""),
-    payoutAddress: jspb.Message.getFieldWithDefault(msg, 20, ""),
-    challenge: jspb.Message.getFieldWithDefault(msg, 21, "")
+tradeProtocolVersion: jspb.Message.getFieldWithDefault(msg, 1, 0),
+offerId: jspb.Message.getFieldWithDefault(msg, 2, ""),
+tradeAmount: jspb.Message.getFieldWithDefault(msg, 3, 0),
+tradePrice: jspb.Message.getFieldWithDefault(msg, 4, 0),
+paymentMethodId: jspb.Message.getFieldWithDefault(msg, 5, ""),
+makerAccountId: jspb.Message.getFieldWithDefault(msg, 6, ""),
+takerAccountId: jspb.Message.getFieldWithDefault(msg, 7, ""),
+makerPaymentAccountId: jspb.Message.getFieldWithDefault(msg, 8, ""),
+takerPaymentAccountId: jspb.Message.getFieldWithDefault(msg, 9, ""),
+takerPubKeyRing: (f = msg.getTakerPubKeyRing()) && proto.io.haveno.protobuffer.PubKeyRing.toObject(includeInstance, f),
+uid: jspb.Message.getFieldWithDefault(msg, 11, ""),
+accountAgeWitnessSignatureOfOfferId: msg.getAccountAgeWitnessSignatureOfOfferId_asB64(),
+currentDate: jspb.Message.getFieldWithDefault(msg, 13, 0),
+makerNodeAddress: (f = msg.getMakerNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
+takerNodeAddress: (f = msg.getTakerNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
+arbitratorNodeAddress: (f = msg.getArbitratorNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
+reserveTxHash: jspb.Message.getFieldWithDefault(msg, 17, ""),
+reserveTxHex: jspb.Message.getFieldWithDefault(msg, 18, ""),
+reserveTxKey: jspb.Message.getFieldWithDefault(msg, 19, ""),
+payoutAddress: jspb.Message.getFieldWithDefault(msg, 20, ""),
+challenge: jspb.Message.getFieldWithDefault(msg, 21, "")
   };
 
   if (includeInstance) {
@@ -12763,13 +12770,13 @@ proto.io.haveno.protobuffer.InitMultisigRequest.prototype.toObject = function(op
  */
 proto.io.haveno.protobuffer.InitMultisigRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
-    tradeId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    uid: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    currentDate: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    preparedMultisigHex: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    madeMultisigHex: jspb.Message.getFieldWithDefault(msg, 5, ""),
-    exchangedMultisigHex: jspb.Message.getFieldWithDefault(msg, 6, ""),
-    tradeFeeAddress: jspb.Message.getFieldWithDefault(msg, 7, "")
+tradeId: jspb.Message.getFieldWithDefault(msg, 1, ""),
+uid: jspb.Message.getFieldWithDefault(msg, 2, ""),
+currentDate: jspb.Message.getFieldWithDefault(msg, 3, 0),
+preparedMultisigHex: jspb.Message.getFieldWithDefault(msg, 4, ""),
+madeMultisigHex: jspb.Message.getFieldWithDefault(msg, 5, ""),
+exchangedMultisigHex: jspb.Message.getFieldWithDefault(msg, 6, ""),
+tradeFeeAddress: jspb.Message.getFieldWithDefault(msg, 7, "")
   };
 
   if (includeInstance) {
@@ -13073,14 +13080,14 @@ proto.io.haveno.protobuffer.SignContractRequest.prototype.toObject = function(op
  */
 proto.io.haveno.protobuffer.SignContractRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
-    tradeId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    uid: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    currentDate: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    accountId: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    paymentAccountPayloadHash: msg.getPaymentAccountPayloadHash_asB64(),
-    payoutAddress: jspb.Message.getFieldWithDefault(msg, 6, ""),
-    depositTxHash: jspb.Message.getFieldWithDefault(msg, 7, ""),
-    accountAgeWitnessSignatureOfDepositHash: msg.getAccountAgeWitnessSignatureOfDepositHash_asB64()
+tradeId: jspb.Message.getFieldWithDefault(msg, 1, ""),
+uid: jspb.Message.getFieldWithDefault(msg, 2, ""),
+currentDate: jspb.Message.getFieldWithDefault(msg, 3, 0),
+accountId: jspb.Message.getFieldWithDefault(msg, 4, ""),
+paymentAccountPayloadHash: msg.getPaymentAccountPayloadHash_asB64(),
+payoutAddress: jspb.Message.getFieldWithDefault(msg, 6, ""),
+depositTxHash: jspb.Message.getFieldWithDefault(msg, 7, ""),
+accountAgeWitnessSignatureOfDepositHash: msg.getAccountAgeWitnessSignatureOfDepositHash_asB64()
   };
 
   if (includeInstance) {
@@ -13461,12 +13468,12 @@ proto.io.haveno.protobuffer.SignContractResponse.prototype.toObject = function(o
  */
 proto.io.haveno.protobuffer.SignContractResponse.toObject = function(includeInstance, msg) {
   var f, obj = {
-    tradeId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    uid: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    currentDate: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    contractAsJson: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    contractSignature: msg.getContractSignature_asB64(),
-    encryptedPaymentAccountPayload: msg.getEncryptedPaymentAccountPayload_asB64()
+tradeId: jspb.Message.getFieldWithDefault(msg, 1, ""),
+uid: jspb.Message.getFieldWithDefault(msg, 2, ""),
+currentDate: jspb.Message.getFieldWithDefault(msg, 3, 0),
+contractAsJson: jspb.Message.getFieldWithDefault(msg, 4, ""),
+contractSignature: msg.getContractSignature_asB64(),
+encryptedPaymentAccountPayload: msg.getEncryptedPaymentAccountPayload_asB64()
   };
 
   if (includeInstance) {
@@ -13789,13 +13796,13 @@ proto.io.haveno.protobuffer.DepositRequest.prototype.toObject = function(opt_inc
  */
 proto.io.haveno.protobuffer.DepositRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
-    tradeId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    uid: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    currentDate: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    contractSignature: msg.getContractSignature_asB64(),
-    depositTxHex: jspb.Message.getFieldWithDefault(msg, 5, ""),
-    depositTxKey: jspb.Message.getFieldWithDefault(msg, 6, ""),
-    paymentAccountKey: msg.getPaymentAccountKey_asB64()
+tradeId: jspb.Message.getFieldWithDefault(msg, 1, ""),
+uid: jspb.Message.getFieldWithDefault(msg, 2, ""),
+currentDate: jspb.Message.getFieldWithDefault(msg, 3, 0),
+contractSignature: msg.getContractSignature_asB64(),
+depositTxHex: jspb.Message.getFieldWithDefault(msg, 5, ""),
+depositTxKey: jspb.Message.getFieldWithDefault(msg, 6, ""),
+paymentAccountKey: msg.getPaymentAccountKey_asB64()
   };
 
   if (includeInstance) {
@@ -14147,12 +14154,12 @@ proto.io.haveno.protobuffer.DepositResponse.prototype.toObject = function(opt_in
  */
 proto.io.haveno.protobuffer.DepositResponse.toObject = function(includeInstance, msg) {
   var f, obj = {
-    tradeId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    uid: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    currentDate: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    errorMessage: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    buyersecuritydeposit: jspb.Message.getFieldWithDefault(msg, 5, 0),
-    sellersecuritydeposit: jspb.Message.getFieldWithDefault(msg, 6, 0)
+tradeId: jspb.Message.getFieldWithDefault(msg, 1, ""),
+uid: jspb.Message.getFieldWithDefault(msg, 2, ""),
+currentDate: jspb.Message.getFieldWithDefault(msg, 3, 0),
+errorMessage: jspb.Message.getFieldWithDefault(msg, 4, ""),
+buyersecuritydeposit: jspb.Message.getFieldWithDefault(msg, 5, 0),
+sellersecuritydeposit: jspb.Message.getFieldWithDefault(msg, 6, 0)
   };
 
   if (includeInstance) {
@@ -14427,12 +14434,12 @@ proto.io.haveno.protobuffer.DepositsConfirmedMessage.prototype.toObject = functi
  */
 proto.io.haveno.protobuffer.DepositsConfirmedMessage.toObject = function(includeInstance, msg) {
   var f, obj = {
-    tradeId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    senderNodeAddress: (f = msg.getSenderNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
-    pubKeyRing: (f = msg.getPubKeyRing()) && proto.io.haveno.protobuffer.PubKeyRing.toObject(includeInstance, f),
-    uid: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    sellerPaymentAccountKey: msg.getSellerPaymentAccountKey_asB64(),
-    updatedMultisigHex: jspb.Message.getFieldWithDefault(msg, 6, "")
+tradeId: jspb.Message.getFieldWithDefault(msg, 1, ""),
+senderNodeAddress: (f = msg.getSenderNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
+pubKeyRing: (f = msg.getPubKeyRing()) && proto.io.haveno.protobuffer.PubKeyRing.toObject(includeInstance, f),
+uid: jspb.Message.getFieldWithDefault(msg, 4, ""),
+sellerPaymentAccountKey: msg.getSellerPaymentAccountKey_asB64(),
+updatedMultisigHex: jspb.Message.getFieldWithDefault(msg, 6, "")
   };
 
   if (includeInstance) {
@@ -14773,16 +14780,16 @@ proto.io.haveno.protobuffer.PaymentSentMessage.prototype.toObject = function(opt
  */
 proto.io.haveno.protobuffer.PaymentSentMessage.toObject = function(includeInstance, msg) {
   var f, obj = {
-    tradeId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    senderNodeAddress: (f = msg.getSenderNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
-    counterCurrencyTxId: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    uid: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    counterCurrencyExtraData: jspb.Message.getFieldWithDefault(msg, 5, ""),
-    payoutTxHex: jspb.Message.getFieldWithDefault(msg, 6, ""),
-    updatedMultisigHex: jspb.Message.getFieldWithDefault(msg, 7, ""),
-    paymentAccountKey: msg.getPaymentAccountKey_asB64(),
-    sellerAccountAgeWitness: (f = msg.getSellerAccountAgeWitness()) && proto.io.haveno.protobuffer.AccountAgeWitness.toObject(includeInstance, f),
-    buyerSignature: msg.getBuyerSignature_asB64()
+tradeId: jspb.Message.getFieldWithDefault(msg, 1, ""),
+senderNodeAddress: (f = msg.getSenderNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
+counterCurrencyTxId: jspb.Message.getFieldWithDefault(msg, 3, ""),
+uid: jspb.Message.getFieldWithDefault(msg, 4, ""),
+counterCurrencyExtraData: jspb.Message.getFieldWithDefault(msg, 5, ""),
+payoutTxHex: jspb.Message.getFieldWithDefault(msg, 6, ""),
+updatedMultisigHex: jspb.Message.getFieldWithDefault(msg, 7, ""),
+paymentAccountKey: msg.getPaymentAccountKey_asB64(),
+sellerAccountAgeWitness: (f = msg.getSellerAccountAgeWitness()) && proto.io.haveno.protobuffer.AccountAgeWitness.toObject(includeInstance, f),
+buyerSignature: msg.getBuyerSignature_asB64()
   };
 
   if (includeInstance) {
@@ -15263,17 +15270,17 @@ proto.io.haveno.protobuffer.PaymentReceivedMessage.prototype.toObject = function
  */
 proto.io.haveno.protobuffer.PaymentReceivedMessage.toObject = function(includeInstance, msg) {
   var f, obj = {
-    tradeId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    senderNodeAddress: (f = msg.getSenderNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
-    uid: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    unsignedPayoutTxHex: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    signedPayoutTxHex: jspb.Message.getFieldWithDefault(msg, 5, ""),
-    updatedMultisigHex: jspb.Message.getFieldWithDefault(msg, 6, ""),
-    deferPublishPayout: jspb.Message.getBooleanFieldWithDefault(msg, 7, false),
-    buyerAccountAgeWitness: (f = msg.getBuyerAccountAgeWitness()) && proto.io.haveno.protobuffer.AccountAgeWitness.toObject(includeInstance, f),
-    buyerSignedWitness: (f = msg.getBuyerSignedWitness()) && proto.io.haveno.protobuffer.SignedWitness.toObject(includeInstance, f),
-    paymentSentMessage: (f = msg.getPaymentSentMessage()) && proto.io.haveno.protobuffer.PaymentSentMessage.toObject(includeInstance, f),
-    sellerSignature: msg.getSellerSignature_asB64()
+tradeId: jspb.Message.getFieldWithDefault(msg, 1, ""),
+senderNodeAddress: (f = msg.getSenderNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
+uid: jspb.Message.getFieldWithDefault(msg, 3, ""),
+unsignedPayoutTxHex: jspb.Message.getFieldWithDefault(msg, 4, ""),
+signedPayoutTxHex: jspb.Message.getFieldWithDefault(msg, 5, ""),
+updatedMultisigHex: jspb.Message.getFieldWithDefault(msg, 6, ""),
+deferPublishPayout: jspb.Message.getBooleanFieldWithDefault(msg, 7, false),
+buyerAccountAgeWitness: (f = msg.getBuyerAccountAgeWitness()) && proto.io.haveno.protobuffer.AccountAgeWitness.toObject(includeInstance, f),
+buyerSignedWitness: (f = msg.getBuyerSignedWitness()) && proto.io.haveno.protobuffer.SignedWitness.toObject(includeInstance, f),
+paymentSentMessage: (f = msg.getPaymentSentMessage()) && proto.io.haveno.protobuffer.PaymentSentMessage.toObject(includeInstance, f),
+sellerSignature: msg.getSellerSignature_asB64()
   };
 
   if (includeInstance) {
@@ -15801,10 +15808,10 @@ proto.io.haveno.protobuffer.MediatedPayoutTxPublishedMessage.prototype.toObject 
  */
 proto.io.haveno.protobuffer.MediatedPayoutTxPublishedMessage.toObject = function(includeInstance, msg) {
   var f, obj = {
-    tradeId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    payoutTx: msg.getPayoutTx_asB64(),
-    senderNodeAddress: (f = msg.getSenderNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
-    uid: jspb.Message.getFieldWithDefault(msg, 4, "")
+tradeId: jspb.Message.getFieldWithDefault(msg, 1, ""),
+payoutTx: msg.getPayoutTx_asB64(),
+senderNodeAddress: (f = msg.getSenderNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
+uid: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
 
   if (includeInstance) {
@@ -16066,10 +16073,10 @@ proto.io.haveno.protobuffer.MediatedPayoutTxSignatureMessage.prototype.toObject 
  */
 proto.io.haveno.protobuffer.MediatedPayoutTxSignatureMessage.toObject = function(includeInstance, msg) {
   var f, obj = {
-    uid: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    tradeId: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    txSignature: msg.getTxSignature_asB64(),
-    senderNodeAddress: (f = msg.getSenderNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f)
+uid: jspb.Message.getFieldWithDefault(msg, 1, ""),
+tradeId: jspb.Message.getFieldWithDefault(msg, 3, ""),
+txSignature: msg.getTxSignature_asB64(),
+senderNodeAddress: (f = msg.getSenderNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -16338,23 +16345,23 @@ proto.io.haveno.protobuffer.ChatMessage.prototype.toObject = function(opt_includ
  */
 proto.io.haveno.protobuffer.ChatMessage.toObject = function(includeInstance, msg) {
   var f, obj = {
-    date: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    tradeId: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    traderId: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    senderIsTrader: jspb.Message.getBooleanFieldWithDefault(msg, 4, false),
-    message: jspb.Message.getFieldWithDefault(msg, 5, ""),
-    attachmentsList: jspb.Message.toObjectList(msg.getAttachmentsList(),
+date: jspb.Message.getFieldWithDefault(msg, 1, 0),
+tradeId: jspb.Message.getFieldWithDefault(msg, 2, ""),
+traderId: jspb.Message.getFieldWithDefault(msg, 3, 0),
+senderIsTrader: jspb.Message.getBooleanFieldWithDefault(msg, 4, false),
+message: jspb.Message.getFieldWithDefault(msg, 5, ""),
+attachmentsList: jspb.Message.toObjectList(msg.getAttachmentsList(),
     proto.io.haveno.protobuffer.Attachment.toObject, includeInstance),
-    arrived: jspb.Message.getBooleanFieldWithDefault(msg, 7, false),
-    storedInMailbox: jspb.Message.getBooleanFieldWithDefault(msg, 8, false),
-    isSystemMessage: jspb.Message.getBooleanFieldWithDefault(msg, 9, false),
-    senderNodeAddress: (f = msg.getSenderNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
-    uid: jspb.Message.getFieldWithDefault(msg, 11, ""),
-    sendMessageError: jspb.Message.getFieldWithDefault(msg, 12, ""),
-    acknowledged: jspb.Message.getBooleanFieldWithDefault(msg, 13, false),
-    ackError: jspb.Message.getFieldWithDefault(msg, 14, ""),
-    type: jspb.Message.getFieldWithDefault(msg, 15, 0),
-    wasDisplayed: jspb.Message.getBooleanFieldWithDefault(msg, 16, false)
+arrived: jspb.Message.getBooleanFieldWithDefault(msg, 7, false),
+storedInMailbox: jspb.Message.getBooleanFieldWithDefault(msg, 8, false),
+isSystemMessage: jspb.Message.getBooleanFieldWithDefault(msg, 9, false),
+senderNodeAddress: (f = msg.getSenderNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
+uid: jspb.Message.getFieldWithDefault(msg, 11, ""),
+sendMessageError: jspb.Message.getFieldWithDefault(msg, 12, ""),
+acknowledged: jspb.Message.getBooleanFieldWithDefault(msg, 13, false),
+ackError: jspb.Message.getFieldWithDefault(msg, 14, ""),
+type: jspb.Message.getFieldWithDefault(msg, 15, 0),
+wasDisplayed: jspb.Message.getBooleanFieldWithDefault(msg, 16, false)
   };
 
   if (includeInstance) {
@@ -16962,12 +16969,12 @@ proto.io.haveno.protobuffer.DisputeOpenedMessage.prototype.toObject = function(o
  */
 proto.io.haveno.protobuffer.DisputeOpenedMessage.toObject = function(includeInstance, msg) {
   var f, obj = {
-    dispute: (f = msg.getDispute()) && proto.io.haveno.protobuffer.Dispute.toObject(includeInstance, f),
-    senderNodeAddress: (f = msg.getSenderNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
-    uid: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    type: jspb.Message.getFieldWithDefault(msg, 4, 0),
-    updatedMultisigHex: jspb.Message.getFieldWithDefault(msg, 5, ""),
-    paymentSentMessage: (f = msg.getPaymentSentMessage()) && proto.io.haveno.protobuffer.PaymentSentMessage.toObject(includeInstance, f)
+dispute: (f = msg.getDispute()) && proto.io.haveno.protobuffer.Dispute.toObject(includeInstance, f),
+senderNodeAddress: (f = msg.getSenderNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
+uid: jspb.Message.getFieldWithDefault(msg, 3, ""),
+type: jspb.Message.getFieldWithDefault(msg, 4, 0),
+updatedMultisigHex: jspb.Message.getFieldWithDefault(msg, 5, ""),
+paymentSentMessage: (f = msg.getPaymentSentMessage()) && proto.io.haveno.protobuffer.PaymentSentMessage.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -17305,13 +17312,13 @@ proto.io.haveno.protobuffer.DisputeClosedMessage.prototype.toObject = function(o
  */
 proto.io.haveno.protobuffer.DisputeClosedMessage.toObject = function(includeInstance, msg) {
   var f, obj = {
-    uid: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    disputeResult: (f = msg.getDisputeResult()) && proto.io.haveno.protobuffer.DisputeResult.toObject(includeInstance, f),
-    senderNodeAddress: (f = msg.getSenderNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
-    type: jspb.Message.getFieldWithDefault(msg, 4, 0),
-    updatedMultisigHex: jspb.Message.getFieldWithDefault(msg, 5, ""),
-    unsignedPayoutTxHex: jspb.Message.getFieldWithDefault(msg, 6, ""),
-    deferPublishPayout: jspb.Message.getBooleanFieldWithDefault(msg, 7, false)
+uid: jspb.Message.getFieldWithDefault(msg, 1, ""),
+disputeResult: (f = msg.getDisputeResult()) && proto.io.haveno.protobuffer.DisputeResult.toObject(includeInstance, f),
+senderNodeAddress: (f = msg.getSenderNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
+type: jspb.Message.getFieldWithDefault(msg, 4, 0),
+updatedMultisigHex: jspb.Message.getFieldWithDefault(msg, 5, ""),
+unsignedPayoutTxHex: jspb.Message.getFieldWithDefault(msg, 6, ""),
+deferPublishPayout: jspb.Message.getBooleanFieldWithDefault(msg, 7, false)
   };
 
   if (includeInstance) {
@@ -17657,9 +17664,9 @@ proto.io.haveno.protobuffer.PrivateNotificationMessage.prototype.toObject = func
  */
 proto.io.haveno.protobuffer.PrivateNotificationMessage.toObject = function(includeInstance, msg) {
   var f, obj = {
-    uid: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    senderNodeAddress: (f = msg.getSenderNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
-    privateNotificationPayload: (f = msg.getPrivateNotificationPayload()) && proto.io.haveno.protobuffer.PrivateNotificationPayload.toObject(includeInstance, f)
+uid: jspb.Message.getFieldWithDefault(msg, 1, ""),
+senderNodeAddress: (f = msg.getSenderNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
+privateNotificationPayload: (f = msg.getPrivateNotificationPayload()) && proto.io.haveno.protobuffer.PrivateNotificationPayload.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -17889,8 +17896,8 @@ proto.io.haveno.protobuffer.NodeAddress.prototype.toObject = function(opt_includ
  */
 proto.io.haveno.protobuffer.NodeAddress.toObject = function(includeInstance, msg) {
   var f, obj = {
-    hostName: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    port: jspb.Message.getFieldWithDefault(msg, 2, 0)
+hostName: jspb.Message.getFieldWithDefault(msg, 1, ""),
+port: jspb.Message.getFieldWithDefault(msg, 2, 0)
   };
 
   if (includeInstance) {
@@ -18056,9 +18063,9 @@ proto.io.haveno.protobuffer.Peer.prototype.toObject = function(opt_includeInstan
  */
 proto.io.haveno.protobuffer.Peer.toObject = function(includeInstance, msg) {
   var f, obj = {
-    nodeAddress: (f = msg.getNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
-    date: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    supportedCapabilitiesList: (f = jspb.Message.getRepeatedField(msg, 3)) == null ? undefined : f
+nodeAddress: (f = msg.getNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
+date: jspb.Message.getFieldWithDefault(msg, 2, 0),
+supportedCapabilitiesList: (f = jspb.Message.getRepeatedField(msg, 3)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -18288,8 +18295,8 @@ proto.io.haveno.protobuffer.PubKeyRing.prototype.toObject = function(opt_include
  */
 proto.io.haveno.protobuffer.PubKeyRing.toObject = function(includeInstance, msg) {
   var f, obj = {
-    signaturePubKeyBytes: msg.getSignaturePubKeyBytes_asB64(),
-    encryptionPubKeyBytes: msg.getEncryptionPubKeyBytes_asB64()
+signaturePubKeyBytes: msg.getSignaturePubKeyBytes_asB64(),
+encryptionPubKeyBytes: msg.getEncryptionPubKeyBytes_asB64()
   };
 
   if (includeInstance) {
@@ -18496,10 +18503,10 @@ proto.io.haveno.protobuffer.SealedAndSigned.prototype.toObject = function(opt_in
  */
 proto.io.haveno.protobuffer.SealedAndSigned.toObject = function(includeInstance, msg) {
   var f, obj = {
-    encryptedSecretKey: msg.getEncryptedSecretKey_asB64(),
-    encryptedPayloadWithHmac: msg.getEncryptedPayloadWithHmac_asB64(),
-    signature: msg.getSignature_asB64(),
-    sigPublicKeyBytes: msg.getSigPublicKeyBytes_asB64()
+encryptedSecretKey: msg.getEncryptedSecretKey_asB64(),
+encryptedPayloadWithHmac: msg.getEncryptedPayloadWithHmac_asB64(),
+signature: msg.getSignature_asB64(),
+sigPublicKeyBytes: msg.getSigPublicKeyBytes_asB64()
   };
 
   if (includeInstance) {
@@ -18843,13 +18850,13 @@ proto.io.haveno.protobuffer.StoragePayload.prototype.toObject = function(opt_inc
  */
 proto.io.haveno.protobuffer.StoragePayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    alert: (f = msg.getAlert()) && proto.io.haveno.protobuffer.Alert.toObject(includeInstance, f),
-    arbitrator: (f = msg.getArbitrator()) && proto.io.haveno.protobuffer.Arbitrator.toObject(includeInstance, f),
-    mediator: (f = msg.getMediator()) && proto.io.haveno.protobuffer.Mediator.toObject(includeInstance, f),
-    filter: (f = msg.getFilter()) && proto.io.haveno.protobuffer.Filter.toObject(includeInstance, f),
-    mailboxStoragePayload: (f = msg.getMailboxStoragePayload()) && proto.io.haveno.protobuffer.MailboxStoragePayload.toObject(includeInstance, f),
-    offerPayload: (f = msg.getOfferPayload()) && proto.io.haveno.protobuffer.OfferPayload.toObject(includeInstance, f),
-    refundAgent: (f = msg.getRefundAgent()) && proto.io.haveno.protobuffer.RefundAgent.toObject(includeInstance, f)
+alert: (f = msg.getAlert()) && proto.io.haveno.protobuffer.Alert.toObject(includeInstance, f),
+arbitrator: (f = msg.getArbitrator()) && proto.io.haveno.protobuffer.Arbitrator.toObject(includeInstance, f),
+mediator: (f = msg.getMediator()) && proto.io.haveno.protobuffer.Mediator.toObject(includeInstance, f),
+filter: (f = msg.getFilter()) && proto.io.haveno.protobuffer.Filter.toObject(includeInstance, f),
+mailboxStoragePayload: (f = msg.getMailboxStoragePayload()) && proto.io.haveno.protobuffer.MailboxStoragePayload.toObject(includeInstance, f),
+offerPayload: (f = msg.getOfferPayload()) && proto.io.haveno.protobuffer.OfferPayload.toObject(includeInstance, f),
+refundAgent: (f = msg.getRefundAgent()) && proto.io.haveno.protobuffer.RefundAgent.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -19327,9 +19334,9 @@ proto.io.haveno.protobuffer.PersistableNetworkPayload.prototype.toObject = funct
  */
 proto.io.haveno.protobuffer.PersistableNetworkPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    accountAgeWitness: (f = msg.getAccountAgeWitness()) && proto.io.haveno.protobuffer.AccountAgeWitness.toObject(includeInstance, f),
-    signedWitness: (f = msg.getSignedWitness()) && proto.io.haveno.protobuffer.SignedWitness.toObject(includeInstance, f),
-    tradeStatistics3: (f = msg.getTradeStatistics3()) && proto.io.haveno.protobuffer.TradeStatistics3.toObject(includeInstance, f)
+accountAgeWitness: (f = msg.getAccountAgeWitness()) && proto.io.haveno.protobuffer.AccountAgeWitness.toObject(includeInstance, f),
+signedWitness: (f = msg.getSignedWitness()) && proto.io.haveno.protobuffer.SignedWitness.toObject(includeInstance, f),
+tradeStatistics3: (f = msg.getTradeStatistics3()) && proto.io.haveno.protobuffer.TradeStatistics3.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -19580,11 +19587,11 @@ proto.io.haveno.protobuffer.ProtectedStorageEntry.prototype.toObject = function(
  */
 proto.io.haveno.protobuffer.ProtectedStorageEntry.toObject = function(includeInstance, msg) {
   var f, obj = {
-    storagepayload: (f = msg.getStoragepayload()) && proto.io.haveno.protobuffer.StoragePayload.toObject(includeInstance, f),
-    ownerPubKeyBytes: msg.getOwnerPubKeyBytes_asB64(),
-    sequenceNumber: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    signature: msg.getSignature_asB64(),
-    creationTimeStamp: jspb.Message.getFieldWithDefault(msg, 5, 0)
+storagepayload: (f = msg.getStoragepayload()) && proto.io.haveno.protobuffer.StoragePayload.toObject(includeInstance, f),
+ownerPubKeyBytes: msg.getOwnerPubKeyBytes_asB64(),
+sequenceNumber: jspb.Message.getFieldWithDefault(msg, 3, 0),
+signature: msg.getSignature_asB64(),
+creationTimeStamp: jspb.Message.getFieldWithDefault(msg, 5, 0)
   };
 
   if (includeInstance) {
@@ -19925,8 +19932,8 @@ proto.io.haveno.protobuffer.StorageEntryWrapper.prototype.toObject = function(op
  */
 proto.io.haveno.protobuffer.StorageEntryWrapper.toObject = function(includeInstance, msg) {
   var f, obj = {
-    protectedStorageEntry: (f = msg.getProtectedStorageEntry()) && proto.io.haveno.protobuffer.ProtectedStorageEntry.toObject(includeInstance, f),
-    protectedMailboxStorageEntry: (f = msg.getProtectedMailboxStorageEntry()) && proto.io.haveno.protobuffer.ProtectedMailboxStorageEntry.toObject(includeInstance, f)
+protectedStorageEntry: (f = msg.getProtectedStorageEntry()) && proto.io.haveno.protobuffer.ProtectedStorageEntry.toObject(includeInstance, f),
+protectedMailboxStorageEntry: (f = msg.getProtectedMailboxStorageEntry()) && proto.io.haveno.protobuffer.ProtectedMailboxStorageEntry.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -20127,8 +20134,8 @@ proto.io.haveno.protobuffer.ProtectedMailboxStorageEntry.prototype.toObject = fu
  */
 proto.io.haveno.protobuffer.ProtectedMailboxStorageEntry.toObject = function(includeInstance, msg) {
   var f, obj = {
-    entry: (f = msg.getEntry()) && proto.io.haveno.protobuffer.ProtectedStorageEntry.toObject(includeInstance, f),
-    receiversPubKeyBytes: msg.getReceiversPubKeyBytes_asB64()
+entry: (f = msg.getEntry()) && proto.io.haveno.protobuffer.ProtectedStorageEntry.toObject(includeInstance, f),
+receiversPubKeyBytes: msg.getReceiversPubKeyBytes_asB64()
   };
 
   if (includeInstance) {
@@ -20332,8 +20339,8 @@ proto.io.haveno.protobuffer.DataAndSeqNrPair.prototype.toObject = function(opt_i
  */
 proto.io.haveno.protobuffer.DataAndSeqNrPair.toObject = function(includeInstance, msg) {
   var f, obj = {
-    payload: (f = msg.getPayload()) && proto.io.haveno.protobuffer.StoragePayload.toObject(includeInstance, f),
-    sequenceNumber: jspb.Message.getFieldWithDefault(msg, 2, 0)
+payload: (f = msg.getPayload()) && proto.io.haveno.protobuffer.StoragePayload.toObject(includeInstance, f),
+sequenceNumber: jspb.Message.getFieldWithDefault(msg, 2, 0)
   };
 
   if (includeInstance) {
@@ -20520,7 +20527,7 @@ proto.io.haveno.protobuffer.MailboxMessageList.prototype.toObject = function(opt
  */
 proto.io.haveno.protobuffer.MailboxMessageList.toObject = function(includeInstance, msg) {
   var f, obj = {
-    mailboxItemList: jspb.Message.toObjectList(msg.getMailboxItemList(),
+mailboxItemList: jspb.Message.toObjectList(msg.getMailboxItemList(),
     proto.io.haveno.protobuffer.MailboxItem.toObject, includeInstance)
   };
 
@@ -20673,7 +20680,7 @@ proto.io.haveno.protobuffer.RemovedPayloadsMap.prototype.toObject = function(opt
  */
 proto.io.haveno.protobuffer.RemovedPayloadsMap.toObject = function(includeInstance, msg) {
   var f, obj = {
-    dateByHashesMap: (f = msg.getDateByHashesMap()) ? f.toObject(includeInstance, undefined) : []
+dateByHashesMap: (f = msg.getDateByHashesMap()) ? f.toObject(includeInstance, undefined) : []
   };
 
   if (includeInstance) {
@@ -20771,7 +20778,8 @@ proto.io.haveno.protobuffer.RemovedPayloadsMap.prototype.getDateByHashesMap = fu
  */
 proto.io.haveno.protobuffer.RemovedPayloadsMap.prototype.clearDateByHashesMap = function() {
   this.getDateByHashesMap().clear();
-  return this;};
+  return this;
+};
 
 
 
@@ -20806,7 +20814,7 @@ proto.io.haveno.protobuffer.IgnoredMailboxMap.prototype.toObject = function(opt_
  */
 proto.io.haveno.protobuffer.IgnoredMailboxMap.toObject = function(includeInstance, msg) {
   var f, obj = {
-    dataMap: (f = msg.getDataMap()) ? f.toObject(includeInstance, undefined) : []
+dataMap: (f = msg.getDataMap()) ? f.toObject(includeInstance, undefined) : []
   };
 
   if (includeInstance) {
@@ -20904,7 +20912,8 @@ proto.io.haveno.protobuffer.IgnoredMailboxMap.prototype.getDataMap = function(op
  */
 proto.io.haveno.protobuffer.IgnoredMailboxMap.prototype.clearDataMap = function() {
   this.getDataMap().clear();
-  return this;};
+  return this;
+};
 
 
 
@@ -20939,8 +20948,8 @@ proto.io.haveno.protobuffer.MailboxItem.prototype.toObject = function(opt_includ
  */
 proto.io.haveno.protobuffer.MailboxItem.toObject = function(includeInstance, msg) {
   var f, obj = {
-    protectedMailboxStorageEntry: (f = msg.getProtectedMailboxStorageEntry()) && proto.io.haveno.protobuffer.ProtectedMailboxStorageEntry.toObject(includeInstance, f),
-    decryptedMessageWithPubKey: (f = msg.getDecryptedMessageWithPubKey()) && proto.io.haveno.protobuffer.DecryptedMessageWithPubKey.toObject(includeInstance, f)
+protectedMailboxStorageEntry: (f = msg.getProtectedMailboxStorageEntry()) && proto.io.haveno.protobuffer.ProtectedMailboxStorageEntry.toObject(includeInstance, f),
+decryptedMessageWithPubKey: (f = msg.getDecryptedMessageWithPubKey()) && proto.io.haveno.protobuffer.DecryptedMessageWithPubKey.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -21141,8 +21150,8 @@ proto.io.haveno.protobuffer.DecryptedMessageWithPubKey.prototype.toObject = func
  */
 proto.io.haveno.protobuffer.DecryptedMessageWithPubKey.toObject = function(includeInstance, msg) {
   var f, obj = {
-    networkEnvelope: (f = msg.getNetworkEnvelope()) && proto.io.haveno.protobuffer.NetworkEnvelope.toObject(includeInstance, f),
-    signaturePubKeyBytes: msg.getSignaturePubKeyBytes_asB64()
+networkEnvelope: (f = msg.getNetworkEnvelope()) && proto.io.haveno.protobuffer.NetworkEnvelope.toObject(includeInstance, f),
+signaturePubKeyBytes: msg.getSignaturePubKeyBytes_asB64()
   };
 
   if (includeInstance) {
@@ -21346,9 +21355,9 @@ proto.io.haveno.protobuffer.PrivateNotificationPayload.prototype.toObject = func
  */
 proto.io.haveno.protobuffer.PrivateNotificationPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    message: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    signatureAsBase64: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    sigPublicKeyBytes: msg.getSigPublicKeyBytes_asB64()
+message: jspb.Message.getFieldWithDefault(msg, 1, ""),
+signatureAsBase64: jspb.Message.getFieldWithDefault(msg, 2, ""),
+sigPublicKeyBytes: msg.getSigPublicKeyBytes_asB64()
   };
 
   if (includeInstance) {
@@ -21560,9 +21569,9 @@ proto.io.haveno.protobuffer.PaymentAccountFilter.prototype.toObject = function(o
  */
 proto.io.haveno.protobuffer.PaymentAccountFilter.toObject = function(includeInstance, msg) {
   var f, obj = {
-    paymentMethodId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    getMethodName: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    value: jspb.Message.getFieldWithDefault(msg, 3, "")
+paymentMethodId: jspb.Message.getFieldWithDefault(msg, 1, ""),
+getMethodName: jspb.Message.getFieldWithDefault(msg, 2, ""),
+value: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
   if (includeInstance) {
@@ -21750,13 +21759,13 @@ proto.io.haveno.protobuffer.Alert.prototype.toObject = function(opt_includeInsta
  */
 proto.io.haveno.protobuffer.Alert.toObject = function(includeInstance, msg) {
   var f, obj = {
-    message: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    version: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    isUpdateInfo: jspb.Message.getBooleanFieldWithDefault(msg, 3, false),
-    signatureAsBase64: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    ownerPubKeyBytes: msg.getOwnerPubKeyBytes_asB64(),
-    extraDataMap: (f = msg.getExtraDataMap()) ? f.toObject(includeInstance, undefined) : [],
-    isPreReleaseInfo: jspb.Message.getBooleanFieldWithDefault(msg, 7, false)
+message: jspb.Message.getFieldWithDefault(msg, 1, ""),
+version: jspb.Message.getFieldWithDefault(msg, 2, ""),
+isUpdateInfo: jspb.Message.getBooleanFieldWithDefault(msg, 3, false),
+signatureAsBase64: jspb.Message.getFieldWithDefault(msg, 4, ""),
+ownerPubKeyBytes: msg.getOwnerPubKeyBytes_asB64(),
+extraDataMap: (f = msg.getExtraDataMap()) ? f.toObject(includeInstance, undefined) : [],
+isPreReleaseInfo: jspb.Message.getBooleanFieldWithDefault(msg, 7, false)
   };
 
   if (includeInstance) {
@@ -22034,7 +22043,8 @@ proto.io.haveno.protobuffer.Alert.prototype.getExtraDataMap = function(opt_noLaz
  */
 proto.io.haveno.protobuffer.Alert.prototype.clearExtraDataMap = function() {
   this.getExtraDataMap().clear();
-  return this;};
+  return this;
+};
 
 
 /**
@@ -22094,15 +22104,15 @@ proto.io.haveno.protobuffer.Arbitrator.prototype.toObject = function(opt_include
  */
 proto.io.haveno.protobuffer.Arbitrator.toObject = function(includeInstance, msg) {
   var f, obj = {
-    nodeAddress: (f = msg.getNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
-    languageCodesList: (f = jspb.Message.getRepeatedField(msg, 2)) == null ? undefined : f,
-    registrationDate: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    registrationSignature: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    registrationPubKey: msg.getRegistrationPubKey_asB64(),
-    pubKeyRing: (f = msg.getPubKeyRing()) && proto.io.haveno.protobuffer.PubKeyRing.toObject(includeInstance, f),
-    emailAddress: jspb.Message.getFieldWithDefault(msg, 7, ""),
-    info: jspb.Message.getFieldWithDefault(msg, 8, ""),
-    extraDataMap: (f = msg.getExtraDataMap()) ? f.toObject(includeInstance, undefined) : []
+nodeAddress: (f = msg.getNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
+languageCodesList: (f = jspb.Message.getRepeatedField(msg, 2)) == null ? undefined : f,
+registrationDate: jspb.Message.getFieldWithDefault(msg, 3, 0),
+registrationSignature: jspb.Message.getFieldWithDefault(msg, 4, ""),
+registrationPubKey: msg.getRegistrationPubKey_asB64(),
+pubKeyRing: (f = msg.getPubKeyRing()) && proto.io.haveno.protobuffer.PubKeyRing.toObject(includeInstance, f),
+emailAddress: jspb.Message.getFieldWithDefault(msg, 7, ""),
+info: jspb.Message.getFieldWithDefault(msg, 8, ""),
+extraDataMap: (f = msg.getExtraDataMap()) ? f.toObject(includeInstance, undefined) : []
   };
 
   if (includeInstance) {
@@ -22517,7 +22527,8 @@ proto.io.haveno.protobuffer.Arbitrator.prototype.getExtraDataMap = function(opt_
  */
 proto.io.haveno.protobuffer.Arbitrator.prototype.clearExtraDataMap = function() {
   this.getExtraDataMap().clear();
-  return this;};
+  return this;
+};
 
 
 
@@ -22559,15 +22570,15 @@ proto.io.haveno.protobuffer.Mediator.prototype.toObject = function(opt_includeIn
  */
 proto.io.haveno.protobuffer.Mediator.toObject = function(includeInstance, msg) {
   var f, obj = {
-    nodeAddress: (f = msg.getNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
-    languageCodesList: (f = jspb.Message.getRepeatedField(msg, 2)) == null ? undefined : f,
-    registrationDate: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    registrationSignature: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    registrationPubKey: msg.getRegistrationPubKey_asB64(),
-    pubKeyRing: (f = msg.getPubKeyRing()) && proto.io.haveno.protobuffer.PubKeyRing.toObject(includeInstance, f),
-    emailAddress: jspb.Message.getFieldWithDefault(msg, 7, ""),
-    info: jspb.Message.getFieldWithDefault(msg, 8, ""),
-    extraDataMap: (f = msg.getExtraDataMap()) ? f.toObject(includeInstance, undefined) : []
+nodeAddress: (f = msg.getNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
+languageCodesList: (f = jspb.Message.getRepeatedField(msg, 2)) == null ? undefined : f,
+registrationDate: jspb.Message.getFieldWithDefault(msg, 3, 0),
+registrationSignature: jspb.Message.getFieldWithDefault(msg, 4, ""),
+registrationPubKey: msg.getRegistrationPubKey_asB64(),
+pubKeyRing: (f = msg.getPubKeyRing()) && proto.io.haveno.protobuffer.PubKeyRing.toObject(includeInstance, f),
+emailAddress: jspb.Message.getFieldWithDefault(msg, 7, ""),
+info: jspb.Message.getFieldWithDefault(msg, 8, ""),
+extraDataMap: (f = msg.getExtraDataMap()) ? f.toObject(includeInstance, undefined) : []
   };
 
   if (includeInstance) {
@@ -22982,7 +22993,8 @@ proto.io.haveno.protobuffer.Mediator.prototype.getExtraDataMap = function(opt_no
  */
 proto.io.haveno.protobuffer.Mediator.prototype.clearExtraDataMap = function() {
   this.getExtraDataMap().clear();
-  return this;};
+  return this;
+};
 
 
 
@@ -23024,15 +23036,15 @@ proto.io.haveno.protobuffer.RefundAgent.prototype.toObject = function(opt_includ
  */
 proto.io.haveno.protobuffer.RefundAgent.toObject = function(includeInstance, msg) {
   var f, obj = {
-    nodeAddress: (f = msg.getNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
-    languageCodesList: (f = jspb.Message.getRepeatedField(msg, 2)) == null ? undefined : f,
-    registrationDate: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    registrationSignature: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    registrationPubKey: msg.getRegistrationPubKey_asB64(),
-    pubKeyRing: (f = msg.getPubKeyRing()) && proto.io.haveno.protobuffer.PubKeyRing.toObject(includeInstance, f),
-    emailAddress: jspb.Message.getFieldWithDefault(msg, 7, ""),
-    info: jspb.Message.getFieldWithDefault(msg, 8, ""),
-    extraDataMap: (f = msg.getExtraDataMap()) ? f.toObject(includeInstance, undefined) : []
+nodeAddress: (f = msg.getNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
+languageCodesList: (f = jspb.Message.getRepeatedField(msg, 2)) == null ? undefined : f,
+registrationDate: jspb.Message.getFieldWithDefault(msg, 3, 0),
+registrationSignature: jspb.Message.getFieldWithDefault(msg, 4, ""),
+registrationPubKey: msg.getRegistrationPubKey_asB64(),
+pubKeyRing: (f = msg.getPubKeyRing()) && proto.io.haveno.protobuffer.PubKeyRing.toObject(includeInstance, f),
+emailAddress: jspb.Message.getFieldWithDefault(msg, 7, ""),
+info: jspb.Message.getFieldWithDefault(msg, 8, ""),
+extraDataMap: (f = msg.getExtraDataMap()) ? f.toObject(includeInstance, undefined) : []
   };
 
   if (includeInstance) {
@@ -23447,7 +23459,8 @@ proto.io.haveno.protobuffer.RefundAgent.prototype.getExtraDataMap = function(opt
  */
 proto.io.haveno.protobuffer.RefundAgent.prototype.clearExtraDataMap = function() {
   this.getExtraDataMap().clear();
-  return this;};
+  return this;
+};
 
 
 
@@ -23489,33 +23502,33 @@ proto.io.haveno.protobuffer.Filter.prototype.toObject = function(opt_includeInst
  */
 proto.io.haveno.protobuffer.Filter.toObject = function(includeInstance, msg) {
   var f, obj = {
-    nodeAddressesBannedFromTradingList: (f = jspb.Message.getRepeatedField(msg, 1)) == null ? undefined : f,
-    bannedOfferIdsList: (f = jspb.Message.getRepeatedField(msg, 2)) == null ? undefined : f,
-    bannedPaymentAccountsList: jspb.Message.toObjectList(msg.getBannedPaymentAccountsList(),
+nodeAddressesBannedFromTradingList: (f = jspb.Message.getRepeatedField(msg, 1)) == null ? undefined : f,
+bannedOfferIdsList: (f = jspb.Message.getRepeatedField(msg, 2)) == null ? undefined : f,
+bannedPaymentAccountsList: jspb.Message.toObjectList(msg.getBannedPaymentAccountsList(),
     proto.io.haveno.protobuffer.PaymentAccountFilter.toObject, includeInstance),
-    signatureAsBase64: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    ownerPubKeyBytes: msg.getOwnerPubKeyBytes_asB64(),
-    extraDataMap: (f = msg.getExtraDataMap()) ? f.toObject(includeInstance, undefined) : [],
-    bannedCurrenciesList: (f = jspb.Message.getRepeatedField(msg, 7)) == null ? undefined : f,
-    bannedPaymentMethodsList: (f = jspb.Message.getRepeatedField(msg, 8)) == null ? undefined : f,
-    arbitratorsList: (f = jspb.Message.getRepeatedField(msg, 9)) == null ? undefined : f,
-    seedNodesList: (f = jspb.Message.getRepeatedField(msg, 10)) == null ? undefined : f,
-    priceRelayNodesList: (f = jspb.Message.getRepeatedField(msg, 11)) == null ? undefined : f,
-    preventPublicXmrNetwork: jspb.Message.getBooleanFieldWithDefault(msg, 12, false),
-    xmrNodesList: (f = jspb.Message.getRepeatedField(msg, 13)) == null ? undefined : f,
-    disableTradeBelowVersion: jspb.Message.getFieldWithDefault(msg, 14, ""),
-    mediatorsList: (f = jspb.Message.getRepeatedField(msg, 15)) == null ? undefined : f,
-    refundagentsList: (f = jspb.Message.getRepeatedField(msg, 16)) == null ? undefined : f,
-    bannedsignerpubkeysList: (f = jspb.Message.getRepeatedField(msg, 17)) == null ? undefined : f,
-    xmrFeeReceiverAddressesList: (f = jspb.Message.getRepeatedField(msg, 18)) == null ? undefined : f,
-    creationDate: jspb.Message.getFieldWithDefault(msg, 19, 0),
-    signerPubKeyAsHex: jspb.Message.getFieldWithDefault(msg, 20, ""),
-    bannedprivilegeddevpubkeysList: (f = jspb.Message.getRepeatedField(msg, 21)) == null ? undefined : f,
-    disableAutoConf: jspb.Message.getBooleanFieldWithDefault(msg, 22, false),
-    bannedAutoConfExplorersList: (f = jspb.Message.getRepeatedField(msg, 23)) == null ? undefined : f,
-    nodeAddressesBannedFromNetworkList: (f = jspb.Message.getRepeatedField(msg, 24)) == null ? undefined : f,
-    disableApi: jspb.Message.getBooleanFieldWithDefault(msg, 25, false),
-    disableMempoolValidation: jspb.Message.getBooleanFieldWithDefault(msg, 26, false)
+signatureAsBase64: jspb.Message.getFieldWithDefault(msg, 4, ""),
+ownerPubKeyBytes: msg.getOwnerPubKeyBytes_asB64(),
+extraDataMap: (f = msg.getExtraDataMap()) ? f.toObject(includeInstance, undefined) : [],
+bannedCurrenciesList: (f = jspb.Message.getRepeatedField(msg, 7)) == null ? undefined : f,
+bannedPaymentMethodsList: (f = jspb.Message.getRepeatedField(msg, 8)) == null ? undefined : f,
+arbitratorsList: (f = jspb.Message.getRepeatedField(msg, 9)) == null ? undefined : f,
+seedNodesList: (f = jspb.Message.getRepeatedField(msg, 10)) == null ? undefined : f,
+priceRelayNodesList: (f = jspb.Message.getRepeatedField(msg, 11)) == null ? undefined : f,
+preventPublicXmrNetwork: jspb.Message.getBooleanFieldWithDefault(msg, 12, false),
+xmrNodesList: (f = jspb.Message.getRepeatedField(msg, 13)) == null ? undefined : f,
+disableTradeBelowVersion: jspb.Message.getFieldWithDefault(msg, 14, ""),
+mediatorsList: (f = jspb.Message.getRepeatedField(msg, 15)) == null ? undefined : f,
+refundagentsList: (f = jspb.Message.getRepeatedField(msg, 16)) == null ? undefined : f,
+bannedsignerpubkeysList: (f = jspb.Message.getRepeatedField(msg, 17)) == null ? undefined : f,
+xmrFeeReceiverAddressesList: (f = jspb.Message.getRepeatedField(msg, 18)) == null ? undefined : f,
+creationDate: jspb.Message.getFieldWithDefault(msg, 19, 0),
+signerPubKeyAsHex: jspb.Message.getFieldWithDefault(msg, 20, ""),
+bannedprivilegeddevpubkeysList: (f = jspb.Message.getRepeatedField(msg, 21)) == null ? undefined : f,
+disableAutoConf: jspb.Message.getBooleanFieldWithDefault(msg, 22, false),
+bannedAutoConfExplorersList: (f = jspb.Message.getRepeatedField(msg, 23)) == null ? undefined : f,
+nodeAddressesBannedFromNetworkList: (f = jspb.Message.getRepeatedField(msg, 24)) == null ? undefined : f,
+disableApi: jspb.Message.getBooleanFieldWithDefault(msg, 25, false),
+disableMempoolValidation: jspb.Message.getBooleanFieldWithDefault(msg, 26, false)
   };
 
   if (includeInstance) {
@@ -24062,7 +24075,8 @@ proto.io.haveno.protobuffer.Filter.prototype.getExtraDataMap = function(opt_noLa
  */
 proto.io.haveno.protobuffer.Filter.prototype.clearExtraDataMap = function() {
   this.getExtraDataMap().clear();
-  return this;};
+  return this;
+};
 
 
 /**
@@ -24704,16 +24718,16 @@ proto.io.haveno.protobuffer.TradeStatistics3.prototype.toObject = function(opt_i
  */
 proto.io.haveno.protobuffer.TradeStatistics3.toObject = function(includeInstance, msg) {
   var f, obj = {
-    currency: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    price: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    amount: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    paymentMethod: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    date: jspb.Message.getFieldWithDefault(msg, 5, 0),
-    arbitrator: jspb.Message.getFieldWithDefault(msg, 6, ""),
-    hash: msg.getHash_asB64(),
-    makerDepositTxId: jspb.Message.getFieldWithDefault(msg, 8, ""),
-    takerDepositTxId: jspb.Message.getFieldWithDefault(msg, 9, ""),
-    extraDataMap: (f = msg.getExtraDataMap()) ? f.toObject(includeInstance, undefined) : []
+currency: jspb.Message.getFieldWithDefault(msg, 1, ""),
+price: jspb.Message.getFieldWithDefault(msg, 2, 0),
+amount: jspb.Message.getFieldWithDefault(msg, 3, 0),
+paymentMethod: jspb.Message.getFieldWithDefault(msg, 4, ""),
+date: jspb.Message.getFieldWithDefault(msg, 5, 0),
+arbitrator: jspb.Message.getFieldWithDefault(msg, 6, ""),
+hash: msg.getHash_asB64(),
+makerDepositTxId: jspb.Message.getFieldWithDefault(msg, 8, ""),
+takerDepositTxId: jspb.Message.getFieldWithDefault(msg, 9, ""),
+extraDataMap: (f = msg.getExtraDataMap()) ? f.toObject(includeInstance, undefined) : []
   };
 
   if (includeInstance) {
@@ -25096,7 +25110,8 @@ proto.io.haveno.protobuffer.TradeStatistics3.prototype.getExtraDataMap = functio
  */
 proto.io.haveno.protobuffer.TradeStatistics3.prototype.clearExtraDataMap = function() {
   this.getExtraDataMap().clear();
-  return this;};
+  return this;
+};
 
 
 
@@ -25131,10 +25146,10 @@ proto.io.haveno.protobuffer.MailboxStoragePayload.prototype.toObject = function(
  */
 proto.io.haveno.protobuffer.MailboxStoragePayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    prefixedSealedAndSignedMessage: (f = msg.getPrefixedSealedAndSignedMessage()) && proto.io.haveno.protobuffer.PrefixedSealedAndSignedMessage.toObject(includeInstance, f),
-    senderPubKeyForAddOperationBytes: msg.getSenderPubKeyForAddOperationBytes_asB64(),
-    ownerPubKeyBytes: msg.getOwnerPubKeyBytes_asB64(),
-    extraDataMap: (f = msg.getExtraDataMap()) ? f.toObject(includeInstance, undefined) : []
+prefixedSealedAndSignedMessage: (f = msg.getPrefixedSealedAndSignedMessage()) && proto.io.haveno.protobuffer.PrefixedSealedAndSignedMessage.toObject(includeInstance, f),
+senderPubKeyForAddOperationBytes: msg.getSenderPubKeyForAddOperationBytes_asB64(),
+ownerPubKeyBytes: msg.getOwnerPubKeyBytes_asB64(),
+extraDataMap: (f = msg.getExtraDataMap()) ? f.toObject(includeInstance, undefined) : []
   };
 
   if (includeInstance) {
@@ -25388,7 +25403,8 @@ proto.io.haveno.protobuffer.MailboxStoragePayload.prototype.getExtraDataMap = fu
  */
 proto.io.haveno.protobuffer.MailboxStoragePayload.prototype.clearExtraDataMap = function() {
   this.getExtraDataMap().clear();
-  return this;};
+  return this;
+};
 
 
 
@@ -25430,44 +25446,44 @@ proto.io.haveno.protobuffer.OfferPayload.prototype.toObject = function(opt_inclu
  */
 proto.io.haveno.protobuffer.OfferPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    id: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    date: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    ownerNodeAddress: (f = msg.getOwnerNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
-    pubKeyRing: (f = msg.getPubKeyRing()) && proto.io.haveno.protobuffer.PubKeyRing.toObject(includeInstance, f),
-    direction: jspb.Message.getFieldWithDefault(msg, 5, 0),
-    price: jspb.Message.getFieldWithDefault(msg, 6, 0),
-    marketPriceMarginPct: jspb.Message.getFloatingPointFieldWithDefault(msg, 7, 0.0),
-    useMarketBasedPrice: jspb.Message.getBooleanFieldWithDefault(msg, 8, false),
-    amount: jspb.Message.getFieldWithDefault(msg, 9, 0),
-    minAmount: jspb.Message.getFieldWithDefault(msg, 10, 0),
-    makerFeePct: jspb.Message.getFloatingPointFieldWithDefault(msg, 11, 0.0),
-    takerFeePct: jspb.Message.getFloatingPointFieldWithDefault(msg, 12, 0.0),
-    penaltyFeePct: jspb.Message.getFloatingPointFieldWithDefault(msg, 13, 0.0),
-    buyerSecurityDepositPct: jspb.Message.getFloatingPointFieldWithDefault(msg, 14, 0.0),
-    sellerSecurityDepositPct: jspb.Message.getFloatingPointFieldWithDefault(msg, 15, 0.0),
-    baseCurrencyCode: jspb.Message.getFieldWithDefault(msg, 16, ""),
-    counterCurrencyCode: jspb.Message.getFieldWithDefault(msg, 17, ""),
-    paymentMethodId: jspb.Message.getFieldWithDefault(msg, 18, ""),
-    makerPaymentAccountId: jspb.Message.getFieldWithDefault(msg, 19, ""),
-    countryCode: jspb.Message.getFieldWithDefault(msg, 20, ""),
-    acceptedCountryCodesList: (f = jspb.Message.getRepeatedField(msg, 21)) == null ? undefined : f,
-    bankId: jspb.Message.getFieldWithDefault(msg, 22, ""),
-    acceptedBankIdsList: (f = jspb.Message.getRepeatedField(msg, 23)) == null ? undefined : f,
-    versionNr: jspb.Message.getFieldWithDefault(msg, 24, ""),
-    blockHeightAtOfferCreation: jspb.Message.getFieldWithDefault(msg, 25, 0),
-    maxTradeLimit: jspb.Message.getFieldWithDefault(msg, 26, 0),
-    maxTradePeriod: jspb.Message.getFieldWithDefault(msg, 27, 0),
-    useAutoClose: jspb.Message.getBooleanFieldWithDefault(msg, 28, false),
-    useReOpenAfterAutoClose: jspb.Message.getBooleanFieldWithDefault(msg, 29, false),
-    lowerClosePrice: jspb.Message.getFieldWithDefault(msg, 30, 0),
-    upperClosePrice: jspb.Message.getFieldWithDefault(msg, 31, 0),
-    isPrivateOffer: jspb.Message.getBooleanFieldWithDefault(msg, 32, false),
-    challengeHash: jspb.Message.getFieldWithDefault(msg, 33, ""),
-    extraDataMap: (f = msg.getExtraDataMap()) ? f.toObject(includeInstance, undefined) : [],
-    protocolVersion: jspb.Message.getFieldWithDefault(msg, 35, 0),
-    arbitratorSigner: (f = msg.getArbitratorSigner()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
-    arbitratorSignature: msg.getArbitratorSignature_asB64(),
-    reserveTxKeyImagesList: (f = jspb.Message.getRepeatedField(msg, 38)) == null ? undefined : f
+id: jspb.Message.getFieldWithDefault(msg, 1, ""),
+date: jspb.Message.getFieldWithDefault(msg, 2, 0),
+ownerNodeAddress: (f = msg.getOwnerNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
+pubKeyRing: (f = msg.getPubKeyRing()) && proto.io.haveno.protobuffer.PubKeyRing.toObject(includeInstance, f),
+direction: jspb.Message.getFieldWithDefault(msg, 5, 0),
+price: jspb.Message.getFieldWithDefault(msg, 6, 0),
+marketPriceMarginPct: jspb.Message.getFloatingPointFieldWithDefault(msg, 7, 0.0),
+useMarketBasedPrice: jspb.Message.getBooleanFieldWithDefault(msg, 8, false),
+amount: jspb.Message.getFieldWithDefault(msg, 9, 0),
+minAmount: jspb.Message.getFieldWithDefault(msg, 10, 0),
+makerFeePct: jspb.Message.getFloatingPointFieldWithDefault(msg, 11, 0.0),
+takerFeePct: jspb.Message.getFloatingPointFieldWithDefault(msg, 12, 0.0),
+penaltyFeePct: jspb.Message.getFloatingPointFieldWithDefault(msg, 13, 0.0),
+buyerSecurityDepositPct: jspb.Message.getFloatingPointFieldWithDefault(msg, 14, 0.0),
+sellerSecurityDepositPct: jspb.Message.getFloatingPointFieldWithDefault(msg, 15, 0.0),
+baseCurrencyCode: jspb.Message.getFieldWithDefault(msg, 16, ""),
+counterCurrencyCode: jspb.Message.getFieldWithDefault(msg, 17, ""),
+paymentMethodId: jspb.Message.getFieldWithDefault(msg, 18, ""),
+makerPaymentAccountId: jspb.Message.getFieldWithDefault(msg, 19, ""),
+countryCode: jspb.Message.getFieldWithDefault(msg, 20, ""),
+acceptedCountryCodesList: (f = jspb.Message.getRepeatedField(msg, 21)) == null ? undefined : f,
+bankId: jspb.Message.getFieldWithDefault(msg, 22, ""),
+acceptedBankIdsList: (f = jspb.Message.getRepeatedField(msg, 23)) == null ? undefined : f,
+versionNr: jspb.Message.getFieldWithDefault(msg, 24, ""),
+blockHeightAtOfferCreation: jspb.Message.getFieldWithDefault(msg, 25, 0),
+maxTradeLimit: jspb.Message.getFieldWithDefault(msg, 26, 0),
+maxTradePeriod: jspb.Message.getFieldWithDefault(msg, 27, 0),
+useAutoClose: jspb.Message.getBooleanFieldWithDefault(msg, 28, false),
+useReOpenAfterAutoClose: jspb.Message.getBooleanFieldWithDefault(msg, 29, false),
+lowerClosePrice: jspb.Message.getFieldWithDefault(msg, 30, 0),
+upperClosePrice: jspb.Message.getFieldWithDefault(msg, 31, 0),
+isPrivateOffer: jspb.Message.getBooleanFieldWithDefault(msg, 32, false),
+challengeHash: jspb.Message.getFieldWithDefault(msg, 33, ""),
+extraDataMap: (f = msg.getExtraDataMap()) ? f.toObject(includeInstance, undefined) : [],
+protocolVersion: jspb.Message.getFieldWithDefault(msg, 35, 0),
+arbitratorSigner: (f = msg.getArbitratorSigner()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
+arbitratorSignature: msg.getArbitratorSignature_asB64(),
+reserveTxKeyImagesList: (f = jspb.Message.getRepeatedField(msg, 38)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -26648,7 +26664,8 @@ proto.io.haveno.protobuffer.OfferPayload.prototype.getExtraDataMap = function(op
  */
 proto.io.haveno.protobuffer.OfferPayload.prototype.clearExtraDataMap = function() {
   this.getExtraDataMap().clear();
-  return this;};
+  return this;
+};
 
 
 /**
@@ -26817,8 +26834,8 @@ proto.io.haveno.protobuffer.AccountAgeWitness.prototype.toObject = function(opt_
  */
 proto.io.haveno.protobuffer.AccountAgeWitness.toObject = function(includeInstance, msg) {
   var f, obj = {
-    hash: msg.getHash_asB64(),
-    date: jspb.Message.getFieldWithDefault(msg, 2, 0)
+hash: msg.getHash_asB64(),
+date: jspb.Message.getFieldWithDefault(msg, 2, 0)
   };
 
   if (includeInstance) {
@@ -27001,13 +27018,13 @@ proto.io.haveno.protobuffer.SignedWitness.prototype.toObject = function(opt_incl
  */
 proto.io.haveno.protobuffer.SignedWitness.toObject = function(includeInstance, msg) {
   var f, obj = {
-    verificationMethod: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    accountAgeWitnessHash: msg.getAccountAgeWitnessHash_asB64(),
-    signature: msg.getSignature_asB64(),
-    signerPubKey: msg.getSignerPubKey_asB64(),
-    witnessOwnerPubKey: msg.getWitnessOwnerPubKey_asB64(),
-    date: jspb.Message.getFieldWithDefault(msg, 6, 0),
-    tradeAmount: jspb.Message.getFieldWithDefault(msg, 7, 0)
+verificationMethod: jspb.Message.getFieldWithDefault(msg, 1, 0),
+accountAgeWitnessHash: msg.getAccountAgeWitnessHash_asB64(),
+signature: msg.getSignature_asB64(),
+signerPubKey: msg.getSignerPubKey_asB64(),
+witnessOwnerPubKey: msg.getWitnessOwnerPubKey_asB64(),
+date: jspb.Message.getFieldWithDefault(msg, 6, 0),
+tradeAmount: jspb.Message.getFieldWithDefault(msg, 7, 0)
   };
 
   if (includeInstance) {
@@ -27423,38 +27440,38 @@ proto.io.haveno.protobuffer.Dispute.prototype.toObject = function(opt_includeIns
  */
 proto.io.haveno.protobuffer.Dispute.toObject = function(includeInstance, msg) {
   var f, obj = {
-    tradeId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    id: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    traderId: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    isOpener: jspb.Message.getBooleanFieldWithDefault(msg, 4, false),
-    disputeOpenerIsBuyer: jspb.Message.getBooleanFieldWithDefault(msg, 5, false),
-    disputeOpenerIsMaker: jspb.Message.getBooleanFieldWithDefault(msg, 6, false),
-    openingDate: jspb.Message.getFieldWithDefault(msg, 7, 0),
-    traderPubKeyRing: (f = msg.getTraderPubKeyRing()) && proto.io.haveno.protobuffer.PubKeyRing.toObject(includeInstance, f),
-    tradeDate: jspb.Message.getFieldWithDefault(msg, 9, 0),
-    contract: (f = msg.getContract()) && proto.io.haveno.protobuffer.Contract.toObject(includeInstance, f),
-    contractHash: msg.getContractHash_asB64(),
-    payoutTxSerialized: msg.getPayoutTxSerialized_asB64(),
-    payoutTxId: jspb.Message.getFieldWithDefault(msg, 13, ""),
-    contractAsJson: jspb.Message.getFieldWithDefault(msg, 14, ""),
-    makerContractSignature: msg.getMakerContractSignature_asB64(),
-    takerContractSignature: msg.getTakerContractSignature_asB64(),
-    makerPaymentAccountPayload: (f = msg.getMakerPaymentAccountPayload()) && proto.io.haveno.protobuffer.PaymentAccountPayload.toObject(includeInstance, f),
-    takerPaymentAccountPayload: (f = msg.getTakerPaymentAccountPayload()) && proto.io.haveno.protobuffer.PaymentAccountPayload.toObject(includeInstance, f),
-    agentPubKeyRing: (f = msg.getAgentPubKeyRing()) && proto.io.haveno.protobuffer.PubKeyRing.toObject(includeInstance, f),
-    isSupportTicket: jspb.Message.getBooleanFieldWithDefault(msg, 20, false),
-    chatMessageList: jspb.Message.toObjectList(msg.getChatMessageList(),
+tradeId: jspb.Message.getFieldWithDefault(msg, 1, ""),
+id: jspb.Message.getFieldWithDefault(msg, 2, ""),
+traderId: jspb.Message.getFieldWithDefault(msg, 3, 0),
+isOpener: jspb.Message.getBooleanFieldWithDefault(msg, 4, false),
+disputeOpenerIsBuyer: jspb.Message.getBooleanFieldWithDefault(msg, 5, false),
+disputeOpenerIsMaker: jspb.Message.getBooleanFieldWithDefault(msg, 6, false),
+openingDate: jspb.Message.getFieldWithDefault(msg, 7, 0),
+traderPubKeyRing: (f = msg.getTraderPubKeyRing()) && proto.io.haveno.protobuffer.PubKeyRing.toObject(includeInstance, f),
+tradeDate: jspb.Message.getFieldWithDefault(msg, 9, 0),
+contract: (f = msg.getContract()) && proto.io.haveno.protobuffer.Contract.toObject(includeInstance, f),
+contractHash: msg.getContractHash_asB64(),
+payoutTxSerialized: msg.getPayoutTxSerialized_asB64(),
+payoutTxId: jspb.Message.getFieldWithDefault(msg, 13, ""),
+contractAsJson: jspb.Message.getFieldWithDefault(msg, 14, ""),
+makerContractSignature: msg.getMakerContractSignature_asB64(),
+takerContractSignature: msg.getTakerContractSignature_asB64(),
+makerPaymentAccountPayload: (f = msg.getMakerPaymentAccountPayload()) && proto.io.haveno.protobuffer.PaymentAccountPayload.toObject(includeInstance, f),
+takerPaymentAccountPayload: (f = msg.getTakerPaymentAccountPayload()) && proto.io.haveno.protobuffer.PaymentAccountPayload.toObject(includeInstance, f),
+agentPubKeyRing: (f = msg.getAgentPubKeyRing()) && proto.io.haveno.protobuffer.PubKeyRing.toObject(includeInstance, f),
+isSupportTicket: jspb.Message.getBooleanFieldWithDefault(msg, 20, false),
+chatMessageList: jspb.Message.toObjectList(msg.getChatMessageList(),
     proto.io.haveno.protobuffer.ChatMessage.toObject, includeInstance),
-    isClosed: jspb.Message.getBooleanFieldWithDefault(msg, 22, false),
-    disputeResult: (f = msg.getDisputeResult()) && proto.io.haveno.protobuffer.DisputeResult.toObject(includeInstance, f),
-    disputePayoutTxId: jspb.Message.getFieldWithDefault(msg, 24, ""),
-    supportType: jspb.Message.getFieldWithDefault(msg, 25, 0),
-    mediatorsDisputeResult: jspb.Message.getFieldWithDefault(msg, 26, ""),
-    delayedPayoutTxId: jspb.Message.getFieldWithDefault(msg, 27, ""),
-    donationAddressOfDelayedPayoutTx: jspb.Message.getFieldWithDefault(msg, 28, ""),
-    state: jspb.Message.getFieldWithDefault(msg, 29, 0),
-    tradePeriodEnd: jspb.Message.getFieldWithDefault(msg, 30, 0),
-    extraDataMap: (f = msg.getExtraDataMap()) ? f.toObject(includeInstance, undefined) : []
+isClosed: jspb.Message.getBooleanFieldWithDefault(msg, 22, false),
+disputeResult: (f = msg.getDisputeResult()) && proto.io.haveno.protobuffer.DisputeResult.toObject(includeInstance, f),
+disputePayoutTxId: jspb.Message.getFieldWithDefault(msg, 24, ""),
+supportType: jspb.Message.getFieldWithDefault(msg, 25, 0),
+mediatorsDisputeResult: jspb.Message.getFieldWithDefault(msg, 26, ""),
+delayedPayoutTxId: jspb.Message.getFieldWithDefault(msg, 27, ""),
+donationAddressOfDelayedPayoutTx: jspb.Message.getFieldWithDefault(msg, 28, ""),
+state: jspb.Message.getFieldWithDefault(msg, 29, 0),
+tradePeriodEnd: jspb.Message.getFieldWithDefault(msg, 30, 0),
+extraDataMap: (f = msg.getExtraDataMap()) ? f.toObject(includeInstance, undefined) : []
   };
 
   if (includeInstance) {
@@ -28677,7 +28694,8 @@ proto.io.haveno.protobuffer.Dispute.prototype.getExtraDataMap = function(opt_noL
  */
 proto.io.haveno.protobuffer.Dispute.prototype.clearExtraDataMap = function() {
   this.getExtraDataMap().clear();
-  return this;};
+  return this;
+};
 
 
 
@@ -28712,8 +28730,8 @@ proto.io.haveno.protobuffer.Attachment.prototype.toObject = function(opt_include
  */
 proto.io.haveno.protobuffer.Attachment.toObject = function(includeInstance, msg) {
   var f, obj = {
-    fileName: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    bytes: msg.getBytes_asB64()
+fileName: jspb.Message.getFieldWithDefault(msg, 1, ""),
+bytes: msg.getBytes_asB64()
   };
 
   if (includeInstance) {
@@ -28896,22 +28914,22 @@ proto.io.haveno.protobuffer.DisputeResult.prototype.toObject = function(opt_incl
  */
 proto.io.haveno.protobuffer.DisputeResult.toObject = function(includeInstance, msg) {
   var f, obj = {
-    tradeId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    traderId: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    winner: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    reasonOrdinal: jspb.Message.getFieldWithDefault(msg, 4, 0),
-    tamperProofEvidence: jspb.Message.getBooleanFieldWithDefault(msg, 5, false),
-    idVerification: jspb.Message.getBooleanFieldWithDefault(msg, 6, false),
-    screenCast: jspb.Message.getBooleanFieldWithDefault(msg, 7, false),
-    summaryNotes: jspb.Message.getFieldWithDefault(msg, 8, ""),
-    chatMessage: (f = msg.getChatMessage()) && proto.io.haveno.protobuffer.ChatMessage.toObject(includeInstance, f),
-    arbitratorSignature: msg.getArbitratorSignature_asB64(),
-    buyerPayoutAmountBeforeCost: jspb.Message.getFieldWithDefault(msg, 11, 0),
-    sellerPayoutAmountBeforeCost: jspb.Message.getFieldWithDefault(msg, 12, 0),
-    subtractFeeFrom: jspb.Message.getFieldWithDefault(msg, 13, 0),
-    arbitratorPubKey: msg.getArbitratorPubKey_asB64(),
-    closeDate: jspb.Message.getFieldWithDefault(msg, 15, 0),
-    isLoserPublisher: jspb.Message.getBooleanFieldWithDefault(msg, 16, false)
+tradeId: jspb.Message.getFieldWithDefault(msg, 1, ""),
+traderId: jspb.Message.getFieldWithDefault(msg, 2, 0),
+winner: jspb.Message.getFieldWithDefault(msg, 3, 0),
+reasonOrdinal: jspb.Message.getFieldWithDefault(msg, 4, 0),
+tamperProofEvidence: jspb.Message.getBooleanFieldWithDefault(msg, 5, false),
+idVerification: jspb.Message.getBooleanFieldWithDefault(msg, 6, false),
+screenCast: jspb.Message.getBooleanFieldWithDefault(msg, 7, false),
+summaryNotes: jspb.Message.getFieldWithDefault(msg, 8, ""),
+chatMessage: (f = msg.getChatMessage()) && proto.io.haveno.protobuffer.ChatMessage.toObject(includeInstance, f),
+arbitratorSignature: msg.getArbitratorSignature_asB64(),
+buyerPayoutAmountBeforeCost: jspb.Message.getFieldWithDefault(msg, 11, 0),
+sellerPayoutAmountBeforeCost: jspb.Message.getFieldWithDefault(msg, 12, 0),
+subtractFeeFrom: jspb.Message.getFieldWithDefault(msg, 13, 0),
+arbitratorPubKey: msg.getArbitratorPubKey_asB64(),
+closeDate: jspb.Message.getFieldWithDefault(msg, 15, 0),
+isLoserPublisher: jspb.Message.getBooleanFieldWithDefault(msg, 16, false)
   };
 
   if (includeInstance) {
@@ -29582,25 +29600,25 @@ proto.io.haveno.protobuffer.Contract.prototype.toObject = function(opt_includeIn
  */
 proto.io.haveno.protobuffer.Contract.toObject = function(includeInstance, msg) {
   var f, obj = {
-    offerPayload: (f = msg.getOfferPayload()) && proto.io.haveno.protobuffer.OfferPayload.toObject(includeInstance, f),
-    tradeAmount: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    tradePrice: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    arbitratorNodeAddress: (f = msg.getArbitratorNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
-    isBuyerMakerAndSellerTaker: jspb.Message.getBooleanFieldWithDefault(msg, 5, false),
-    makerAccountId: jspb.Message.getFieldWithDefault(msg, 6, ""),
-    takerAccountId: jspb.Message.getFieldWithDefault(msg, 7, ""),
-    makerPaymentMethodId: jspb.Message.getFieldWithDefault(msg, 8, ""),
-    takerPaymentMethodId: jspb.Message.getFieldWithDefault(msg, 9, ""),
-    makerPaymentAccountPayloadHash: msg.getMakerPaymentAccountPayloadHash_asB64(),
-    takerPaymentAccountPayloadHash: msg.getTakerPaymentAccountPayloadHash_asB64(),
-    makerPubKeyRing: (f = msg.getMakerPubKeyRing()) && proto.io.haveno.protobuffer.PubKeyRing.toObject(includeInstance, f),
-    takerPubKeyRing: (f = msg.getTakerPubKeyRing()) && proto.io.haveno.protobuffer.PubKeyRing.toObject(includeInstance, f),
-    buyerNodeAddress: (f = msg.getBuyerNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
-    sellerNodeAddress: (f = msg.getSellerNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
-    makerPayoutAddressString: jspb.Message.getFieldWithDefault(msg, 16, ""),
-    takerPayoutAddressString: jspb.Message.getFieldWithDefault(msg, 17, ""),
-    makerDepositTxHash: jspb.Message.getFieldWithDefault(msg, 18, ""),
-    takerDepositTxHash: jspb.Message.getFieldWithDefault(msg, 19, "")
+offerPayload: (f = msg.getOfferPayload()) && proto.io.haveno.protobuffer.OfferPayload.toObject(includeInstance, f),
+tradeAmount: jspb.Message.getFieldWithDefault(msg, 2, 0),
+tradePrice: jspb.Message.getFieldWithDefault(msg, 3, 0),
+arbitratorNodeAddress: (f = msg.getArbitratorNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
+isBuyerMakerAndSellerTaker: jspb.Message.getBooleanFieldWithDefault(msg, 5, false),
+makerAccountId: jspb.Message.getFieldWithDefault(msg, 6, ""),
+takerAccountId: jspb.Message.getFieldWithDefault(msg, 7, ""),
+makerPaymentMethodId: jspb.Message.getFieldWithDefault(msg, 8, ""),
+takerPaymentMethodId: jspb.Message.getFieldWithDefault(msg, 9, ""),
+makerPaymentAccountPayloadHash: msg.getMakerPaymentAccountPayloadHash_asB64(),
+takerPaymentAccountPayloadHash: msg.getTakerPaymentAccountPayloadHash_asB64(),
+makerPubKeyRing: (f = msg.getMakerPubKeyRing()) && proto.io.haveno.protobuffer.PubKeyRing.toObject(includeInstance, f),
+takerPubKeyRing: (f = msg.getTakerPubKeyRing()) && proto.io.haveno.protobuffer.PubKeyRing.toObject(includeInstance, f),
+buyerNodeAddress: (f = msg.getBuyerNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
+sellerNodeAddress: (f = msg.getSellerNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
+makerPayoutAddressString: jspb.Message.getFieldWithDefault(msg, 16, ""),
+takerPayoutAddressString: jspb.Message.getFieldWithDefault(msg, 17, ""),
+makerDepositTxHash: jspb.Message.getFieldWithDefault(msg, 18, ""),
+takerDepositTxHash: jspb.Message.getFieldWithDefault(msg, 19, "")
   };
 
   if (includeInstance) {
@@ -30426,9 +30444,9 @@ proto.io.haveno.protobuffer.RawTransactionInput.prototype.toObject = function(op
  */
 proto.io.haveno.protobuffer.RawTransactionInput.toObject = function(includeInstance, msg) {
   var f, obj = {
-    index: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    parentTransaction: msg.getParentTransaction_asB64(),
-    value: jspb.Message.getFieldWithDefault(msg, 3, 0)
+index: jspb.Message.getFieldWithDefault(msg, 1, 0),
+parentTransaction: msg.getParentTransaction_asB64(),
+value: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -30701,47 +30719,47 @@ proto.io.haveno.protobuffer.PaymentAccountPayload.prototype.toObject = function(
  */
 proto.io.haveno.protobuffer.PaymentAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    id: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    paymentMethodId: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    maxTradePeriod: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    excludeFromJsonDataMap: (f = msg.getExcludeFromJsonDataMap()) ? f.toObject(includeInstance, undefined) : [],
-    aliPayAccountPayload: (f = msg.getAliPayAccountPayload()) && proto.io.haveno.protobuffer.AliPayAccountPayload.toObject(includeInstance, f),
-    chaseQuickPayAccountPayload: (f = msg.getChaseQuickPayAccountPayload()) && proto.io.haveno.protobuffer.ChaseQuickPayAccountPayload.toObject(includeInstance, f),
-    zelleAccountPayload: (f = msg.getZelleAccountPayload()) && proto.io.haveno.protobuffer.ZelleAccountPayload.toObject(includeInstance, f),
-    countryBasedPaymentAccountPayload: (f = msg.getCountryBasedPaymentAccountPayload()) && proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload.toObject(includeInstance, f),
-    cryptoCurrencyAccountPayload: (f = msg.getCryptoCurrencyAccountPayload()) && proto.io.haveno.protobuffer.CryptoCurrencyAccountPayload.toObject(includeInstance, f),
-    fasterPaymentsAccountPayload: (f = msg.getFasterPaymentsAccountPayload()) && proto.io.haveno.protobuffer.FasterPaymentsAccountPayload.toObject(includeInstance, f),
-    interacETransferAccountPayload: (f = msg.getInteracETransferAccountPayload()) && proto.io.haveno.protobuffer.InteracETransferAccountPayload.toObject(includeInstance, f),
-    oKPayAccountPayload: (f = msg.getOKPayAccountPayload()) && proto.io.haveno.protobuffer.OKPayAccountPayload.toObject(includeInstance, f),
-    perfectMoneyAccountPayload: (f = msg.getPerfectMoneyAccountPayload()) && proto.io.haveno.protobuffer.PerfectMoneyAccountPayload.toObject(includeInstance, f),
-    swishAccountPayload: (f = msg.getSwishAccountPayload()) && proto.io.haveno.protobuffer.SwishAccountPayload.toObject(includeInstance, f),
-    uSPostalMoneyOrderAccountPayload: (f = msg.getUSPostalMoneyOrderAccountPayload()) && proto.io.haveno.protobuffer.USPostalMoneyOrderAccountPayload.toObject(includeInstance, f),
-    upholdAccountPayload: (f = msg.getUpholdAccountPayload()) && proto.io.haveno.protobuffer.UpholdAccountPayload.toObject(includeInstance, f),
-    cashAppAccountPayload: (f = msg.getCashAppAccountPayload()) && proto.io.haveno.protobuffer.CashAppAccountPayload.toObject(includeInstance, f),
-    moneyBeamAccountPayload: (f = msg.getMoneyBeamAccountPayload()) && proto.io.haveno.protobuffer.MoneyBeamAccountPayload.toObject(includeInstance, f),
-    venmoAccountPayload: (f = msg.getVenmoAccountPayload()) && proto.io.haveno.protobuffer.VenmoAccountPayload.toObject(includeInstance, f),
-    popmoneyAccountPayload: (f = msg.getPopmoneyAccountPayload()) && proto.io.haveno.protobuffer.PopmoneyAccountPayload.toObject(includeInstance, f),
-    revolutAccountPayload: (f = msg.getRevolutAccountPayload()) && proto.io.haveno.protobuffer.RevolutAccountPayload.toObject(includeInstance, f),
-    weChatPayAccountPayload: (f = msg.getWeChatPayAccountPayload()) && proto.io.haveno.protobuffer.WeChatPayAccountPayload.toObject(includeInstance, f),
-    moneyGramAccountPayload: (f = msg.getMoneyGramAccountPayload()) && proto.io.haveno.protobuffer.MoneyGramAccountPayload.toObject(includeInstance, f),
-    halCashAccountPayload: (f = msg.getHalCashAccountPayload()) && proto.io.haveno.protobuffer.HalCashAccountPayload.toObject(includeInstance, f),
-    promptPayAccountPayload: (f = msg.getPromptPayAccountPayload()) && proto.io.haveno.protobuffer.PromptPayAccountPayload.toObject(includeInstance, f),
-    advancedCashAccountPayload: (f = msg.getAdvancedCashAccountPayload()) && proto.io.haveno.protobuffer.AdvancedCashAccountPayload.toObject(includeInstance, f),
-    instantCryptoCurrencyAccountPayload: (f = msg.getInstantCryptoCurrencyAccountPayload()) && proto.io.haveno.protobuffer.InstantCryptoCurrencyAccountPayload.toObject(includeInstance, f),
-    japanBankAccountPayload: (f = msg.getJapanBankAccountPayload()) && proto.io.haveno.protobuffer.JapanBankAccountPayload.toObject(includeInstance, f),
-    transferwiseAccountPayload: (f = msg.getTransferwiseAccountPayload()) && proto.io.haveno.protobuffer.TransferwiseAccountPayload.toObject(includeInstance, f),
-    australiaPayidPayload: (f = msg.getAustraliaPayidPayload()) && proto.io.haveno.protobuffer.AustraliaPayidPayload.toObject(includeInstance, f),
-    amazonGiftCardAccountPayload: (f = msg.getAmazonGiftCardAccountPayload()) && proto.io.haveno.protobuffer.AmazonGiftCardAccountPayload.toObject(includeInstance, f),
-    payByMailAccountPayload: (f = msg.getPayByMailAccountPayload()) && proto.io.haveno.protobuffer.PayByMailAccountPayload.toObject(includeInstance, f),
-    capitualAccountPayload: (f = msg.getCapitualAccountPayload()) && proto.io.haveno.protobuffer.CapitualAccountPayload.toObject(includeInstance, f),
-    payseraAccountPayload: (f = msg.getPayseraAccountPayload()) && proto.io.haveno.protobuffer.PayseraAccountPayload.toObject(includeInstance, f),
-    paxumAccountPayload: (f = msg.getPaxumAccountPayload()) && proto.io.haveno.protobuffer.PaxumAccountPayload.toObject(includeInstance, f),
-    swiftAccountPayload: (f = msg.getSwiftAccountPayload()) && proto.io.haveno.protobuffer.SwiftAccountPayload.toObject(includeInstance, f),
-    celPayAccountPayload: (f = msg.getCelPayAccountPayload()) && proto.io.haveno.protobuffer.CelPayAccountPayload.toObject(includeInstance, f),
-    moneseAccountPayload: (f = msg.getMoneseAccountPayload()) && proto.io.haveno.protobuffer.MoneseAccountPayload.toObject(includeInstance, f),
-    verseAccountPayload: (f = msg.getVerseAccountPayload()) && proto.io.haveno.protobuffer.VerseAccountPayload.toObject(includeInstance, f),
-    cashAtAtmAccountPayload: (f = msg.getCashAtAtmAccountPayload()) && proto.io.haveno.protobuffer.CashAtAtmAccountPayload.toObject(includeInstance, f),
-    paypalAccountPayload: (f = msg.getPaypalAccountPayload()) && proto.io.haveno.protobuffer.PayPalAccountPayload.toObject(includeInstance, f)
+id: jspb.Message.getFieldWithDefault(msg, 1, ""),
+paymentMethodId: jspb.Message.getFieldWithDefault(msg, 2, ""),
+maxTradePeriod: jspb.Message.getFieldWithDefault(msg, 3, 0),
+excludeFromJsonDataMap: (f = msg.getExcludeFromJsonDataMap()) ? f.toObject(includeInstance, undefined) : [],
+aliPayAccountPayload: (f = msg.getAliPayAccountPayload()) && proto.io.haveno.protobuffer.AliPayAccountPayload.toObject(includeInstance, f),
+chaseQuickPayAccountPayload: (f = msg.getChaseQuickPayAccountPayload()) && proto.io.haveno.protobuffer.ChaseQuickPayAccountPayload.toObject(includeInstance, f),
+zelleAccountPayload: (f = msg.getZelleAccountPayload()) && proto.io.haveno.protobuffer.ZelleAccountPayload.toObject(includeInstance, f),
+countryBasedPaymentAccountPayload: (f = msg.getCountryBasedPaymentAccountPayload()) && proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload.toObject(includeInstance, f),
+cryptoCurrencyAccountPayload: (f = msg.getCryptoCurrencyAccountPayload()) && proto.io.haveno.protobuffer.CryptoCurrencyAccountPayload.toObject(includeInstance, f),
+fasterPaymentsAccountPayload: (f = msg.getFasterPaymentsAccountPayload()) && proto.io.haveno.protobuffer.FasterPaymentsAccountPayload.toObject(includeInstance, f),
+interacETransferAccountPayload: (f = msg.getInteracETransferAccountPayload()) && proto.io.haveno.protobuffer.InteracETransferAccountPayload.toObject(includeInstance, f),
+oKPayAccountPayload: (f = msg.getOKPayAccountPayload()) && proto.io.haveno.protobuffer.OKPayAccountPayload.toObject(includeInstance, f),
+perfectMoneyAccountPayload: (f = msg.getPerfectMoneyAccountPayload()) && proto.io.haveno.protobuffer.PerfectMoneyAccountPayload.toObject(includeInstance, f),
+swishAccountPayload: (f = msg.getSwishAccountPayload()) && proto.io.haveno.protobuffer.SwishAccountPayload.toObject(includeInstance, f),
+uSPostalMoneyOrderAccountPayload: (f = msg.getUSPostalMoneyOrderAccountPayload()) && proto.io.haveno.protobuffer.USPostalMoneyOrderAccountPayload.toObject(includeInstance, f),
+upholdAccountPayload: (f = msg.getUpholdAccountPayload()) && proto.io.haveno.protobuffer.UpholdAccountPayload.toObject(includeInstance, f),
+cashAppAccountPayload: (f = msg.getCashAppAccountPayload()) && proto.io.haveno.protobuffer.CashAppAccountPayload.toObject(includeInstance, f),
+moneyBeamAccountPayload: (f = msg.getMoneyBeamAccountPayload()) && proto.io.haveno.protobuffer.MoneyBeamAccountPayload.toObject(includeInstance, f),
+venmoAccountPayload: (f = msg.getVenmoAccountPayload()) && proto.io.haveno.protobuffer.VenmoAccountPayload.toObject(includeInstance, f),
+popmoneyAccountPayload: (f = msg.getPopmoneyAccountPayload()) && proto.io.haveno.protobuffer.PopmoneyAccountPayload.toObject(includeInstance, f),
+revolutAccountPayload: (f = msg.getRevolutAccountPayload()) && proto.io.haveno.protobuffer.RevolutAccountPayload.toObject(includeInstance, f),
+weChatPayAccountPayload: (f = msg.getWeChatPayAccountPayload()) && proto.io.haveno.protobuffer.WeChatPayAccountPayload.toObject(includeInstance, f),
+moneyGramAccountPayload: (f = msg.getMoneyGramAccountPayload()) && proto.io.haveno.protobuffer.MoneyGramAccountPayload.toObject(includeInstance, f),
+halCashAccountPayload: (f = msg.getHalCashAccountPayload()) && proto.io.haveno.protobuffer.HalCashAccountPayload.toObject(includeInstance, f),
+promptPayAccountPayload: (f = msg.getPromptPayAccountPayload()) && proto.io.haveno.protobuffer.PromptPayAccountPayload.toObject(includeInstance, f),
+advancedCashAccountPayload: (f = msg.getAdvancedCashAccountPayload()) && proto.io.haveno.protobuffer.AdvancedCashAccountPayload.toObject(includeInstance, f),
+instantCryptoCurrencyAccountPayload: (f = msg.getInstantCryptoCurrencyAccountPayload()) && proto.io.haveno.protobuffer.InstantCryptoCurrencyAccountPayload.toObject(includeInstance, f),
+japanBankAccountPayload: (f = msg.getJapanBankAccountPayload()) && proto.io.haveno.protobuffer.JapanBankAccountPayload.toObject(includeInstance, f),
+transferwiseAccountPayload: (f = msg.getTransferwiseAccountPayload()) && proto.io.haveno.protobuffer.TransferwiseAccountPayload.toObject(includeInstance, f),
+australiaPayidPayload: (f = msg.getAustraliaPayidPayload()) && proto.io.haveno.protobuffer.AustraliaPayidPayload.toObject(includeInstance, f),
+amazonGiftCardAccountPayload: (f = msg.getAmazonGiftCardAccountPayload()) && proto.io.haveno.protobuffer.AmazonGiftCardAccountPayload.toObject(includeInstance, f),
+payByMailAccountPayload: (f = msg.getPayByMailAccountPayload()) && proto.io.haveno.protobuffer.PayByMailAccountPayload.toObject(includeInstance, f),
+capitualAccountPayload: (f = msg.getCapitualAccountPayload()) && proto.io.haveno.protobuffer.CapitualAccountPayload.toObject(includeInstance, f),
+payseraAccountPayload: (f = msg.getPayseraAccountPayload()) && proto.io.haveno.protobuffer.PayseraAccountPayload.toObject(includeInstance, f),
+paxumAccountPayload: (f = msg.getPaxumAccountPayload()) && proto.io.haveno.protobuffer.PaxumAccountPayload.toObject(includeInstance, f),
+swiftAccountPayload: (f = msg.getSwiftAccountPayload()) && proto.io.haveno.protobuffer.SwiftAccountPayload.toObject(includeInstance, f),
+celPayAccountPayload: (f = msg.getCelPayAccountPayload()) && proto.io.haveno.protobuffer.CelPayAccountPayload.toObject(includeInstance, f),
+moneseAccountPayload: (f = msg.getMoneseAccountPayload()) && proto.io.haveno.protobuffer.MoneseAccountPayload.toObject(includeInstance, f),
+verseAccountPayload: (f = msg.getVerseAccountPayload()) && proto.io.haveno.protobuffer.VerseAccountPayload.toObject(includeInstance, f),
+cashAtAtmAccountPayload: (f = msg.getCashAtAtmAccountPayload()) && proto.io.haveno.protobuffer.CashAtAtmAccountPayload.toObject(includeInstance, f),
+paypalAccountPayload: (f = msg.getPaypalAccountPayload()) && proto.io.haveno.protobuffer.PayPalAccountPayload.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -31407,7 +31425,8 @@ proto.io.haveno.protobuffer.PaymentAccountPayload.prototype.getExcludeFromJsonDa
  */
 proto.io.haveno.protobuffer.PaymentAccountPayload.prototype.clearExcludeFromJsonDataMap = function() {
   this.getExcludeFromJsonDataMap().clear();
-  return this;};
+  return this;
+};
 
 
 /**
@@ -32811,7 +32830,7 @@ proto.io.haveno.protobuffer.AliPayAccountPayload.prototype.toObject = function(o
  */
 proto.io.haveno.protobuffer.AliPayAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    accountNr: jspb.Message.getFieldWithDefault(msg, 1, "")
+accountNr: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -32941,7 +32960,7 @@ proto.io.haveno.protobuffer.WeChatPayAccountPayload.prototype.toObject = functio
  */
 proto.io.haveno.protobuffer.WeChatPayAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    accountNr: jspb.Message.getFieldWithDefault(msg, 1, "")
+accountNr: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -33071,8 +33090,8 @@ proto.io.haveno.protobuffer.ChaseQuickPayAccountPayload.prototype.toObject = fun
  */
 proto.io.haveno.protobuffer.ChaseQuickPayAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    email: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    holderName: jspb.Message.getFieldWithDefault(msg, 2, "")
+email: jspb.Message.getFieldWithDefault(msg, 1, ""),
+holderName: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -33231,8 +33250,8 @@ proto.io.haveno.protobuffer.ZelleAccountPayload.prototype.toObject = function(op
  */
 proto.io.haveno.protobuffer.ZelleAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    holderName: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    emailOrMobileNr: jspb.Message.getFieldWithDefault(msg, 2, "")
+holderName: jspb.Message.getFieldWithDefault(msg, 1, ""),
+emailOrMobileNr: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -33439,25 +33458,25 @@ proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload.prototype.toObject
  */
 proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    countryCode: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    acceptedCountryCodesList: (f = jspb.Message.getRepeatedField(msg, 2)) == null ? undefined : f,
-    bankAccountPayload: (f = msg.getBankAccountPayload()) && proto.io.haveno.protobuffer.BankAccountPayload.toObject(includeInstance, f),
-    cashDepositAccountPayload: (f = msg.getCashDepositAccountPayload()) && proto.io.haveno.protobuffer.CashDepositAccountPayload.toObject(includeInstance, f),
-    sepaAccountPayload: (f = msg.getSepaAccountPayload()) && proto.io.haveno.protobuffer.SepaAccountPayload.toObject(includeInstance, f),
-    westernUnionAccountPayload: (f = msg.getWesternUnionAccountPayload()) && proto.io.haveno.protobuffer.WesternUnionAccountPayload.toObject(includeInstance, f),
-    sepaInstantAccountPayload: (f = msg.getSepaInstantAccountPayload()) && proto.io.haveno.protobuffer.SepaInstantAccountPayload.toObject(includeInstance, f),
-    f2fAccountPayload: (f = msg.getF2fAccountPayload()) && proto.io.haveno.protobuffer.F2FAccountPayload.toObject(includeInstance, f),
-    upiAccountPayload: (f = msg.getUpiAccountPayload()) && proto.io.haveno.protobuffer.UpiAccountPayload.toObject(includeInstance, f),
-    paytmAccountPayload: (f = msg.getPaytmAccountPayload()) && proto.io.haveno.protobuffer.PaytmAccountPayload.toObject(includeInstance, f),
-    ifscBasedAccountPayload: (f = msg.getIfscBasedAccountPayload()) && proto.io.haveno.protobuffer.IfscBasedAccountPayload.toObject(includeInstance, f),
-    nequiAccountPayload: (f = msg.getNequiAccountPayload()) && proto.io.haveno.protobuffer.NequiAccountPayload.toObject(includeInstance, f),
-    bizumAccountPayload: (f = msg.getBizumAccountPayload()) && proto.io.haveno.protobuffer.BizumAccountPayload.toObject(includeInstance, f),
-    pixAccountPayload: (f = msg.getPixAccountPayload()) && proto.io.haveno.protobuffer.PixAccountPayload.toObject(includeInstance, f),
-    satispayAccountPayload: (f = msg.getSatispayAccountPayload()) && proto.io.haveno.protobuffer.SatispayAccountPayload.toObject(includeInstance, f),
-    strikeAccountPayload: (f = msg.getStrikeAccountPayload()) && proto.io.haveno.protobuffer.StrikeAccountPayload.toObject(includeInstance, f),
-    tikkieAccountPayload: (f = msg.getTikkieAccountPayload()) && proto.io.haveno.protobuffer.TikkieAccountPayload.toObject(includeInstance, f),
-    transferwiseUsdAccountPayload: (f = msg.getTransferwiseUsdAccountPayload()) && proto.io.haveno.protobuffer.TransferwiseUsdAccountPayload.toObject(includeInstance, f),
-    swiftAccountPayload: (f = msg.getSwiftAccountPayload()) && proto.io.haveno.protobuffer.SwiftAccountPayload.toObject(includeInstance, f)
+countryCode: jspb.Message.getFieldWithDefault(msg, 1, ""),
+acceptedCountryCodesList: (f = jspb.Message.getRepeatedField(msg, 2)) == null ? undefined : f,
+bankAccountPayload: (f = msg.getBankAccountPayload()) && proto.io.haveno.protobuffer.BankAccountPayload.toObject(includeInstance, f),
+cashDepositAccountPayload: (f = msg.getCashDepositAccountPayload()) && proto.io.haveno.protobuffer.CashDepositAccountPayload.toObject(includeInstance, f),
+sepaAccountPayload: (f = msg.getSepaAccountPayload()) && proto.io.haveno.protobuffer.SepaAccountPayload.toObject(includeInstance, f),
+westernUnionAccountPayload: (f = msg.getWesternUnionAccountPayload()) && proto.io.haveno.protobuffer.WesternUnionAccountPayload.toObject(includeInstance, f),
+sepaInstantAccountPayload: (f = msg.getSepaInstantAccountPayload()) && proto.io.haveno.protobuffer.SepaInstantAccountPayload.toObject(includeInstance, f),
+f2fAccountPayload: (f = msg.getF2fAccountPayload()) && proto.io.haveno.protobuffer.F2FAccountPayload.toObject(includeInstance, f),
+upiAccountPayload: (f = msg.getUpiAccountPayload()) && proto.io.haveno.protobuffer.UpiAccountPayload.toObject(includeInstance, f),
+paytmAccountPayload: (f = msg.getPaytmAccountPayload()) && proto.io.haveno.protobuffer.PaytmAccountPayload.toObject(includeInstance, f),
+ifscBasedAccountPayload: (f = msg.getIfscBasedAccountPayload()) && proto.io.haveno.protobuffer.IfscBasedAccountPayload.toObject(includeInstance, f),
+nequiAccountPayload: (f = msg.getNequiAccountPayload()) && proto.io.haveno.protobuffer.NequiAccountPayload.toObject(includeInstance, f),
+bizumAccountPayload: (f = msg.getBizumAccountPayload()) && proto.io.haveno.protobuffer.BizumAccountPayload.toObject(includeInstance, f),
+pixAccountPayload: (f = msg.getPixAccountPayload()) && proto.io.haveno.protobuffer.PixAccountPayload.toObject(includeInstance, f),
+satispayAccountPayload: (f = msg.getSatispayAccountPayload()) && proto.io.haveno.protobuffer.SatispayAccountPayload.toObject(includeInstance, f),
+strikeAccountPayload: (f = msg.getStrikeAccountPayload()) && proto.io.haveno.protobuffer.StrikeAccountPayload.toObject(includeInstance, f),
+tikkieAccountPayload: (f = msg.getTikkieAccountPayload()) && proto.io.haveno.protobuffer.TikkieAccountPayload.toObject(includeInstance, f),
+transferwiseUsdAccountPayload: (f = msg.getTransferwiseUsdAccountPayload()) && proto.io.haveno.protobuffer.TransferwiseUsdAccountPayload.toObject(includeInstance, f),
+swiftAccountPayload: (f = msg.getSwiftAccountPayload()) && proto.io.haveno.protobuffer.SwiftAccountPayload.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -34514,20 +34533,20 @@ proto.io.haveno.protobuffer.BankAccountPayload.prototype.toObject = function(opt
  */
 proto.io.haveno.protobuffer.BankAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    holderName: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    bankName: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    bankId: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    branchId: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    accountNr: jspb.Message.getFieldWithDefault(msg, 5, ""),
-    accountType: jspb.Message.getFieldWithDefault(msg, 6, ""),
-    holderTaxId: jspb.Message.getFieldWithDefault(msg, 7, ""),
-    email: jspb.Message.getFieldWithDefault(msg, 8, ""),
-    nationalBankAccountPayload: (f = msg.getNationalBankAccountPayload()) && proto.io.haveno.protobuffer.NationalBankAccountPayload.toObject(includeInstance, f),
-    sameBankAccontPayload: (f = msg.getSameBankAccontPayload()) && proto.io.haveno.protobuffer.SameBankAccountPayload.toObject(includeInstance, f),
-    specificBanksAccountPayload: (f = msg.getSpecificBanksAccountPayload()) && proto.io.haveno.protobuffer.SpecificBanksAccountPayload.toObject(includeInstance, f),
-    achTransferAccountPayload: (f = msg.getAchTransferAccountPayload()) && proto.io.haveno.protobuffer.AchTransferAccountPayload.toObject(includeInstance, f),
-    domesticWireTransferAccountPayload: (f = msg.getDomesticWireTransferAccountPayload()) && proto.io.haveno.protobuffer.DomesticWireTransferAccountPayload.toObject(includeInstance, f),
-    nationalAccountId: jspb.Message.getFieldWithDefault(msg, 12, "")
+holderName: jspb.Message.getFieldWithDefault(msg, 1, ""),
+bankName: jspb.Message.getFieldWithDefault(msg, 2, ""),
+bankId: jspb.Message.getFieldWithDefault(msg, 3, ""),
+branchId: jspb.Message.getFieldWithDefault(msg, 4, ""),
+accountNr: jspb.Message.getFieldWithDefault(msg, 5, ""),
+accountType: jspb.Message.getFieldWithDefault(msg, 6, ""),
+holderTaxId: jspb.Message.getFieldWithDefault(msg, 7, ""),
+email: jspb.Message.getFieldWithDefault(msg, 8, ""),
+nationalBankAccountPayload: (f = msg.getNationalBankAccountPayload()) && proto.io.haveno.protobuffer.NationalBankAccountPayload.toObject(includeInstance, f),
+sameBankAccontPayload: (f = msg.getSameBankAccontPayload()) && proto.io.haveno.protobuffer.SameBankAccountPayload.toObject(includeInstance, f),
+specificBanksAccountPayload: (f = msg.getSpecificBanksAccountPayload()) && proto.io.haveno.protobuffer.SpecificBanksAccountPayload.toObject(includeInstance, f),
+achTransferAccountPayload: (f = msg.getAchTransferAccountPayload()) && proto.io.haveno.protobuffer.AchTransferAccountPayload.toObject(includeInstance, f),
+domesticWireTransferAccountPayload: (f = msg.getDomesticWireTransferAccountPayload()) && proto.io.haveno.protobuffer.DomesticWireTransferAccountPayload.toObject(includeInstance, f),
+nationalAccountId: jspb.Message.getFieldWithDefault(msg, 12, "")
   };
 
   if (includeInstance) {
@@ -35139,7 +35158,7 @@ proto.io.haveno.protobuffer.AchTransferAccountPayload.prototype.toObject = funct
  */
 proto.io.haveno.protobuffer.AchTransferAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    holderAddress: jspb.Message.getFieldWithDefault(msg, 1, "")
+holderAddress: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -35269,7 +35288,7 @@ proto.io.haveno.protobuffer.DomesticWireTransferAccountPayload.prototype.toObjec
  */
 proto.io.haveno.protobuffer.DomesticWireTransferAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    holderAddress: jspb.Message.getFieldWithDefault(msg, 1, "")
+holderAddress: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -35601,13 +35620,13 @@ proto.io.haveno.protobuffer.JapanBankAccountPayload.prototype.toObject = functio
  */
 proto.io.haveno.protobuffer.JapanBankAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    bankName: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    bankCode: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    bankBranchName: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    bankBranchCode: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    bankAccountType: jspb.Message.getFieldWithDefault(msg, 5, ""),
-    bankAccountName: jspb.Message.getFieldWithDefault(msg, 6, ""),
-    bankAccountNumber: jspb.Message.getFieldWithDefault(msg, 7, "")
+bankName: jspb.Message.getFieldWithDefault(msg, 1, ""),
+bankCode: jspb.Message.getFieldWithDefault(msg, 2, ""),
+bankBranchName: jspb.Message.getFieldWithDefault(msg, 3, ""),
+bankBranchCode: jspb.Message.getFieldWithDefault(msg, 4, ""),
+bankAccountType: jspb.Message.getFieldWithDefault(msg, 5, ""),
+bankAccountName: jspb.Message.getFieldWithDefault(msg, 6, ""),
+bankAccountNumber: jspb.Message.getFieldWithDefault(msg, 7, "")
   };
 
   if (includeInstance) {
@@ -35911,9 +35930,9 @@ proto.io.haveno.protobuffer.AustraliaPayidPayload.prototype.toObject = function(
  */
 proto.io.haveno.protobuffer.AustraliaPayidPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    bankAccountName: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    payid: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    extraInfo: jspb.Message.getFieldWithDefault(msg, 3, "")
+bankAccountName: jspb.Message.getFieldWithDefault(msg, 1, ""),
+payid: jspb.Message.getFieldWithDefault(msg, 2, ""),
+extraInfo: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
   if (includeInstance) {
@@ -36108,7 +36127,7 @@ proto.io.haveno.protobuffer.SpecificBanksAccountPayload.prototype.toObject = fun
  */
 proto.io.haveno.protobuffer.SpecificBanksAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    acceptedBanksList: (f = jspb.Message.getRepeatedField(msg, 1)) == null ? undefined : f
+acceptedBanksList: (f = jspb.Message.getRepeatedField(msg, 1)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -36257,16 +36276,16 @@ proto.io.haveno.protobuffer.CashDepositAccountPayload.prototype.toObject = funct
  */
 proto.io.haveno.protobuffer.CashDepositAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    holderName: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    holderEmail: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    bankName: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    bankId: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    branchId: jspb.Message.getFieldWithDefault(msg, 5, ""),
-    accountNr: jspb.Message.getFieldWithDefault(msg, 6, ""),
-    accountType: jspb.Message.getFieldWithDefault(msg, 7, ""),
-    requirements: jspb.Message.getFieldWithDefault(msg, 8, ""),
-    holderTaxId: jspb.Message.getFieldWithDefault(msg, 9, ""),
-    nationalAccountId: jspb.Message.getFieldWithDefault(msg, 10, "")
+holderName: jspb.Message.getFieldWithDefault(msg, 1, ""),
+holderEmail: jspb.Message.getFieldWithDefault(msg, 2, ""),
+bankName: jspb.Message.getFieldWithDefault(msg, 3, ""),
+bankId: jspb.Message.getFieldWithDefault(msg, 4, ""),
+branchId: jspb.Message.getFieldWithDefault(msg, 5, ""),
+accountNr: jspb.Message.getFieldWithDefault(msg, 6, ""),
+accountType: jspb.Message.getFieldWithDefault(msg, 7, ""),
+requirements: jspb.Message.getFieldWithDefault(msg, 8, ""),
+holderTaxId: jspb.Message.getFieldWithDefault(msg, 9, ""),
+nationalAccountId: jspb.Message.getFieldWithDefault(msg, 10, "")
   };
 
   if (includeInstance) {
@@ -36657,10 +36676,10 @@ proto.io.haveno.protobuffer.MoneyGramAccountPayload.prototype.toObject = functio
  */
 proto.io.haveno.protobuffer.MoneyGramAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    holderName: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    countryCode: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    state: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    email: jspb.Message.getFieldWithDefault(msg, 4, "")
+holderName: jspb.Message.getFieldWithDefault(msg, 1, ""),
+countryCode: jspb.Message.getFieldWithDefault(msg, 2, ""),
+state: jspb.Message.getFieldWithDefault(msg, 3, ""),
+email: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
 
   if (includeInstance) {
@@ -36877,7 +36896,7 @@ proto.io.haveno.protobuffer.HalCashAccountPayload.prototype.toObject = function(
  */
 proto.io.haveno.protobuffer.HalCashAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    mobileNr: jspb.Message.getFieldWithDefault(msg, 1, "")
+mobileNr: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -37007,10 +37026,10 @@ proto.io.haveno.protobuffer.WesternUnionAccountPayload.prototype.toObject = func
  */
 proto.io.haveno.protobuffer.WesternUnionAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    holderName: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    city: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    state: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    email: jspb.Message.getFieldWithDefault(msg, 4, "")
+holderName: jspb.Message.getFieldWithDefault(msg, 1, ""),
+city: jspb.Message.getFieldWithDefault(msg, 2, ""),
+state: jspb.Message.getFieldWithDefault(msg, 3, ""),
+email: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
 
   if (includeInstance) {
@@ -37227,8 +37246,8 @@ proto.io.haveno.protobuffer.AmazonGiftCardAccountPayload.prototype.toObject = fu
  */
 proto.io.haveno.protobuffer.AmazonGiftCardAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    emailOrMobileNr: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    countryCode: jspb.Message.getFieldWithDefault(msg, 2, "")
+emailOrMobileNr: jspb.Message.getFieldWithDefault(msg, 1, ""),
+countryCode: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -37387,10 +37406,10 @@ proto.io.haveno.protobuffer.SepaAccountPayload.prototype.toObject = function(opt
  */
 proto.io.haveno.protobuffer.SepaAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    holderName: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    iban: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    bic: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    email: jspb.Message.getFieldWithDefault(msg, 4, "")
+holderName: jspb.Message.getFieldWithDefault(msg, 1, ""),
+iban: jspb.Message.getFieldWithDefault(msg, 2, ""),
+bic: jspb.Message.getFieldWithDefault(msg, 3, ""),
+email: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
 
   if (includeInstance) {
@@ -37607,9 +37626,9 @@ proto.io.haveno.protobuffer.SepaInstantAccountPayload.prototype.toObject = funct
  */
 proto.io.haveno.protobuffer.SepaInstantAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    holderName: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    iban: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    bic: jspb.Message.getFieldWithDefault(msg, 3, "")
+holderName: jspb.Message.getFieldWithDefault(msg, 1, ""),
+iban: jspb.Message.getFieldWithDefault(msg, 2, ""),
+bic: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
   if (includeInstance) {
@@ -37797,7 +37816,7 @@ proto.io.haveno.protobuffer.CryptoCurrencyAccountPayload.prototype.toObject = fu
  */
 proto.io.haveno.protobuffer.CryptoCurrencyAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    address: jspb.Message.getFieldWithDefault(msg, 1, "")
+address: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -37927,7 +37946,7 @@ proto.io.haveno.protobuffer.InstantCryptoCurrencyAccountPayload.prototype.toObje
  */
 proto.io.haveno.protobuffer.InstantCryptoCurrencyAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    address: jspb.Message.getFieldWithDefault(msg, 1, "")
+address: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -38057,9 +38076,9 @@ proto.io.haveno.protobuffer.FasterPaymentsAccountPayload.prototype.toObject = fu
  */
 proto.io.haveno.protobuffer.FasterPaymentsAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    holderName: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    sortCode: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    accountNr: jspb.Message.getFieldWithDefault(msg, 3, "")
+holderName: jspb.Message.getFieldWithDefault(msg, 1, ""),
+sortCode: jspb.Message.getFieldWithDefault(msg, 2, ""),
+accountNr: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
   if (includeInstance) {
@@ -38247,10 +38266,10 @@ proto.io.haveno.protobuffer.InteracETransferAccountPayload.prototype.toObject = 
  */
 proto.io.haveno.protobuffer.InteracETransferAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    email: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    holderName: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    question: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    answer: jspb.Message.getFieldWithDefault(msg, 4, "")
+email: jspb.Message.getFieldWithDefault(msg, 1, ""),
+holderName: jspb.Message.getFieldWithDefault(msg, 2, ""),
+question: jspb.Message.getFieldWithDefault(msg, 3, ""),
+answer: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
 
   if (includeInstance) {
@@ -38467,7 +38486,7 @@ proto.io.haveno.protobuffer.OKPayAccountPayload.prototype.toObject = function(op
  */
 proto.io.haveno.protobuffer.OKPayAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    accountNr: jspb.Message.getFieldWithDefault(msg, 1, "")
+accountNr: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -38597,8 +38616,8 @@ proto.io.haveno.protobuffer.UpholdAccountPayload.prototype.toObject = function(o
  */
 proto.io.haveno.protobuffer.UpholdAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    accountId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    accountOwner: jspb.Message.getFieldWithDefault(msg, 2, "")
+accountId: jspb.Message.getFieldWithDefault(msg, 1, ""),
+accountOwner: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -38757,8 +38776,8 @@ proto.io.haveno.protobuffer.CashAppAccountPayload.prototype.toObject = function(
  */
 proto.io.haveno.protobuffer.CashAppAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    emailOrMobileNrOrCashtag: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    extraInfo: jspb.Message.getFieldWithDefault(msg, 2, "")
+emailOrMobileNrOrCashtag: jspb.Message.getFieldWithDefault(msg, 1, ""),
+extraInfo: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -38917,7 +38936,7 @@ proto.io.haveno.protobuffer.MoneyBeamAccountPayload.prototype.toObject = functio
  */
 proto.io.haveno.protobuffer.MoneyBeamAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    accountId: jspb.Message.getFieldWithDefault(msg, 1, "")
+accountId: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -39047,7 +39066,7 @@ proto.io.haveno.protobuffer.VenmoAccountPayload.prototype.toObject = function(op
  */
 proto.io.haveno.protobuffer.VenmoAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    emailOrMobileNrOrUsername: jspb.Message.getFieldWithDefault(msg, 1, "")
+emailOrMobileNrOrUsername: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -39177,8 +39196,8 @@ proto.io.haveno.protobuffer.PayPalAccountPayload.prototype.toObject = function(o
  */
 proto.io.haveno.protobuffer.PayPalAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    emailOrMobileNrOrUsername: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    extraInfo: jspb.Message.getFieldWithDefault(msg, 2, "")
+emailOrMobileNrOrUsername: jspb.Message.getFieldWithDefault(msg, 1, ""),
+extraInfo: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -39337,8 +39356,8 @@ proto.io.haveno.protobuffer.PopmoneyAccountPayload.prototype.toObject = function
  */
 proto.io.haveno.protobuffer.PopmoneyAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    accountId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    holderName: jspb.Message.getFieldWithDefault(msg, 2, "")
+accountId: jspb.Message.getFieldWithDefault(msg, 1, ""),
+holderName: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -39497,7 +39516,7 @@ proto.io.haveno.protobuffer.RevolutAccountPayload.prototype.toObject = function(
  */
 proto.io.haveno.protobuffer.RevolutAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    username: jspb.Message.getFieldWithDefault(msg, 1, "")
+username: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -39627,7 +39646,7 @@ proto.io.haveno.protobuffer.PerfectMoneyAccountPayload.prototype.toObject = func
  */
 proto.io.haveno.protobuffer.PerfectMoneyAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    accountNr: jspb.Message.getFieldWithDefault(msg, 1, "")
+accountNr: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -39757,8 +39776,8 @@ proto.io.haveno.protobuffer.SwishAccountPayload.prototype.toObject = function(op
  */
 proto.io.haveno.protobuffer.SwishAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    mobileNr: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    holderName: jspb.Message.getFieldWithDefault(msg, 2, "")
+mobileNr: jspb.Message.getFieldWithDefault(msg, 1, ""),
+holderName: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -39917,8 +39936,8 @@ proto.io.haveno.protobuffer.USPostalMoneyOrderAccountPayload.prototype.toObject 
  */
 proto.io.haveno.protobuffer.USPostalMoneyOrderAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    postalAddress: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    holderName: jspb.Message.getFieldWithDefault(msg, 2, "")
+postalAddress: jspb.Message.getFieldWithDefault(msg, 1, ""),
+holderName: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -40077,9 +40096,9 @@ proto.io.haveno.protobuffer.F2FAccountPayload.prototype.toObject = function(opt_
  */
 proto.io.haveno.protobuffer.F2FAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    contact: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    city: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    extraInfo: jspb.Message.getFieldWithDefault(msg, 3, "")
+contact: jspb.Message.getFieldWithDefault(msg, 1, ""),
+city: jspb.Message.getFieldWithDefault(msg, 2, ""),
+extraInfo: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
   if (includeInstance) {
@@ -40294,12 +40313,12 @@ proto.io.haveno.protobuffer.IfscBasedAccountPayload.prototype.toObject = functio
  */
 proto.io.haveno.protobuffer.IfscBasedAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    holderName: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    accountNr: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    ifsc: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    neftAccountPayload: (f = msg.getNeftAccountPayload()) && proto.io.haveno.protobuffer.NeftAccountPayload.toObject(includeInstance, f),
-    rtgsAccountPayload: (f = msg.getRtgsAccountPayload()) && proto.io.haveno.protobuffer.RtgsAccountPayload.toObject(includeInstance, f),
-    impsAccountPayload: (f = msg.getImpsAccountPayload()) && proto.io.haveno.protobuffer.ImpsAccountPayload.toObject(includeInstance, f)
+holderName: jspb.Message.getFieldWithDefault(msg, 1, ""),
+accountNr: jspb.Message.getFieldWithDefault(msg, 2, ""),
+ifsc: jspb.Message.getFieldWithDefault(msg, 3, ""),
+neftAccountPayload: (f = msg.getNeftAccountPayload()) && proto.io.haveno.protobuffer.NeftAccountPayload.toObject(includeInstance, f),
+rtgsAccountPayload: (f = msg.getRtgsAccountPayload()) && proto.io.haveno.protobuffer.RtgsAccountPayload.toObject(includeInstance, f),
+impsAccountPayload: (f = msg.getImpsAccountPayload()) && proto.io.haveno.protobuffer.ImpsAccountPayload.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -40940,7 +40959,7 @@ proto.io.haveno.protobuffer.UpiAccountPayload.prototype.toObject = function(opt_
  */
 proto.io.haveno.protobuffer.UpiAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    virtualPaymentAddress: jspb.Message.getFieldWithDefault(msg, 1, "")
+virtualPaymentAddress: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -41070,7 +41089,7 @@ proto.io.haveno.protobuffer.PaytmAccountPayload.prototype.toObject = function(op
  */
 proto.io.haveno.protobuffer.PaytmAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    emailOrMobileNr: jspb.Message.getFieldWithDefault(msg, 1, "")
+emailOrMobileNr: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -41200,9 +41219,9 @@ proto.io.haveno.protobuffer.PayByMailAccountPayload.prototype.toObject = functio
  */
 proto.io.haveno.protobuffer.PayByMailAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    postalAddress: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    contact: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    extraInfo: jspb.Message.getFieldWithDefault(msg, 3, "")
+postalAddress: jspb.Message.getFieldWithDefault(msg, 1, ""),
+contact: jspb.Message.getFieldWithDefault(msg, 2, ""),
+extraInfo: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
   if (includeInstance) {
@@ -41390,7 +41409,7 @@ proto.io.haveno.protobuffer.CashAtAtmAccountPayload.prototype.toObject = functio
  */
 proto.io.haveno.protobuffer.CashAtAtmAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    extraInfo: jspb.Message.getFieldWithDefault(msg, 1, "")
+extraInfo: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -41520,7 +41539,7 @@ proto.io.haveno.protobuffer.PromptPayAccountPayload.prototype.toObject = functio
  */
 proto.io.haveno.protobuffer.PromptPayAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    promptPayId: jspb.Message.getFieldWithDefault(msg, 1, "")
+promptPayId: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -41650,7 +41669,7 @@ proto.io.haveno.protobuffer.AdvancedCashAccountPayload.prototype.toObject = func
  */
 proto.io.haveno.protobuffer.AdvancedCashAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    accountNr: jspb.Message.getFieldWithDefault(msg, 1, "")
+accountNr: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -41780,7 +41799,7 @@ proto.io.haveno.protobuffer.TransferwiseAccountPayload.prototype.toObject = func
  */
 proto.io.haveno.protobuffer.TransferwiseAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    email: jspb.Message.getFieldWithDefault(msg, 1, "")
+email: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -41910,9 +41929,9 @@ proto.io.haveno.protobuffer.TransferwiseUsdAccountPayload.prototype.toObject = f
  */
 proto.io.haveno.protobuffer.TransferwiseUsdAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    email: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    holderName: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    beneficiaryAddress: jspb.Message.getFieldWithDefault(msg, 3, "")
+email: jspb.Message.getFieldWithDefault(msg, 1, ""),
+holderName: jspb.Message.getFieldWithDefault(msg, 2, ""),
+beneficiaryAddress: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
   if (includeInstance) {
@@ -42100,7 +42119,7 @@ proto.io.haveno.protobuffer.PayseraAccountPayload.prototype.toObject = function(
  */
 proto.io.haveno.protobuffer.PayseraAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    email: jspb.Message.getFieldWithDefault(msg, 1, "")
+email: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -42230,7 +42249,7 @@ proto.io.haveno.protobuffer.PaxumAccountPayload.prototype.toObject = function(op
  */
 proto.io.haveno.protobuffer.PaxumAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    email: jspb.Message.getFieldWithDefault(msg, 1, "")
+email: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -42360,7 +42379,7 @@ proto.io.haveno.protobuffer.CapitualAccountPayload.prototype.toObject = function
  */
 proto.io.haveno.protobuffer.CapitualAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    accountNr: jspb.Message.getFieldWithDefault(msg, 1, "")
+accountNr: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -42490,7 +42509,7 @@ proto.io.haveno.protobuffer.CelPayAccountPayload.prototype.toObject = function(o
  */
 proto.io.haveno.protobuffer.CelPayAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    email: jspb.Message.getFieldWithDefault(msg, 1, "")
+email: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -42620,7 +42639,7 @@ proto.io.haveno.protobuffer.NequiAccountPayload.prototype.toObject = function(op
  */
 proto.io.haveno.protobuffer.NequiAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    mobileNr: jspb.Message.getFieldWithDefault(msg, 1, "")
+mobileNr: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -42750,7 +42769,7 @@ proto.io.haveno.protobuffer.BizumAccountPayload.prototype.toObject = function(op
  */
 proto.io.haveno.protobuffer.BizumAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    mobileNr: jspb.Message.getFieldWithDefault(msg, 1, "")
+mobileNr: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -42880,7 +42899,7 @@ proto.io.haveno.protobuffer.PixAccountPayload.prototype.toObject = function(opt_
  */
 proto.io.haveno.protobuffer.PixAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    pixKey: jspb.Message.getFieldWithDefault(msg, 1, "")
+pixKey: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -43010,8 +43029,8 @@ proto.io.haveno.protobuffer.MoneseAccountPayload.prototype.toObject = function(o
  */
 proto.io.haveno.protobuffer.MoneseAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    mobileNr: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    holderName: jspb.Message.getFieldWithDefault(msg, 2, "")
+mobileNr: jspb.Message.getFieldWithDefault(msg, 1, ""),
+holderName: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -43170,8 +43189,8 @@ proto.io.haveno.protobuffer.SatispayAccountPayload.prototype.toObject = function
  */
 proto.io.haveno.protobuffer.SatispayAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    mobileNr: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    holderName: jspb.Message.getFieldWithDefault(msg, 2, "")
+mobileNr: jspb.Message.getFieldWithDefault(msg, 1, ""),
+holderName: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -43330,7 +43349,7 @@ proto.io.haveno.protobuffer.StrikeAccountPayload.prototype.toObject = function(o
  */
 proto.io.haveno.protobuffer.StrikeAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    holderName: jspb.Message.getFieldWithDefault(msg, 1, "")
+holderName: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -43460,7 +43479,7 @@ proto.io.haveno.protobuffer.TikkieAccountPayload.prototype.toObject = function(o
  */
 proto.io.haveno.protobuffer.TikkieAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    iban: jspb.Message.getFieldWithDefault(msg, 1, "")
+iban: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -43590,7 +43609,7 @@ proto.io.haveno.protobuffer.VerseAccountPayload.prototype.toObject = function(op
  */
 proto.io.haveno.protobuffer.VerseAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    holderName: jspb.Message.getFieldWithDefault(msg, 1, "")
+holderName: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -43720,22 +43739,22 @@ proto.io.haveno.protobuffer.SwiftAccountPayload.prototype.toObject = function(op
  */
 proto.io.haveno.protobuffer.SwiftAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    beneficiaryName: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    beneficiaryAccountNr: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    beneficiaryAddress: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    beneficiaryCity: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    beneficiaryPhone: jspb.Message.getFieldWithDefault(msg, 5, ""),
-    specialInstructions: jspb.Message.getFieldWithDefault(msg, 6, ""),
-    bankSwiftCode: jspb.Message.getFieldWithDefault(msg, 7, ""),
-    bankCountryCode: jspb.Message.getFieldWithDefault(msg, 8, ""),
-    bankName: jspb.Message.getFieldWithDefault(msg, 9, ""),
-    bankBranch: jspb.Message.getFieldWithDefault(msg, 10, ""),
-    bankAddress: jspb.Message.getFieldWithDefault(msg, 11, ""),
-    intermediarySwiftCode: jspb.Message.getFieldWithDefault(msg, 12, ""),
-    intermediaryCountryCode: jspb.Message.getFieldWithDefault(msg, 13, ""),
-    intermediaryName: jspb.Message.getFieldWithDefault(msg, 14, ""),
-    intermediaryBranch: jspb.Message.getFieldWithDefault(msg, 15, ""),
-    intermediaryAddress: jspb.Message.getFieldWithDefault(msg, 16, "")
+beneficiaryName: jspb.Message.getFieldWithDefault(msg, 1, ""),
+beneficiaryAccountNr: jspb.Message.getFieldWithDefault(msg, 2, ""),
+beneficiaryAddress: jspb.Message.getFieldWithDefault(msg, 3, ""),
+beneficiaryCity: jspb.Message.getFieldWithDefault(msg, 4, ""),
+beneficiaryPhone: jspb.Message.getFieldWithDefault(msg, 5, ""),
+specialInstructions: jspb.Message.getFieldWithDefault(msg, 6, ""),
+bankSwiftCode: jspb.Message.getFieldWithDefault(msg, 7, ""),
+bankCountryCode: jspb.Message.getFieldWithDefault(msg, 8, ""),
+bankName: jspb.Message.getFieldWithDefault(msg, 9, ""),
+bankBranch: jspb.Message.getFieldWithDefault(msg, 10, ""),
+bankAddress: jspb.Message.getFieldWithDefault(msg, 11, ""),
+intermediarySwiftCode: jspb.Message.getFieldWithDefault(msg, 12, ""),
+intermediaryCountryCode: jspb.Message.getFieldWithDefault(msg, 13, ""),
+intermediaryName: jspb.Message.getFieldWithDefault(msg, 14, ""),
+intermediaryBranch: jspb.Message.getFieldWithDefault(msg, 15, ""),
+intermediaryAddress: jspb.Message.getFieldWithDefault(msg, 16, "")
   };
 
   if (includeInstance) {
@@ -44344,26 +44363,26 @@ proto.io.haveno.protobuffer.PersistableEnvelope.prototype.toObject = function(op
  */
 proto.io.haveno.protobuffer.PersistableEnvelope.toObject = function(includeInstance, msg) {
   var f, obj = {
-    sequenceNumberMap: (f = msg.getSequenceNumberMap()) && proto.io.haveno.protobuffer.SequenceNumberMap.toObject(includeInstance, f),
-    peerList: (f = msg.getPeerList()) && proto.io.haveno.protobuffer.PeerList.toObject(includeInstance, f),
-    addressEntryList: (f = msg.getAddressEntryList()) && proto.io.haveno.protobuffer.AddressEntryList.toObject(includeInstance, f),
-    navigationPath: (f = msg.getNavigationPath()) && proto.io.haveno.protobuffer.NavigationPath.toObject(includeInstance, f),
-    tradableList: (f = msg.getTradableList()) && proto.io.haveno.protobuffer.TradableList.toObject(includeInstance, f),
-    arbitrationDisputeList: (f = msg.getArbitrationDisputeList()) && proto.io.haveno.protobuffer.ArbitrationDisputeList.toObject(includeInstance, f),
-    preferencesPayload: (f = msg.getPreferencesPayload()) && proto.io.haveno.protobuffer.PreferencesPayload.toObject(includeInstance, f),
-    userPayload: (f = msg.getUserPayload()) && proto.io.haveno.protobuffer.UserPayload.toObject(includeInstance, f),
-    paymentAccountList: (f = msg.getPaymentAccountList()) && proto.io.haveno.protobuffer.PaymentAccountList.toObject(includeInstance, f),
-    accountAgeWitnessStore: (f = msg.getAccountAgeWitnessStore()) && proto.io.haveno.protobuffer.AccountAgeWitnessStore.toObject(includeInstance, f),
-    signedWitnessStore: (f = msg.getSignedWitnessStore()) && proto.io.haveno.protobuffer.SignedWitnessStore.toObject(includeInstance, f),
-    mediationDisputeList: (f = msg.getMediationDisputeList()) && proto.io.haveno.protobuffer.MediationDisputeList.toObject(includeInstance, f),
-    refundDisputeList: (f = msg.getRefundDisputeList()) && proto.io.haveno.protobuffer.RefundDisputeList.toObject(includeInstance, f),
-    tradeStatistics3Store: (f = msg.getTradeStatistics3Store()) && proto.io.haveno.protobuffer.TradeStatistics3Store.toObject(includeInstance, f),
-    mailboxMessageList: (f = msg.getMailboxMessageList()) && proto.io.haveno.protobuffer.MailboxMessageList.toObject(includeInstance, f),
-    ignoredMailboxMap: (f = msg.getIgnoredMailboxMap()) && proto.io.haveno.protobuffer.IgnoredMailboxMap.toObject(includeInstance, f),
-    removedPayloadsMap: (f = msg.getRemovedPayloadsMap()) && proto.io.haveno.protobuffer.RemovedPayloadsMap.toObject(includeInstance, f),
-    xmrAddressEntryList: (f = msg.getXmrAddressEntryList()) && proto.io.haveno.protobuffer.XmrAddressEntryList.toObject(includeInstance, f),
-    signedOfferList: (f = msg.getSignedOfferList()) && proto.io.haveno.protobuffer.SignedOfferList.toObject(includeInstance, f),
-    encryptedConnectionList: (f = msg.getEncryptedConnectionList()) && proto.io.haveno.protobuffer.EncryptedConnectionList.toObject(includeInstance, f)
+sequenceNumberMap: (f = msg.getSequenceNumberMap()) && proto.io.haveno.protobuffer.SequenceNumberMap.toObject(includeInstance, f),
+peerList: (f = msg.getPeerList()) && proto.io.haveno.protobuffer.PeerList.toObject(includeInstance, f),
+addressEntryList: (f = msg.getAddressEntryList()) && proto.io.haveno.protobuffer.AddressEntryList.toObject(includeInstance, f),
+navigationPath: (f = msg.getNavigationPath()) && proto.io.haveno.protobuffer.NavigationPath.toObject(includeInstance, f),
+tradableList: (f = msg.getTradableList()) && proto.io.haveno.protobuffer.TradableList.toObject(includeInstance, f),
+arbitrationDisputeList: (f = msg.getArbitrationDisputeList()) && proto.io.haveno.protobuffer.ArbitrationDisputeList.toObject(includeInstance, f),
+preferencesPayload: (f = msg.getPreferencesPayload()) && proto.io.haveno.protobuffer.PreferencesPayload.toObject(includeInstance, f),
+userPayload: (f = msg.getUserPayload()) && proto.io.haveno.protobuffer.UserPayload.toObject(includeInstance, f),
+paymentAccountList: (f = msg.getPaymentAccountList()) && proto.io.haveno.protobuffer.PaymentAccountList.toObject(includeInstance, f),
+accountAgeWitnessStore: (f = msg.getAccountAgeWitnessStore()) && proto.io.haveno.protobuffer.AccountAgeWitnessStore.toObject(includeInstance, f),
+signedWitnessStore: (f = msg.getSignedWitnessStore()) && proto.io.haveno.protobuffer.SignedWitnessStore.toObject(includeInstance, f),
+mediationDisputeList: (f = msg.getMediationDisputeList()) && proto.io.haveno.protobuffer.MediationDisputeList.toObject(includeInstance, f),
+refundDisputeList: (f = msg.getRefundDisputeList()) && proto.io.haveno.protobuffer.RefundDisputeList.toObject(includeInstance, f),
+tradeStatistics3Store: (f = msg.getTradeStatistics3Store()) && proto.io.haveno.protobuffer.TradeStatistics3Store.toObject(includeInstance, f),
+mailboxMessageList: (f = msg.getMailboxMessageList()) && proto.io.haveno.protobuffer.MailboxMessageList.toObject(includeInstance, f),
+ignoredMailboxMap: (f = msg.getIgnoredMailboxMap()) && proto.io.haveno.protobuffer.IgnoredMailboxMap.toObject(includeInstance, f),
+removedPayloadsMap: (f = msg.getRemovedPayloadsMap()) && proto.io.haveno.protobuffer.RemovedPayloadsMap.toObject(includeInstance, f),
+xmrAddressEntryList: (f = msg.getXmrAddressEntryList()) && proto.io.haveno.protobuffer.XmrAddressEntryList.toObject(includeInstance, f),
+signedOfferList: (f = msg.getSignedOfferList()) && proto.io.haveno.protobuffer.SignedOfferList.toObject(includeInstance, f),
+encryptedConnectionList: (f = msg.getEncryptedConnectionList()) && proto.io.haveno.protobuffer.EncryptedConnectionList.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -45471,7 +45490,7 @@ proto.io.haveno.protobuffer.SequenceNumberMap.prototype.toObject = function(opt_
  */
 proto.io.haveno.protobuffer.SequenceNumberMap.toObject = function(includeInstance, msg) {
   var f, obj = {
-    sequenceNumberEntriesList: jspb.Message.toObjectList(msg.getSequenceNumberEntriesList(),
+sequenceNumberEntriesList: jspb.Message.toObjectList(msg.getSequenceNumberEntriesList(),
     proto.io.haveno.protobuffer.SequenceNumberEntry.toObject, includeInstance)
   };
 
@@ -45624,8 +45643,8 @@ proto.io.haveno.protobuffer.SequenceNumberEntry.prototype.toObject = function(op
  */
 proto.io.haveno.protobuffer.SequenceNumberEntry.toObject = function(includeInstance, msg) {
   var f, obj = {
-    bytes: (f = msg.getBytes()) && proto.io.haveno.protobuffer.ByteArray.toObject(includeInstance, f),
-    mapValue: (f = msg.getMapValue()) && proto.io.haveno.protobuffer.MapValue.toObject(includeInstance, f)
+bytes: (f = msg.getBytes()) && proto.io.haveno.protobuffer.ByteArray.toObject(includeInstance, f),
+mapValue: (f = msg.getMapValue()) && proto.io.haveno.protobuffer.MapValue.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -45826,7 +45845,7 @@ proto.io.haveno.protobuffer.ByteArray.prototype.toObject = function(opt_includeI
  */
 proto.io.haveno.protobuffer.ByteArray.toObject = function(includeInstance, msg) {
   var f, obj = {
-    bytes: msg.getBytes_asB64()
+bytes: msg.getBytes_asB64()
   };
 
   if (includeInstance) {
@@ -45980,8 +45999,8 @@ proto.io.haveno.protobuffer.MapValue.prototype.toObject = function(opt_includeIn
  */
 proto.io.haveno.protobuffer.MapValue.toObject = function(includeInstance, msg) {
   var f, obj = {
-    sequenceNr: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    timeStamp: jspb.Message.getFieldWithDefault(msg, 2, 0)
+sequenceNr: jspb.Message.getFieldWithDefault(msg, 1, 0),
+timeStamp: jspb.Message.getFieldWithDefault(msg, 2, 0)
   };
 
   if (includeInstance) {
@@ -46147,7 +46166,7 @@ proto.io.haveno.protobuffer.AccountAgeWitnessStore.prototype.toObject = function
  */
 proto.io.haveno.protobuffer.AccountAgeWitnessStore.toObject = function(includeInstance, msg) {
   var f, obj = {
-    itemsList: jspb.Message.toObjectList(msg.getItemsList(),
+itemsList: jspb.Message.toObjectList(msg.getItemsList(),
     proto.io.haveno.protobuffer.AccountAgeWitness.toObject, includeInstance)
   };
 
@@ -46307,7 +46326,7 @@ proto.io.haveno.protobuffer.SignedWitnessStore.prototype.toObject = function(opt
  */
 proto.io.haveno.protobuffer.SignedWitnessStore.toObject = function(includeInstance, msg) {
   var f, obj = {
-    itemsList: jspb.Message.toObjectList(msg.getItemsList(),
+itemsList: jspb.Message.toObjectList(msg.getItemsList(),
     proto.io.haveno.protobuffer.SignedWitness.toObject, includeInstance)
   };
 
@@ -46467,7 +46486,7 @@ proto.io.haveno.protobuffer.TradeStatistics3Store.prototype.toObject = function(
  */
 proto.io.haveno.protobuffer.TradeStatistics3Store.toObject = function(includeInstance, msg) {
   var f, obj = {
-    itemsList: jspb.Message.toObjectList(msg.getItemsList(),
+itemsList: jspb.Message.toObjectList(msg.getItemsList(),
     proto.io.haveno.protobuffer.TradeStatistics3.toObject, includeInstance)
   };
 
@@ -46627,7 +46646,7 @@ proto.io.haveno.protobuffer.PeerList.prototype.toObject = function(opt_includeIn
  */
 proto.io.haveno.protobuffer.PeerList.toObject = function(includeInstance, msg) {
   var f, obj = {
-    peerList: jspb.Message.toObjectList(msg.getPeerList(),
+peerList: jspb.Message.toObjectList(msg.getPeerList(),
     proto.io.haveno.protobuffer.Peer.toObject, includeInstance)
   };
 
@@ -46787,7 +46806,7 @@ proto.io.haveno.protobuffer.AddressEntryList.prototype.toObject = function(opt_i
  */
 proto.io.haveno.protobuffer.AddressEntryList.toObject = function(includeInstance, msg) {
   var f, obj = {
-    addressEntryList: jspb.Message.toObjectList(msg.getAddressEntryList(),
+addressEntryList: jspb.Message.toObjectList(msg.getAddressEntryList(),
     proto.io.haveno.protobuffer.AddressEntry.toObject, includeInstance)
   };
 
@@ -46940,12 +46959,12 @@ proto.io.haveno.protobuffer.AddressEntry.prototype.toObject = function(opt_inclu
  */
 proto.io.haveno.protobuffer.AddressEntry.toObject = function(includeInstance, msg) {
   var f, obj = {
-    offerId: jspb.Message.getFieldWithDefault(msg, 7, ""),
-    context: jspb.Message.getFieldWithDefault(msg, 8, 0),
-    pubKey: msg.getPubKey_asB64(),
-    pubKeyHash: msg.getPubKeyHash_asB64(),
-    coinLockedInMultiSig: jspb.Message.getFieldWithDefault(msg, 11, 0),
-    segwit: jspb.Message.getBooleanFieldWithDefault(msg, 12, false)
+offerId: jspb.Message.getFieldWithDefault(msg, 7, ""),
+context: jspb.Message.getFieldWithDefault(msg, 8, 0),
+pubKey: msg.getPubKey_asB64(),
+pubKeyHash: msg.getPubKeyHash_asB64(),
+coinLockedInMultiSig: jspb.Message.getFieldWithDefault(msg, 11, 0),
+segwit: jspb.Message.getBooleanFieldWithDefault(msg, 12, false)
   };
 
   if (includeInstance) {
@@ -47288,7 +47307,7 @@ proto.io.haveno.protobuffer.XmrAddressEntryList.prototype.toObject = function(op
  */
 proto.io.haveno.protobuffer.XmrAddressEntryList.toObject = function(includeInstance, msg) {
   var f, obj = {
-    xmrAddressEntryList: jspb.Message.toObjectList(msg.getXmrAddressEntryList(),
+xmrAddressEntryList: jspb.Message.toObjectList(msg.getXmrAddressEntryList(),
     proto.io.haveno.protobuffer.XmrAddressEntry.toObject, includeInstance)
   };
 
@@ -47441,11 +47460,11 @@ proto.io.haveno.protobuffer.XmrAddressEntry.prototype.toObject = function(opt_in
  */
 proto.io.haveno.protobuffer.XmrAddressEntry.toObject = function(includeInstance, msg) {
   var f, obj = {
-    subaddressIndex: jspb.Message.getFieldWithDefault(msg, 7, 0),
-    addressString: jspb.Message.getFieldWithDefault(msg, 8, ""),
-    offerId: jspb.Message.getFieldWithDefault(msg, 9, ""),
-    context: jspb.Message.getFieldWithDefault(msg, 10, 0),
-    coinLockedInMultiSig: jspb.Message.getFieldWithDefault(msg, 11, 0)
+subaddressIndex: jspb.Message.getFieldWithDefault(msg, 7, 0),
+addressString: jspb.Message.getFieldWithDefault(msg, 8, ""),
+offerId: jspb.Message.getFieldWithDefault(msg, 9, ""),
+context: jspb.Message.getFieldWithDefault(msg, 10, 0),
+coinLockedInMultiSig: jspb.Message.getFieldWithDefault(msg, 11, 0)
   };
 
   if (includeInstance) {
@@ -47710,7 +47729,7 @@ proto.io.haveno.protobuffer.NavigationPath.prototype.toObject = function(opt_inc
  */
 proto.io.haveno.protobuffer.NavigationPath.toObject = function(includeInstance, msg) {
   var f, obj = {
-    pathList: (f = jspb.Message.getRepeatedField(msg, 1)) == null ? undefined : f
+pathList: (f = jspb.Message.getRepeatedField(msg, 1)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -47866,7 +47885,7 @@ proto.io.haveno.protobuffer.PaymentAccountList.prototype.toObject = function(opt
  */
 proto.io.haveno.protobuffer.PaymentAccountList.toObject = function(includeInstance, msg) {
   var f, obj = {
-    paymentAccountList: jspb.Message.toObjectList(msg.getPaymentAccountList(),
+paymentAccountList: jspb.Message.toObjectList(msg.getPaymentAccountList(),
     proto.io.haveno.protobuffer.PaymentAccount.toObject, includeInstance)
   };
 
@@ -48026,7 +48045,7 @@ proto.io.haveno.protobuffer.TradableList.prototype.toObject = function(opt_inclu
  */
 proto.io.haveno.protobuffer.TradableList.toObject = function(includeInstance, msg) {
   var f, obj = {
-    tradableList: jspb.Message.toObjectList(msg.getTradableList(),
+tradableList: jspb.Message.toObjectList(msg.getTradableList(),
     proto.io.haveno.protobuffer.Tradable.toObject, includeInstance)
   };
 
@@ -48179,7 +48198,7 @@ proto.io.haveno.protobuffer.Offer.prototype.toObject = function(opt_includeInsta
  */
 proto.io.haveno.protobuffer.Offer.toObject = function(includeInstance, msg) {
   var f, obj = {
-    offerPayload: (f = msg.getOfferPayload()) && proto.io.haveno.protobuffer.OfferPayload.toObject(includeInstance, f)
+offerPayload: (f = msg.getOfferPayload()) && proto.io.haveno.protobuffer.OfferPayload.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -48351,7 +48370,7 @@ proto.io.haveno.protobuffer.SignedOfferList.prototype.toObject = function(opt_in
  */
 proto.io.haveno.protobuffer.SignedOfferList.toObject = function(includeInstance, msg) {
   var f, obj = {
-    signedOfferList: jspb.Message.toObjectList(msg.getSignedOfferList(),
+signedOfferList: jspb.Message.toObjectList(msg.getSignedOfferList(),
     proto.io.haveno.protobuffer.SignedOffer.toObject, includeInstance)
   };
 
@@ -48511,16 +48530,16 @@ proto.io.haveno.protobuffer.SignedOffer.prototype.toObject = function(opt_includ
  */
 proto.io.haveno.protobuffer.SignedOffer.toObject = function(includeInstance, msg) {
   var f, obj = {
-    timeStamp: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    traderId: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    offerId: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    tradeAmount: jspb.Message.getFieldWithDefault(msg, 4, 0),
-    penaltyAmount: jspb.Message.getFieldWithDefault(msg, 5, 0),
-    reserveTxHash: jspb.Message.getFieldWithDefault(msg, 6, ""),
-    reserveTxHex: jspb.Message.getFieldWithDefault(msg, 7, ""),
-    reserveTxKeyImagesList: (f = jspb.Message.getRepeatedField(msg, 8)) == null ? undefined : f,
-    reserveTxMinerFee: jspb.Message.getFieldWithDefault(msg, 9, 0),
-    arbitratorSignature: msg.getArbitratorSignature_asB64()
+timeStamp: jspb.Message.getFieldWithDefault(msg, 1, 0),
+traderId: jspb.Message.getFieldWithDefault(msg, 2, 0),
+offerId: jspb.Message.getFieldWithDefault(msg, 3, ""),
+tradeAmount: jspb.Message.getFieldWithDefault(msg, 4, 0),
+penaltyAmount: jspb.Message.getFieldWithDefault(msg, 5, 0),
+reserveTxHash: jspb.Message.getFieldWithDefault(msg, 6, ""),
+reserveTxHex: jspb.Message.getFieldWithDefault(msg, 7, ""),
+reserveTxKeyImagesList: (f = jspb.Message.getRepeatedField(msg, 8)) == null ? undefined : f,
+reserveTxMinerFee: jspb.Message.getFieldWithDefault(msg, 9, 0),
+arbitratorSignature: msg.getArbitratorSignature_asB64()
   };
 
   if (includeInstance) {
@@ -48961,18 +48980,18 @@ proto.io.haveno.protobuffer.OpenOffer.prototype.toObject = function(opt_includeI
  */
 proto.io.haveno.protobuffer.OpenOffer.toObject = function(includeInstance, msg) {
   var f, obj = {
-    offer: (f = msg.getOffer()) && proto.io.haveno.protobuffer.Offer.toObject(includeInstance, f),
-    state: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    triggerPrice: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    reserveExactAmount: jspb.Message.getBooleanFieldWithDefault(msg, 4, false),
-    splitOutputTxHash: jspb.Message.getFieldWithDefault(msg, 5, ""),
-    splitOutputTxFee: jspb.Message.getFieldWithDefault(msg, 6, 0),
-    scheduledTxHashesList: (f = jspb.Message.getRepeatedField(msg, 7)) == null ? undefined : f,
-    scheduledAmount: jspb.Message.getFieldWithDefault(msg, 8, ""),
-    reserveTxHash: jspb.Message.getFieldWithDefault(msg, 9, ""),
-    reserveTxHex: jspb.Message.getFieldWithDefault(msg, 10, ""),
-    reserveTxKey: jspb.Message.getFieldWithDefault(msg, 11, ""),
-    challenge: jspb.Message.getFieldWithDefault(msg, 12, "")
+offer: (f = msg.getOffer()) && proto.io.haveno.protobuffer.Offer.toObject(includeInstance, f),
+state: jspb.Message.getFieldWithDefault(msg, 2, 0),
+triggerPrice: jspb.Message.getFieldWithDefault(msg, 3, 0),
+reserveExactAmount: jspb.Message.getBooleanFieldWithDefault(msg, 4, false),
+splitOutputTxHash: jspb.Message.getFieldWithDefault(msg, 5, ""),
+splitOutputTxFee: jspb.Message.getFieldWithDefault(msg, 6, 0),
+scheduledTxHashesList: (f = jspb.Message.getRepeatedField(msg, 7)) == null ? undefined : f,
+scheduledAmount: jspb.Message.getFieldWithDefault(msg, 8, ""),
+reserveTxHash: jspb.Message.getFieldWithDefault(msg, 9, ""),
+reserveTxHex: jspb.Message.getFieldWithDefault(msg, 10, ""),
+reserveTxKey: jspb.Message.getFieldWithDefault(msg, 11, ""),
+challenge: jspb.Message.getFieldWithDefault(msg, 12, "")
   };
 
   if (includeInstance) {
@@ -49505,13 +49524,13 @@ proto.io.haveno.protobuffer.Tradable.prototype.toObject = function(opt_includeIn
  */
 proto.io.haveno.protobuffer.Tradable.toObject = function(includeInstance, msg) {
   var f, obj = {
-    openOffer: (f = msg.getOpenOffer()) && proto.io.haveno.protobuffer.OpenOffer.toObject(includeInstance, f),
-    signedOffer: (f = msg.getSignedOffer()) && proto.io.haveno.protobuffer.SignedOffer.toObject(includeInstance, f),
-    buyerAsMakerTrade: (f = msg.getBuyerAsMakerTrade()) && proto.io.haveno.protobuffer.BuyerAsMakerTrade.toObject(includeInstance, f),
-    buyerAsTakerTrade: (f = msg.getBuyerAsTakerTrade()) && proto.io.haveno.protobuffer.BuyerAsTakerTrade.toObject(includeInstance, f),
-    sellerAsMakerTrade: (f = msg.getSellerAsMakerTrade()) && proto.io.haveno.protobuffer.SellerAsMakerTrade.toObject(includeInstance, f),
-    sellerAsTakerTrade: (f = msg.getSellerAsTakerTrade()) && proto.io.haveno.protobuffer.SellerAsTakerTrade.toObject(includeInstance, f),
-    arbitratorTrade: (f = msg.getArbitratorTrade()) && proto.io.haveno.protobuffer.ArbitratorTrade.toObject(includeInstance, f)
+openOffer: (f = msg.getOpenOffer()) && proto.io.haveno.protobuffer.OpenOffer.toObject(includeInstance, f),
+signedOffer: (f = msg.getSignedOffer()) && proto.io.haveno.protobuffer.SignedOffer.toObject(includeInstance, f),
+buyerAsMakerTrade: (f = msg.getBuyerAsMakerTrade()) && proto.io.haveno.protobuffer.BuyerAsMakerTrade.toObject(includeInstance, f),
+buyerAsTakerTrade: (f = msg.getBuyerAsTakerTrade()) && proto.io.haveno.protobuffer.BuyerAsTakerTrade.toObject(includeInstance, f),
+sellerAsMakerTrade: (f = msg.getSellerAsMakerTrade()) && proto.io.haveno.protobuffer.SellerAsMakerTrade.toObject(includeInstance, f),
+sellerAsTakerTrade: (f = msg.getSellerAsTakerTrade()) && proto.io.haveno.protobuffer.SellerAsTakerTrade.toObject(includeInstance, f),
+arbitratorTrade: (f = msg.getArbitratorTrade()) && proto.io.haveno.protobuffer.ArbitratorTrade.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -49969,36 +49988,36 @@ proto.io.haveno.protobuffer.Trade.prototype.toObject = function(opt_includeInsta
  */
 proto.io.haveno.protobuffer.Trade.toObject = function(includeInstance, msg) {
   var f, obj = {
-    offer: (f = msg.getOffer()) && proto.io.haveno.protobuffer.Offer.toObject(includeInstance, f),
-    processModel: (f = msg.getProcessModel()) && proto.io.haveno.protobuffer.ProcessModel.toObject(includeInstance, f),
-    payoutTxId: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    payoutTxHex: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    payoutTxKey: jspb.Message.getFieldWithDefault(msg, 5, ""),
-    amount: jspb.Message.getFieldWithDefault(msg, 6, 0),
-    takeOfferDate: jspb.Message.getFieldWithDefault(msg, 7, 0),
-    price: jspb.Message.getFieldWithDefault(msg, 8, 0),
-    state: jspb.Message.getFieldWithDefault(msg, 9, 0),
-    payoutState: jspb.Message.getFieldWithDefault(msg, 10, 0),
-    disputeState: jspb.Message.getFieldWithDefault(msg, 11, 0),
-    periodState: jspb.Message.getFieldWithDefault(msg, 12, 0),
-    contract: (f = msg.getContract()) && proto.io.haveno.protobuffer.Contract.toObject(includeInstance, f),
-    contractAsJson: jspb.Message.getFieldWithDefault(msg, 14, ""),
-    contractHash: msg.getContractHash_asB64(),
-    arbitratorNodeAddress: (f = msg.getArbitratorNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
-    mediatorNodeAddress: (f = msg.getMediatorNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
-    errorMessage: jspb.Message.getFieldWithDefault(msg, 18, ""),
-    counterCurrencyTxId: jspb.Message.getFieldWithDefault(msg, 19, ""),
-    chatMessageList: jspb.Message.toObjectList(msg.getChatMessageList(),
+offer: (f = msg.getOffer()) && proto.io.haveno.protobuffer.Offer.toObject(includeInstance, f),
+processModel: (f = msg.getProcessModel()) && proto.io.haveno.protobuffer.ProcessModel.toObject(includeInstance, f),
+payoutTxId: jspb.Message.getFieldWithDefault(msg, 3, ""),
+payoutTxHex: jspb.Message.getFieldWithDefault(msg, 4, ""),
+payoutTxKey: jspb.Message.getFieldWithDefault(msg, 5, ""),
+amount: jspb.Message.getFieldWithDefault(msg, 6, 0),
+takeOfferDate: jspb.Message.getFieldWithDefault(msg, 7, 0),
+price: jspb.Message.getFieldWithDefault(msg, 8, 0),
+state: jspb.Message.getFieldWithDefault(msg, 9, 0),
+payoutState: jspb.Message.getFieldWithDefault(msg, 10, 0),
+disputeState: jspb.Message.getFieldWithDefault(msg, 11, 0),
+periodState: jspb.Message.getFieldWithDefault(msg, 12, 0),
+contract: (f = msg.getContract()) && proto.io.haveno.protobuffer.Contract.toObject(includeInstance, f),
+contractAsJson: jspb.Message.getFieldWithDefault(msg, 14, ""),
+contractHash: msg.getContractHash_asB64(),
+arbitratorNodeAddress: (f = msg.getArbitratorNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
+mediatorNodeAddress: (f = msg.getMediatorNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
+errorMessage: jspb.Message.getFieldWithDefault(msg, 18, ""),
+counterCurrencyTxId: jspb.Message.getFieldWithDefault(msg, 19, ""),
+chatMessageList: jspb.Message.toObjectList(msg.getChatMessageList(),
     proto.io.haveno.protobuffer.ChatMessage.toObject, includeInstance),
-    mediationResultState: jspb.Message.getFieldWithDefault(msg, 21, 0),
-    lockTime: jspb.Message.getFieldWithDefault(msg, 22, 0),
-    startTime: jspb.Message.getFieldWithDefault(msg, 23, 0),
-    refundAgentNodeAddress: (f = msg.getRefundAgentNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
-    refundResultState: jspb.Message.getFieldWithDefault(msg, 25, 0),
-    counterCurrencyExtraData: jspb.Message.getFieldWithDefault(msg, 26, ""),
-    uid: jspb.Message.getFieldWithDefault(msg, 27, ""),
-    isCompleted: jspb.Message.getBooleanFieldWithDefault(msg, 28, false),
-    challenge: jspb.Message.getFieldWithDefault(msg, 29, "")
+mediationResultState: jspb.Message.getFieldWithDefault(msg, 21, 0),
+lockTime: jspb.Message.getFieldWithDefault(msg, 22, 0),
+startTime: jspb.Message.getFieldWithDefault(msg, 23, 0),
+refundAgentNodeAddress: (f = msg.getRefundAgentNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
+refundResultState: jspb.Message.getFieldWithDefault(msg, 25, 0),
+counterCurrencyExtraData: jspb.Message.getFieldWithDefault(msg, 26, ""),
+uid: jspb.Message.getFieldWithDefault(msg, 27, ""),
+isCompleted: jspb.Message.getBooleanFieldWithDefault(msg, 28, false),
+challenge: jspb.Message.getFieldWithDefault(msg, 29, "")
   };
 
   if (includeInstance) {
@@ -51200,7 +51219,7 @@ proto.io.haveno.protobuffer.BuyerAsMakerTrade.prototype.toObject = function(opt_
  */
 proto.io.haveno.protobuffer.BuyerAsMakerTrade.toObject = function(includeInstance, msg) {
   var f, obj = {
-    trade: (f = msg.getTrade()) && proto.io.haveno.protobuffer.Trade.toObject(includeInstance, f)
+trade: (f = msg.getTrade()) && proto.io.haveno.protobuffer.Trade.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -51351,7 +51370,7 @@ proto.io.haveno.protobuffer.BuyerAsTakerTrade.prototype.toObject = function(opt_
  */
 proto.io.haveno.protobuffer.BuyerAsTakerTrade.toObject = function(includeInstance, msg) {
   var f, obj = {
-    trade: (f = msg.getTrade()) && proto.io.haveno.protobuffer.Trade.toObject(includeInstance, f)
+trade: (f = msg.getTrade()) && proto.io.haveno.protobuffer.Trade.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -51502,7 +51521,7 @@ proto.io.haveno.protobuffer.SellerAsMakerTrade.prototype.toObject = function(opt
  */
 proto.io.haveno.protobuffer.SellerAsMakerTrade.toObject = function(includeInstance, msg) {
   var f, obj = {
-    trade: (f = msg.getTrade()) && proto.io.haveno.protobuffer.Trade.toObject(includeInstance, f)
+trade: (f = msg.getTrade()) && proto.io.haveno.protobuffer.Trade.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -51653,7 +51672,7 @@ proto.io.haveno.protobuffer.SellerAsTakerTrade.prototype.toObject = function(opt
  */
 proto.io.haveno.protobuffer.SellerAsTakerTrade.toObject = function(includeInstance, msg) {
   var f, obj = {
-    trade: (f = msg.getTrade()) && proto.io.haveno.protobuffer.Trade.toObject(includeInstance, f)
+trade: (f = msg.getTrade()) && proto.io.haveno.protobuffer.Trade.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -51804,7 +51823,7 @@ proto.io.haveno.protobuffer.ArbitratorTrade.prototype.toObject = function(opt_in
  */
 proto.io.haveno.protobuffer.ArbitratorTrade.toObject = function(includeInstance, msg) {
   var f, obj = {
-    trade: (f = msg.getTrade()) && proto.io.haveno.protobuffer.Trade.toObject(includeInstance, f)
+trade: (f = msg.getTrade()) && proto.io.haveno.protobuffer.Trade.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -51955,25 +51974,25 @@ proto.io.haveno.protobuffer.ProcessModel.prototype.toObject = function(opt_inclu
  */
 proto.io.haveno.protobuffer.ProcessModel.toObject = function(includeInstance, msg) {
   var f, obj = {
-    offerId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    accountId: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    pubKeyRing: (f = msg.getPubKeyRing()) && proto.io.haveno.protobuffer.PubKeyRing.toObject(includeInstance, f),
-    payoutTxSignature: msg.getPayoutTxSignature_asB64(),
-    useSavingsWallet: jspb.Message.getBooleanFieldWithDefault(msg, 5, false),
-    fundsNeededForTrade: jspb.Message.getFieldWithDefault(msg, 6, 0),
-    paymentSentMessageState: jspb.Message.getFieldWithDefault(msg, 7, ""),
-    paymentSentMessageStateArbitrator: jspb.Message.getFieldWithDefault(msg, 8, ""),
-    makerSignature: msg.getMakerSignature_asB64(),
-    maker: (f = msg.getMaker()) && proto.io.haveno.protobuffer.TradePeer.toObject(includeInstance, f),
-    taker: (f = msg.getTaker()) && proto.io.haveno.protobuffer.TradePeer.toObject(includeInstance, f),
-    arbitrator: (f = msg.getArbitrator()) && proto.io.haveno.protobuffer.TradePeer.toObject(includeInstance, f),
-    tempTradePeerNodeAddress: (f = msg.getTempTradePeerNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
-    multisigAddress: jspb.Message.getFieldWithDefault(msg, 14, ""),
-    mediatedPayoutTxSignature: msg.getMediatedPayoutTxSignature_asB64(),
-    buyerPayoutAmountFromMediation: jspb.Message.getFieldWithDefault(msg, 16, 0),
-    sellerPayoutAmountFromMediation: jspb.Message.getFieldWithDefault(msg, 17, 0),
-    tradeProtocolErrorHeight: jspb.Message.getFieldWithDefault(msg, 18, 0),
-    tradeFeeAddress: jspb.Message.getFieldWithDefault(msg, 19, "")
+offerId: jspb.Message.getFieldWithDefault(msg, 1, ""),
+accountId: jspb.Message.getFieldWithDefault(msg, 2, ""),
+pubKeyRing: (f = msg.getPubKeyRing()) && proto.io.haveno.protobuffer.PubKeyRing.toObject(includeInstance, f),
+payoutTxSignature: msg.getPayoutTxSignature_asB64(),
+useSavingsWallet: jspb.Message.getBooleanFieldWithDefault(msg, 5, false),
+fundsNeededForTrade: jspb.Message.getFieldWithDefault(msg, 6, 0),
+paymentSentMessageState: jspb.Message.getFieldWithDefault(msg, 7, ""),
+paymentSentMessageStateArbitrator: jspb.Message.getFieldWithDefault(msg, 8, ""),
+makerSignature: msg.getMakerSignature_asB64(),
+maker: (f = msg.getMaker()) && proto.io.haveno.protobuffer.TradePeer.toObject(includeInstance, f),
+taker: (f = msg.getTaker()) && proto.io.haveno.protobuffer.TradePeer.toObject(includeInstance, f),
+arbitrator: (f = msg.getArbitrator()) && proto.io.haveno.protobuffer.TradePeer.toObject(includeInstance, f),
+tempTradePeerNodeAddress: (f = msg.getTempTradePeerNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
+multisigAddress: jspb.Message.getFieldWithDefault(msg, 14, ""),
+mediatedPayoutTxSignature: msg.getMediatedPayoutTxSignature_asB64(),
+buyerPayoutAmountFromMediation: jspb.Message.getFieldWithDefault(msg, 16, 0),
+sellerPayoutAmountFromMediation: jspb.Message.getFieldWithDefault(msg, 17, 0),
+tradeProtocolErrorHeight: jspb.Message.getFieldWithDefault(msg, 18, 0),
+tradeFeeAddress: jspb.Message.getFieldWithDefault(msg, 19, "")
   };
 
   if (includeInstance) {
@@ -52809,43 +52828,43 @@ proto.io.haveno.protobuffer.TradePeer.prototype.toObject = function(opt_includeI
  */
 proto.io.haveno.protobuffer.TradePeer.toObject = function(includeInstance, msg) {
   var f, obj = {
-    nodeAddress: (f = msg.getNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
-    pubKeyRing: (f = msg.getPubKeyRing()) && proto.io.haveno.protobuffer.PubKeyRing.toObject(includeInstance, f),
-    accountId: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    paymentAccountId: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    paymentMethodId: jspb.Message.getFieldWithDefault(msg, 5, ""),
-    paymentAccountPayloadHash: msg.getPaymentAccountPayloadHash_asB64(),
-    encryptedPaymentAccountPayload: msg.getEncryptedPaymentAccountPayload_asB64(),
-    paymentAccountKey: msg.getPaymentAccountKey_asB64(),
-    paymentAccountPayload: (f = msg.getPaymentAccountPayload()) && proto.io.haveno.protobuffer.PaymentAccountPayload.toObject(includeInstance, f),
-    payoutAddressString: jspb.Message.getFieldWithDefault(msg, 10, ""),
-    contractAsJson: jspb.Message.getFieldWithDefault(msg, 11, ""),
-    contractSignature: msg.getContractSignature_asB64(),
-    accountAgeWitnessNonce: msg.getAccountAgeWitnessNonce_asB64(),
-    accountAgeWitnessSignature: msg.getAccountAgeWitnessSignature_asB64(),
-    accountAgeWitness: (f = msg.getAccountAgeWitness()) && proto.io.haveno.protobuffer.AccountAgeWitness.toObject(includeInstance, f),
-    currentDate: jspb.Message.getFieldWithDefault(msg, 21, 0),
-    mediatedPayoutTxSignature: msg.getMediatedPayoutTxSignature_asB64(),
-    paymentSentMessage: (f = msg.getPaymentSentMessage()) && proto.io.haveno.protobuffer.PaymentSentMessage.toObject(includeInstance, f),
-    paymentReceivedMessage: (f = msg.getPaymentReceivedMessage()) && proto.io.haveno.protobuffer.PaymentReceivedMessage.toObject(includeInstance, f),
-    disputeClosedMessage: (f = msg.getDisputeClosedMessage()) && proto.io.haveno.protobuffer.DisputeClosedMessage.toObject(includeInstance, f),
-    reserveTxHash: jspb.Message.getFieldWithDefault(msg, 26, ""),
-    reserveTxHex: jspb.Message.getFieldWithDefault(msg, 27, ""),
-    reserveTxKey: jspb.Message.getFieldWithDefault(msg, 28, ""),
-    reserveTxKeyImagesList: (f = jspb.Message.getRepeatedField(msg, 29)) == null ? undefined : f,
-    preparedMultisigHex: jspb.Message.getFieldWithDefault(msg, 30, ""),
-    madeMultisigHex: jspb.Message.getFieldWithDefault(msg, 31, ""),
-    exchangedMultisigHex: jspb.Message.getFieldWithDefault(msg, 32, ""),
-    updatedMultisigHex: jspb.Message.getFieldWithDefault(msg, 33, ""),
-    depositsConfirmedMessageAcked: jspb.Message.getBooleanFieldWithDefault(msg, 34, false),
-    depositTxHash: jspb.Message.getFieldWithDefault(msg, 35, ""),
-    depositTxHex: jspb.Message.getFieldWithDefault(msg, 36, ""),
-    depositTxKey: jspb.Message.getFieldWithDefault(msg, 37, ""),
-    depositTxFee: jspb.Message.getFieldWithDefault(msg, 38, 0),
-    securityDeposit: jspb.Message.getFieldWithDefault(msg, 39, 0),
-    unsignedPayoutTxHex: jspb.Message.getFieldWithDefault(msg, 40, ""),
-    payoutTxFee: jspb.Message.getFieldWithDefault(msg, 41, 0),
-    payoutAmount: jspb.Message.getFieldWithDefault(msg, 42, 0)
+nodeAddress: (f = msg.getNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
+pubKeyRing: (f = msg.getPubKeyRing()) && proto.io.haveno.protobuffer.PubKeyRing.toObject(includeInstance, f),
+accountId: jspb.Message.getFieldWithDefault(msg, 3, ""),
+paymentAccountId: jspb.Message.getFieldWithDefault(msg, 4, ""),
+paymentMethodId: jspb.Message.getFieldWithDefault(msg, 5, ""),
+paymentAccountPayloadHash: msg.getPaymentAccountPayloadHash_asB64(),
+encryptedPaymentAccountPayload: msg.getEncryptedPaymentAccountPayload_asB64(),
+paymentAccountKey: msg.getPaymentAccountKey_asB64(),
+paymentAccountPayload: (f = msg.getPaymentAccountPayload()) && proto.io.haveno.protobuffer.PaymentAccountPayload.toObject(includeInstance, f),
+payoutAddressString: jspb.Message.getFieldWithDefault(msg, 10, ""),
+contractAsJson: jspb.Message.getFieldWithDefault(msg, 11, ""),
+contractSignature: msg.getContractSignature_asB64(),
+accountAgeWitnessNonce: msg.getAccountAgeWitnessNonce_asB64(),
+accountAgeWitnessSignature: msg.getAccountAgeWitnessSignature_asB64(),
+accountAgeWitness: (f = msg.getAccountAgeWitness()) && proto.io.haveno.protobuffer.AccountAgeWitness.toObject(includeInstance, f),
+currentDate: jspb.Message.getFieldWithDefault(msg, 21, 0),
+mediatedPayoutTxSignature: msg.getMediatedPayoutTxSignature_asB64(),
+paymentSentMessage: (f = msg.getPaymentSentMessage()) && proto.io.haveno.protobuffer.PaymentSentMessage.toObject(includeInstance, f),
+paymentReceivedMessage: (f = msg.getPaymentReceivedMessage()) && proto.io.haveno.protobuffer.PaymentReceivedMessage.toObject(includeInstance, f),
+disputeClosedMessage: (f = msg.getDisputeClosedMessage()) && proto.io.haveno.protobuffer.DisputeClosedMessage.toObject(includeInstance, f),
+reserveTxHash: jspb.Message.getFieldWithDefault(msg, 26, ""),
+reserveTxHex: jspb.Message.getFieldWithDefault(msg, 27, ""),
+reserveTxKey: jspb.Message.getFieldWithDefault(msg, 28, ""),
+reserveTxKeyImagesList: (f = jspb.Message.getRepeatedField(msg, 29)) == null ? undefined : f,
+preparedMultisigHex: jspb.Message.getFieldWithDefault(msg, 30, ""),
+madeMultisigHex: jspb.Message.getFieldWithDefault(msg, 31, ""),
+exchangedMultisigHex: jspb.Message.getFieldWithDefault(msg, 32, ""),
+updatedMultisigHex: jspb.Message.getFieldWithDefault(msg, 33, ""),
+depositsConfirmedMessageAcked: jspb.Message.getBooleanFieldWithDefault(msg, 34, false),
+depositTxHash: jspb.Message.getFieldWithDefault(msg, 35, ""),
+depositTxHex: jspb.Message.getFieldWithDefault(msg, 36, ""),
+depositTxKey: jspb.Message.getFieldWithDefault(msg, 37, ""),
+depositTxFee: jspb.Message.getFieldWithDefault(msg, 38, 0),
+securityDeposit: jspb.Message.getFieldWithDefault(msg, 39, 0),
+unsignedPayoutTxHex: jspb.Message.getFieldWithDefault(msg, 40, ""),
+payoutTxFee: jspb.Message.getFieldWithDefault(msg, 41, 0),
+payoutAmount: jspb.Message.getFieldWithDefault(msg, 42, 0)
   };
 
   if (includeInstance) {
@@ -54353,11 +54372,11 @@ proto.io.haveno.protobuffer.EncryptedConnection.prototype.toObject = function(op
  */
 proto.io.haveno.protobuffer.EncryptedConnection.toObject = function(includeInstance, msg) {
   var f, obj = {
-    url: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    username: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    encryptedPassword: msg.getEncryptedPassword_asB64(),
-    encryptionSalt: msg.getEncryptionSalt_asB64(),
-    priority: jspb.Message.getFieldWithDefault(msg, 5, 0)
+url: jspb.Message.getFieldWithDefault(msg, 1, ""),
+username: jspb.Message.getFieldWithDefault(msg, 2, ""),
+encryptedPassword: msg.getEncryptedPassword_asB64(),
+encryptionSalt: msg.getEncryptionSalt_asB64(),
+priority: jspb.Message.getFieldWithDefault(msg, 5, 0)
   };
 
   if (includeInstance) {
@@ -54658,12 +54677,12 @@ proto.io.haveno.protobuffer.EncryptedConnectionList.prototype.toObject = functio
  */
 proto.io.haveno.protobuffer.EncryptedConnectionList.toObject = function(includeInstance, msg) {
   var f, obj = {
-    salt: msg.getSalt_asB64(),
-    itemsList: jspb.Message.toObjectList(msg.getItemsList(),
+salt: msg.getSalt_asB64(),
+itemsList: jspb.Message.toObjectList(msg.getItemsList(),
     proto.io.haveno.protobuffer.EncryptedConnection.toObject, includeInstance),
-    currentConnectionUrl: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    refreshPeriod: jspb.Message.getFieldWithDefault(msg, 4, 0),
-    autoSwitch: jspb.Message.getBooleanFieldWithDefault(msg, 5, false)
+currentConnectionUrl: jspb.Message.getFieldWithDefault(msg, 3, ""),
+refreshPeriod: jspb.Message.getFieldWithDefault(msg, 4, 0),
+autoSwitch: jspb.Message.getBooleanFieldWithDefault(msg, 5, false)
   };
 
   if (includeInstance) {
@@ -54962,7 +54981,7 @@ proto.io.haveno.protobuffer.ArbitrationDisputeList.prototype.toObject = function
  */
 proto.io.haveno.protobuffer.ArbitrationDisputeList.toObject = function(includeInstance, msg) {
   var f, obj = {
-    disputeList: jspb.Message.toObjectList(msg.getDisputeList(),
+disputeList: jspb.Message.toObjectList(msg.getDisputeList(),
     proto.io.haveno.protobuffer.Dispute.toObject, includeInstance)
   };
 
@@ -55122,7 +55141,7 @@ proto.io.haveno.protobuffer.MediationDisputeList.prototype.toObject = function(o
  */
 proto.io.haveno.protobuffer.MediationDisputeList.toObject = function(includeInstance, msg) {
   var f, obj = {
-    disputeList: jspb.Message.toObjectList(msg.getDisputeList(),
+disputeList: jspb.Message.toObjectList(msg.getDisputeList(),
     proto.io.haveno.protobuffer.Dispute.toObject, includeInstance)
   };
 
@@ -55282,7 +55301,7 @@ proto.io.haveno.protobuffer.RefundDisputeList.prototype.toObject = function(opt_
  */
 proto.io.haveno.protobuffer.RefundDisputeList.toObject = function(includeInstance, msg) {
   var f, obj = {
-    disputeList: jspb.Message.toObjectList(msg.getDisputeList(),
+disputeList: jspb.Message.toObjectList(msg.getDisputeList(),
     proto.io.haveno.protobuffer.Dispute.toObject, includeInstance)
   };
 
@@ -55442,76 +55461,76 @@ proto.io.haveno.protobuffer.PreferencesPayload.prototype.toObject = function(opt
  */
 proto.io.haveno.protobuffer.PreferencesPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    userLanguage: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    userCountry: (f = msg.getUserCountry()) && proto.io.haveno.protobuffer.Country.toObject(includeInstance, f),
-    traditionalCurrenciesList: jspb.Message.toObjectList(msg.getTraditionalCurrenciesList(),
+userLanguage: jspb.Message.getFieldWithDefault(msg, 1, ""),
+userCountry: (f = msg.getUserCountry()) && proto.io.haveno.protobuffer.Country.toObject(includeInstance, f),
+traditionalCurrenciesList: jspb.Message.toObjectList(msg.getTraditionalCurrenciesList(),
     proto.io.haveno.protobuffer.TradeCurrency.toObject, includeInstance),
-    cryptoCurrenciesList: jspb.Message.toObjectList(msg.getCryptoCurrenciesList(),
+cryptoCurrenciesList: jspb.Message.toObjectList(msg.getCryptoCurrenciesList(),
     proto.io.haveno.protobuffer.TradeCurrency.toObject, includeInstance),
-    blockChainExplorerMainNet: (f = msg.getBlockChainExplorerMainNet()) && proto.io.haveno.protobuffer.BlockChainExplorer.toObject(includeInstance, f),
-    blockChainExplorerTestNet: (f = msg.getBlockChainExplorerTestNet()) && proto.io.haveno.protobuffer.BlockChainExplorer.toObject(includeInstance, f),
-    backupDirectory: jspb.Message.getFieldWithDefault(msg, 7, ""),
-    autoSelectArbitrators: jspb.Message.getBooleanFieldWithDefault(msg, 8, false),
-    dontShowAgainMapMap: (f = msg.getDontShowAgainMapMap()) ? f.toObject(includeInstance, undefined) : [],
-    tacAccepted: jspb.Message.getBooleanFieldWithDefault(msg, 10, false),
-    useTorForXmrOrdinal: jspb.Message.getFieldWithDefault(msg, 11, 0),
-    showOwnOffersInOfferBook: jspb.Message.getBooleanFieldWithDefault(msg, 12, false),
-    preferredTradeCurrency: (f = msg.getPreferredTradeCurrency()) && proto.io.haveno.protobuffer.TradeCurrency.toObject(includeInstance, f),
-    withdrawalTxFeeInVbytes: jspb.Message.getFieldWithDefault(msg, 14, 0),
-    useCustomWithdrawalTxFee: jspb.Message.getBooleanFieldWithDefault(msg, 15, false),
-    maxPriceDistanceInPercent: jspb.Message.getFloatingPointFieldWithDefault(msg, 16, 0.0),
-    offerBookChartScreenCurrencyCode: jspb.Message.getFieldWithDefault(msg, 17, ""),
-    tradeChartsScreenCurrencyCode: jspb.Message.getFieldWithDefault(msg, 18, ""),
-    buyScreenCurrencyCode: jspb.Message.getFieldWithDefault(msg, 19, ""),
-    sellScreenCurrencyCode: jspb.Message.getFieldWithDefault(msg, 20, ""),
-    tradeStatisticsTickUnitIndex: jspb.Message.getFieldWithDefault(msg, 21, 0),
-    resyncSpvRequested: jspb.Message.getBooleanFieldWithDefault(msg, 22, false),
-    sortMarketCurrenciesNumerically: jspb.Message.getBooleanFieldWithDefault(msg, 23, false),
-    usePercentageBasedPrice: jspb.Message.getBooleanFieldWithDefault(msg, 24, false),
-    peerTagMapMap: (f = msg.getPeerTagMapMap()) ? f.toObject(includeInstance, undefined) : [],
-    moneroNodes: jspb.Message.getFieldWithDefault(msg, 26, ""),
-    ignoreTradersListList: (f = jspb.Message.getRepeatedField(msg, 27)) == null ? undefined : f,
-    directoryChooserPath: jspb.Message.getFieldWithDefault(msg, 28, ""),
-    useAnimations: jspb.Message.getBooleanFieldWithDefault(msg, 29, false),
-    selectedpaymentAccountForCreateoffer: (f = msg.getSelectedpaymentAccountForCreateoffer()) && proto.io.haveno.protobuffer.PaymentAccount.toObject(includeInstance, f),
-    bridgeAddressesList: (f = jspb.Message.getRepeatedField(msg, 31)) == null ? undefined : f,
-    bridgeOptionOrdinal: jspb.Message.getFieldWithDefault(msg, 32, 0),
-    torTransportOrdinal: jspb.Message.getFieldWithDefault(msg, 33, 0),
-    customBridges: jspb.Message.getFieldWithDefault(msg, 34, ""),
-    moneroNodesOptionOrdinal: jspb.Message.getFieldWithDefault(msg, 35, 0),
-    referralId: jspb.Message.getFieldWithDefault(msg, 36, ""),
-    phoneKeyAndToken: jspb.Message.getFieldWithDefault(msg, 37, ""),
-    useSoundForMobileNotifications: jspb.Message.getBooleanFieldWithDefault(msg, 38, false),
-    useTradeNotifications: jspb.Message.getBooleanFieldWithDefault(msg, 39, false),
-    useMarketNotifications: jspb.Message.getBooleanFieldWithDefault(msg, 40, false),
-    usePriceNotifications: jspb.Message.getBooleanFieldWithDefault(msg, 41, false),
-    useStandbyMode: jspb.Message.getBooleanFieldWithDefault(msg, 42, false),
-    rpcUser: jspb.Message.getFieldWithDefault(msg, 43, ""),
-    rpcPw: jspb.Message.getFieldWithDefault(msg, 44, ""),
-    takeOfferSelectedPaymentAccountId: jspb.Message.getFieldWithDefault(msg, 45, ""),
-    securityDepositAsPercent: jspb.Message.getFloatingPointFieldWithDefault(msg, 46, 0.0),
-    ignoreDustThreshold: jspb.Message.getFieldWithDefault(msg, 47, 0),
-    securityDepositAsPercentForCrypto: jspb.Message.getFloatingPointFieldWithDefault(msg, 48, 0.0),
-    blockNotifyPort: jspb.Message.getFieldWithDefault(msg, 49, 0),
-    cssTheme: jspb.Message.getFieldWithDefault(msg, 50, 0),
-    tacAcceptedV120: jspb.Message.getBooleanFieldWithDefault(msg, 51, false),
-    autoConfirmSettingsList: jspb.Message.toObjectList(msg.getAutoConfirmSettingsList(),
+blockChainExplorerMainNet: (f = msg.getBlockChainExplorerMainNet()) && proto.io.haveno.protobuffer.BlockChainExplorer.toObject(includeInstance, f),
+blockChainExplorerTestNet: (f = msg.getBlockChainExplorerTestNet()) && proto.io.haveno.protobuffer.BlockChainExplorer.toObject(includeInstance, f),
+backupDirectory: jspb.Message.getFieldWithDefault(msg, 7, ""),
+autoSelectArbitrators: jspb.Message.getBooleanFieldWithDefault(msg, 8, false),
+dontShowAgainMapMap: (f = msg.getDontShowAgainMapMap()) ? f.toObject(includeInstance, undefined) : [],
+tacAccepted: jspb.Message.getBooleanFieldWithDefault(msg, 10, false),
+useTorForXmrOrdinal: jspb.Message.getFieldWithDefault(msg, 11, 0),
+showOwnOffersInOfferBook: jspb.Message.getBooleanFieldWithDefault(msg, 12, false),
+preferredTradeCurrency: (f = msg.getPreferredTradeCurrency()) && proto.io.haveno.protobuffer.TradeCurrency.toObject(includeInstance, f),
+withdrawalTxFeeInVbytes: jspb.Message.getFieldWithDefault(msg, 14, 0),
+useCustomWithdrawalTxFee: jspb.Message.getBooleanFieldWithDefault(msg, 15, false),
+maxPriceDistanceInPercent: jspb.Message.getFloatingPointFieldWithDefault(msg, 16, 0.0),
+offerBookChartScreenCurrencyCode: jspb.Message.getFieldWithDefault(msg, 17, ""),
+tradeChartsScreenCurrencyCode: jspb.Message.getFieldWithDefault(msg, 18, ""),
+buyScreenCurrencyCode: jspb.Message.getFieldWithDefault(msg, 19, ""),
+sellScreenCurrencyCode: jspb.Message.getFieldWithDefault(msg, 20, ""),
+tradeStatisticsTickUnitIndex: jspb.Message.getFieldWithDefault(msg, 21, 0),
+resyncSpvRequested: jspb.Message.getBooleanFieldWithDefault(msg, 22, false),
+sortMarketCurrenciesNumerically: jspb.Message.getBooleanFieldWithDefault(msg, 23, false),
+usePercentageBasedPrice: jspb.Message.getBooleanFieldWithDefault(msg, 24, false),
+peerTagMapMap: (f = msg.getPeerTagMapMap()) ? f.toObject(includeInstance, undefined) : [],
+moneroNodes: jspb.Message.getFieldWithDefault(msg, 26, ""),
+ignoreTradersListList: (f = jspb.Message.getRepeatedField(msg, 27)) == null ? undefined : f,
+directoryChooserPath: jspb.Message.getFieldWithDefault(msg, 28, ""),
+useAnimations: jspb.Message.getBooleanFieldWithDefault(msg, 29, false),
+selectedpaymentAccountForCreateoffer: (f = msg.getSelectedpaymentAccountForCreateoffer()) && proto.io.haveno.protobuffer.PaymentAccount.toObject(includeInstance, f),
+bridgeAddressesList: (f = jspb.Message.getRepeatedField(msg, 31)) == null ? undefined : f,
+bridgeOptionOrdinal: jspb.Message.getFieldWithDefault(msg, 32, 0),
+torTransportOrdinal: jspb.Message.getFieldWithDefault(msg, 33, 0),
+customBridges: jspb.Message.getFieldWithDefault(msg, 34, ""),
+moneroNodesOptionOrdinal: jspb.Message.getFieldWithDefault(msg, 35, 0),
+referralId: jspb.Message.getFieldWithDefault(msg, 36, ""),
+phoneKeyAndToken: jspb.Message.getFieldWithDefault(msg, 37, ""),
+useSoundForMobileNotifications: jspb.Message.getBooleanFieldWithDefault(msg, 38, false),
+useTradeNotifications: jspb.Message.getBooleanFieldWithDefault(msg, 39, false),
+useMarketNotifications: jspb.Message.getBooleanFieldWithDefault(msg, 40, false),
+usePriceNotifications: jspb.Message.getBooleanFieldWithDefault(msg, 41, false),
+useStandbyMode: jspb.Message.getBooleanFieldWithDefault(msg, 42, false),
+rpcUser: jspb.Message.getFieldWithDefault(msg, 43, ""),
+rpcPw: jspb.Message.getFieldWithDefault(msg, 44, ""),
+takeOfferSelectedPaymentAccountId: jspb.Message.getFieldWithDefault(msg, 45, ""),
+securityDepositAsPercent: jspb.Message.getFloatingPointFieldWithDefault(msg, 46, 0.0),
+ignoreDustThreshold: jspb.Message.getFieldWithDefault(msg, 47, 0),
+securityDepositAsPercentForCrypto: jspb.Message.getFloatingPointFieldWithDefault(msg, 48, 0.0),
+blockNotifyPort: jspb.Message.getFieldWithDefault(msg, 49, 0),
+cssTheme: jspb.Message.getFieldWithDefault(msg, 50, 0),
+tacAcceptedV120: jspb.Message.getBooleanFieldWithDefault(msg, 51, false),
+autoConfirmSettingsList: jspb.Message.toObjectList(msg.getAutoConfirmSettingsList(),
     proto.io.haveno.protobuffer.AutoConfirmSettings.toObject, includeInstance),
-    bsqAverageTrimThreshold: jspb.Message.getFloatingPointFieldWithDefault(msg, 53, 0.0),
-    hideNonAccountPaymentMethods: jspb.Message.getBooleanFieldWithDefault(msg, 54, false),
-    showOffersMatchingMyAccounts: jspb.Message.getBooleanFieldWithDefault(msg, 55, false),
-    denyApiTaker: jspb.Message.getBooleanFieldWithDefault(msg, 56, false),
-    notifyOnPreRelease: jspb.Message.getBooleanFieldWithDefault(msg, 57, false),
-    xmrNodeSettings: (f = msg.getXmrNodeSettings()) && proto.io.haveno.protobuffer.XmrNodeSettings.toObject(includeInstance, f),
-    clearDataAfterDays: jspb.Message.getFieldWithDefault(msg, 59, 0),
-    buyScreenCryptoCurrencyCode: jspb.Message.getFieldWithDefault(msg, 60, ""),
-    sellScreenCryptoCurrencyCode: jspb.Message.getFieldWithDefault(msg, 61, ""),
-    splitOfferOutput: jspb.Message.getBooleanFieldWithDefault(msg, 62, false),
-    useSoundForNotifications: jspb.Message.getBooleanFieldWithDefault(msg, 63, false),
-    useSoundForNotificationsInitialized: jspb.Message.getBooleanFieldWithDefault(msg, 64, false),
-    buyScreenOtherCurrencyCode: jspb.Message.getFieldWithDefault(msg, 65, ""),
-    sellScreenOtherCurrencyCode: jspb.Message.getFieldWithDefault(msg, 66, ""),
-    showPrivateOffers: jspb.Message.getBooleanFieldWithDefault(msg, 67, false)
+bsqAverageTrimThreshold: jspb.Message.getFloatingPointFieldWithDefault(msg, 53, 0.0),
+hideNonAccountPaymentMethods: jspb.Message.getBooleanFieldWithDefault(msg, 54, false),
+showOffersMatchingMyAccounts: jspb.Message.getBooleanFieldWithDefault(msg, 55, false),
+denyApiTaker: jspb.Message.getBooleanFieldWithDefault(msg, 56, false),
+notifyOnPreRelease: jspb.Message.getBooleanFieldWithDefault(msg, 57, false),
+xmrNodeSettings: (f = msg.getXmrNodeSettings()) && proto.io.haveno.protobuffer.XmrNodeSettings.toObject(includeInstance, f),
+clearDataAfterDays: jspb.Message.getFieldWithDefault(msg, 59, 0),
+buyScreenCryptoCurrencyCode: jspb.Message.getFieldWithDefault(msg, 60, ""),
+sellScreenCryptoCurrencyCode: jspb.Message.getFieldWithDefault(msg, 61, ""),
+splitOfferOutput: jspb.Message.getBooleanFieldWithDefault(msg, 62, false),
+useSoundForNotifications: jspb.Message.getBooleanFieldWithDefault(msg, 63, false),
+useSoundForNotificationsInitialized: jspb.Message.getBooleanFieldWithDefault(msg, 64, false),
+buyScreenOtherCurrencyCode: jspb.Message.getFieldWithDefault(msg, 65, ""),
+sellScreenOtherCurrencyCode: jspb.Message.getFieldWithDefault(msg, 66, ""),
+showPrivateOffers: jspb.Message.getBooleanFieldWithDefault(msg, 67, false)
   };
 
   if (includeInstance) {
@@ -56593,7 +56612,8 @@ proto.io.haveno.protobuffer.PreferencesPayload.prototype.getDontShowAgainMapMap 
  */
 proto.io.haveno.protobuffer.PreferencesPayload.prototype.clearDontShowAgainMapMap = function() {
   this.getDontShowAgainMapMap().clear();
-  return this;};
+  return this;
+};
 
 
 /**
@@ -56904,7 +56924,8 @@ proto.io.haveno.protobuffer.PreferencesPayload.prototype.getPeerTagMapMap = func
  */
 proto.io.haveno.protobuffer.PreferencesPayload.prototype.clearPeerTagMapMap = function() {
   this.getPeerTagMapMap().clear();
-  return this;};
+  return this;
+};
 
 
 /**
@@ -57798,11 +57819,11 @@ proto.io.haveno.protobuffer.AutoConfirmSettings.prototype.toObject = function(op
  */
 proto.io.haveno.protobuffer.AutoConfirmSettings.toObject = function(includeInstance, msg) {
   var f, obj = {
-    enabled: jspb.Message.getBooleanFieldWithDefault(msg, 1, false),
-    requiredConfirmations: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    tradeLimit: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    serviceAddressesList: (f = jspb.Message.getRepeatedField(msg, 4)) == null ? undefined : f,
-    currencyCode: jspb.Message.getFieldWithDefault(msg, 5, "")
+enabled: jspb.Message.getBooleanFieldWithDefault(msg, 1, false),
+requiredConfirmations: jspb.Message.getFieldWithDefault(msg, 2, 0),
+tradeLimit: jspb.Message.getFieldWithDefault(msg, 3, 0),
+serviceAddressesList: (f = jspb.Message.getRepeatedField(msg, 4)) == null ? undefined : f,
+currencyCode: jspb.Message.getFieldWithDefault(msg, 5, "")
   };
 
   if (includeInstance) {
@@ -58074,10 +58095,10 @@ proto.io.haveno.protobuffer.XmrNodeSettings.prototype.toObject = function(opt_in
  */
 proto.io.haveno.protobuffer.XmrNodeSettings.toObject = function(includeInstance, msg) {
   var f, obj = {
-    blockchainPath: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    bootstrapUrl: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    startupFlagsList: (f = jspb.Message.getRepeatedField(msg, 3)) == null ? undefined : f,
-    syncBlockchain: jspb.Message.getBooleanFieldWithDefault(msg, 4, false)
+blockchainPath: jspb.Message.getFieldWithDefault(msg, 1, ""),
+bootstrapUrl: jspb.Message.getFieldWithDefault(msg, 2, ""),
+startupFlagsList: (f = jspb.Message.getRepeatedField(msg, 3)) == null ? undefined : f,
+syncBlockchain: jspb.Message.getBooleanFieldWithDefault(msg, 4, false)
   };
 
   if (includeInstance) {
@@ -58320,28 +58341,28 @@ proto.io.haveno.protobuffer.UserPayload.prototype.toObject = function(opt_includ
  */
 proto.io.haveno.protobuffer.UserPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    accountId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    paymentAccountsList: jspb.Message.toObjectList(msg.getPaymentAccountsList(),
+accountId: jspb.Message.getFieldWithDefault(msg, 1, ""),
+paymentAccountsList: jspb.Message.toObjectList(msg.getPaymentAccountsList(),
     proto.io.haveno.protobuffer.PaymentAccount.toObject, includeInstance),
-    currentPaymentAccount: (f = msg.getCurrentPaymentAccount()) && proto.io.haveno.protobuffer.PaymentAccount.toObject(includeInstance, f),
-    acceptedLanguageLocaleCodesList: (f = jspb.Message.getRepeatedField(msg, 4)) == null ? undefined : f,
-    developersAlert: (f = msg.getDevelopersAlert()) && proto.io.haveno.protobuffer.Alert.toObject(includeInstance, f),
-    displayedAlert: (f = msg.getDisplayedAlert()) && proto.io.haveno.protobuffer.Alert.toObject(includeInstance, f),
-    developersFilter: (f = msg.getDevelopersFilter()) && proto.io.haveno.protobuffer.Filter.toObject(includeInstance, f),
-    acceptedArbitratorsList: jspb.Message.toObjectList(msg.getAcceptedArbitratorsList(),
+currentPaymentAccount: (f = msg.getCurrentPaymentAccount()) && proto.io.haveno.protobuffer.PaymentAccount.toObject(includeInstance, f),
+acceptedLanguageLocaleCodesList: (f = jspb.Message.getRepeatedField(msg, 4)) == null ? undefined : f,
+developersAlert: (f = msg.getDevelopersAlert()) && proto.io.haveno.protobuffer.Alert.toObject(includeInstance, f),
+displayedAlert: (f = msg.getDisplayedAlert()) && proto.io.haveno.protobuffer.Alert.toObject(includeInstance, f),
+developersFilter: (f = msg.getDevelopersFilter()) && proto.io.haveno.protobuffer.Filter.toObject(includeInstance, f),
+acceptedArbitratorsList: jspb.Message.toObjectList(msg.getAcceptedArbitratorsList(),
     proto.io.haveno.protobuffer.Arbitrator.toObject, includeInstance),
-    acceptedMediatorsList: jspb.Message.toObjectList(msg.getAcceptedMediatorsList(),
+acceptedMediatorsList: jspb.Message.toObjectList(msg.getAcceptedMediatorsList(),
     proto.io.haveno.protobuffer.Mediator.toObject, includeInstance),
-    registeredArbitrator: (f = msg.getRegisteredArbitrator()) && proto.io.haveno.protobuffer.Arbitrator.toObject(includeInstance, f),
-    registeredMediator: (f = msg.getRegisteredMediator()) && proto.io.haveno.protobuffer.Mediator.toObject(includeInstance, f),
-    priceAlertFilter: (f = msg.getPriceAlertFilter()) && proto.io.haveno.protobuffer.PriceAlertFilter.toObject(includeInstance, f),
-    marketAlertFiltersList: jspb.Message.toObjectList(msg.getMarketAlertFiltersList(),
+registeredArbitrator: (f = msg.getRegisteredArbitrator()) && proto.io.haveno.protobuffer.Arbitrator.toObject(includeInstance, f),
+registeredMediator: (f = msg.getRegisteredMediator()) && proto.io.haveno.protobuffer.Mediator.toObject(includeInstance, f),
+priceAlertFilter: (f = msg.getPriceAlertFilter()) && proto.io.haveno.protobuffer.PriceAlertFilter.toObject(includeInstance, f),
+marketAlertFiltersList: jspb.Message.toObjectList(msg.getMarketAlertFiltersList(),
     proto.io.haveno.protobuffer.MarketAlertFilter.toObject, includeInstance),
-    acceptedRefundAgentsList: jspb.Message.toObjectList(msg.getAcceptedRefundAgentsList(),
+acceptedRefundAgentsList: jspb.Message.toObjectList(msg.getAcceptedRefundAgentsList(),
     proto.io.haveno.protobuffer.RefundAgent.toObject, includeInstance),
-    registeredRefundAgent: (f = msg.getRegisteredRefundAgent()) && proto.io.haveno.protobuffer.RefundAgent.toObject(includeInstance, f),
-    cookieMap: (f = msg.getCookieMap()) ? f.toObject(includeInstance, undefined) : [],
-    walletCreationDate: jspb.Message.getFieldWithDefault(msg, 17, 0)
+registeredRefundAgent: (f = msg.getRegisteredRefundAgent()) && proto.io.haveno.protobuffer.RefundAgent.toObject(includeInstance, f),
+cookieMap: (f = msg.getCookieMap()) ? f.toObject(includeInstance, undefined) : [],
+walletCreationDate: jspb.Message.getFieldWithDefault(msg, 17, 0)
   };
 
   if (includeInstance) {
@@ -59182,7 +59203,8 @@ proto.io.haveno.protobuffer.UserPayload.prototype.getCookieMap = function(opt_no
  */
 proto.io.haveno.protobuffer.UserPayload.prototype.clearCookieMap = function() {
   this.getCookieMap().clear();
-  return this;};
+  return this;
+};
 
 
 /**
@@ -59235,8 +59257,8 @@ proto.io.haveno.protobuffer.BlockChainExplorer.prototype.toObject = function(opt
  */
 proto.io.haveno.protobuffer.BlockChainExplorer.toObject = function(includeInstance, msg) {
   var f, obj = {
-    name: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    txUrl: jspb.Message.getFieldWithDefault(msg, 2, "")
+name: jspb.Message.getFieldWithDefault(msg, 1, ""),
+txUrl: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -59402,14 +59424,14 @@ proto.io.haveno.protobuffer.PaymentAccount.prototype.toObject = function(opt_inc
  */
 proto.io.haveno.protobuffer.PaymentAccount.toObject = function(includeInstance, msg) {
   var f, obj = {
-    id: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    creationDate: jspb.Message.getFieldWithDefault(msg, 2, "0"),
-    paymentMethod: (f = msg.getPaymentMethod()) && proto.io.haveno.protobuffer.PaymentMethod.toObject(includeInstance, f),
-    accountName: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    tradeCurrenciesList: jspb.Message.toObjectList(msg.getTradeCurrenciesList(),
+id: jspb.Message.getFieldWithDefault(msg, 1, ""),
+creationDate: jspb.Message.getFieldWithDefault(msg, 2, "0"),
+paymentMethod: (f = msg.getPaymentMethod()) && proto.io.haveno.protobuffer.PaymentMethod.toObject(includeInstance, f),
+accountName: jspb.Message.getFieldWithDefault(msg, 4, ""),
+tradeCurrenciesList: jspb.Message.toObjectList(msg.getTradeCurrenciesList(),
     proto.io.haveno.protobuffer.TradeCurrency.toObject, includeInstance),
-    selectedTradeCurrency: (f = msg.getSelectedTradeCurrency()) && proto.io.haveno.protobuffer.TradeCurrency.toObject(includeInstance, f),
-    paymentAccountPayload: (f = msg.getPaymentAccountPayload()) && proto.io.haveno.protobuffer.PaymentAccountPayload.toObject(includeInstance, f)
+selectedTradeCurrency: (f = msg.getSelectedTradeCurrency()) && proto.io.haveno.protobuffer.TradeCurrency.toObject(includeInstance, f),
+paymentAccountPayload: (f = msg.getPaymentAccountPayload()) && proto.io.haveno.protobuffer.PaymentAccountPayload.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -59805,10 +59827,10 @@ proto.io.haveno.protobuffer.PaymentMethod.prototype.toObject = function(opt_incl
  */
 proto.io.haveno.protobuffer.PaymentMethod.toObject = function(includeInstance, msg) {
   var f, obj = {
-    id: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    maxTradePeriod: jspb.Message.getFieldWithDefault(msg, 2, "0"),
-    maxTradeLimit: jspb.Message.getFieldWithDefault(msg, 3, "0"),
-    supportedAssetCodesList: (f = jspb.Message.getRepeatedField(msg, 4)) == null ? undefined : f
+id: jspb.Message.getFieldWithDefault(msg, 1, ""),
+maxTradePeriod: jspb.Message.getFieldWithDefault(msg, 2, "0"),
+maxTradeLimit: jspb.Message.getFieldWithDefault(msg, 3, "0"),
+supportedAssetCodesList: (f = jspb.Message.getRepeatedField(msg, 4)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -60044,7 +60066,7 @@ proto.io.haveno.protobuffer.Currency.prototype.toObject = function(opt_includeIn
  */
 proto.io.haveno.protobuffer.Currency.toObject = function(includeInstance, msg) {
   var f, obj = {
-    currencyCode: jspb.Message.getFieldWithDefault(msg, 1, "")
+currencyCode: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -60200,10 +60222,10 @@ proto.io.haveno.protobuffer.TradeCurrency.prototype.toObject = function(opt_incl
  */
 proto.io.haveno.protobuffer.TradeCurrency.toObject = function(includeInstance, msg) {
   var f, obj = {
-    code: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    name: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    cryptoCurrency: (f = msg.getCryptoCurrency()) && proto.io.haveno.protobuffer.CryptoCurrency.toObject(includeInstance, f),
-    traditionalCurrency: (f = msg.getTraditionalCurrency()) && proto.io.haveno.protobuffer.TraditionalCurrency.toObject(includeInstance, f)
+code: jspb.Message.getFieldWithDefault(msg, 1, ""),
+name: jspb.Message.getFieldWithDefault(msg, 2, ""),
+cryptoCurrency: (f = msg.getCryptoCurrency()) && proto.io.haveno.protobuffer.CryptoCurrency.toObject(includeInstance, f),
+traditionalCurrency: (f = msg.getTraditionalCurrency()) && proto.io.haveno.protobuffer.TraditionalCurrency.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -60462,7 +60484,7 @@ proto.io.haveno.protobuffer.CryptoCurrency.prototype.toObject = function(opt_inc
  */
 proto.io.haveno.protobuffer.CryptoCurrency.toObject = function(includeInstance, msg) {
   var f, obj = {
-    isAsset: jspb.Message.getBooleanFieldWithDefault(msg, 1, false)
+isAsset: jspb.Message.getBooleanFieldWithDefault(msg, 1, false)
   };
 
   if (includeInstance) {
@@ -60693,9 +60715,9 @@ proto.io.haveno.protobuffer.Country.prototype.toObject = function(opt_includeIns
  */
 proto.io.haveno.protobuffer.Country.toObject = function(includeInstance, msg) {
   var f, obj = {
-    code: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    name: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    region: (f = msg.getRegion()) && proto.io.haveno.protobuffer.Region.toObject(includeInstance, f)
+code: jspb.Message.getFieldWithDefault(msg, 1, ""),
+name: jspb.Message.getFieldWithDefault(msg, 2, ""),
+region: (f = msg.getRegion()) && proto.io.haveno.protobuffer.Region.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -60904,8 +60926,8 @@ proto.io.haveno.protobuffer.Region.prototype.toObject = function(opt_includeInst
  */
 proto.io.haveno.protobuffer.Region.toObject = function(includeInstance, msg) {
   var f, obj = {
-    code: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    name: jspb.Message.getFieldWithDefault(msg, 2, "")
+code: jspb.Message.getFieldWithDefault(msg, 1, ""),
+name: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -61064,9 +61086,9 @@ proto.io.haveno.protobuffer.PriceAlertFilter.prototype.toObject = function(opt_i
  */
 proto.io.haveno.protobuffer.PriceAlertFilter.toObject = function(includeInstance, msg) {
   var f, obj = {
-    currencycode: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    high: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    low: jspb.Message.getFieldWithDefault(msg, 3, 0)
+currencycode: jspb.Message.getFieldWithDefault(msg, 1, ""),
+high: jspb.Message.getFieldWithDefault(msg, 2, 0),
+low: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -61261,10 +61283,10 @@ proto.io.haveno.protobuffer.MarketAlertFilter.prototype.toObject = function(opt_
  */
 proto.io.haveno.protobuffer.MarketAlertFilter.toObject = function(includeInstance, msg) {
   var f, obj = {
-    paymentAccount: (f = msg.getPaymentAccount()) && proto.io.haveno.protobuffer.PaymentAccount.toObject(includeInstance, f),
-    triggerValue: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    isBuyOffer: jspb.Message.getBooleanFieldWithDefault(msg, 3, false),
-    alertIdsList: (f = jspb.Message.getRepeatedField(msg, 4)) == null ? undefined : f
+paymentAccount: (f = msg.getPaymentAccount()) && proto.io.haveno.protobuffer.PaymentAccount.toObject(includeInstance, f),
+triggerValue: jspb.Message.getFieldWithDefault(msg, 2, 0),
+isBuyOffer: jspb.Message.getBooleanFieldWithDefault(msg, 3, false),
+alertIdsList: (f = jspb.Message.getRepeatedField(msg, 4)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -61521,9 +61543,9 @@ proto.io.haveno.protobuffer.MockMailboxPayload.prototype.toObject = function(opt
  */
 proto.io.haveno.protobuffer.MockMailboxPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    message: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    senderNodeAddress: (f = msg.getSenderNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
-    uid: jspb.Message.getFieldWithDefault(msg, 3, "")
+message: jspb.Message.getFieldWithDefault(msg, 1, ""),
+senderNodeAddress: (f = msg.getSenderNodeAddress()) && proto.io.haveno.protobuffer.NodeAddress.toObject(includeInstance, f),
+uid: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
   if (includeInstance) {
@@ -61732,8 +61754,8 @@ proto.io.haveno.protobuffer.MockPayload.prototype.toObject = function(opt_includ
  */
 proto.io.haveno.protobuffer.MockPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    messageVersion: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    message: jspb.Message.getFieldWithDefault(msg, 2, "")
+messageVersion: jspb.Message.getFieldWithDefault(msg, 1, ""),
+message: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -61899,8 +61921,8 @@ proto.io.haveno.protobuffer.PaymentAccountForm.prototype.toObject = function(opt
  */
 proto.io.haveno.protobuffer.PaymentAccountForm.toObject = function(includeInstance, msg) {
   var f, obj = {
-    id: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    fieldsList: jspb.Message.toObjectList(msg.getFieldsList(),
+id: jspb.Message.getFieldWithDefault(msg, 1, 0),
+fieldsList: jspb.Message.toObjectList(msg.getFieldsList(),
     proto.io.haveno.protobuffer.PaymentAccountFormField.toObject, includeInstance)
   };
 
@@ -62114,22 +62136,22 @@ proto.io.haveno.protobuffer.PaymentAccountFormField.prototype.toObject = functio
  */
 proto.io.haveno.protobuffer.PaymentAccountFormField.toObject = function(includeInstance, msg) {
   var f, obj = {
-    id: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    component: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    type: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    label: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    value: jspb.Message.getFieldWithDefault(msg, 5, ""),
-    minlength: jspb.Message.getFieldWithDefault(msg, 6, 0),
-    maxlength: jspb.Message.getFieldWithDefault(msg, 7, 0),
-    supportedCurrenciesList: jspb.Message.toObjectList(msg.getSupportedCurrenciesList(),
+id: jspb.Message.getFieldWithDefault(msg, 1, 0),
+component: jspb.Message.getFieldWithDefault(msg, 2, 0),
+type: jspb.Message.getFieldWithDefault(msg, 3, ""),
+label: jspb.Message.getFieldWithDefault(msg, 4, ""),
+value: jspb.Message.getFieldWithDefault(msg, 5, ""),
+minlength: jspb.Message.getFieldWithDefault(msg, 6, 0),
+maxlength: jspb.Message.getFieldWithDefault(msg, 7, 0),
+supportedCurrenciesList: jspb.Message.toObjectList(msg.getSupportedCurrenciesList(),
     proto.io.haveno.protobuffer.TradeCurrency.toObject, includeInstance),
-    supportedCountriesList: jspb.Message.toObjectList(msg.getSupportedCountriesList(),
+supportedCountriesList: jspb.Message.toObjectList(msg.getSupportedCountriesList(),
     proto.io.haveno.protobuffer.Country.toObject, includeInstance),
-    supportedSepaEuroCountriesList: jspb.Message.toObjectList(msg.getSupportedSepaEuroCountriesList(),
+supportedSepaEuroCountriesList: jspb.Message.toObjectList(msg.getSupportedSepaEuroCountriesList(),
     proto.io.haveno.protobuffer.Country.toObject, includeInstance),
-    supportedSepaNonEuroCountriesList: jspb.Message.toObjectList(msg.getSupportedSepaNonEuroCountriesList(),
+supportedSepaNonEuroCountriesList: jspb.Message.toObjectList(msg.getSupportedSepaNonEuroCountriesList(),
     proto.io.haveno.protobuffer.Country.toObject, includeInstance),
-    requiredForCountriesList: (f = jspb.Message.getRepeatedField(msg, 12)) == null ? undefined : f
+requiredForCountriesList: (f = jspb.Message.getRepeatedField(msg, 12)) == null ? undefined : f
   };
 
   if (includeInstance) {

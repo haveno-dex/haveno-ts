@@ -219,11 +219,11 @@ export default class HavenoClient {
      */
     stopCheckingConnection(): Promise<void>;
     /**
-     * Get the best available connection in order of priority then response time.
+     * Get the best connection in order of priority then response time.
      *
-     * @return {UrlConnection | undefined} the best available connection in order of priority then response time, undefined if no connections available
+     * @return {UrlConnection | undefined} the best connection in order of priority then response time, undefined if no connections
      */
-    getBestAvailableConnection(): Promise<UrlConnection | undefined>;
+    getBestConnection(): Promise<UrlConnection | undefined>;
     /**
      * Automatically switch to the best available connection if current connection is disconnected after being checked.
      *
@@ -328,9 +328,9 @@ export default class HavenoClient {
      * Get the current market price per 1 XMR in the given currency.
      *
      * @param {string} assetCode - asset code to get the price of
-     * @return {number} the price of the asset per 1 XMR
+     * @return {number|undefined} the price of the asset per 1 XMR
      */
-    getPrice(assetCode: string): Promise<number>;
+    getPrice(assetCode: string): Promise<number | undefined>;
     /**
      * Get the current market prices of all a.
      *
