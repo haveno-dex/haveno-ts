@@ -195,6 +195,7 @@ class TradeContext {
   reserveExactAmount?: boolean;
   isPrivateOffer?: boolean;
   buyerAsTakerWithoutDeposit?: boolean; // buyer as taker security deposit is optional for private offers
+  extraInfo?: string;
 
   // take offer
   awaitFundsToTakeOffer?: boolean;
@@ -1479,7 +1480,8 @@ test("Can post and remove an offer (Test, CI, sanity check)", async () => {
   let assetCode = "BCH";
   let price = 1 / 17;
   price = 1 / price; // TODO: price in crypto offer is inverted
-  let offer: OfferInfo = await makeOffer({maker: {havenod: user1}, assetCode: assetCode, price: price});
+  let ctx: Partial<TradeContext> = {maker: {havenod: user1}, assetCode: assetCode, price: price, extraInfo: "My extra info"};
+  let offer: OfferInfo = await makeOffer(ctx);;
   assert.equal(offer.getState(), "AVAILABLE");
   assert.equal(offer.getBaseCurrencyCode(), assetCode); // TODO: base and counter currencies inverted in crypto offer
   assert.equal(offer.getCounterCurrencyCode(), "XMR");
@@ -1491,7 +1493,9 @@ test("Can post and remove an offer (Test, CI, sanity check)", async () => {
 
   // peer sees offer
   await wait(TestConfig.trade.maxTimePeerNoticeMs);
-  if (!getOffer(await user2.getOffers(assetCode, TestConfig.trade.direction), offer.getId())) throw new Error("Offer " + offer.getId() + " was not found in peer's offers after posted");
+  let peerOffer = getOffer(await user2.getOffers(assetCode, TestConfig.trade.direction), offer.getId());
+  if (!peerOffer) throw new Error("Offer " + offer.getId() + " was not found in peer's offers after posted");
+  testOffer(peerOffer, ctx, false);
 
   // cancel offer
   await user1.removeOffer(offer.getId());
@@ -1509,7 +1513,8 @@ test("Can post and remove an offer (Test, CI, sanity check)", async () => {
   // post fiat offer
   assetCode = "USD";
   price = 180.0;
-  offer = await makeOffer({maker: {havenod: user1}, assetCode: assetCode, price: price});
+  ctx = {maker: {havenod: user1}, assetCode: assetCode, price: price, extraInfo: "My extra info 2"};
+  offer = await makeOffer(ctx);
   assert.equal(offer.getState(), "AVAILABLE");
   assert.equal(offer.getBaseCurrencyCode(), "XMR");
   assert.equal(offer.getCounterCurrencyCode(), "USD");
@@ -1521,7 +1526,9 @@ test("Can post and remove an offer (Test, CI, sanity check)", async () => {
 
   // peer sees offer
   await wait(TestConfig.trade.maxTimePeerNoticeMs);
-  if (!getOffer(await user2.getOffers(assetCode, TestConfig.trade.direction), offer.getId())) throw new Error("Offer " + offer.getId() + " was not found in peer's offers after posted");
+  peerOffer = getOffer(await user2.getOffers(assetCode, TestConfig.trade.direction), offer.getId());
+  if (!peerOffer) throw new Error("Offer " + offer.getId() + " was not found in peer's offers after posted");
+  testOffer(peerOffer, ctx, false);
 
   // cancel offer
   await user1.removeOffer(offer.getId());
@@ -1759,7 +1766,8 @@ test("Can complete a trade within a range and without a buyer deposit (Test, CI)
     testBalanceChangeEndToEnd: true,
     direction: OfferDirection.SELL,
     isPrivateOffer: true,
-    buyerAsTakerWithoutDeposit: true
+    buyerAsTakerWithoutDeposit: true,
+    extraInfo: "My extra info"
   }
   await executeTrade(ctx);
 
@@ -2906,7 +2914,8 @@ async function makeOffer(ctxP?: Partial<TradeContext>): Promise<OfferInfo> {
         ctx.offerMinAmount,
         ctx.reserveExactAmount,
         ctx.isPrivateOffer,
-        ctx.buyerAsTakerWithoutDeposit);
+        ctx.buyerAsTakerWithoutDeposit,
+        ctx.extraInfo);
   testOffer(offer, ctx, true);
 
   // offer is included in my offers only
@@ -4203,6 +4212,7 @@ function testOffer(offer: OfferInfo, ctxP?: Partial<TradeContext>, isMyOffer?: b
       expect(offer.getBuyerSecurityDepositPct()).toEqual(ctx.securityDepositPct);
       expect(offer.getChallenge()).toEqual("");
     }
+    if (ctx.extraInfo) expect(offer.getExtraInfo().indexOf(ctx.extraInfo)).toBeGreaterThanOrEqual(0); // may contain extra info from payment account
     expect(offer.getSellerSecurityDepositPct()).toEqual(ctx.securityDepositPct);
     expect(offer.getUseMarketBasedPrice()).toEqual(!ctx?.price);
     expect(offer.getMarketPriceMarginPct()).toEqual(ctx?.priceMargin ? ctx.priceMargin : 0);

@@ -1049,6 +1049,7 @@ export default class HavenoClient {
    * @param {number} reserveExactAmount - reserve exact amount needed for offer, incurring on-chain transaction and 10 confirmations before the offer goes live (default = false)
    * @param {boolean} isPrivateOffer - whether the offer is private (default = false)
    * @param {boolean} buyerAsTakerWithoutDeposit - waive buyer as taker deposit and fee (default false)
+   * @param {string} extraInfo - extra information to include with the offer (optional)
    * @return {OfferInfo} the posted offer
    */
   async postOffer(direction: OfferDirection,
@@ -1062,7 +1063,8 @@ export default class HavenoClient {
                   minAmount?: bigint,
                   reserveExactAmount?: boolean,
                   isPrivateOffer?: boolean,
-                  buyerAsTakerWithoutDeposit?: boolean): Promise<OfferInfo> {
+                  buyerAsTakerWithoutDeposit?: boolean,
+                  extraInfo?: string): Promise<OfferInfo> {
     console.log("Posting offer with security deposit %: " + securityDepositPct)
     try {
       const request = new PostOfferRequest()
@@ -1079,6 +1081,7 @@ export default class HavenoClient {
       if (reserveExactAmount) request.setReserveExactAmount(true);
       if (isPrivateOffer) request.setIsPrivateOffer(true);
       if (buyerAsTakerWithoutDeposit) request.setBuyerAsTakerWithoutDeposit(true);
+      if (extraInfo) request.setExtraInfo(extraInfo);
       return (await this._offersClient.postOffer(request, {password: this._password})).getOffer()!;
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);
