@@ -8,8 +8,10 @@ TypeScript library for using Haveno.
 
 ## Install
 
-1. Start a Haveno daemon (see [installing.md](https://github.com/haveno-dex/haveno/blob/master/docs/installing.md)).
-2. Install haveno-ts in your project: `npm install haveno-ts`
+1. Follow [instructions](https://github.com/haveno-dex/haveno/blob/master/docs/installing.md) to build and start a Haveno daemon: `make haveno-daemon-mainnet`
+2. Install envoy, for example: `brew install envoy`
+3. Start envoy to proxy between http1 and http2: `envoy -c config/envoy.yaml`
+4. Install haveno-ts in your project: `npm install haveno-ts`
 
 ## Sample code
 
