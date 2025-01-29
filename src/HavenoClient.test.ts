@@ -444,7 +444,7 @@ const TestConfig = {
     paymentMethods: Object.keys(PaymentAccountForm.FormId), // all supported payment methods
     assetCodes: ["USD", "GBP", "EUR", "ETH", "BTC", "BCH", "LTC", "USDT-ERC20", "USDT-TRC20", "USDC-ERC20"], // crypto asset codes
     fixedPriceAssetCodes: ["XAG", "XAU", "XGB"],
-    fixedPricePaymentMethods: [HavenoUtils.getPaymentMethodId(PaymentAccountForm.FormId.CASH_AT_ATM)],
+    fixedPricePaymentMethods: [],
     cryptoAddresses: [{
             currencyCode: "ETH",
             address: "0xdBdAb835Acd6fC84cF5F9aDD3c0B5a1E25fbd99f"
