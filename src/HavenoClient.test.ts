@@ -4325,7 +4325,7 @@ function getValidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountForm
     case PaymentAccountFormField.FieldId.INTERMEDIARY_SWIFT_CODE:
       return "10987654321"; // TODO: use real swift code
     case PaymentAccountFormField.FieldId.MOBILE_NR:
-      throw new Error("Not implemented");
+      return "876-512-7813";
     case PaymentAccountFormField.FieldId.NATIONAL_ACCOUNT_ID:
       throw new Error("Not implemented");
     case PaymentAccountFormField.FieldId.PAYID:
@@ -4464,7 +4464,7 @@ function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFo
     case PaymentAccountFormField.FieldId.INTERMEDIARY_SWIFT_CODE:
       return "A";
     case PaymentAccountFormField.FieldId.MOBILE_NR:
-      throw new Error("Not implemented");
+      return "A";
     case PaymentAccountFormField.FieldId.NATIONAL_ACCOUNT_ID:
       throw new Error("Not implemented");
     case PaymentAccountFormField.FieldId.PAYID:
@@ -4612,6 +4612,10 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
         expect(account.getPaymentAccountPayload()!.getVenmoAccountPayload()!.getEmailOrMobileNrOrUsername()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.EMAIL_OR_MOBILE_NR_OR_USERNAME).getValue());
         expect(account.getTradeCurrenciesList().length).toEqual(1);
         expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("USD");
+        break;
+     case PaymentAccountForm.FormId.PAYSAFE:
+        expect(account.getPaymentAccountPayload()!.getPaysafeAccountPayload()!.getEmail()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.EMAIL).getValue());
+        expect(account.getTradeCurrenciesList().map(currency => currency.getCode()).join(",")).toEqual(getFormField(form, PaymentAccountFormField.FieldId.TRADE_CURRENCIES).getValue());
         break;
       default:
         throw new Error("Unhandled payment method type: " + form.getId());
