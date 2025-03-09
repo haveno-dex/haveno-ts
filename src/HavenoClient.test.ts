@@ -2257,8 +2257,8 @@ test("Selects arbitrators which are online, registered, and least used (Test)", 
   await wait(TestConfig.trade.walletSyncPeriodMs * 2);
 
   // get internal api addresses
-  const arbitrator1ApiUrl = "127.0.0.1:" + TestConfig.ports.get(getPort(arbitrator.getUrl()))![1]; // TODO: havenod.getApiUrl()?
-  const arbitrator2ApiUrl = "127.0.0.1:" + TestConfig.ports.get(getPort(arbitrator2.getUrl()))![1];
+  const arbitrator1ApiUrl = "localhost:" + TestConfig.ports.get(getPort(arbitrator.getUrl()))![1]; // TODO: havenod.getApiUrl()?
+  const arbitrator2ApiUrl = "localhost:" + TestConfig.ports.get(getPort(arbitrator2.getUrl()))![1];
 
   let err = undefined;
   try {
