@@ -268,6 +268,10 @@ class TradeContext {
     return this.direction === OfferDirection.BUY;
   }
 
+  wasDisputeOpened() {
+    return this.buyerOpenedDispute || this.sellerOpenedDispute;
+  }
+
   getDisputeOpener(): PeerContext | undefined {
     if (this.disputeOpener === undefined) return undefined;
     return this.disputeOpener === SaleRole.BUYER ? this.getBuyer() : this.getSeller();
@@ -1808,25 +1812,30 @@ test("Can complete all trade combinations (Test, stress)", async () => {
   const BUYER_DISPUTE_OPTS = [DisputeContext.NONE, DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK, DisputeContext.OPEN_AFTER_PAYMENT_SENT];
   const SELLER_DISPUTE_OPTS = [DisputeContext.NONE, DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK, DisputeContext.OPEN_AFTER_PAYMENT_SENT];
   const DISPUTE_WINNER_OPTS = [DisputeResult.Winner.BUYER, DisputeResult.Winner.SELLER];
+  const RESOLVE_DISPUTE_OPTS = [false, true];
   for (let i = 0; i < MAKER_OPTS.length; i++) {
     for (let j = 0; j < DIRECTION_OPTS.length; j++) {
       for (let k = 0; k < BUYER_DISPUTE_OPTS.length; k++) {
         for (let l = 0; l < SELLER_DISPUTE_OPTS.length; l++) {
           for (let m = 0; m < DISPUTE_WINNER_OPTS.length; m++) {
-            if (BUYER_DISPUTE_OPTS[k] !== DisputeContext.NONE && SELLER_DISPUTE_OPTS[l] !== DisputeContext.NONE) continue; // skip both opening a dispute
-            const ctx: Partial<TradeContext> = {
-              walletSyncPeriodMs: 8000, // increase for stress test
-              maxTimePeerNoticeMs: 8000,
-              maker: { havenod: MAKER_OPTS[i] === TradeRole.MAKER ? user1 : user2 },
-              taker: { havenod: MAKER_OPTS[i] === TradeRole.MAKER ? user2 : user1 },
-              direction: DIRECTION_OPTS[j],
-              buyerDisputeContext: BUYER_DISPUTE_OPTS[k],
-              sellerDisputeContext: SELLER_DISPUTE_OPTS[l],
-              disputeWinner: DISPUTE_WINNER_OPTS[m],
-              disputeSummary: "After much deliberation, " + (DISPUTE_WINNER_OPTS[m] === DisputeResult.Winner.BUYER ? "buyer" : "seller") + " is winner",
-              offerAmount: getRandomBigIntWithinPercent(TestConfig.trade.offerAmount!, 0.15)
-            };
-            ctxs.push(new TradeContext(Object.assign({}, new TradeContext(TestConfig.trade), ctx)));
+            for (let n = 0; n < RESOLVE_DISPUTE_OPTS.length; n++) {
+              if (BUYER_DISPUTE_OPTS[k] !== DisputeContext.NONE && SELLER_DISPUTE_OPTS[l] !== DisputeContext.NONE) continue; // skip both opening a dispute
+              if (BUYER_DISPUTE_OPTS[k] === DisputeContext.NONE && SELLER_DISPUTE_OPTS[l] === DisputeContext.NONE && RESOLVE_DISPUTE_OPTS[n]) continue; // skip permutations to resolve dispute when no dispute
+              const ctx: Partial<TradeContext> = {
+                walletSyncPeriodMs: 8000, // increase for stress test
+                maxTimePeerNoticeMs: 8000,
+                maker: { havenod: MAKER_OPTS[i] === TradeRole.MAKER ? user1 : user2 },
+                taker: { havenod: MAKER_OPTS[i] === TradeRole.MAKER ? user2 : user1 },
+                direction: DIRECTION_OPTS[j],
+                buyerDisputeContext: BUYER_DISPUTE_OPTS[k],
+                sellerDisputeContext: SELLER_DISPUTE_OPTS[l],
+                disputeWinner: DISPUTE_WINNER_OPTS[m],
+                resolveDispute: RESOLVE_DISPUTE_OPTS[n],
+                disputeSummary: "After much deliberation, " + (DISPUTE_WINNER_OPTS[m] === DisputeResult.Winner.BUYER ? "buyer" : "seller") + " is winner",
+                offerAmount: getRandomBigIntWithinPercent(TestConfig.trade.offerAmount!, 0.15)
+              };
+              ctxs.push(new TradeContext(Object.assign({}, new TradeContext(TestConfig.trade), ctx)));
+            }
           }
         }
       }
@@ -1931,6 +1940,7 @@ test("Can resolve disputes (Test, CI)", async () => {
   const trade2 = await user1.getTrade(tradeIds[configIdx === undefined ? 2 : 0]);
   Object.assign(ctxs[0], {
     resolveDispute: false,
+    buyerSendsPayment: false,
     sellerDisputeContext: DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK,
     disputeWinner: DisputeResult.Winner.SELLER,
     disputeReason: DisputeResult.Reason.PEER_WAS_LATE,
@@ -1938,6 +1948,7 @@ test("Can resolve disputes (Test, CI)", async () => {
   });
   Object.assign(ctxs[1], {
     resolveDispute: false,
+    buyerSendsPayment: false,
     buyerDisputeContext: DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK,
     disputeWinner: DisputeResult.Winner.BUYER,
     disputeReason: DisputeResult.Reason.SELLER_NOT_RESPONDING,
@@ -1946,6 +1957,7 @@ test("Can resolve disputes (Test, CI)", async () => {
   });
   Object.assign(ctxs[2], {
     resolveDispute: false,
+    buyerSendsPayment: false,
     buyerDisputeContext: DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK,
     disputeWinner: DisputeResult.Winner.SELLER,
     disputeReason: DisputeResult.Reason.TRADE_ALREADY_SETTLED,
@@ -1955,6 +1967,7 @@ test("Can resolve disputes (Test, CI)", async () => {
   Object.assign(ctxs[3], {
     resolveDispute: false,
     buyerSendsPayment: true,
+    sellerReceivesPayment: false,
     sellerDisputeContext: DisputeContext.OPEN_AFTER_PAYMENT_SENT,
     disputeWinner: DisputeResult.Winner.BUYER,
     disputeReason: DisputeResult.Reason.TRADE_ALREADY_SETTLED,
@@ -2684,16 +2697,16 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
 
     // handle opened dispute
     if (ctx.isStopped) return ctx.offerId!;
-    if (ctx.disputeOpener) {
+    if (ctx.wasDisputeOpened()) {
 
       // test open dispute
       await testOpenDispute(ctx);
 
       // resolve dispute if configured
-      if (ctx.resolveDispute) await resolveDispute(ctx);
-
-      // return offer id
-      return ctx.offerId!;
+      if (ctx.resolveDispute) {
+        await resolveDispute(ctx);
+        return ctx.offerId!;
+      }
     }
 
     // buyer confirms payment is sent
@@ -2759,12 +2772,12 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
       if (!ctx.disputeOpener) ctx.disputeOpener = SaleRole.SELLER;
     }
     if (ctx.isStopped) return ctx.offerId!;
-    if (ctx.disputeOpener) await testOpenDispute(ctx);
+    if (ctx.wasDisputeOpened()) await testOpenDispute(ctx);
 
-    // if dispute opened, resolve dispute if configured and return
+    // if dispute opened, resolve dispute if configured
     if (ctx.isStopped) return ctx.offerId!;
-    if (ctx.disputeOpener) {
-      if (ctx.resolveDispute) await resolveDispute(ctx);
+    if (ctx.wasDisputeOpened() && ctx.resolveDispute) {
+      await resolveDispute(ctx);
       return ctx.offerId!;
     }
 
@@ -2846,7 +2859,7 @@ async function testTradePayoutUnlock(ctxP: Partial<TradeContext>) {
   let trade = await ctx.arbitrator.havenod!.getTrade(ctx.offerId!);
   if (trade.getPayoutState() !== "PAYOUT_CONFIRMED") await mineToHeight(height + 1);
   await wait(TestConfig.maxWalletStartupMs + ctx.walletSyncPeriodMs * 2);
-  const disputeState = ctx.isPaymentReceived ? "NO_DISPUTE" : "DISPUTE_CLOSED";
+  const disputeState = ctx.wasDisputeOpened() ? "DISPUTE_CLOSED" : "NO_DISPUTE";
   if (ctx.getBuyer().havenod) await testTradeState(await ctx.getBuyer().havenod!.getTrade(ctx.offerId!), {phase: ctx.getPhase(), disputeState: disputeState, payoutState: ["PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"]});
   if (ctx.getSeller().havenod) await testTradeState(await ctx.getSeller().havenod!.getTrade(ctx.offerId!), {phase: ctx.getPhase(), disputeState: disputeState, payoutState: ["PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"]});
   await testTradeState(await ctx.arbitrator.havenod!.getTrade(ctx.offerId!), {phase: ctx.getPhase(), payoutState: ["PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED"]});
@@ -3163,16 +3176,17 @@ async function testOpenDispute(ctxP: Partial<TradeContext>) {
   expect(sellerPaymentAccountPayload).toEqual(expectedSellerPaymentAccountPayload);
   expect(await ctx.arbitrator.havenod?.getPaymentAccountPayloadForm(sellerPaymentAccountPayload!)).toEqual(await ctx.arbitrator.havenod?.getPaymentAccountPayloadForm(expectedSellerPaymentAccountPayload!));
 
-  // arbitrator has buyer's payment account info unless opener is seller and payment not sent
+  // arbitrator has buyer's payment account info unless seller opens dispute before payment sent
+  // TODO: should arbitrator receive buyer's payment account info if seller opens dispute before payment sent?
   let buyerPaymentAccountPayload = arbDisputeOpener.getContract()!.getIsBuyerMakerAndSellerTaker() ? arbDisputeOpener.getMakerPaymentAccountPayload() : arbDisputeOpener.getTakerPaymentAccountPayload();
-  if (ctx.getDisputeOpener()!.havenod === ctx.getSeller().havenod && !ctx.isPaymentSent) expect(buyerPaymentAccountPayload).toBeUndefined();
+  if (ctx.getDisputeOpener()!.havenod === ctx.getSeller().havenod && ctx.sellerDisputeContext === DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK) expect(buyerPaymentAccountPayload).toBeUndefined();
   else {
     let expectedBuyerPaymentAccountPayload = (await ctx.getBuyer().havenod?.getPaymentAccount(buyerPaymentAccountPayload?.getId()!))?.getPaymentAccountPayload();
     expect(buyerPaymentAccountPayload).toEqual(expectedBuyerPaymentAccountPayload);
     expect(await ctx.arbitrator.havenod?.getPaymentAccountPayloadForm(buyerPaymentAccountPayload!)).toEqual(await ctx.arbitrator.havenod?.getPaymentAccountPayloadForm(expectedBuyerPaymentAccountPayload!));
   }
   buyerPaymentAccountPayload = arbDisputePeer.getContract()!.getIsBuyerMakerAndSellerTaker() ? arbDisputePeer.getMakerPaymentAccountPayload() : arbDisputePeer.getTakerPaymentAccountPayload();
-  if (ctx.getDisputeOpener()!.havenod === ctx.getSeller().havenod && !ctx.isPaymentSent) expect(buyerPaymentAccountPayload).toBeUndefined();
+  if (ctx.getDisputeOpener()!.havenod === ctx.getSeller().havenod && ctx.sellerDisputeContext === DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK) expect(buyerPaymentAccountPayload).toBeUndefined();
   else {
     let expectedBuyerPaymentAccountPayload = (await ctx.getBuyer().havenod?.getPaymentAccount(buyerPaymentAccountPayload?.getId()!))?.getPaymentAccountPayload();
     expect(buyerPaymentAccountPayload).toEqual(expectedBuyerPaymentAccountPayload);
@@ -3380,8 +3394,8 @@ async function testAmountsAfterComplete(tradeCtx: TradeContext) {
   const payoutTxFee = BigInt(payoutTx!.getFee());
 
   // get expected payouts for normal trade
-  const isDisputedTrade = tradeCtx.getDisputeOpener() !== undefined;
-  if (!isDisputedTrade) {
+  const isResolvedByDispute = tradeCtx.wasDisputeOpened() && tradeCtx.resolveDispute;
+  if (!isResolvedByDispute) {
     tradeCtx.getBuyer().payoutTxFee = payoutTxFee / 2n;
     tradeCtx.getBuyer().payoutAmount = tradeCtx.getBuyer().securityDepositActual! + tradeCtx.tradeAmount! - tradeCtx.getBuyer().payoutTxFee!;
     tradeCtx.getSeller().payoutTxFee = payoutTxFee / 2n;
@@ -3404,7 +3418,7 @@ async function testAmountsAfterComplete(tradeCtx: TradeContext) {
   }
 
   // TODO: payout tx is unknown to offline non-signer until confirmed
-  if (isDisputedTrade || tradeCtx.isOfflineFlow()) {
+  if (isResolvedByDispute || tradeCtx.isOfflineFlow()) {
     await mineToHeight(await monerod.getHeight() + 1);
     await wait(TestConfig.maxWalletStartupMs + tradeCtx.walletSyncPeriodMs * 2);
   }
