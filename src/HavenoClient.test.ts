@@ -196,6 +196,7 @@ class TradeContext {
   isPrivateOffer?: boolean;
   buyerAsTakerWithoutDeposit?: boolean; // buyer as taker security deposit is optional for private offers
   extraInfo?: string;
+  sourceOfferId?: string;
 
   // take offer
   awaitFundsToTakeOffer?: boolean;
@@ -1551,6 +1552,40 @@ test("Can post and remove an offer (Test, CI, sanity check)", async () => {
   // peer does not see offer
   await wait(TestConfig.trade.maxTimePeerNoticeMs);
   if (getOffer(await user2.getOffers(assetCode, TestConfig.trade.direction), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in peer's offers after removed");
+});
+
+test("Can clone offers (Test, CI, sanity check)", async () => {
+
+  // wait for user1 to have unlocked balance to post offer
+  await waitForAvailableBalance(250000000000n * 2n, user1);
+
+  // get unlocked balance before reserving funds for offer
+  const availableBalanceBefore = BigInt((await user1.getBalances()).getAvailableBalance());
+
+  // post offer
+  let assetCode = "BCH";
+  let ctx: Partial<TradeContext> = {maker: {havenod: user1}, isPrivateOffer: true, buyerAsTakerWithoutDeposit: true, assetCode: assetCode, extraInfo: "My extra info"};
+  let offer: OfferInfo = await makeOffer(ctx);;
+  assert.equal(offer.getState(), "AVAILABLE");
+
+  // clone offer
+  const clonedOffer = await makeOffer({
+    sourceOfferId: offer.getId(),
+    assetCode: "BCH"
+  });
+  assert.notEqual(clonedOffer.getId(), offer.getId());
+  assert.equal(clonedOffer.getState(), "DEACTIVATED"); // deactivated if same payment method and currency
+  assert.equal(clonedOffer.getBaseCurrencyCode(), assetCode);
+  assert.equal(clonedOffer.getCounterCurrencyCode(), "XMR");
+  assert.equal(clonedOffer.getAmount(), offer.getAmount());
+  assert.equal(clonedOffer.getMinAmount(), offer.getMinAmount());
+  assert.equal(clonedOffer.getIsPrivateOffer(), offer.getIsPrivateOffer());
+  
+  // TODO: test edited fields on clone, etc
+
+  // remove offers
+  await user1.removeOffer(offer.getId());
+  await user1.removeOffer(clonedOffer.getId());
 });
 
 // TODO: provide number of confirmations in offer status
@@ -2919,21 +2954,31 @@ async function makeOffer(ctxP?: Partial<TradeContext>): Promise<OfferInfo> {
     ctx.taker.balancesBeforeOffer = await ctx.taker.havenod?.getBalances();
   }
 
-  // post offer
-  const offer: OfferInfo = await ctx.maker.havenod!.postOffer(
-        ctx.direction!,
-        ctx.offerAmount!,
-        ctx.assetCode!,
-        ctx.makerPaymentAccountId!,
-        ctx.securityDepositPct!,
-        ctx.price,
-        ctx.priceMargin,
-        ctx.triggerPrice,
-        ctx.offerMinAmount,
-        ctx.reserveExactAmount,
-        ctx.isPrivateOffer,
-        ctx.buyerAsTakerWithoutDeposit,
-        ctx.extraInfo);
+  // post or clone offer
+  const offer: OfferInfo = await ctx.maker.havenod!.postOffer({
+    direction: ctx.direction,
+    amount: ctx.offerAmount,
+    assetCode: ctx.assetCode,
+    paymentAccountId: ctx.makerPaymentAccountId,
+    securityDepositPct: ctx.securityDepositPct,
+    price: ctx.price,
+    marketPriceMarginPct: ctx.priceMargin,
+    triggerPrice: ctx.triggerPrice,
+    minAmount: ctx.offerMinAmount,
+    reserveExactAmount: ctx.reserveExactAmount,
+    isPrivateOffer: ctx.isPrivateOffer,
+    buyerAsTakerWithoutDeposit: ctx.buyerAsTakerWithoutDeposit,
+    extraInfo: ctx.extraInfo,
+    sourceOfferId: ctx.sourceOfferId
+  });
+
+  // transfer context from clone source
+  if (ctx.sourceOfferId) {
+    const sourceOffer = await ctx.maker.havenod!.getMyOffer(ctx.sourceOfferId);
+    ctx.isPrivateOffer = sourceOffer.getIsPrivateOffer();
+  }
+
+  // test offer
   testOffer(offer, ctx, true);
 
   // offer is included in my offers only
@@ -2962,13 +3007,13 @@ async function makeOffer(ctxP?: Partial<TradeContext>): Promise<OfferInfo> {
   if (offer.getState() === "PENDING") {
     if (!ctx.reserveExactAmount && unlockedBalanceAfter !== unlockedBalanceBefore) throw new Error("Unlocked balance should not change for scheduled offer " + offer.getId());
   } else if (offer.getState() === "AVAILABLE") {
-    if (unlockedBalanceAfter === unlockedBalanceBefore) {
+    if (!ctx.sourceOfferId && unlockedBalanceAfter === unlockedBalanceBefore) {
       console.warn("Unlocked balance did not change after posting offer, waiting a sync period");
       await wait(ctx.walletSyncPeriodMs);
       unlockedBalanceAfter = BigInt((await ctx.maker.havenod!.getBalances()).getAvailableBalance());
       if (unlockedBalanceAfter === unlockedBalanceBefore) throw new Error("Unlocked balance did not change after posting offer " + offer.getId() + ", before=" + unlockedBalanceBefore + ", after=" + unlockedBalanceAfter);
     }
-  } else {
+  } else if (!ctx.sourceOfferId) { // cloned offers can be deactivated after creating
     throw new Error("Unexpected offer state after posting: " + offer.getState());
   }
 
