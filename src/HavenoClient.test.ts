@@ -840,7 +840,9 @@ test("Can manage Monero daemon connections (Test, CI)", async () => {
       "--confirm-external-bind",
       "--rpc-access-control-origins", "http://127.0.0.1:8080",
       "--fixed-difficulty", "500",
-      "--disable-rpc-ban"
+      "--disable-rpc-ban",
+      "--rpc-max-connections-per-private-ip", "100",
+      "--max-connections-per-ip", "10"
     ];
     if (getBaseCurrencyNetwork() !== BaseCurrencyNetwork.XMR_MAINNET) cmd.push("--" + moneroTs.MoneroNetworkType.toString(TestConfig.networkType).toLowerCase());
     if (TestConfig.monerod3.username) cmd.push("--rpc-login", TestConfig.monerod3.username + ":" + TestConfig.monerod3.password);
