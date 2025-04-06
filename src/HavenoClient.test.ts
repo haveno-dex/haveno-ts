@@ -145,7 +145,7 @@ const defaultTradeConfig: Partial<TradeContext> = {
   disputeReason: DisputeResult.Reason.PEER_WAS_LATE,
   disputeSummary: "Seller is winner",
   walletSyncPeriodMs: 5000,
-  maxTimePeerNoticeMs: 5000,
+  maxTimePeerNoticeMs: 6000,
   testChatMessages: true,
   stopOnFailure: false, // TODO: setting to true can cause error: Http response at 400 or 500 level, http status code: 503
   testPayoutConfirmed: true,
