@@ -2445,7 +2445,7 @@ test("Can bootstrap a network", async () => {
     if (await isFixedPrice(ctxP)) ctxP.price = 142.23;
   
     // randomize trade config
-    if (ctxP.takeOffer === undefined) ctxP.takeOffer = getRandomOutcome(4/5);
+    if (ctxP.takeOffer === undefined) ctxP.takeOffer = getRandomOutcome(3/4);
     if (ctxP.tradeAmount === undefined) ctxP.tradeAmount = isRangeOffer ? getRandomBigIntWithinRange(ctxP.offerMinAmount!, ctxP.offerAmount) : ctxP.offerAmount;
     if (ctxP.buyerSendsPayment === undefined) ctxP.buyerSendsPayment = getRandomOutcome(1/2);
     if (ctxP.sellerReceivesPayment === undefined) ctxP.sellerReceivesPayment = getRandomOutcome(1/2);
