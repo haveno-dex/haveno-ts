@@ -2270,7 +2270,7 @@ test("Can handle unexpected errors during trade initialization (Test)", async ()
 
       // determine if error is expected
       let expected = false;
-      const expectedErrMsgs = ["not enough unlocked money", "timeout reached. protocol did not complete", "trade is already taken"];
+      const expectedErrMsgs = ["not enough unlocked money", "timeout reached. protocol did not complete", "trade is already taken", "open offer has been removed"];
       for (const expectedErrMsg of expectedErrMsgs) {
         if (err.message.indexOf(expectedErrMsg) >= 0) {
           expected = true;
