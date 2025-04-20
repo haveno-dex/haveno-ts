@@ -14838,7 +14838,9 @@ triggerPrice: jspb.Message.getFieldWithDefault(msg, 9, ""),
 reserveExactAmount: jspb.Message.getBooleanFieldWithDefault(msg, 10, false),
 paymentAccountId: jspb.Message.getFieldWithDefault(msg, 11, ""),
 isPrivateOffer: jspb.Message.getBooleanFieldWithDefault(msg, 12, false),
-buyerAsTakerWithoutDeposit: jspb.Message.getBooleanFieldWithDefault(msg, 13, false)
+buyerAsTakerWithoutDeposit: jspb.Message.getBooleanFieldWithDefault(msg, 13, false),
+extraInfo: jspb.Message.getFieldWithDefault(msg, 14, ""),
+sourceOfferId: jspb.Message.getFieldWithDefault(msg, 15, "")
   };
 
   if (includeInstance) {
@@ -14926,6 +14928,14 @@ proto.io.haveno.protobuffer.PostOfferRequest.deserializeBinaryFromReader = funct
     case 13:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setBuyerAsTakerWithoutDeposit(value);
+      break;
+    case 14:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setExtraInfo(value);
+      break;
+    case 15:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setSourceOfferId(value);
       break;
     default:
       reader.skipField();
@@ -15044,6 +15054,20 @@ proto.io.haveno.protobuffer.PostOfferRequest.serializeBinaryToWriter = function(
   if (f) {
     writer.writeBool(
       13,
+      f
+    );
+  }
+  f = message.getExtraInfo();
+  if (f.length > 0) {
+    writer.writeString(
+      14,
+      f
+    );
+  }
+  f = message.getSourceOfferId();
+  if (f.length > 0) {
+    writer.writeString(
+      15,
       f
     );
   }
@@ -15281,6 +15305,42 @@ proto.io.haveno.protobuffer.PostOfferRequest.prototype.getBuyerAsTakerWithoutDep
  */
 proto.io.haveno.protobuffer.PostOfferRequest.prototype.setBuyerAsTakerWithoutDeposit = function(value) {
   return jspb.Message.setProto3BooleanField(this, 13, value);
+};
+
+
+/**
+ * optional string extra_info = 14;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.PostOfferRequest.prototype.getExtraInfo = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 14, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.PostOfferRequest} returns this
+ */
+proto.io.haveno.protobuffer.PostOfferRequest.prototype.setExtraInfo = function(value) {
+  return jspb.Message.setProto3StringField(this, 14, value);
+};
+
+
+/**
+ * optional string source_offer_id = 15;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.PostOfferRequest.prototype.getSourceOfferId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 15, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.PostOfferRequest} returns this
+ */
+proto.io.haveno.protobuffer.PostOfferRequest.prototype.setSourceOfferId = function(value) {
+  return jspb.Message.setProto3StringField(this, 15, value);
 };
 
 
@@ -15730,7 +15790,8 @@ arbitratorSigner: jspb.Message.getFieldWithDefault(msg, 29, ""),
 splitOutputTxHash: jspb.Message.getFieldWithDefault(msg, 30, ""),
 splitOutputTxFee: jspb.Message.getFieldWithDefault(msg, 31, "0"),
 isPrivateOffer: jspb.Message.getBooleanFieldWithDefault(msg, 32, false),
-challenge: jspb.Message.getFieldWithDefault(msg, 33, "")
+challenge: jspb.Message.getFieldWithDefault(msg, 33, ""),
+extraInfo: jspb.Message.getFieldWithDefault(msg, 34, "")
   };
 
   if (includeInstance) {
@@ -15898,6 +15959,10 @@ proto.io.haveno.protobuffer.OfferInfo.deserializeBinaryFromReader = function(msg
     case 33:
       var value = /** @type {string} */ (reader.readString());
       msg.setChallenge(value);
+      break;
+    case 34:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setExtraInfo(value);
       break;
     default:
       reader.skipField();
@@ -16156,6 +16221,13 @@ proto.io.haveno.protobuffer.OfferInfo.serializeBinaryToWriter = function(message
   if (f.length > 0) {
     writer.writeString(
       33,
+      f
+    );
+  }
+  f = message.getExtraInfo();
+  if (f.length > 0) {
+    writer.writeString(
+      34,
       f
     );
   }
@@ -16753,6 +16825,24 @@ proto.io.haveno.protobuffer.OfferInfo.prototype.getChallenge = function() {
  */
 proto.io.haveno.protobuffer.OfferInfo.prototype.setChallenge = function(value) {
   return jspb.Message.setProto3StringField(this, 33, value);
+};
+
+
+/**
+ * optional string extra_info = 34;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.OfferInfo.prototype.getExtraInfo = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 34, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.OfferInfo} returns this
+ */
+proto.io.haveno.protobuffer.OfferInfo.prototype.setExtraInfo = function(value) {
+  return jspb.Message.setProto3StringField(this, 34, value);
 };
 
 

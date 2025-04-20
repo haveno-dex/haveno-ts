@@ -3,6 +3,25 @@ import { GetTradeStatisticsClient, GetVersionClient, AccountClient, XmrConnectio
 import { MarketPriceInfo, MarketDepthInfo, XmrBalanceInfo, OfferInfo, TradeInfo, XmrTx, XmrDestination, NotificationMessage, UrlConnection } from "./protobuf/grpc_pb";
 import { TradeStatistics3, OfferDirection, PaymentMethod, PaymentAccountForm, PaymentAccountFormField, PaymentAccount, PaymentAccountPayload, Attachment, DisputeResult, Dispute, ChatMessage, XmrNodeSettings } from "./protobuf/pb_pb";
 /**
+ * Configuration to post, clone, or edit an offer.
+ */
+export interface OfferConfig {
+    direction?: OfferDirection;
+    amount?: bigint;
+    minAmount?: bigint;
+    assetCode?: string;
+    paymentAccountId?: string;
+    securityDepositPct?: number;
+    price?: number;
+    marketPriceMarginPct?: number;
+    triggerPrice?: number;
+    reserveExactAmount?: boolean;
+    isPrivateOffer?: boolean;
+    buyerAsTakerWithoutDeposit?: boolean;
+    extraInfo?: string;
+    sourceOfferId?: string;
+}
+/**
  * Haveno daemon client.
  */
 export default class HavenoClient {
@@ -425,23 +444,26 @@ export default class HavenoClient {
      */
     getMyOffer(offerId: string): Promise<OfferInfo>;
     /**
-     * Post an offer.
+     * Post or clone an offer.
      *
-     * @param {OfferDirection} direction - "buy" or "sell" XMR
-     * @param {bigint} amount - amount of XMR to trade
-     * @param {string} assetCode - asset code to trade for XMR
-     * @param {string} paymentAccountId - payment account id
-     * @param {number} securityDepositPct - security deposit as % of trade amount for buyer and seller
-     * @param {number} price - trade price (optional, default to market price)
-     * @param {number} marketPriceMarginPct - if using market price, % from market price to accept (optional, default 0%)
-     * @param {number} triggerPrice - price to remove offer (optional)
-     * @param {bigint} minAmount - minimum amount to trade (optional, default to fixed amount)
-     * @param {number} reserveExactAmount - reserve exact amount needed for offer, incurring on-chain transaction and 10 confirmations before the offer goes live (default = false)
-     * @param {boolean} isPrivateOffer - whether the offer is private (default = false)
-     * @param {boolean} buyerAsTakerWithoutDeposit - waive buyer as taker deposit and fee (default false)
+     * @param {OfferConfig} config - configures the offer to post or clone
+     * @param {OfferDirection} [config.direction] - specifies to buy or sell xmr (default buy)
+     * @param {bigint} [config.amount] - amount of XMR to trade
+     * @param {string} [config.assetCode] - asset code to trade for XMR
+     * @param {string} [config.paymentAccountId] - payment account id
+     * @param {number} [config.securityDepositPct] - security deposit as % of trade amount for buyer and seller
+     * @param {number} [config.price] - trade price (optional, default to market price)
+     * @param {number} [config.marketPriceMarginPct] - if using market price, % from market price to accept (optional, default 0%)
+     * @param {number} [config.triggerPrice] - price to remove offer (optional)
+     * @param {bigint} [config.minAmount] - minimum amount to trade (optional, default to fixed amount)
+     * @param {number} [config.reserveExactAmount] - reserve exact amount needed for offer, incurring on-chain transaction and 10 confirmations before the offer goes live (default = false)
+     * @param {boolean} [config.isPrivateOffer] - whether the offer is private (default = false)
+     * @param {boolean} [config.buyerAsTakerWithoutDeposit] - waive buyer as taker deposit and fee (default false)
+     * @param {string} [config.extraInfo] - extra information to include with the offer (optional)
+     * @param {string} [config.sourceOfferId] - create a clone of a source offer which shares the same reserved funds. overrides other fields which are immutable or unspecified (optional)
      * @return {OfferInfo} the posted offer
      */
-    postOffer(direction: OfferDirection, amount: bigint, assetCode: string, paymentAccountId: string, securityDepositPct: number, price?: number, marketPriceMarginPct?: number, triggerPrice?: number, minAmount?: bigint, reserveExactAmount?: boolean, isPrivateOffer?: boolean, buyerAsTakerWithoutDeposit?: boolean): Promise<OfferInfo>;
+    postOffer(config: OfferConfig): Promise<OfferInfo>;
     /**
      * Remove a posted offer, releasing its reserved funds.
      *

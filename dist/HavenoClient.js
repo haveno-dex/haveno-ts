@@ -1014,45 +1014,57 @@ class HavenoClient {
         }
     }
     /**
-     * Post an offer.
+     * Post or clone an offer.
      *
-     * @param {OfferDirection} direction - "buy" or "sell" XMR
-     * @param {bigint} amount - amount of XMR to trade
-     * @param {string} assetCode - asset code to trade for XMR
-     * @param {string} paymentAccountId - payment account id
-     * @param {number} securityDepositPct - security deposit as % of trade amount for buyer and seller
-     * @param {number} price - trade price (optional, default to market price)
-     * @param {number} marketPriceMarginPct - if using market price, % from market price to accept (optional, default 0%)
-     * @param {number} triggerPrice - price to remove offer (optional)
-     * @param {bigint} minAmount - minimum amount to trade (optional, default to fixed amount)
-     * @param {number} reserveExactAmount - reserve exact amount needed for offer, incurring on-chain transaction and 10 confirmations before the offer goes live (default = false)
-     * @param {boolean} isPrivateOffer - whether the offer is private (default = false)
-     * @param {boolean} buyerAsTakerWithoutDeposit - waive buyer as taker deposit and fee (default false)
+     * @param {OfferConfig} config - configures the offer to post or clone
+     * @param {OfferDirection} [config.direction] - specifies to buy or sell xmr (default buy)
+     * @param {bigint} [config.amount] - amount of XMR to trade
+     * @param {string} [config.assetCode] - asset code to trade for XMR
+     * @param {string} [config.paymentAccountId] - payment account id
+     * @param {number} [config.securityDepositPct] - security deposit as % of trade amount for buyer and seller
+     * @param {number} [config.price] - trade price (optional, default to market price)
+     * @param {number} [config.marketPriceMarginPct] - if using market price, % from market price to accept (optional, default 0%)
+     * @param {number} [config.triggerPrice] - price to remove offer (optional)
+     * @param {bigint} [config.minAmount] - minimum amount to trade (optional, default to fixed amount)
+     * @param {number} [config.reserveExactAmount] - reserve exact amount needed for offer, incurring on-chain transaction and 10 confirmations before the offer goes live (default = false)
+     * @param {boolean} [config.isPrivateOffer] - whether the offer is private (default = false)
+     * @param {boolean} [config.buyerAsTakerWithoutDeposit] - waive buyer as taker deposit and fee (default false)
+     * @param {string} [config.extraInfo] - extra information to include with the offer (optional)
+     * @param {string} [config.sourceOfferId] - create a clone of a source offer which shares the same reserved funds. overrides other fields which are immutable or unspecified (optional)
      * @return {OfferInfo} the posted offer
      */
-    async postOffer(direction, amount, assetCode, paymentAccountId, securityDepositPct, price, marketPriceMarginPct, triggerPrice, minAmount, reserveExactAmount, isPrivateOffer, buyerAsTakerWithoutDeposit) {
-        console_1.default.log("Posting offer with security deposit %: " + securityDepositPct);
+    async postOffer(config) {
+        console_1.default.log("Posting offer with security deposit %: " + config.securityDepositPct);
         try {
-            const request = new grpc_pb_1.PostOfferRequest()
-                .setDirection(direction === pb_pb_1.OfferDirection.BUY ? "buy" : "sell")
-                .setAmount(amount.toString())
-                .setCurrencyCode(assetCode)
-                .setPaymentAccountId(paymentAccountId)
-                .setSecurityDepositPct(securityDepositPct)
-                .setUseMarketBasedPrice(price === undefined)
-                .setMinAmount(minAmount ? minAmount.toString() : amount.toString());
-            if (price)
-                request.setPrice(price.toString());
-            if (marketPriceMarginPct)
-                request.setMarketPriceMarginPct(marketPriceMarginPct);
-            if (triggerPrice)
-                request.setTriggerPrice(triggerPrice.toString());
-            if (reserveExactAmount)
+            const request = new grpc_pb_1.PostOfferRequest();
+            if (config.direction)
+                request.setDirection(config.direction === pb_pb_1.OfferDirection.BUY ? "buy" : "sell");
+            if (config.amount)
+                request.setAmount(config.amount.toString());
+            request.setMinAmount(config.minAmount ? config.minAmount.toString() : config.amount.toString());
+            if (config.assetCode)
+                request.setCurrencyCode(config.assetCode);
+            if (config.paymentAccountId)
+                request.setPaymentAccountId(config.paymentAccountId);
+            if (config.securityDepositPct)
+                request.setSecurityDepositPct(config.securityDepositPct);
+            request.setUseMarketBasedPrice(config.price === undefined);
+            if (config.price)
+                request.setPrice(config.price?.toString());
+            if (config.marketPriceMarginPct)
+                request.setMarketPriceMarginPct(config.marketPriceMarginPct);
+            if (config.triggerPrice)
+                request.setTriggerPrice(config.triggerPrice.toString());
+            if (config.reserveExactAmount)
                 request.setReserveExactAmount(true);
-            if (isPrivateOffer)
+            if (config.isPrivateOffer)
                 request.setIsPrivateOffer(true);
-            if (buyerAsTakerWithoutDeposit)
+            if (config.buyerAsTakerWithoutDeposit)
                 request.setBuyerAsTakerWithoutDeposit(true);
+            if (config.extraInfo)
+                request.setExtraInfo(config.extraInfo);
+            if (config.sourceOfferId)
+                request.setSourceOfferId(config.sourceOfferId);
             return (await this._offersClient.postOffer(request, { password: this._password })).getOffer();
         }
         catch (e) {

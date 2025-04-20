@@ -1543,6 +1543,12 @@ export class PostOfferRequest extends jspb.Message {
   getBuyerAsTakerWithoutDeposit(): boolean;
   setBuyerAsTakerWithoutDeposit(value: boolean): PostOfferRequest;
 
+  getExtraInfo(): string;
+  setExtraInfo(value: string): PostOfferRequest;
+
+  getSourceOfferId(): string;
+  setSourceOfferId(value: string): PostOfferRequest;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PostOfferRequest.AsObject;
   static toObject(includeInstance: boolean, msg: PostOfferRequest): PostOfferRequest.AsObject;
@@ -1566,6 +1572,8 @@ export namespace PostOfferRequest {
     paymentAccountId: string,
     isPrivateOffer: boolean,
     buyerAsTakerWithoutDeposit: boolean,
+    extraInfo: string,
+    sourceOfferId: string,
   }
 }
 
@@ -1721,6 +1729,9 @@ export class OfferInfo extends jspb.Message {
   getChallenge(): string;
   setChallenge(value: string): OfferInfo;
 
+  getExtraInfo(): string;
+  setExtraInfo(value: string): OfferInfo;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): OfferInfo.AsObject;
   static toObject(includeInstance: boolean, msg: OfferInfo): OfferInfo.AsObject;
@@ -1764,6 +1775,7 @@ export namespace OfferInfo {
     splitOutputTxFee: string,
     isPrivateOffer: boolean,
     challenge: string,
+    extraInfo: string,
   }
 }
 

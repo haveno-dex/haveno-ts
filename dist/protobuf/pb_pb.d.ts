@@ -1677,8 +1677,8 @@ export class DisputeOpenedMessage extends jspb.Message {
   getType(): SupportType;
   setType(value: SupportType): DisputeOpenedMessage;
 
-  getUpdatedMultisigHex(): string;
-  setUpdatedMultisigHex(value: string): DisputeOpenedMessage;
+  getOpenerUpdatedMultisigHex(): string;
+  setOpenerUpdatedMultisigHex(value: string): DisputeOpenedMessage;
 
   getPaymentSentMessage(): PaymentSentMessage | undefined;
   setPaymentSentMessage(value?: PaymentSentMessage): DisputeOpenedMessage;
@@ -1699,7 +1699,7 @@ export namespace DisputeOpenedMessage {
     senderNodeAddress?: NodeAddress.AsObject,
     uid: string,
     type: SupportType,
-    updatedMultisigHex: string,
+    openerUpdatedMultisigHex: string,
     paymentSentMessage?: PaymentSentMessage.AsObject,
   }
 }
@@ -2883,6 +2883,9 @@ export class OfferPayload extends jspb.Message {
   clearReserveTxKeyImagesList(): OfferPayload;
   addReserveTxKeyImages(value: string, index?: number): OfferPayload;
 
+  getExtraInfo(): string;
+  setExtraInfo(value: string): OfferPayload;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): OfferPayload.AsObject;
   static toObject(includeInstance: boolean, msg: OfferPayload): OfferPayload.AsObject;
@@ -2931,6 +2934,7 @@ export namespace OfferPayload {
     arbitratorSigner?: NodeAddress.AsObject,
     arbitratorSignature: Uint8Array | string,
     reserveTxKeyImagesList: Array<string>,
+    extraInfo: string,
   }
 }
 
@@ -3650,6 +3654,11 @@ export class PaymentAccountPayload extends jspb.Message {
   hasPaypalAccountPayload(): boolean;
   clearPaypalAccountPayload(): PaymentAccountPayload;
 
+  getPaysafeAccountPayload(): PaysafeAccountPayload | undefined;
+  setPaysafeAccountPayload(value?: PaysafeAccountPayload): PaymentAccountPayload;
+  hasPaysafeAccountPayload(): boolean;
+  clearPaysafeAccountPayload(): PaymentAccountPayload;
+
   getMessageCase(): PaymentAccountPayload.MessageCase;
 
   serializeBinary(): Uint8Array;
@@ -3703,6 +3712,7 @@ export namespace PaymentAccountPayload {
     verseAccountPayload?: VerseAccountPayload.AsObject,
     cashAtAtmAccountPayload?: CashAtAtmAccountPayload.AsObject,
     paypalAccountPayload?: PayPalAccountPayload.AsObject,
+    paysafeAccountPayload?: PaysafeAccountPayload.AsObject,
   }
 
   export enum MessageCase { 
@@ -3744,6 +3754,7 @@ export namespace PaymentAccountPayload {
     VERSE_ACCOUNT_PAYLOAD = 39,
     CASH_AT_ATM_ACCOUNT_PAYLOAD = 40,
     PAYPAL_ACCOUNT_PAYLOAD = 41,
+    PAYSAFE_ACCOUNT_PAYLOAD = 42,
   }
 }
 
@@ -5326,6 +5337,24 @@ export namespace SwiftAccountPayload {
   }
 }
 
+export class PaysafeAccountPayload extends jspb.Message {
+  getEmail(): string;
+  setEmail(value: string): PaysafeAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PaysafeAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: PaysafeAccountPayload): PaysafeAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: PaysafeAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PaysafeAccountPayload;
+  static deserializeBinaryFromReader(message: PaysafeAccountPayload, reader: jspb.BinaryReader): PaysafeAccountPayload;
+}
+
+export namespace PaysafeAccountPayload {
+  export type AsObject = {
+    email: string,
+  }
+}
+
 export class PersistableEnvelope extends jspb.Message {
   getSequenceNumberMap(): SequenceNumberMap | undefined;
   setSequenceNumberMap(value?: SequenceNumberMap): PersistableEnvelope;
@@ -5999,6 +6028,12 @@ export class OpenOffer extends jspb.Message {
   getChallenge(): string;
   setChallenge(value: string): OpenOffer;
 
+  getDeactivatedByTrigger(): boolean;
+  setDeactivatedByTrigger(value: boolean): OpenOffer;
+
+  getGroupId(): string;
+  setGroupId(value: string): OpenOffer;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): OpenOffer.AsObject;
   static toObject(includeInstance: boolean, msg: OpenOffer): OpenOffer.AsObject;
@@ -6021,6 +6056,8 @@ export namespace OpenOffer {
     reserveTxHex: string,
     reserveTxKey: string,
     challenge: string,
+    deactivatedByTrigger: boolean,
+    groupId: string,
   }
 
   export enum State { 
@@ -6276,6 +6313,7 @@ export namespace Trade {
     SELLER_SEND_FAILED_PAYMENT_RECEIVED_MSG = 24,
     SELLER_STORED_IN_MAILBOX_PAYMENT_RECEIVED_MSG = 25,
     SELLER_SAW_ARRIVED_PAYMENT_RECEIVED_MSG = 26,
+    BUYER_RECEIVED_PAYMENT_RECEIVED_MSG = 27,
   }
 
   export enum Phase { 
@@ -6445,8 +6483,8 @@ export class ProcessModel extends jspb.Message {
   getFundsNeededForTrade(): number;
   setFundsNeededForTrade(value: number): ProcessModel;
 
-  getPaymentSentMessageState(): string;
-  setPaymentSentMessageState(value: string): ProcessModel;
+  getPaymentSentMessageStateSeller(): string;
+  setPaymentSentMessageStateSeller(value: string): ProcessModel;
 
   getPaymentSentMessageStateArbitrator(): string;
   setPaymentSentMessageStateArbitrator(value: string): ProcessModel;
@@ -6496,6 +6534,9 @@ export class ProcessModel extends jspb.Message {
   getTradeFeeAddress(): string;
   setTradeFeeAddress(value: string): ProcessModel;
 
+  getImportMultisigHexScheduled(): boolean;
+  setImportMultisigHexScheduled(value: boolean): ProcessModel;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ProcessModel.AsObject;
   static toObject(includeInstance: boolean, msg: ProcessModel): ProcessModel.AsObject;
@@ -6512,7 +6553,7 @@ export namespace ProcessModel {
     payoutTxSignature: Uint8Array | string,
     useSavingsWallet: boolean,
     fundsNeededForTrade: number,
-    paymentSentMessageState: string,
+    paymentSentMessageStateSeller: string,
     paymentSentMessageStateArbitrator: string,
     makerSignature: Uint8Array | string,
     maker?: TradePeer.AsObject,
@@ -6525,6 +6566,7 @@ export namespace ProcessModel {
     sellerPayoutAmountFromMediation: number,
     tradeProtocolErrorHeight: number,
     tradeFeeAddress: string,
+    importMultisigHexScheduled: boolean,
   }
 }
 
@@ -6670,6 +6712,15 @@ export class TradePeer extends jspb.Message {
   getPayoutAmount(): number;
   setPayoutAmount(value: number): TradePeer;
 
+  getDepositsConfirmedMessageState(): string;
+  setDepositsConfirmedMessageState(value: string): TradePeer;
+
+  getPaymentSentMessageState(): string;
+  setPaymentSentMessageState(value: string): TradePeer;
+
+  getPaymentReceivedMessageState(): string;
+  setPaymentReceivedMessageState(value: string): TradePeer;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): TradePeer.AsObject;
   static toObject(includeInstance: boolean, msg: TradePeer): TradePeer.AsObject;
@@ -6717,6 +6768,9 @@ export namespace TradePeer {
     unsignedPayoutTxHex: string,
     payoutTxFee: number,
     payoutAmount: number,
+    depositsConfirmedMessageState: string,
+    paymentSentMessageState: string,
+    paymentReceivedMessageState: string,
   }
 }
 
@@ -7737,6 +7791,7 @@ export namespace PaymentAccountForm {
     CASH_APP = 16,
     PAYPAL = 17,
     VENMO = 18,
+    PAYSAFE = 19,
   }
 }
 
