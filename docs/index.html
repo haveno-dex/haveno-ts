@@ -21,19 +21,16 @@
 <a href="https://matrix.to/#/#haveno:monero.social"><img src="https://img.shields.io/badge/Matrix%20room-%23haveno-blue" alt="Matrix rooms"></a></p>
 <p>TypeScript library for using Haveno.</p>
 
-<a href="#install" id="install" style="color: inherit; text-decoration: none;">
-  <h2>Install</h2>
-</a>
-<ol>
-<li>Start a Haveno daemon (see <a href="https://github.com/haveno-dex/haveno/blob/master/docs/installing.md">installing.md</a>).</li>
-<li>Install haveno-ts in your project: <code>npm install haveno-ts</code></li>
-</ol>
-
 <a href="#sample-code" id="sample-code" style="color: inherit; text-decoration: none;">
   <h2>Sample code</h2>
 </a>
 <pre><code class="language-js"><span class="hl-0">import</span><span class="hl-1"> { </span><span class="hl-2">HavenoClient</span><span class="hl-1"> } </span><span class="hl-0">from</span><span class="hl-1"> </span><span class="hl-3">&quot;haveno-ts&quot;</span><span class="hl-1">;</span><br/><br/><span class="hl-4">// create client connected to Haveno daemon</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-6">alice</span><span class="hl-1"> = </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-7">HavenoClient</span><span class="hl-1">(</span><span class="hl-3">&quot;http://localhost:8080&quot;</span><span class="hl-1">, </span><span class="hl-3">&quot;apitest&quot;</span><span class="hl-1">);</span><br/><br/><span class="hl-4">// use Haveno daemon</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-6">balances</span><span class="hl-1"> = </span><span class="hl-0">await</span><span class="hl-1"> </span><span class="hl-2">alice</span><span class="hl-1">.</span><span class="hl-7">getBalances</span><span class="hl-1">();</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-6">paymentAccounts</span><span class="hl-1"> = </span><span class="hl-0">await</span><span class="hl-1"> </span><span class="hl-2">alice</span><span class="hl-1">.</span><span class="hl-7">getPaymentAccounts</span><span class="hl-1">();</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-6">myOffers</span><span class="hl-1"> = </span><span class="hl-0">await</span><span class="hl-1"> </span><span class="hl-2">alice</span><span class="hl-1">.</span><span class="hl-7">getMyOffers</span><span class="hl-1">(</span><span class="hl-3">&quot;ETH&quot;</span><span class="hl-1">);</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-6">offers</span><span class="hl-1"> = </span><span class="hl-0">await</span><span class="hl-1"> </span><span class="hl-2">alice</span><span class="hl-1">.</span><span class="hl-7">getOffers</span><span class="hl-1">(</span><span class="hl-3">&quot;ETH&quot;</span><span class="hl-1">, </span><span class="hl-3">&quot;BUY&quot;</span><span class="hl-1">);</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-6">trade</span><span class="hl-1"> = </span><span class="hl-0">await</span><span class="hl-1"> </span><span class="hl-2">alice</span><span class="hl-1">.</span><span class="hl-7">takeOffer</span><span class="hl-1">(</span><span class="hl-2">offers</span><span class="hl-1">[</span><span class="hl-8">0</span><span class="hl-1">].</span><span class="hl-7">getId</span><span class="hl-1">(), </span><span class="hl-2">paymentAccounts</span><span class="hl-1">[</span><span class="hl-8">0</span><span class="hl-1">].</span><span class="hl-7">getId</span><span class="hl-1">());</span><br/><br/><span class="hl-4">// disconnect client</span><br/><span class="hl-0">await</span><span class="hl-1"> </span><span class="hl-2">alice</span><span class="hl-1">.</span><span class="hl-7">disconnect</span><span class="hl-1">();</span>
 </code></pre>
+
+<a href="#sample-application" id="sample-application" style="color: inherit; text-decoration: none;">
+  <h2>Sample application</h2>
+</a>
+<p>See the <a href="https://github.com/haveno-dex/haveno-sample-app">sample application</a> to start a Haveno daemon and connect to it from haveno-ts.</p>
 
 <a href="#typedocs" id="typedocs" style="color: inherit; text-decoration: none;">
   <h2>TypeDocs</h2>
@@ -402,6 +399,7 @@
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.PaymentMethod.html">Payment<wbr/>Method</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.PaymentReceivedMessage.html">Payment<wbr/>Received<wbr/>Message</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.PaymentSentMessage.html">Payment<wbr/>Sent<wbr/>Message</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.PaysafeAccountPayload.html">Paysafe<wbr/>Account<wbr/>Payload</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.PayseraAccountPayload.html">Paysera<wbr/>Account<wbr/>Payload</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.PaytmAccountPayload.html">Paytm<wbr/>Account<wbr/>Payload</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.Peer.html">Peer</a></li>
