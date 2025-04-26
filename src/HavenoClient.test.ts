@@ -382,7 +382,7 @@ const TestConfig = {
     deferralMs: 25000,
     haveno: {
         path: "../haveno",
-        version: "1.1.0"
+        version: "1.1.1"
     },
     monerod: {
         url: "http://127.0.0.1:" + getNetworkStartPort() + "8081", // 18081, 28081, 38081 for mainnet, testnet, and stagenet, respectively
