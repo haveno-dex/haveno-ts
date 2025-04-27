@@ -953,6 +953,9 @@ export class AckMessage extends jspb.Message {
   getErrorMessage(): string;
   setErrorMessage(value: string): AckMessage;
 
+  getUpdatedMultisigHex(): string;
+  setUpdatedMultisigHex(value: string): AckMessage;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AckMessage.AsObject;
   static toObject(includeInstance: boolean, msg: AckMessage): AckMessage.AsObject;
@@ -971,6 +974,7 @@ export namespace AckMessage {
     sourceId: string,
     success: boolean,
     errorMessage: string,
+    updatedMultisigHex: string,
   }
 }
 

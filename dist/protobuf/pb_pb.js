@@ -11314,7 +11314,8 @@ sourceMsgClassName: jspb.Message.getFieldWithDefault(msg, 4, ""),
 sourceUid: jspb.Message.getFieldWithDefault(msg, 5, ""),
 sourceId: jspb.Message.getFieldWithDefault(msg, 6, ""),
 success: jspb.Message.getBooleanFieldWithDefault(msg, 7, false),
-errorMessage: jspb.Message.getFieldWithDefault(msg, 8, "")
+errorMessage: jspb.Message.getFieldWithDefault(msg, 8, ""),
+updatedMultisigHex: jspb.Message.getFieldWithDefault(msg, 9, "")
   };
 
   if (includeInstance) {
@@ -11383,6 +11384,10 @@ proto.io.haveno.protobuffer.AckMessage.deserializeBinaryFromReader = function(ms
     case 8:
       var value = /** @type {string} */ (reader.readString());
       msg.setErrorMessage(value);
+      break;
+    case 9:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setUpdatedMultisigHex(value);
       break;
     default:
       reader.skipField();
@@ -11467,6 +11472,13 @@ proto.io.haveno.protobuffer.AckMessage.serializeBinaryToWriter = function(messag
   if (f.length > 0) {
     writer.writeString(
       8,
+      f
+    );
+  }
+  f = message.getUpdatedMultisigHex();
+  if (f.length > 0) {
+    writer.writeString(
+      9,
       f
     );
   }
@@ -11633,6 +11645,24 @@ proto.io.haveno.protobuffer.AckMessage.prototype.getErrorMessage = function() {
  */
 proto.io.haveno.protobuffer.AckMessage.prototype.setErrorMessage = function(value) {
   return jspb.Message.setProto3StringField(this, 8, value);
+};
+
+
+/**
+ * optional string updated_multisig_hex = 9;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.AckMessage.prototype.getUpdatedMultisigHex = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 9, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.AckMessage} returns this
+ */
+proto.io.haveno.protobuffer.AckMessage.prototype.setUpdatedMultisigHex = function(value) {
+  return jspb.Message.setProto3StringField(this, 9, value);
 };
 
 
