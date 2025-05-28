@@ -2453,7 +2453,7 @@ test("Can bootstrap a network", async () => {
     if (ctxP.buyerDisputeContext === undefined) ctxP.buyerDisputeContext = getRandomOutcome(1/14) ? DisputeContext.OPEN_AFTER_PAYMENT_SENT : undefined;
     if (ctxP.sellerDisputeContext === undefined) ctxP.sellerDisputeContext = getRandomOutcome(1/14) ? DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK : undefined;
     if (ctxP.sellerDisputeContext === undefined) ctxP.sellerDisputeContext = getRandomOutcome(1/14) ? DisputeContext.OPEN_AFTER_PAYMENT_SENT : undefined;
-    if (ctxP.resolveDispute === undefined) ctxP.resolveDispute = getRandomOutcome(5/7);
+    if (ctxP.resolveDispute === undefined) ctxP.resolveDispute = getRandomOutcome(2/3);
 
     return TradeContext.init(ctxP);
   }
