@@ -1343,7 +1343,7 @@ test("Can validate payment account forms (Test, CI, sanity check)", async () => 
       }
 
       // validate valid form field
-      const validInput = getValidFormInput(accountForm, field.getId());
+      const validInput = getValidFormInput(accountForm, field.getId(), user1);
       await user1.validateFormField(accountForm, field.getId(), validInput);
       field.setValue(validInput);
     }
@@ -2474,7 +2474,7 @@ test("Can bootstrap a network", async () => {
     if (assetCodes) HavenoUtils.setFormValue(accountForm, PaymentAccountFormField.FieldId.TRADE_CURRENCIES, assetCodes.join(","));
     for (const field of accountForm.getFieldsList()) {
       if (field.getValue() !== "") continue; // skip if already set
-      field.setValue(getValidFormInput(accountForm, field.getId()));
+      field.setValue(getValidFormInput(accountForm, field.getId(), trader));
     }
     return await trader.createPaymentAccount(accountForm);
   }
@@ -3812,7 +3812,7 @@ async function prepareForTrading(numTrades: number, ...havenods: HavenoClient[])
     for (const paymentMethod of await havenod.getPaymentMethods()) {
       if (await hasPaymentAccount({trader: havenod, paymentMethod: paymentMethod.getId()})) continue; // skip if exists
       const accountForm = await user1.getPaymentAccountForm(paymentMethod.getId());
-      for (const field of accountForm.getFieldsList()) field.setValue(getValidFormInput(accountForm, field.getId())); // set all form fields
+      for (const field of accountForm.getFieldsList()) field.setValue(getValidFormInput(accountForm, field.getId(), havenod)); // set all form fields
       await havenod.createPaymentAccount(accountForm);
     }
   }
@@ -4221,7 +4221,7 @@ async function createPaymentAccount(trader: HavenoClient, assetCodes: string, pa
   // initialize remaining fields
   for (const field of accountForm.getFieldsList()) {
     if (field.getValue() !== "") continue; // skip if already set
-    field.setValue(getValidFormInput(accountForm, field.getId()));
+    field.setValue(getValidFormInput(accountForm, field.getId(), trader));
   }
   return await trader.createPaymentAccount(accountForm);
 }
@@ -4298,26 +4298,30 @@ function getFormField(form: PaymentAccountForm, fieldId: PaymentAccountFormField
     throw new Error("Form field not found: " + fieldId);
 }
 
-function getValidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFormField.FieldId): string {
+function getValidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFormField.FieldId, havenod: HavenoClient): string {
+  return getValidFormInputAux(form, fieldId, havenod);
+}
+
+function getValidFormInputAux(form: PaymentAccountForm, fieldId: PaymentAccountFormField.FieldId, havenod: HavenoClient): string {
   const field = getFormField(form, fieldId);
   switch (fieldId) {
     case PaymentAccountFormField.FieldId.ACCEPTED_COUNTRY_CODES:
       if (form.getId() === PaymentAccountForm.FormId.SEPA || form.getId() === PaymentAccountForm.FormId.SEPA_INSTANT) return "BE," + field.getSupportedSepaEuroCountriesList().map(country => country.getCode()).join(',');
       return field.getSupportedCountriesList().map(country => country.getCode()).join(',');
     case PaymentAccountFormField.FieldId.ACCOUNT_ID:
-      return "jdoe@no.com";
+      return havenod.getAppName() + "_jdoe@no.com";
     case PaymentAccountFormField.FieldId.ACCOUNT_NAME:
       return "Form_" + form.getId() + " " + moneroTs.GenUtils.getUUID(); // TODO: rename to form.getPaymentMethodId()
     case PaymentAccountFormField.FieldId.ACCOUNT_NR:
       return "12345678";
     case PaymentAccountFormField.FieldId.ACCOUNT_OWNER:
-      return "John Doe";
+      return "John Doe (" + havenod.getAppName() + ")";
     case PaymentAccountFormField.FieldId.ACCOUNT_TYPE:
       throw new Error("Not implemented");
     case PaymentAccountFormField.FieldId.ANSWER:
       throw new Error("Not implemented");
     case PaymentAccountFormField.FieldId.BANK_ACCOUNT_NAME:
-      return "John Doe";
+      return "John Doe (" + havenod.getAppName() + ")";
     case PaymentAccountFormField.FieldId.BANK_ACCOUNT_NUMBER:
       throw new Error("Not implemented");
     case PaymentAccountFormField.FieldId.BANK_ACCOUNT_TYPE:
@@ -4343,7 +4347,7 @@ function getValidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountForm
     case PaymentAccountFormField.FieldId.BENEFICIARY_CITY:
       return "Acme";
     case PaymentAccountFormField.FieldId.BENEFICIARY_NAME:
-      return "Jane Doe";
+      return "Jane Doe (" + havenod.getAppName() + ")";
     case PaymentAccountFormField.FieldId.BENEFICIARY_PHONE:
       return "123-456-7890";
     case PaymentAccountFormField.FieldId.BIC:
@@ -4353,13 +4357,13 @@ function getValidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountForm
     case PaymentAccountFormField.FieldId.CITY:
       return "Atlanta";
     case PaymentAccountFormField.FieldId.CONTACT:
-      return "Email please";
+      return "Email me please";
     case PaymentAccountFormField.FieldId.COUNTRY:
     case PaymentAccountFormField.FieldId.BANK_COUNTRY_CODE:
     case PaymentAccountFormField.FieldId.INTERMEDIARY_COUNTRY_CODE:
       return field.getSupportedCountriesList().length ? field.getSupportedCountriesList()[0]!.getCode() : "FR";
     case PaymentAccountFormField.FieldId.EMAIL:
-      return "jdoe@no.com";
+      return havenod.getAppName() + "_jdoe@no.com";
     case PaymentAccountFormField.FieldId.EMAIL_OR_MOBILE_NR:
       return "876-512-7813";
     case PaymentAccountFormField.FieldId.EMAIL_OR_MOBILE_NR_OR_USERNAME:
@@ -4373,7 +4377,7 @@ function getValidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountForm
     case PaymentAccountFormField.FieldId.HOLDER_EMAIL:
       throw new Error("Not implemented");
     case PaymentAccountFormField.FieldId.HOLDER_NAME:
-      return "user1 Doe";
+      return havenod.getAppName() + " Doe";
     case PaymentAccountFormField.FieldId.HOLDER_TAX_ID:
       throw new Error("Not implemented");
     case PaymentAccountFormField.FieldId.IBAN:
@@ -4393,7 +4397,7 @@ function getValidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountForm
     case PaymentAccountFormField.FieldId.NATIONAL_ACCOUNT_ID:
       throw new Error("Not implemented");
     case PaymentAccountFormField.FieldId.PAYID:
-      return "john.doe@example.com";
+      return havenod.getAppName() + "_john.doe@example.com";
     case PaymentAccountFormField.FieldId.PIX_KEY:
       throw new Error("Not implemented");
     case PaymentAccountFormField.FieldId.POSTAL_ADDRESS:
@@ -4421,7 +4425,7 @@ function getValidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountForm
       }
       else return field.getSupportedCurrenciesList().map(currency => currency.getCode()).join(',');
     case PaymentAccountFormField.FieldId.USERNAME:
-      return "user123";
+      return havenod.getAppName() + "_jdoe";
     case PaymentAccountFormField.FieldId.ADDRESS:
       const currencyCode = HavenoUtils.getFormValue(form, PaymentAccountFormField.FieldId.TRADE_CURRENCIES);
       for (let cryptoAddress of TestConfig.cryptoAddresses) {
