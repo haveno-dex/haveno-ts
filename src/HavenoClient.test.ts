@@ -2445,9 +2445,10 @@ test("Can bootstrap a network", async () => {
     if (await isFixedPrice(ctxP)) ctxP.price = 142.23;
   
     // randomize trade config
-    if (ctxP.takeOffer === undefined) ctxP.takeOffer = getRandomOutcome(3/4);
+    if (ctxP.takeOffer === undefined) ctxP.takeOffer = getRandomOutcome(2/3);
     if (ctxP.tradeAmount === undefined) ctxP.tradeAmount = isRangeOffer ? getRandomBigIntWithinRange(ctxP.offerMinAmount!, ctxP.offerAmount) : ctxP.offerAmount;
     if (ctxP.buyerSendsPayment === undefined) ctxP.buyerSendsPayment = getRandomOutcome(1/2);
+    if (ctxP.priceMargin === undefined && ctxP.price === undefined) ctxP.priceMargin = parseFloat(getRandomFloat(0, .3).toFixed(10));
     if (ctxP.sellerReceivesPayment === undefined) ctxP.sellerReceivesPayment = getRandomOutcome(1/2);
     if (ctxP.buyerDisputeContext === undefined) ctxP.buyerDisputeContext = getRandomOutcome(1/14) ? DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK : undefined;
     if (ctxP.buyerDisputeContext === undefined) ctxP.buyerDisputeContext = getRandomOutcome(1/14) ? DisputeContext.OPEN_AFTER_PAYMENT_SENT : undefined;
@@ -4175,6 +4176,10 @@ function getRandomAssetCodeForPaymentAccount(paymentAccount: PaymentAccount): st
 
 function getRandomOutcome(percentChance: number): boolean {
   return Math.random() <= percentChance;
+}
+
+function getRandomFloat(min: number, max: number) {
+  return Math.random() * (max - min) + min;
 }
 
 function getRandomBigIntWithinPercent(base: bigint, percent: number): bigint {
