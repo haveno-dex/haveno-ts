@@ -413,7 +413,7 @@ const TestConfig = {
         logLevel: "info",
         apiPassword: "apitest",
         walletUsername: "haveno_user",
-        walletDefaultPassword: "password", // only used if account password not set
+        walletDefaultPassword: "password",
         accountPasswordRequired: true,
         accountPassword: "abctesting789",
         autoLogin: true
@@ -587,8 +587,8 @@ beforeAll(async () => {
   TestConfig.trade.taker.havenod = user2;
 
   // connect client wallets
-  user1Wallet = await moneroTs.connectToWalletRpc(TestConfig.startupHavenods[1].walletUrl!, TestConfig.defaultHavenod.walletUsername, TestConfig.startupHavenods[1].accountPasswordRequired ? TestConfig.startupHavenods[1].accountPassword : TestConfig.defaultHavenod.walletDefaultPassword);
-  user2Wallet = await moneroTs.connectToWalletRpc(TestConfig.startupHavenods[2].walletUrl!, TestConfig.defaultHavenod.walletUsername, TestConfig.startupHavenods[2].accountPasswordRequired ? TestConfig.startupHavenods[2].accountPassword : TestConfig.defaultHavenod.walletDefaultPassword);
+  user1Wallet = await moneroTs.connectToWalletRpc(TestConfig.startupHavenods[1].walletUrl!, TestConfig.defaultHavenod.walletUsername, TestConfig.defaultHavenod.walletDefaultPassword);
+  user2Wallet = await moneroTs.connectToWalletRpc(TestConfig.startupHavenods[2].walletUrl!, TestConfig.defaultHavenod.walletUsername, TestConfig.defaultHavenod.walletDefaultPassword);
 
   // register arbitrator dispute agent
   await arbitrator.registerDisputeAgent("arbitrator", getArbitratorPrivKey(0));
@@ -1600,7 +1600,7 @@ test("Can schedule offers with locked funds (Test, CI)", async () => {
 
     // start user3
     user3 = await initHaveno();
-    const user3Wallet = await moneroTs.connectToWalletRpc("http://127.0.0.1:" + user3.getWalletRpcPort(), TestConfig.defaultHavenod.walletUsername, TestConfig.defaultHavenod.accountPassword);
+    const user3Wallet = await moneroTs.connectToWalletRpc("http://127.0.0.1:" + user3.getWalletRpcPort(), TestConfig.defaultHavenod.walletUsername, TestConfig.defaultHavenod.walletDefaultPassword);
 
     // fund user3 with 2 outputs of 0.5 XMR
     const outputAmt = 500000000000n;
@@ -2213,10 +2213,10 @@ test("Can handle unexpected errors during trade initialization (Test)", async ()
     await wait(TestConfig.trade.walletSyncPeriodMs * 2);
 
     // trader 1 spends trade funds after initializing trade
-    let paymentAccount = await createCryptoPaymentAccount(traders[1]);
+    let paymentAccount = await createCryptoPaymentAccount(traders[1]); // TODO: this is different account type than maker's offer, but accounts should not be used in this test
     wait(3000).then(async function() {
       try {
-        const traderWallet = await moneroTs.connectToWalletRpc("http://127.0.0.1:" + traders[1].getWalletRpcPort(), TestConfig.defaultHavenod.walletUsername, TestConfig.defaultHavenod.accountPassword);
+        const traderWallet = await moneroTs.connectToWalletRpc("http://127.0.0.1:" + traders[1].getWalletRpcPort(), TestConfig.defaultHavenod.walletUsername, TestConfig.defaultHavenod.walletDefaultPassword);
         for (const frozenOutput of await traderWallet.getOutputs({isFrozen: true})) await traderWallet.thawOutput(frozenOutput.getKeyImage().getHex());
         HavenoUtils.log(1, "Sweeping trade funds");
         await traderWallet.sweepUnlocked({address: await traderWallet.getPrimaryAddress(), relay: true});
@@ -2250,7 +2250,7 @@ test("Can handle unexpected errors during trade initialization (Test)", async ()
     // trader 0 spends trade funds after trader 2 takes offer
     wait(3000).then(async function() {
       try {
-        const traderWallet = await moneroTs.connectToWalletRpc("http://127.0.0.1:" + traders[0].getWalletRpcPort(), TestConfig.defaultHavenod.walletUsername, TestConfig.defaultHavenod.accountPassword);
+        const traderWallet = await moneroTs.connectToWalletRpc("http://127.0.0.1:" + traders[0].getWalletRpcPort(), TestConfig.defaultHavenod.walletUsername, TestConfig.defaultHavenod.walletDefaultPassword);
         for (const frozenOutput of await traderWallet.getOutputs({isFrozen: true})) await traderWallet.thawOutput(frozenOutput.getKeyImage().getHex());
         HavenoUtils.log(1, "Sweeping offer funds");
         await traderWallet.sweepUnlocked({address: await traderWallet.getPrimaryAddress(), relay: true});
@@ -3838,7 +3838,7 @@ async function getWallet(havenod: HavenoClient) {
     let wallet: any;
     if (havenod === user1) wallet = user1Wallet;
     else if (havenod === user2) wallet = user2Wallet;
-    else wallet = await moneroTs.connectToWalletRpc("http://127.0.0.1:" + havenod.getWalletRpcPort(), TestConfig.defaultHavenod.walletUsername, TestConfig.defaultHavenod.accountPassword);
+    else wallet = await moneroTs.connectToWalletRpc("http://127.0.0.1:" + havenod.getWalletRpcPort(), TestConfig.defaultHavenod.walletUsername, TestConfig.defaultHavenod.walletDefaultPassword);
     HAVENO_WALLETS.set(havenod, wallet);
   }
   return HAVENO_WALLETS.get(havenod);
