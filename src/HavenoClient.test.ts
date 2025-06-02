@@ -2435,6 +2435,7 @@ test("Can bootstrap a network", async () => {
     if (ctxP.offerAmount === undefined) ctxP.offerAmount = getRandomBigIntWithinPercent(HavenoUtils.xmrToAtomicUnits(1), 0.15);
     if (isRangeOffer && ctxP.offerMinAmount === undefined) ctxP.offerMinAmount = getRandomBigIntWithinPercent(HavenoUtils.xmrToAtomicUnits(0.3), 0.15);
     if (ctxP.reserveExactAmount === undefined) ctxP.reserveExactAmount = getRandomOutcome(3/4);
+    if (ctxP.buyerAsTakerWithoutDeposit === undefined) ctxP.buyerAsTakerWithoutDeposit = getRandomOutcome(1/3);
 
     // randomize payment method and asset code
     if (ctxP.assetCode && (!ctxP.makerPaymentAccountId || !ctxP.paymentMethodId)) throw new Error("Cannot specify asset code without payment account or method ID");
@@ -2445,7 +2446,7 @@ test("Can bootstrap a network", async () => {
     if (await isFixedPrice(ctxP)) ctxP.price = 142.23;
   
     // randomize trade config
-    if (ctxP.takeOffer === undefined) ctxP.takeOffer = getRandomOutcome(2/3);
+    if (ctxP.takeOffer === undefined) ctxP.takeOffer = getRandomOutcome(3/5);
     if (ctxP.tradeAmount === undefined) ctxP.tradeAmount = isRangeOffer ? getRandomBigIntWithinRange(ctxP.offerMinAmount!, ctxP.offerAmount) : ctxP.offerAmount;
     if (ctxP.buyerSendsPayment === undefined) ctxP.buyerSendsPayment = getRandomOutcome(1/2);
     if (ctxP.priceMargin === undefined && ctxP.price === undefined) ctxP.priceMargin = parseFloat(getRandomFloat(0, .3).toFixed(10));
