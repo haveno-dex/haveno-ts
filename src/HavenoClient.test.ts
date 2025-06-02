@@ -2457,8 +2457,10 @@ test("Can bootstrap a network", async () => {
     if (ctxP.sellerReceivesPayment === undefined) ctxP.sellerReceivesPayment = getRandomOutcome(1/2);
     if (ctxP.buyerDisputeContext === undefined) ctxP.buyerDisputeContext = getRandomOutcome(1/14) ? DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK : undefined;
     if (ctxP.buyerDisputeContext === undefined) ctxP.buyerDisputeContext = getRandomOutcome(1/14) ? DisputeContext.OPEN_AFTER_PAYMENT_SENT : undefined;
-    if (ctxP.sellerDisputeContext === undefined) ctxP.sellerDisputeContext = getRandomOutcome(1/14) ? DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK : undefined;
-    if (ctxP.sellerDisputeContext === undefined) ctxP.sellerDisputeContext = getRandomOutcome(1/14) ? DisputeContext.OPEN_AFTER_PAYMENT_SENT : undefined;
+    if (ctxP.buyerDisputeContext === undefined) { // only one peer opens dispute
+      if (ctxP.sellerDisputeContext === undefined) ctxP.sellerDisputeContext = getRandomOutcome(1/14) ? DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK : undefined;
+      if (ctxP.sellerDisputeContext === undefined) ctxP.sellerDisputeContext = getRandomOutcome(1/14) ? DisputeContext.OPEN_AFTER_PAYMENT_SENT : undefined;
+    }
     if (ctxP.resolveDispute === undefined) ctxP.resolveDispute = getRandomOutcome(2/3);
 
     return TradeContext.init(ctxP);
@@ -3222,28 +3224,30 @@ async function testOpenDispute(ctxP: Partial<TradeContext>) {
 
   // arbitrator has seller's payment account info
   let sellerPaymentAccountPayload = arbDisputeOpener.getContract()!.getIsBuyerMakerAndSellerTaker() ? arbDisputeOpener.getTakerPaymentAccountPayload() : arbDisputeOpener.getMakerPaymentAccountPayload();
-  let expectedSellerPaymentAccountPayload = (await ctx.getSeller().havenod?.getPaymentAccount(sellerPaymentAccountPayload?.getId()!))?.getPaymentAccountPayload();
+  let expectedSellerPaymentAccountPayload = (await ctx.getSeller().havenod!.getPaymentAccount(sellerPaymentAccountPayload?.getId()!))!.getPaymentAccountPayload();
   expect(sellerPaymentAccountPayload).toEqual(expectedSellerPaymentAccountPayload);
-  expect(await ctx.arbitrator.havenod?.getPaymentAccountPayloadForm(sellerPaymentAccountPayload!)).toEqual(await ctx.arbitrator.havenod?.getPaymentAccountPayloadForm(expectedSellerPaymentAccountPayload!));
+  expect(await ctx.arbitrator.havenod!.getPaymentAccountPayloadForm(sellerPaymentAccountPayload!)).toEqual(await ctx.arbitrator.havenod!.getPaymentAccountPayloadForm(expectedSellerPaymentAccountPayload!));
   sellerPaymentAccountPayload = arbDisputePeer.getContract()!.getIsBuyerMakerAndSellerTaker() ? arbDisputePeer.getTakerPaymentAccountPayload() : arbDisputeOpener.getMakerPaymentAccountPayload();
   expect(sellerPaymentAccountPayload).toEqual(expectedSellerPaymentAccountPayload);
-  expect(await ctx.arbitrator.havenod?.getPaymentAccountPayloadForm(sellerPaymentAccountPayload!)).toEqual(await ctx.arbitrator.havenod?.getPaymentAccountPayloadForm(expectedSellerPaymentAccountPayload!));
+  expect(await ctx.arbitrator.havenod!.getPaymentAccountPayloadForm(sellerPaymentAccountPayload!)).toEqual(await ctx.arbitrator.havenod!.getPaymentAccountPayloadForm(expectedSellerPaymentAccountPayload!));
 
   // arbitrator has buyer's payment account info unless seller opens dispute before payment sent
   // TODO: should arbitrator receive buyer's payment account info if seller opens dispute before payment sent?
   let buyerPaymentAccountPayload = arbDisputeOpener.getContract()!.getIsBuyerMakerAndSellerTaker() ? arbDisputeOpener.getMakerPaymentAccountPayload() : arbDisputeOpener.getTakerPaymentAccountPayload();
   if (ctx.getDisputeOpener()!.havenod === ctx.getSeller().havenod && ctx.sellerDisputeContext === DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK) expect(buyerPaymentAccountPayload).toBeUndefined();
   else {
-    let expectedBuyerPaymentAccountPayload = (await ctx.getBuyer().havenod?.getPaymentAccount(buyerPaymentAccountPayload?.getId()!))?.getPaymentAccountPayload();
+    expect(buyerPaymentAccountPayload).toBeDefined();
+    let expectedBuyerPaymentAccountPayload = (await ctx.getBuyer().havenod!.getPaymentAccount(buyerPaymentAccountPayload!.getId()!))!.getPaymentAccountPayload();
     expect(buyerPaymentAccountPayload).toEqual(expectedBuyerPaymentAccountPayload);
-    expect(await ctx.arbitrator.havenod?.getPaymentAccountPayloadForm(buyerPaymentAccountPayload!)).toEqual(await ctx.arbitrator.havenod?.getPaymentAccountPayloadForm(expectedBuyerPaymentAccountPayload!));
+    expect(await ctx.arbitrator.havenod!.getPaymentAccountPayloadForm(buyerPaymentAccountPayload!)).toEqual(await ctx.arbitrator.havenod!.getPaymentAccountPayloadForm(expectedBuyerPaymentAccountPayload!));
   }
   buyerPaymentAccountPayload = arbDisputePeer.getContract()!.getIsBuyerMakerAndSellerTaker() ? arbDisputePeer.getMakerPaymentAccountPayload() : arbDisputePeer.getTakerPaymentAccountPayload();
   if (ctx.getDisputeOpener()!.havenod === ctx.getSeller().havenod && ctx.sellerDisputeContext === DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK) expect(buyerPaymentAccountPayload).toBeUndefined();
   else {
-    let expectedBuyerPaymentAccountPayload = (await ctx.getBuyer().havenod?.getPaymentAccount(buyerPaymentAccountPayload?.getId()!))?.getPaymentAccountPayload();
+    expect(buyerPaymentAccountPayload).toBeDefined(); // TODO: this is undefined if both peers open a dispute after deposits unlocked
+    let expectedBuyerPaymentAccountPayload = (await ctx.getBuyer().havenod!.getPaymentAccount(buyerPaymentAccountPayload!.getId()!))!.getPaymentAccountPayload();
     expect(buyerPaymentAccountPayload).toEqual(expectedBuyerPaymentAccountPayload);
-    expect(await ctx.arbitrator.havenod?.getPaymentAccountPayloadForm(buyerPaymentAccountPayload!)).toEqual(await ctx.arbitrator.havenod?.getPaymentAccountPayloadForm(expectedBuyerPaymentAccountPayload!));
+    expect(await ctx.arbitrator.havenod!.getPaymentAccountPayloadForm(buyerPaymentAccountPayload!)).toEqual(await ctx.arbitrator.havenod!.getPaymentAccountPayloadForm(expectedBuyerPaymentAccountPayload!));
   }
 
   // register to receive notifications
