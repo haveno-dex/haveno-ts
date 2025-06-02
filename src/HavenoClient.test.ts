@@ -2435,7 +2435,11 @@ test("Can bootstrap a network", async () => {
     if (ctxP.offerAmount === undefined) ctxP.offerAmount = getRandomBigIntWithinPercent(HavenoUtils.xmrToAtomicUnits(1), 0.15);
     if (isRangeOffer && ctxP.offerMinAmount === undefined) ctxP.offerMinAmount = getRandomBigIntWithinPercent(HavenoUtils.xmrToAtomicUnits(0.3), 0.15);
     if (ctxP.reserveExactAmount === undefined) ctxP.reserveExactAmount = getRandomOutcome(3/4);
-    if (ctxP.buyerAsTakerWithoutDeposit === undefined) ctxP.buyerAsTakerWithoutDeposit = getRandomOutcome(1/3);
+    if (ctxP.buyerAsTakerWithoutDeposit === undefined) ctxP.buyerAsTakerWithoutDeposit = ctxP.direction === OfferDirection.SELL && getRandomOutcome(2/3);
+    if (ctxP.buyerAsTakerWithoutDeposit) {
+      ctxP.isPrivateOffer = true;
+      ctxP.extraInfo = "Will get this done fast, no deposit required 😎";
+    }
 
     // randomize payment method and asset code
     if (ctxP.assetCode && (!ctxP.makerPaymentAccountId || !ctxP.paymentMethodId)) throw new Error("Cannot specify asset code without payment account or method ID");
@@ -2443,7 +2447,7 @@ test("Can bootstrap a network", async () => {
     if (!ctxP.makerPaymentAccountId) ctxP.makerPaymentAccountId = (await createPaymentAccount2(ctxP.maker.havenod!, ctxP.paymentMethodId)).getId();
     if (!ctxP.takerPaymentAccountId) ctxP.takerPaymentAccountId = (await createPaymentAccount2(ctxP.taker.havenod!, ctxP.paymentMethodId)).getId();
     if (!ctxP.assetCode) ctxP.assetCode = getRandomAssetCodeForPaymentAccount(await ctxP.maker.havenod.getPaymentAccount(ctxP.makerPaymentAccountId));
-    if (await isFixedPrice(ctxP)) ctxP.price = 142.23;
+    if (await isFixedPrice(ctxP)) ctxP.price = getRandomFloat(125, 155);
   
     // randomize trade config
     if (ctxP.takeOffer === undefined) ctxP.takeOffer = getRandomOutcome(3/5);
