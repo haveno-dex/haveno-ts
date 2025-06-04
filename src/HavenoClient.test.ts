@@ -1564,8 +1564,8 @@ test("Can clone offers (Test, CI, sanity check)", async () => {
 
   // post offer
   let assetCode = "BCH";
-  let ctx: Partial<TradeContext> = {maker: {havenod: user1}, isPrivateOffer: true, buyerAsTakerWithoutDeposit: true, assetCode: assetCode, extraInfo: "My extra info"};
-  let offer: OfferInfo = await makeOffer(ctx);;
+  let ctx: Partial<TradeContext> = {maker: {havenod: user1}, direction: OfferDirection.SELL, isPrivateOffer: true, buyerAsTakerWithoutDeposit: true, assetCode: assetCode, extraInfo: "My extra info"};
+  let offer: OfferInfo = await makeOffer(ctx);
   assert.equal(offer.getState(), "AVAILABLE");
 
   // clone offer
@@ -2962,6 +2962,14 @@ async function makeOffer(ctxP?: Partial<TradeContext>): Promise<OfferInfo> {
     ctx.taker.balancesBeforeOffer = await ctx.taker.havenod?.getBalances();
   }
 
+  // transfer context from clone source
+  if (ctx.sourceOfferId) {
+    const sourceOffer = await ctx.maker.havenod!.getMyOffer(ctx.sourceOfferId);
+    ctx.isPrivateOffer = sourceOffer.getIsPrivateOffer();
+    ctx.direction = sourceOffer.getDirection() == "BUY" ? OfferDirection.BUY : OfferDirection.SELL;
+    ctx.buyerAsTakerWithoutDeposit = ctx.isPrivateOffer && ctx.direction === OfferDirection.SELL && sourceOffer.getBuyerSecurityDepositPct() === 0;
+  }
+
   // post or clone offer
   const offer: OfferInfo = await ctx.maker.havenod!.postOffer({
     direction: ctx.direction,
@@ -2980,11 +2988,6 @@ async function makeOffer(ctxP?: Partial<TradeContext>): Promise<OfferInfo> {
     sourceOfferId: ctx.sourceOfferId
   });
 
-  // transfer context from clone source
-  if (ctx.sourceOfferId) {
-    const sourceOffer = await ctx.maker.havenod!.getMyOffer(ctx.sourceOfferId);
-    ctx.isPrivateOffer = sourceOffer.getIsPrivateOffer();
-  }
 
   // test offer
   testOffer(offer, ctx, true);
