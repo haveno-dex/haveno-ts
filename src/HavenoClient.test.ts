@@ -1084,7 +1084,7 @@ test("Has a Monero wallet (Test, CI)", async () => {
   testTx(tx, {isCreatedTx: true});
 
   // relay withdraw tx
-  const txHash = await user1.relayXmrTx(tx.getMetadata());
+  const txHash = (await user1.relayXmrTxs([tx.getMetadata()]))[0];
   expect(txHash.length).toEqual(64);
   await wait(TestConfig.trade.walletSyncPeriodMs * 2); // wait for wallet to sync relayed tx
 
@@ -1099,10 +1099,17 @@ test("Has a Monero wallet (Test, CI)", async () => {
 
   // relay invalid tx
   try {
-    await user1.relayXmrTx("invalid tx metadata");
+    await user1.relayXmrTxs(["invalid tx metadata"]);
     throw new Error("Cannot relay invalid tx metadata");
   } catch (err: any) {
     if (err.message !== "Failed to parse hex.") throw new Error("Unexpected error: " + err.message);
+  }
+
+  // create sweep txs
+  let sweepTxs = await user1.createXmrSweepTxs(await user1.getXmrNewSubaddress());
+  assert(sweepTxs.length > 0);
+  for (const sweepTx of sweepTxs) {
+    testTx(sweepTx, {isCreatedTx: true});
   }
 });
 
