@@ -21,7 +21,7 @@ import HavenoUtils from "./utils/HavenoUtils";
 import TaskLooper from "./utils/TaskLooper";
 import type * as grpcWeb from "grpc-web";
 import { GetTradeStatisticsClient, GetVersionClient, AccountClient, XmrConnectionsClient, DisputesClient, DisputeAgentsClient, NotificationsClient, WalletsClient, PriceClient, OffersClient, PaymentAccountsClient, TradesClient, ShutdownServerClient, XmrNodeClient } from './protobuf/GrpcServiceClientPb';
-import { GetTradeStatisticsRequest, GetTradeStatisticsReply, GetVersionRequest, GetVersionReply, IsAppInitializedRequest, IsAppInitializedReply, RegisterDisputeAgentRequest, UnregisterDisputeAgentRequest, MarketPriceRequest, MarketPriceReply, MarketPricesRequest, MarketPricesReply, MarketPriceInfo, MarketDepthRequest, MarketDepthReply, MarketDepthInfo, GetBalancesRequest, GetBalancesReply, XmrBalanceInfo, GetMyOfferRequest, GetMyOfferReply, GetOffersRequest, GetOffersReply, OfferInfo, GetPaymentMethodsRequest, GetPaymentMethodsReply, GetPaymentAccountFormRequest, CreatePaymentAccountRequest, ValidateFormFieldRequest, CreatePaymentAccountReply, GetPaymentAccountFormReply, GetPaymentAccountsRequest, GetPaymentAccountsReply, CreateCryptoCurrencyPaymentAccountRequest, CreateCryptoCurrencyPaymentAccountReply, DeletePaymentAccountRequest, DeletePaymentAccountReply, PostOfferRequest, PostOfferReply, CancelOfferRequest, TakeOfferRequest, TakeOfferReply, TradeInfo, GetTradeRequest, GetTradeReply, GetTradesRequest, GetTradesReply, GetXmrSeedRequest, GetXmrSeedReply, GetXmrPrimaryAddressRequest, GetXmrPrimaryAddressReply, GetXmrNewSubaddressRequest, GetXmrNewSubaddressReply, ConfirmPaymentSentRequest, ConfirmPaymentReceivedRequest, CompleteTradeRequest, XmrTx, GetXmrTxsRequest, GetXmrTxsReply, XmrDestination, CreateXmrTxRequest, CreateXmrTxReply, RelayXmrTxRequest, RelayXmrTxReply, CreateAccountRequest, AccountExistsRequest, AccountExistsReply, DeleteAccountRequest, OpenAccountRequest, IsAccountOpenRequest, IsAccountOpenReply, CloseAccountRequest, ChangePasswordRequest, BackupAccountRequest, BackupAccountReply, RestoreAccountRequest, StopRequest, NotificationMessage, RegisterNotificationListenerRequest, SendNotificationRequest, UrlConnection, AddConnectionRequest, RemoveConnectionRequest, GetConnectionRequest, GetConnectionsRequest, SetConnectionRequest, CheckConnectionRequest, CheckConnectionsReply, CheckConnectionsRequest, StartCheckingConnectionRequest, StopCheckingConnectionRequest, GetBestConnectionRequest, SetAutoSwitchRequest, GetAutoSwitchRequest, CheckConnectionReply, GetConnectionsReply, GetConnectionReply, GetBestConnectionReply, GetDisputeRequest, GetDisputeReply, GetDisputesRequest, GetDisputesReply, OpenDisputeRequest, ResolveDisputeRequest, SendDisputeChatMessageRequest, SendChatMessageRequest, GetChatMessagesRequest, GetChatMessagesReply, StartXmrNodeRequest, StopXmrNodeRequest, IsXmrNodeOnlineRequest, IsXmrNodeOnlineReply, GetXmrNodeSettingsRequest, GetXmrNodeSettingsReply } from "./protobuf/grpc_pb";
+import { GetTradeStatisticsRequest, GetTradeStatisticsReply, GetVersionRequest, GetVersionReply, IsAppInitializedRequest, IsAppInitializedReply, RegisterDisputeAgentRequest, UnregisterDisputeAgentRequest, MarketPriceRequest, MarketPriceReply, MarketPricesRequest, MarketPricesReply, MarketPriceInfo, MarketDepthRequest, MarketDepthReply, MarketDepthInfo, GetBalancesRequest, GetBalancesReply, XmrBalanceInfo, GetMyOfferRequest, GetMyOfferReply, GetOffersRequest, GetOffersReply, OfferInfo, GetPaymentMethodsRequest, GetPaymentMethodsReply, GetPaymentAccountFormRequest, CreatePaymentAccountRequest, ValidateFormFieldRequest, CreatePaymentAccountReply, GetPaymentAccountFormReply, GetPaymentAccountsRequest, GetPaymentAccountsReply, CreateCryptoCurrencyPaymentAccountRequest, CreateCryptoCurrencyPaymentAccountReply, DeletePaymentAccountRequest, DeletePaymentAccountReply, PostOfferRequest, PostOfferReply, CancelOfferRequest, TakeOfferRequest, TakeOfferReply, TradeInfo, GetTradeRequest, GetTradeReply, GetTradesRequest, GetTradesReply, GetXmrSeedRequest, GetXmrSeedReply, GetXmrPrimaryAddressRequest, GetXmrPrimaryAddressReply, GetXmrNewSubaddressRequest, GetXmrNewSubaddressReply, ConfirmPaymentSentRequest, ConfirmPaymentReceivedRequest, CompleteTradeRequest, XmrTx, GetXmrTxsRequest, GetXmrTxsReply, XmrDestination, CreateXmrTxRequest, CreateXmrTxReply, CreateXmrSweepTxsRequest, CreateXmrSweepTxsReply, RelayXmrTxsRequest, RelayXmrTxsReply, CreateAccountRequest, AccountExistsRequest, AccountExistsReply, DeleteAccountRequest, OpenAccountRequest, IsAccountOpenRequest, IsAccountOpenReply, CloseAccountRequest, ChangePasswordRequest, BackupAccountRequest, BackupAccountReply, RestoreAccountRequest, StopRequest, NotificationMessage, RegisterNotificationListenerRequest, SendNotificationRequest, UrlConnection, AddConnectionRequest, RemoveConnectionRequest, GetConnectionRequest, GetConnectionsRequest, SetConnectionRequest, CheckConnectionRequest, CheckConnectionsReply, CheckConnectionsRequest, StartCheckingConnectionRequest, StopCheckingConnectionRequest, GetBestConnectionRequest, SetAutoSwitchRequest, GetAutoSwitchRequest, CheckConnectionReply, GetConnectionsReply, GetConnectionReply, GetBestConnectionReply, GetDisputeRequest, GetDisputeReply, GetDisputesRequest, GetDisputesReply, OpenDisputeRequest, ResolveDisputeRequest, SendDisputeChatMessageRequest, SendChatMessageRequest, GetChatMessagesRequest, GetChatMessagesReply, StartXmrNodeRequest, StopXmrNodeRequest, IsXmrNodeOnlineRequest, IsXmrNodeOnlineReply, GetXmrNodeSettingsRequest, GetXmrNodeSettingsReply } from "./protobuf/grpc_pb";
 import { TradeStatistics3, OfferDirection, PaymentMethod, PaymentAccountForm, PaymentAccountFormField, PaymentAccount, PaymentAccountPayload, AvailabilityResult, Attachment, DisputeResult, Dispute, ChatMessage, XmrNodeSettings } from "./protobuf/pb_pb";
 
 
@@ -783,11 +783,26 @@ export default class HavenoClient {
   /**
    * Create but do not relay a transaction to send funds from the Monero wallet.
    * 
+   * @param {XmrDestination[]} destinations - the destinations to send funds to
    * @return {XmrTx} the created transaction
    */
   async createXmrTx(destinations: XmrDestination[]): Promise<XmrTx> {
     try {
       return (await this._walletsClient.createXmrTx(new CreateXmrTxRequest().setDestinationsList(destinations), {password: this._password})).getTx()!;
+    } catch (e: any) {
+      throw new HavenoError(e.message, e.code);
+    }
+  }
+
+  /**
+   * Create but do not relay transactions to sweep all funds from the Monero wallet.
+   * 
+   * @param {string} address - the address to sweep funds to
+   * @return {XmrTx} the created transactions
+   */
+  async createXmrSweepTxs(address: string): Promise<XmrTx[]> {
+    try {
+      return (await this._walletsClient.createXmrSweepTxs(new CreateXmrSweepTxsRequest().setAddress(address), {password: this._password})).getTxsList()!;
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);
     }
@@ -798,9 +813,9 @@ export default class HavenoClient {
    * 
    * @return {string} the hash of the relayed transaction
    */
-  async relayXmrTx(metadata: string): Promise<string> {
+  async relayXmrTxs(metadatas: string[]): Promise<string[]> {
     try {
-      return (await this._walletsClient.relayXmrTx(new RelayXmrTxRequest().setMetadata(metadata), {password: this._password})).getHash();
+      return (await this._walletsClient.relayXmrTxs(new RelayXmrTxsRequest().setMetadatasList(metadatas), {password: this._password})).getHashesList();
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);
     }
