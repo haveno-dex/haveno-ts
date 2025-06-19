@@ -3689,7 +3689,8 @@ async function initHaveno(ctx?: HavenodContext): Promise<HavenoClient> {
       "--apiPort", TestConfig.ports.get(ctx.port)![0],
       "--walletRpcBindPort", ctx.walletUrl ? getPort(ctx.walletUrl) : "" + await getAvailablePort(), // use configured port if given
       "--passwordRequired", (ctx.accountPasswordRequired ? "true" : "false"),
-      "--logLevel", ctx.logLevel!
+      "--logLevel", ctx.logLevel!,
+      "--disableRateLimits", "true"
     ];
     havenod = await HavenoClient.startProcess(TestConfig.haveno.path, cmd, "http://127.0.0.1:" + ctx.port, ctx.logProcessOutput!);
 
