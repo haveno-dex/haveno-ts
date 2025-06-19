@@ -1315,7 +1315,9 @@ test("Can get payment accounts (Test, CI)", async () => {
   const paymentAccounts: PaymentAccount[] = await user1.getPaymentAccounts();
   for (const paymentAccount of paymentAccounts) {
     if (paymentAccount.getPaymentAccountPayload()!.getCryptoCurrencyAccountPayload()) { // TODO (woodser): test non-crypto
-       testCryptoPaymentAccount(paymentAccount);
+      testCryptoPaymentAccount(paymentAccount, false);
+    } else if (paymentAccount.getPaymentAccountPayload()!.getInstantCryptoCurrencyAccountPayload()) {
+      testCryptoPaymentAccount(paymentAccount, true);
     }
   }
 });
@@ -1423,15 +1425,20 @@ test("Can create fiat payment accounts (Test, CI)", async () => {
 });
 
 test("Can create crypto payment accounts (Test, CI)", async () => {
+  await testCryptoPaymentAccounts(false);
+  await testCryptoPaymentAccounts(true);
+});
+
+async function testCryptoPaymentAccounts(instant: boolean) {
 
   // test each crypto
   for (const testAccount of TestConfig.cryptoAddresses) {
 
     // create payment account
     const name = testAccount.currencyCode + " " + testAccount.address.substr(0, 8) + "... " + moneroTs.GenUtils.getUUID();
-    const paymentAccount: PaymentAccount = await user1.createCryptoPaymentAccount(name, testAccount.currencyCode, testAccount.address);
-    testCryptoPaymentAccount(paymentAccount);
-    testCryptoPaymentAccountEquals(paymentAccount, testAccount, name);
+    const paymentAccount: PaymentAccount = await user1.createCryptoPaymentAccount(name, testAccount.currencyCode, testAccount.address, instant);
+    testCryptoPaymentAccount(paymentAccount, instant);
+    testCryptoPaymentAccountEquals(paymentAccount, testAccount, name, instant);
 
     // fetch and test payment account
     let fetchedAccount: PaymentAccount|undefined;
@@ -1442,8 +1449,8 @@ test("Can create crypto payment accounts (Test, CI)", async () => {
       }
     }
     if (!fetchedAccount) throw new Error("Payment account not found after being added");
-    testCryptoPaymentAccount(paymentAccount);
-    testCryptoPaymentAccountEquals(fetchedAccount, testAccount, name);
+    testCryptoPaymentAccount(paymentAccount, instant);
+    testCryptoPaymentAccountEquals(fetchedAccount, testAccount, name, instant);
 
     // delete payment account
     await user1.deletePaymentAccount(paymentAccount.getId());
@@ -1458,28 +1465,32 @@ test("Can create crypto payment accounts (Test, CI)", async () => {
   }
 
   // test invalid currency code
-  await expect(async () => { await user1.createCryptoPaymentAccount("My first account", "ABC", "123"); })
+  await expect(async () => { await user1.createCryptoPaymentAccount("My first account", "ABC", "123", instant); })
       .rejects
       .toThrow("crypto currency with code 'abc' not found");
 
   // test invalid address
-  await expect(async () => { await user1.createCryptoPaymentAccount("My second account", "ETH", "123"); })
+  await expect(async () => { await user1.createCryptoPaymentAccount("My second account", "ETH", "123", instant); })
       .rejects
       .toThrow('123 is not a valid eth address');
 
   // test address duplicity
   let uid = "Unique account name " + moneroTs.GenUtils.getUUID();
   await user1.createCryptoPaymentAccount(uid, TestConfig.cryptoAddresses[0].currencyCode, TestConfig.cryptoAddresses[0].address)
-  await expect(async () => { await user1.createCryptoPaymentAccount(uid, TestConfig.cryptoAddresses[0].currencyCode, TestConfig.cryptoAddresses[0].address); })
+  await expect(async () => { await user1.createCryptoPaymentAccount(uid, TestConfig.cryptoAddresses[0].currencyCode, TestConfig.cryptoAddresses[0].address, instant); })
       .rejects
       .toThrow("Account '" + uid + "' is already taken");
 
-  function testCryptoPaymentAccountEquals(paymentAccount: PaymentAccount, testAccount: any, name: string) {
+  function testCryptoPaymentAccountEquals(paymentAccount: PaymentAccount, testAccount: any, name: string, instant: boolean) {
     expect(paymentAccount.getAccountName()).toEqual(name);
-    expect(paymentAccount.getPaymentAccountPayload()!.getCryptoCurrencyAccountPayload()!.getAddress()).toEqual(testAccount.address);
     expect(paymentAccount.getSelectedTradeCurrency()!.getCode()).toEqual(testAccount.currencyCode.toUpperCase());
+    if (instant) {
+      expect(paymentAccount.getPaymentAccountPayload()!.getInstantCryptoCurrencyAccountPayload()!.getAddress()).toEqual(testAccount.address);
+    } else {
+      expect(paymentAccount.getPaymentAccountPayload()!.getCryptoCurrencyAccountPayload()!.getAddress()).toEqual(testAccount.address);
+    }
   }
-});
+}
 
 test("Can prepare for trading (Test, CI)", async () => {
   await prepareForTrading(5, user1, user2);
@@ -4266,15 +4277,19 @@ function getOffer(offers: OfferInfo[], id: string): OfferInfo|undefined {
   return offers.find(offer => offer.getId() === id);
 }
 
-function testCryptoPaymentAccount(acct: PaymentAccount) {
+function testCryptoPaymentAccount(acct: PaymentAccount, instant: boolean) {
   expect(acct.getId().length).toBeGreaterThan(0);
   expect(acct.getAccountName().length).toBeGreaterThan(0);
-  expect(acct.getPaymentAccountPayload()!.getCryptoCurrencyAccountPayload()!.getAddress().length).toBeGreaterThan(0);
   expect(acct.getSelectedTradeCurrency()!.getCode().length).toBeGreaterThan(0);
   expect(acct.getTradeCurrenciesList().length).toEqual(1);
   const tradeCurrency = acct.getTradeCurrenciesList()[0];
   expect(tradeCurrency.getName().length).toBeGreaterThan(0);
   expect(tradeCurrency.getCode()).toEqual(acct.getSelectedTradeCurrency()!.getCode());
+  if (instant) {
+    expect(acct.getPaymentAccountPayload()!.getInstantCryptoCurrencyAccountPayload()!.getAddress().length).toBeGreaterThan(0);
+  } else {
+    expect(acct.getPaymentAccountPayload()!.getCryptoCurrencyAccountPayload()!.getAddress().length).toBeGreaterThan(0);
+  }
 }
 
 function testCryptoPaymentAccountsEqual(acct1: PaymentAccount, acct2: PaymentAccount) {
@@ -4594,7 +4609,8 @@ function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFo
 }
 
 function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
-    if (account.getPaymentAccountPayload()?.getCryptoCurrencyAccountPayload()) testCryptoPaymentAccount(account); // TODO: test non-crypto
+    if (account.getPaymentAccountPayload()?.getCryptoCurrencyAccountPayload()) testCryptoPaymentAccount(account, false); // TODO: test non-crypto
+    if (account.getPaymentAccountPayload()?.getInstantCryptoCurrencyAccountPayload()) testCryptoPaymentAccount(account, true);
     expect(account.getAccountName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.ACCOUNT_NAME).getValue()); // TODO: using number as payment method, account payload's account name = username
     const isCountryBased = account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload() !== undefined;
     if (isCountryBased) expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getCountryCode()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.COUNTRY).getValue());
