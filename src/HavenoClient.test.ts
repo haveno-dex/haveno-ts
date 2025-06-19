@@ -4730,6 +4730,10 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
         expect(account.getPaymentAccountPayload()!.getWeChatPayAccountPayload()!.getAccountNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.ACCOUNT_NR).getValue());
         expect(account.getTradeCurrenciesList().map(currency => currency.getCode()).join(",")).toEqual(getFormField(form, PaymentAccountFormField.FieldId.TRADE_CURRENCIES).getValue());
         break;
+    case PaymentAccountForm.FormId.ALI_PAY:
+        expect(account.getPaymentAccountPayload()!.getAliPayAccountPayload()!.getAccountNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.ACCOUNT_NR).getValue());
+        expect(account.getTradeCurrenciesList().map(currency => currency.getCode()).join(",")).toEqual(getFormField(form, PaymentAccountFormField.FieldId.TRADE_CURRENCIES).getValue());
+        break;
       default:
         throw new Error("Unhandled payment method type: " + form.getId());
     }
