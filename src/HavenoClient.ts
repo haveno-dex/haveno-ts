@@ -994,15 +994,16 @@ export default class HavenoClient {
    * @param {string} accountName - description of the account
    * @param {string} assetCode - traded asset code
    * @param {string} address - payment address of the account
+   * @param {boolean} [instant] - whether to use instant trades (default false)
    * @return {PaymentAccount} the created payment account
    */
-  async createCryptoPaymentAccount(accountName: string, assetCode: string, address: string): Promise<PaymentAccount> {
+  async createCryptoPaymentAccount(accountName: string, assetCode: string, address: string, instant?: boolean): Promise<PaymentAccount> {
     try {
       const request = new CreateCryptoCurrencyPaymentAccountRequest()
           .setAccountName(accountName)
           .setCurrencyCode(assetCode)
-          .setAddress(address)
-          .setTradeInstant(false); // not using instant trades
+          .setAddress(address);
+      if (instant !== undefined) request.setTradeInstant(instant);
       return (await this._paymentAccountsClient.createCryptoCurrencyPaymentAccount(request, {password: this._password})).getPaymentAccount()!;
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);
