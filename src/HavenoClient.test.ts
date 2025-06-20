@@ -4359,7 +4359,7 @@ function getValidFormInputAux(form: PaymentAccountForm, fieldId: PaymentAccountF
     case PaymentAccountFormField.FieldId.ACCOUNT_OWNER:
       return "John Doe (" + havenod.getAppName() + ")";
     case PaymentAccountFormField.FieldId.ACCOUNT_TYPE:
-      throw new Error("Not implemented");
+      return "Checking";
     case PaymentAccountFormField.FieldId.ANSWER:
       throw new Error("Not implemented");
     case PaymentAccountFormField.FieldId.BANK_ACCOUNT_NAME:
@@ -4395,7 +4395,7 @@ function getValidFormInputAux(form: PaymentAccountForm, fieldId: PaymentAccountF
     case PaymentAccountFormField.FieldId.BIC:
       return "ATLNFRPP";
     case PaymentAccountFormField.FieldId.BRANCH_ID:
-      throw new Error("Not implemented");
+      return "142000182"
     case PaymentAccountFormField.FieldId.CITY:
       return "Atlanta";
     case PaymentAccountFormField.FieldId.CONTACT:
@@ -4494,7 +4494,7 @@ function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFo
     case PaymentAccountFormField.FieldId.ACCOUNT_OWNER:
       return "J";
     case PaymentAccountFormField.FieldId.ACCOUNT_TYPE:
-      throw new Error("Not implemented");
+      return "A";
     case PaymentAccountFormField.FieldId.ANSWER:
       throw new Error("Not implemented");
     case PaymentAccountFormField.FieldId.BANK_ACCOUNT_NAME:
@@ -4534,7 +4534,7 @@ function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFo
     case PaymentAccountFormField.FieldId.BIC:
       return "123";
     case PaymentAccountFormField.FieldId.BRANCH_ID:
-      throw new Error("Not implemented");
+      return "1";
     case PaymentAccountFormField.FieldId.CITY:
       return "A";
     case PaymentAccountFormField.FieldId.CONTACT:
@@ -4753,6 +4753,17 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
         expect(account.getPaymentAccountPayload()!.getAmazonGiftCardAccountPayload()!.getEmailOrMobileNr()!).toEqual(getFormField(form, PaymentAccountFormField.FieldId.EMAIL_OR_MOBILE_NR).getValue());
         expect(account.getPaymentAccountPayload()!.getAmazonGiftCardAccountPayload()!.getCountryCode()!).toEqual(getFormField(form, PaymentAccountFormField.FieldId.COUNTRY).getValue());
         expect(account.getTradeCurrenciesList().map(currency => currency.getCode()).join(",")).toEqual(getFormField(form, PaymentAccountFormField.FieldId.TRADE_CURRENCIES).getValue());
+        break;
+    case PaymentAccountForm.FormId.ACH_TRANSFER:
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getBankAccountPayload()?.getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getBankAccountPayload()?.getAchTransferAccountPayload()?.getHolderAddress()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_ADDRESS).getValue());
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getBankAccountPayload()?.getBankName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.BANK_NAME).getValue());
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getBankAccountPayload()?.getBranchId()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.BRANCH_ID).getValue());
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getBankAccountPayload()?.getAccountNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.ACCOUNT_NR).getValue());
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getBankAccountPayload()?.getAccountType()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.ACCOUNT_TYPE).getValue());
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getCountryCode()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.COUNTRY).getValue());
+        expect(account.getTradeCurrenciesList().length).toEqual(1);
+        expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("USD");
         break;
       default:
         throw new Error("Unhandled payment method type: " + form.getId());
