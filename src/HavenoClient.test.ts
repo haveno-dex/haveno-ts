@@ -4361,7 +4361,7 @@ function getValidFormInputAux(form: PaymentAccountForm, fieldId: PaymentAccountF
     case PaymentAccountFormField.FieldId.ACCOUNT_TYPE:
       return "Checking";
     case PaymentAccountFormField.FieldId.ANSWER:
-      throw new Error("Not implemented");
+      return "XMR-orange";
     case PaymentAccountFormField.FieldId.BANK_ACCOUNT_NAME:
       return "John Doe (" + havenod.getAppName() + ")";
     case PaymentAccountFormField.FieldId.BANK_ACCOUNT_NUMBER:
@@ -4447,7 +4447,7 @@ function getValidFormInputAux(form: PaymentAccountForm, fieldId: PaymentAccountF
     case PaymentAccountFormField.FieldId.PROMPT_PAY_ID:
       throw new Error("Not implemented");
     case PaymentAccountFormField.FieldId.QUESTION:
-      throw new Error("Not implemented");
+      return "What is your favorite color?";
     case PaymentAccountFormField.FieldId.REQUIREMENTS:
       throw new Error("Not implemented");
     case PaymentAccountFormField.FieldId.SALT:
@@ -4496,7 +4496,7 @@ function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFo
     case PaymentAccountFormField.FieldId.ACCOUNT_TYPE:
       return "A";
     case PaymentAccountFormField.FieldId.ANSWER:
-      throw new Error("Not implemented");
+      return "Two words";
     case PaymentAccountFormField.FieldId.BANK_ACCOUNT_NAME:
       return "F";
     case PaymentAccountFormField.FieldId.BANK_ACCOUNT_NUMBER:
@@ -4586,7 +4586,7 @@ function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFo
     case PaymentAccountFormField.FieldId.PROMPT_PAY_ID:
       throw new Error("Not implemented");
     case PaymentAccountFormField.FieldId.QUESTION:
-      throw new Error("Not implemented");
+      return "";
     case PaymentAccountFormField.FieldId.REQUIREMENTS:
       throw new Error("Not implemented");
     case PaymentAccountFormField.FieldId.SALT:
@@ -4764,6 +4764,12 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
         expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getCountryCode()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.COUNTRY).getValue());
         expect(account.getTradeCurrenciesList().length).toEqual(1);
         expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("USD");
+        break;
+    case PaymentAccountForm.FormId.INTERAC_E_TRANSFER:
+        expect(account.getPaymentAccountPayload()!.getInteracETransferAccountPayload()!.getHolderName()!).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
+        expect(account.getPaymentAccountPayload()!.getInteracETransferAccountPayload()!.getEmailOrMobileNr()!).toEqual(getFormField(form, PaymentAccountFormField.FieldId.EMAIL_OR_MOBILE_NR).getValue());
+        expect(account.getPaymentAccountPayload()!.getInteracETransferAccountPayload()!.getQuestion()!).toEqual(getFormField(form, PaymentAccountFormField.FieldId.QUESTION).getValue());
+        expect(account.getPaymentAccountPayload()!.getInteracETransferAccountPayload()!.getAnswer()!).toEqual(getFormField(form, PaymentAccountFormField.FieldId.ANSWER).getValue());
         break;
       default:
         throw new Error("Unhandled payment method type: " + form.getId());
