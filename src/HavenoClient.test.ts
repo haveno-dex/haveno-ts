@@ -1342,13 +1342,15 @@ test("Can validate payment account forms (Test, CI, sanity check)", async () => 
     for (const field of accountForm.getFieldsList()) {
 
       // validate invalid form field
-      try {
-        const invalidInput = getInvalidFormInput(accountForm, field.getId());
-        await user1.validateFormField(accountForm, field.getId(), invalidInput);
-        throw new Error("Should have thrown error validating form field '" + field.getId() + "' with invalid value '" + invalidInput + "'");
-      } catch (err: any) {
-        if (err.message.indexOf("Not implemented") >= 0) throw err;
-        if (err.message.indexOf("Should have thrown") >= 0) throw err;
+      const invalidInput = getInvalidFormInput(accountForm, field.getId());
+      if (invalidInput !== undefined) {
+        try {
+          await user1.validateFormField(accountForm, field.getId(), invalidInput);
+          throw new Error("Should have thrown error validating form field '" + field.getId() + "' with invalid value '" + invalidInput + "'");
+        } catch (err: any) {
+          if (err.message.indexOf("Not implemented") >= 0) throw err;
+          if (err.message.indexOf("Should have thrown") >= 0) throw err;
+        }
       }
 
       // validate valid form field
@@ -4413,7 +4415,7 @@ function getValidFormInputAux(form: PaymentAccountForm, fieldId: PaymentAccountF
     case PaymentAccountFormField.FieldId.EXTRA_INFO:
       return "Please and thanks";
     case PaymentAccountFormField.FieldId.HOLDER_ADDRESS:
-      throw new Error("Not implemented");
+      return "123 Holder Street";
     case PaymentAccountFormField.FieldId.HOLDER_EMAIL:
       throw new Error("Not implemented");
     case PaymentAccountFormField.FieldId.HOLDER_NAME:
@@ -4478,7 +4480,7 @@ function getValidFormInputAux(form: PaymentAccountForm, fieldId: PaymentAccountF
 }
 
 // TODO: improve invalid inputs
-function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFormField.FieldId): string {
+function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFormField.FieldId): string | undefined{
   const field = getFormField(form, fieldId);
   switch (fieldId) {
     case PaymentAccountFormField.FieldId.ACCEPTED_COUNTRY_CODES:
@@ -4548,9 +4550,9 @@ function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFo
     case PaymentAccountFormField.FieldId.EMAIL_OR_MOBILE_NR_OR_CASHTAG:
       return "A"
     case PaymentAccountFormField.FieldId.EXTRA_INFO:
-      throw new Error("Extra info has no invalid input");
+      return undefined;
     case PaymentAccountFormField.FieldId.HOLDER_ADDRESS:
-      throw new Error("Not implemented");
+      return "aerkjgaef ajsdj asdfasdf dfjaksdjfe asd fasdf asf asdfjoiejasef asdf asdfjkajs dfaksdjf aksdjf aksjdf aks"; // >100 characters
     case PaymentAccountFormField.FieldId.HOLDER_EMAIL:
       throw new Error("Not implemented");
     case PaymentAccountFormField.FieldId.HOLDER_NAME:
@@ -4592,7 +4594,7 @@ function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFo
     case PaymentAccountFormField.FieldId.SORT_CODE:
       return "12345A";
     case PaymentAccountFormField.FieldId.SPECIAL_INSTRUCTIONS:
-      throw new Error("Special instructions have no invalid input");
+      return undefined;
     case PaymentAccountFormField.FieldId.STATE: {
       const country = HavenoUtils.getFormValue(form, PaymentAccountFormField.FieldId.COUNTRY);
       return moneroTs.GenUtils.arrayContains(field.getRequiredForCountriesList(), country) ? "" : "My state";
@@ -4739,6 +4741,13 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
         expect(account.getPaymentAccountPayload()!.getSwishAccountPayload()!.getMobileNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.MOBILE_NR).getValue());
         expect(account.getTradeCurrenciesList().length).toEqual(1);
         expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("SEK");
+        break;
+    case PaymentAccountForm.FormId.TRANSFERWISE_USD:
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getTransferwiseUsdAccountPayload()!.getEmail()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.EMAIL).getValue());
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getTransferwiseUsdAccountPayload()!.getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getTransferwiseUsdAccountPayload()!.getHolderAddress()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_ADDRESS).getValue());
+        expect(account.getTradeCurrenciesList().length).toEqual(1);
+        expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("USD");
         break;
       default:
         throw new Error("Unhandled payment method type: " + form.getId());
