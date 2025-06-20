@@ -4749,6 +4749,11 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
         expect(account.getTradeCurrenciesList().length).toEqual(1);
         expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("USD");
         break;
+    case PaymentAccountForm.FormId.AMAZON_GIFT_CARD:
+        expect(account.getPaymentAccountPayload()!.getAmazonGiftCardAccountPayload()!.getEmailOrMobileNr()!).toEqual(getFormField(form, PaymentAccountFormField.FieldId.EMAIL_OR_MOBILE_NR).getValue());
+        expect(account.getPaymentAccountPayload()!.getAmazonGiftCardAccountPayload()!.getCountryCode()!).toEqual(getFormField(form, PaymentAccountFormField.FieldId.COUNTRY).getValue());
+        expect(account.getTradeCurrenciesList().map(currency => currency.getCode()).join(",")).toEqual(getFormField(form, PaymentAccountFormField.FieldId.TRADE_CURRENCIES).getValue());
+        break;
       default:
         throw new Error("Unhandled payment method type: " + form.getId());
     }
