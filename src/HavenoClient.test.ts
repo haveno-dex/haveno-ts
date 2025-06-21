@@ -4771,6 +4771,12 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
         expect(account.getPaymentAccountPayload()!.getInteracETransferAccountPayload()!.getQuestion()!).toEqual(getFormField(form, PaymentAccountFormField.FieldId.QUESTION).getValue());
         expect(account.getPaymentAccountPayload()!.getInteracETransferAccountPayload()!.getAnswer()!).toEqual(getFormField(form, PaymentAccountFormField.FieldId.ANSWER).getValue());
         break;
+    case PaymentAccountForm.FormId.US_POSTAL_MONEY_ORDER:
+        expect(account.getPaymentAccountPayload()!.getUSPostalMoneyOrderAccountPayload()!.getHolderName()!).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
+        expect(account.getPaymentAccountPayload()!.getUSPostalMoneyOrderAccountPayload()!.getPostalAddress()!).toEqual(getFormField(form, PaymentAccountFormField.FieldId.POSTAL_ADDRESS).getValue());
+        expect(account.getTradeCurrenciesList().length).toEqual(1);
+        expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("USD");
+        break;
       default:
         throw new Error("Unhandled payment method type: " + form.getId());
     }
