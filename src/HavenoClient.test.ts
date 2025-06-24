@@ -2411,9 +2411,12 @@ test("Selects arbitrators which are online, registered, and least used (Test)", 
 
   // cleanup if error
   if (err) {
-    try { await arbitrator2.unregisterDisputeAgent("arbitrator"); }
-    catch (err) { /*ignore*/ }
-    await releaseHavenoProcess(arbitrator2, true);
+    if (arbitrator2) {
+      try { await arbitrator2.unregisterDisputeAgent("arbitrator"); }
+      catch (err: any) { console.log("Error unregistering arbitrator2: " + err.message); }
+      try { await releaseHavenoProcess(arbitrator2, true); }
+      catch (err: any) { console.log("Error releasing arbitrator2: " + err.message); }
+    }
     throw err;
   }
 });
