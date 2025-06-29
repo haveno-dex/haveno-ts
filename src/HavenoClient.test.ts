@@ -2470,7 +2470,7 @@ test("Can bootstrap a network", async () => {
     if (!ctxP.makerPaymentAccountId) ctxP.makerPaymentAccountId = (await createPaymentAccount2(ctxP.maker.havenod!, ctxP.paymentMethodId)).getId();
     if (!ctxP.takerPaymentAccountId) ctxP.takerPaymentAccountId = (await createPaymentAccount2(ctxP.taker.havenod!, ctxP.paymentMethodId)).getId();
     if (!ctxP.assetCode) ctxP.assetCode = getRandomAssetCodeForPaymentAccount(await ctxP.maker.havenod.getPaymentAccount(ctxP.makerPaymentAccountId));
-    if (await isFixedPrice(ctxP)) ctxP.price = getRandomFloat(125, 155);
+    if (await isFixedPrice(ctxP)) ctxP.price = ctxP.direction === OfferDirection.BUY ? getRandomFloat(125, 155) : getRandomFloat(160, 190);
   
     // randomize trade config
     if (ctxP.takeOffer === undefined) ctxP.takeOffer = getRandomOutcome(3/5);
@@ -4200,7 +4200,7 @@ function testDestination(destination: XmrDestination) {
 }
 
 function getRandomPaymentMethodId(): string {
-  if (getRandomOutcome(1/5)) return "BLOCK_CHAINS";
+  if (getRandomOutcome(2/5)) return "BLOCK_CHAINS";
   let allPaymentMethodIds = Object.keys(PaymentAccountForm.FormId);
   return allPaymentMethodIds[moneroTs.GenUtils.getRandomInt(0, allPaymentMethodIds.length - 1)];
 }
@@ -4466,7 +4466,8 @@ function getValidFormInputAux(form: PaymentAccountForm, fieldId: PaymentAccountF
       if (field.getComponent() === PaymentAccountFormField.Component.SELECT_ONE) {
         if (form.getId() === PaymentAccountForm.FormId.F2F) return "XAU";
         if (form.getId() === PaymentAccountForm.FormId.PAY_BY_MAIL) return "XGB";
-        return field.getSupportedCurrenciesList()[0]!.getCode(); // TODO: randomly select?
+        let randomIndex = moneroTs.GenUtils.getRandomInt(0, field.getSupportedCurrenciesList().length - 1);
+        return field.getSupportedCurrenciesList()[randomIndex]!.getCode();
       }
       else return field.getSupportedCurrenciesList().map(currency => currency.getCode()).join(',');
     case PaymentAccountFormField.FieldId.USERNAME:
