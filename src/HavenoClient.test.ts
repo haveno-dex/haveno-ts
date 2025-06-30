@@ -1219,7 +1219,7 @@ test("Can get market depth (Test, CI, sanity check)", async () => {
 
     // get user2's market depth
     await wait(TestConfig.trade.maxTimePeerNoticeMs);
-    marketDepth = await user1.getMarketDepth(assetCode);
+    marketDepth = await user2.getMarketDepth(assetCode);
 
     // each unique price has a depth
     expect(marketDepth.getBuyPricesList().length).toEqual(3);
@@ -1228,7 +1228,7 @@ test("Can get market depth (Test, CI, sanity check)", async () => {
     expect(marketDepth.getSellPricesList().length).toEqual(marketDepth.getSellDepthList().length);
 
     // test buy prices and depths
-    const buyOffers = (await user1.getOffers(assetCode, OfferDirection.BUY)).concat(await user1.getMyOffers(assetCode, OfferDirection.BUY)).sort(function(a, b) { return parseFloat(a.getPrice()) - parseFloat(b.getPrice()) });
+    const buyOffers = (await user2.getOffers(assetCode, OfferDirection.BUY)).concat(await user2.getMyOffers(assetCode, OfferDirection.BUY)).sort(function(a, b) { return parseFloat(a.getPrice()) - parseFloat(b.getPrice()) });
     expect(marketDepth.getBuyPricesList()[0]).toEqual(1 / parseFloat(buyOffers[0].getPrice())); // TODO: price when posting offer is reversed. this assumes crypto counter currency
     expect(marketDepth.getBuyPricesList()[1]).toEqual(1 / parseFloat(buyOffers[1].getPrice()));
     expect(marketDepth.getBuyPricesList()[2]).toEqual(1 / parseFloat(buyOffers[2].getPrice()));
@@ -1237,7 +1237,7 @@ test("Can get market depth (Test, CI, sanity check)", async () => {
     expect(marketDepth.getBuyDepthList()[2]).toEqual(0.65);
 
     // test sell prices and depths
-    const sellOffers = (await user1.getOffers(assetCode, OfferDirection.SELL)).concat(await user1.getMyOffers(assetCode, OfferDirection.SELL)).sort(function(a, b) { return parseFloat(b.getPrice()) - parseFloat(a.getPrice()) });
+    const sellOffers = (await user2.getOffers(assetCode, OfferDirection.SELL)).concat(await user2.getMyOffers(assetCode, OfferDirection.SELL)).sort(function(a, b) { return parseFloat(b.getPrice()) - parseFloat(a.getPrice()) });
     expect(marketDepth.getSellPricesList()[0]).toEqual(1 / parseFloat(sellOffers[0].getPrice()));
     expect(marketDepth.getSellPricesList()[1]).toEqual(1 / parseFloat(sellOffers[1].getPrice()));
     expect(marketDepth.getSellPricesList()[2]).toEqual(1 / parseFloat(sellOffers[2].getPrice()));
