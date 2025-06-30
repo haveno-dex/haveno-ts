@@ -2446,6 +2446,11 @@ test("Can bootstrap a network", async () => {
 
   async function getRandomBootstrapConfig(ctxP?: Partial<TradeContext>): Promise<TradeContext> {
     if (!ctxP) ctxP = {};
+
+    // customize configs
+    //ctxP.paymentMethodId = "BLOCK_CHAINS";
+    //ctxP.assetCode = "BTC";
+    const completeAllTrades = false;
   
     // randomize offer config
     const user1AsMaker = getRandomOutcome(1/2);
@@ -2465,26 +2470,26 @@ test("Can bootstrap a network", async () => {
     }
 
     // randomize payment method and asset code
-    if (ctxP.assetCode && (!ctxP.makerPaymentAccountId || !ctxP.paymentMethodId)) throw new Error("Cannot specify asset code without payment account or method ID");
+    if (ctxP.assetCode && !ctxP.paymentMethodId && (!ctxP.makerPaymentAccountId || !ctxP.takerPaymentAccountId)) throw new Error("Cannot specify asset code without payment method or accounts");
     if (!ctxP.paymentMethodId) ctxP.paymentMethodId = getRandomPaymentMethodId();
-    if (!ctxP.makerPaymentAccountId) ctxP.makerPaymentAccountId = (await createPaymentAccount2(ctxP.maker.havenod!, ctxP.paymentMethodId)).getId();
-    if (!ctxP.takerPaymentAccountId) ctxP.takerPaymentAccountId = (await createPaymentAccount2(ctxP.taker.havenod!, ctxP.paymentMethodId)).getId();
+    if (!ctxP.makerPaymentAccountId) ctxP.makerPaymentAccountId = (await createPaymentAccount2(ctxP.maker.havenod!, ctxP.paymentMethodId, ctxP.assetCode)).getId();
+    if (!ctxP.takerPaymentAccountId) ctxP.takerPaymentAccountId = (await createPaymentAccount2(ctxP.taker.havenod!, ctxP.paymentMethodId, ctxP.assetCode)).getId();
     if (!ctxP.assetCode) ctxP.assetCode = getRandomAssetCodeForPaymentAccount(await ctxP.maker.havenod.getPaymentAccount(ctxP.makerPaymentAccountId));
     if (await isFixedPrice(ctxP)) ctxP.price = ctxP.direction === OfferDirection.BUY ? getRandomFloat(125, 155) : getRandomFloat(160, 190);
   
     // randomize trade config
     if (ctxP.takeOffer === undefined) ctxP.takeOffer = getRandomOutcome(3/5);
     if (ctxP.tradeAmount === undefined) ctxP.tradeAmount = isRangeOffer ? getRandomBigIntWithinRange(ctxP.offerMinAmount!, ctxP.offerAmount) : ctxP.offerAmount;
-    if (ctxP.buyerSendsPayment === undefined) ctxP.buyerSendsPayment = getRandomOutcome(1/2);
+    if (ctxP.buyerSendsPayment === undefined) ctxP.buyerSendsPayment = completeAllTrades || getRandomOutcome(1/2);
     if (ctxP.priceMargin === undefined && ctxP.price === undefined) ctxP.priceMargin = parseFloat(getRandomFloat(0, .3).toFixed(10));
-    if (ctxP.sellerReceivesPayment === undefined) ctxP.sellerReceivesPayment = getRandomOutcome(1/2);
+    if (ctxP.sellerReceivesPayment === undefined) ctxP.sellerReceivesPayment = completeAllTrades || getRandomOutcome(1/2);
     if (ctxP.buyerDisputeContext === undefined) ctxP.buyerDisputeContext = getRandomOutcome(1/14) ? DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK : undefined;
     if (ctxP.buyerDisputeContext === undefined) ctxP.buyerDisputeContext = getRandomOutcome(1/14) ? DisputeContext.OPEN_AFTER_PAYMENT_SENT : undefined;
     if (ctxP.buyerDisputeContext === undefined) { // only one peer opens dispute
       if (ctxP.sellerDisputeContext === undefined) ctxP.sellerDisputeContext = getRandomOutcome(1/14) ? DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK : undefined;
       if (ctxP.sellerDisputeContext === undefined) ctxP.sellerDisputeContext = getRandomOutcome(1/14) ? DisputeContext.OPEN_AFTER_PAYMENT_SENT : undefined;
     }
-    if (ctxP.resolveDispute === undefined) ctxP.resolveDispute = getRandomOutcome(2/3);
+    if (ctxP.resolveDispute === undefined) ctxP.resolveDispute = completeAllTrades || getRandomOutcome(2/3);
 
     return TradeContext.init(ctxP);
   }
@@ -2498,11 +2503,11 @@ test("Can bootstrap a network", async () => {
   }
 
   // TODO: reconcile with createPaymentAccount
-  async function createPaymentAccount2(trader: HavenoClient, paymentMethodId?: string, assetCodes?: string[]): Promise<PaymentAccount> {
-    if (assetCodes && !paymentMethodId) throw new Error("Cannot create payment account with asset codes and no payment method ID");
+  async function createPaymentAccount2(trader: HavenoClient, paymentMethodId?: string, assetCode?: string): Promise<PaymentAccount> {
+    if (assetCode && !paymentMethodId) throw new Error("Cannot create payment account with asset code and no payment method ID");
     if (!paymentMethodId) paymentMethodId = getRandomPaymentMethodId();
     const accountForm = await trader.getPaymentAccountForm(paymentMethodId);
-    if (assetCodes) HavenoUtils.setFormValue(accountForm, PaymentAccountFormField.FieldId.TRADE_CURRENCIES, assetCodes.join(","));
+    if (assetCode) HavenoUtils.setFormValue(accountForm, PaymentAccountFormField.FieldId.TRADE_CURRENCIES, assetCode);
     for (const field of accountForm.getFieldsList()) {
       if (field.getValue() !== "") continue; // skip if already set
       field.setValue(getValidFormInput(accountForm, field.getId(), trader));
