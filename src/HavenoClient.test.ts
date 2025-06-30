@@ -4312,7 +4312,7 @@ function testCryptoPaymentAccountsEqual(acct1: PaymentAccount, acct2: PaymentAcc
 function testOffer(offer: OfferInfo, ctxP?: Partial<TradeContext>, isMyOffer?: boolean) {
   let ctx = TradeContext.init(ctxP);
   expect(offer.getId().length).toBeGreaterThan(0);
-  if (ctx) {
+  if (ctxP) {
     expect(offer.getIsPrivateOffer()).toEqual(ctx?.isPrivateOffer ? true : false); // TODO: update tests for security deposit
     if (offer.getIsPrivateOffer()) {
       if (isMyOffer) expect(offer.getChallenge().length).toBeGreaterThan(0);
