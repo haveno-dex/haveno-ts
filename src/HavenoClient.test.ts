@@ -1194,7 +1194,7 @@ test("Can get market depth (Test, CI, sanity check)", async () => {
     await clearOffers(user2, assetCode);
     async function clearOffers(havenod: HavenoClient, assetCode: string) {
       for (const offer of await havenod.getMyOffers(assetCode)) {
-        if (offer.getBaseCurrencyCode().toLowerCase() === assetCode.toLowerCase()) {
+        if (offer.getCounterCurrencyCode().toLowerCase() === assetCode.toLowerCase()) {
             await havenod.removeOffer(offer.getId());
         }
       }
@@ -1229,18 +1229,18 @@ test("Can get market depth (Test, CI, sanity check)", async () => {
 
     // test buy prices and depths
     const buyOffers = (await user2.getOffers(assetCode, OfferDirection.BUY)).concat(await user2.getMyOffers(assetCode, OfferDirection.BUY)).sort(function(a, b) { return parseFloat(a.getPrice()) - parseFloat(b.getPrice()) });
-    expect(marketDepth.getBuyPricesList()[0]).toEqual(1 / parseFloat(buyOffers[0].getPrice())); // TODO: price when posting offer is reversed. this assumes crypto counter currency
-    expect(marketDepth.getBuyPricesList()[1]).toEqual(1 / parseFloat(buyOffers[1].getPrice()));
-    expect(marketDepth.getBuyPricesList()[2]).toEqual(1 / parseFloat(buyOffers[2].getPrice()));
-    expect(marketDepth.getBuyDepthList()[0]).toEqual(0.15);
-    expect(marketDepth.getBuyDepthList()[1]).toEqual(0.30);
+    expect(marketDepth.getBuyPricesList()[0]).toEqual(parseFloat(buyOffers[2].getPrice()));
+    expect(marketDepth.getBuyPricesList()[1]).toEqual(parseFloat(buyOffers[1].getPrice()));
+    expect(marketDepth.getBuyPricesList()[2]).toEqual(parseFloat(buyOffers[0].getPrice()));
+    expect(marketDepth.getBuyDepthList()[0]).toEqual(0.35);
+    expect(marketDepth.getBuyDepthList()[1]).toEqual(0.5);
     expect(marketDepth.getBuyDepthList()[2]).toEqual(0.65);
 
     // test sell prices and depths
     const sellOffers = (await user2.getOffers(assetCode, OfferDirection.SELL)).concat(await user2.getMyOffers(assetCode, OfferDirection.SELL)).sort(function(a, b) { return parseFloat(b.getPrice()) - parseFloat(a.getPrice()) });
-    expect(marketDepth.getSellPricesList()[0]).toEqual(1 / parseFloat(sellOffers[0].getPrice()));
-    expect(marketDepth.getSellPricesList()[1]).toEqual(1 / parseFloat(sellOffers[1].getPrice()));
-    expect(marketDepth.getSellPricesList()[2]).toEqual(1 / parseFloat(sellOffers[2].getPrice()));
+    expect(marketDepth.getSellPricesList()[0]).toEqual(parseFloat(sellOffers[2].getPrice()));
+    expect(marketDepth.getSellPricesList()[1]).toEqual(parseFloat(sellOffers[1].getPrice()));
+    expect(marketDepth.getSellPricesList()[2]).toEqual(parseFloat(sellOffers[0].getPrice()));
     expect(marketDepth.getSellDepthList()[0]).toEqual(0.3);
     expect(marketDepth.getSellDepthList()[1]).toEqual(0.6);
     expect(marketDepth.getSellDepthList()[2]).toEqual(1);
@@ -1295,7 +1295,7 @@ test("Can get my offers (Test, CI)", async () => {
     const offers: OfferInfo[] = await user1.getMyOffers(assetCode);
     for (const offer of offers) {
       testOffer(offer, undefined, true);
-      expect(assetCode).toEqual(isCrypto(assetCode) ? offer.getBaseCurrencyCode() : offer.getCounterCurrencyCode()); // crypto asset codes are base
+      expect(assetCode).toEqual(offer.getCounterCurrencyCode());
     }
   }
 });
@@ -1509,13 +1509,12 @@ test("Can post and remove an offer (Test, CI, sanity check)", async () => {
   // post crypto offer
   let assetCode = "BCH";
   let price = 1 / 17;
-  price = 1 / price; // TODO: price in crypto offer is inverted
   let ctx: Partial<TradeContext> = {maker: {havenod: user1}, assetCode: assetCode, price: price, extraInfo: "My extra info"};
   let offer: OfferInfo = await makeOffer(ctx);;
   assert.equal(offer.getState(), "AVAILABLE");
-  assert.equal(offer.getBaseCurrencyCode(), assetCode); // TODO: base and counter currencies inverted in crypto offer
-  assert.equal(offer.getCounterCurrencyCode(), "XMR");
-  assert.equal(parseFloat(offer.getPrice()), price);
+  assert.equal(offer.getCounterCurrencyCode(), assetCode);
+  assert.equal(offer.getBaseCurrencyCode(), "XMR");
+  assert.equal(parseFloat(offer.getPrice()), price.toFixed(8));
 
   // has offer
   offer = await user1.getMyOffer(offer.getId());
@@ -1595,8 +1594,8 @@ test("Can clone offers (Test, CI, sanity check)", async () => {
   });
   assert.notEqual(clonedOffer.getId(), offer.getId());
   assert.equal(clonedOffer.getState(), "DEACTIVATED"); // deactivated if same payment method and currency
-  assert.equal(clonedOffer.getBaseCurrencyCode(), assetCode);
-  assert.equal(clonedOffer.getCounterCurrencyCode(), "XMR");
+  assert.equal(clonedOffer.getCounterCurrencyCode(), assetCode);
+  assert.equal(clonedOffer.getBaseCurrencyCode(), "XMR");
   assert.equal(clonedOffer.getAmount(), offer.getAmount());
   assert.equal(clonedOffer.getMinAmount(), offer.getMinAmount());
   assert.equal(clonedOffer.getIsPrivateOffer(), offer.getIsPrivateOffer());
@@ -3020,7 +3019,6 @@ async function makeOffer(ctxP?: Partial<TradeContext>): Promise<OfferInfo> {
     sourceOfferId: ctx.sourceOfferId
   });
 
-
   // test offer
   testOffer(offer, ctx, true);
 
@@ -4332,8 +4330,8 @@ function testOffer(offer: OfferInfo, ctxP?: Partial<TradeContext>, isMyOffer?: b
     }
     if (ctx.extraInfo) expect(offer.getExtraInfo().indexOf(ctx.extraInfo)).toBeGreaterThanOrEqual(0); // may contain extra info from payment account
     expect(offer.getSellerSecurityDepositPct()).toEqual(ctx.securityDepositPct);
-    expect(offer.getUseMarketBasedPrice()).toEqual(!ctx?.price);
-    expect(offer.getMarketPriceMarginPct()).toEqual(ctx?.priceMargin ? ctx.priceMargin : 0);
+    expect(offer.getUseMarketBasedPrice()).toEqual(!ctx.price);
+    expect(offer.getMarketPriceMarginPct()).toEqual(ctx.priceMargin ? ctx.priceMargin : 0);
 
     // TODO: test rest of offer
   }
