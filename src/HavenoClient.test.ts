@@ -2463,7 +2463,7 @@ test("Can bootstrap a network", async () => {
     if (ctxP.offerAmount === undefined) ctxP.offerAmount = getRandomBigIntWithinPercent(HavenoUtils.xmrToAtomicUnits(1), 0.15);
     if (isRangeOffer && ctxP.offerMinAmount === undefined) ctxP.offerMinAmount = getRandomBigIntWithinPercent(HavenoUtils.xmrToAtomicUnits(0.3), 0.15);
     if (ctxP.reserveExactAmount === undefined) ctxP.reserveExactAmount = getRandomOutcome(3/4);
-    if (ctxP.buyerAsTakerWithoutDeposit === undefined) ctxP.buyerAsTakerWithoutDeposit = ctxP.direction === OfferDirection.SELL && getRandomOutcome(2/3);
+    if (ctxP.buyerAsTakerWithoutDeposit === undefined) ctxP.buyerAsTakerWithoutDeposit = ctxP.direction === OfferDirection.SELL && getRandomOutcome(1/3);
     if (ctxP.buyerAsTakerWithoutDeposit) {
       ctxP.isPrivateOffer = true;
       ctxP.extraInfo = "Will get this done fast, no deposit required 😎";
