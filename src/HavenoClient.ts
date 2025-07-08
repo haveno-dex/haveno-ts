@@ -844,7 +844,7 @@ export default class HavenoClient {
     try {
       return (await this._priceClient.getMarketPrice(new MarketPriceRequest().setCurrencyCode(assetCode), {password: this._password})).getPrice();
     } catch (e: any) {
-      if (e.message.indexOf("not found") >= 0) return undefined; // TODO: return unknown price server side (0?)
+      if (e.message.indexOf("not found") >= 0 || e.message.indexOf("not available") >= 0) return undefined; // TODO: return unknown price server side (0?)
       throw new HavenoError(e.message, e.code);
     }
   }
