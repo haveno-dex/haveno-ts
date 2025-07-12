@@ -441,7 +441,7 @@ const TestConfig = {
         }
     ],
     maxFee: HavenoUtils.xmrToAtomicUnits(0.5), // local testnet fees can be relatively high
-    minSecurityDeposit: moneroTs.MoneroUtils.xmrToAtomicUnits(0.1),
+    minSecurityDeposit: moneroTs.MoneroUtils.xmrToAtomicUnits(0.05),
     maxAdjustmentPct: 0.2,
     daemonPollPeriodMs: 5000,
     maxWalletStartupMs: 10000, // TODO (woodser): make shorter by switching to jni
@@ -3185,8 +3185,8 @@ async function takeOffer(ctxP: Partial<TradeContext>): Promise<TradeInfo> {
 async function testTrade(trade: TradeInfo, ctx: TradeContext, havenod?: HavenoClient): Promise<void> {
   expect(BigInt(trade.getAmount())).toEqual(ctx!.tradeAmount);
 
-  // test security deposit = max(0.1, trade amount * security deposit pct)
-  const expectedSecurityDeposit = HavenoUtils.max(HavenoUtils.xmrToAtomicUnits(.1), HavenoUtils.multiply(ctx.tradeAmount!, ctx.securityDepositPct!));
+  // test security deposit = max(min security deposit, trade amount * security deposit pct)
+  const expectedSecurityDeposit = HavenoUtils.max(TestConfig.minSecurityDeposit, HavenoUtils.multiply(ctx.tradeAmount!, ctx.securityDepositPct!));
   expect(BigInt(trade.getBuyerSecurityDeposit())).toEqual(ctx.hasBuyerAsTakerWithoutDeposit() ? 0n : expectedSecurityDeposit - ctx.getBuyer().depositTxFee!);
   expect(BigInt(trade.getSellerSecurityDeposit())).toEqual(expectedSecurityDeposit - ctx.getSeller().depositTxFee!);
 
