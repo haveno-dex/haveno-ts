@@ -3140,6 +3140,8 @@ async function takeOffer(ctxP: Partial<TradeContext>): Promise<TradeInfo> {
   }
 
   // test trade model
+  assert.equal(ctx.maker.trade!.getDate(), ctx.taker.trade!.getDate(), "Expected trade date to match");
+  assert.equal(ctx.taker.trade!.getDate(), ctx.arbitrator.trade!.getDate(), "Expected trade date to match");
   await testTrade(takerTrade, ctx);
 
   // test buyer and seller balances after offer taken
