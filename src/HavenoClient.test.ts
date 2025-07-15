@@ -146,7 +146,8 @@ const defaultTradeConfig: Partial<TradeContext> = {
   disputeSummary: "Seller is winner",
   walletSyncPeriodMs: 5000,
   maxTimePeerNoticeMs: 6000,
-  testChatMessages: true,
+  testTradeChatMessages: true,
+  testDisputeChatMessages: true,
   stopOnFailure: false, // TODO: setting to true can cause error: Http response at 400 or 500 level, http status code: 503
   testPayoutConfirmed: true,
   testPayoutUnlocked: false,
@@ -203,7 +204,8 @@ class TradeContext {
   offerId?: string;
   takerPaymentAccountId?: string;
   challenge?: string;
-  testTraderChat?: boolean;
+  testTradeChatMessages?: boolean;
+  tradeChatMessagesTested?: boolean;
 
   // resolve dispute
   resolveDispute?: boolean
@@ -230,7 +232,8 @@ class TradeContext {
   sellerOpenedDispute?: boolean;
   walletSyncPeriodMs!: number;
   maxTimePeerNoticeMs!: number;
-  testChatMessages!: boolean;
+  testDisputeChatMessages!: boolean;
+  disputeChatMessagesTested!: boolean;
   stopOnFailure?: boolean;
   buyerAppName?: string;
   sellerAppName?: string;
@@ -2706,7 +2709,7 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
 
     // test trader chat
     if (ctx.isStopped) return ctx.offerId!;
-    if (ctx.testTraderChat) await testTradeChat(ctx);
+    if (ctx.testTradeChatMessages && !ctx.tradeChatMessagesTested) await testTradeChat(ctx); // test trader chat once
 
     // get expected payment account payloads
     if (ctx.isStopped) return ctx.offerId!;
@@ -3345,7 +3348,7 @@ async function testOpenDispute(ctxP: Partial<TradeContext>) {
   await arbitrator.addNotificationListener(notification => { HavenoUtils.log(3, "Arbitrator received notification " + notification.getType() + " " + (notification.getChatMessage() ? notification.getChatMessage()?.getMessage() : "")); arbitratorNotifications.push(notification); });
 
   // test chat messages
-  if (ctx.testChatMessages) {
+  if (ctx.testDisputeChatMessages && !ctx.disputeChatMessagesTested) {
 
     // arbitrator sends chat messages to traders
     HavenoUtils.log(1, "Arbitrator sending chat messages to traders. tradeId=" + ctx.offerId + ", disputeId=" + openerDispute.getId());
@@ -3419,6 +3422,8 @@ async function testOpenDispute(ctxP: Partial<TradeContext>) {
     expect(attachments[1].getFileName()).toEqual("proof.png");
     expect(attachments[1].getBytes()).toEqual(bytes2);
     expect(chatNotifications[1].getChatMessage()?.getMessage()).toEqual("Dispute peer chat message");
+
+    ctx.disputeChatMessagesTested = true; // mark chat messages as tested
   }
 }
 
@@ -3612,74 +3617,88 @@ async function testTradeChat(ctxP: Partial<TradeContext>) {
 
   // invalid trade should throw error
   try {
-    await user1.getChatMessages("invalid");
+    await ctx.maker.havenod!.getChatMessages("invalid");
     throw new Error("get chat messages with invalid id should fail");
   } catch (err: any) {
     assert.equal(err.message, "trade with id 'invalid' not found");
   }
 
   // trade chat should be in initial state
-  let messages = await user1.getChatMessages(ctx.offerId!);
-  assert(messages.length === 0);
-  messages = await user2.getChatMessages(ctx.offerId!);
-  assert(messages.length === 0);
+  let messages = await ctx.maker.havenod!.getChatMessages(ctx.offerId!);
+  expect(messages.length).toEqual(0);
+  messages = await ctx.taker.havenod!.getChatMessages(ctx.offerId!);
+  expect(messages.length).toEqual(0);
 
   // add notification handlers and send some messages
-  const user1Notifications: NotificationMessage[] = [];
-  const user2Notifications: NotificationMessage[] = [];
-  await user1.addNotificationListener(notification => { user1Notifications.push(notification); });
-  await user2.addNotificationListener(notification => { user2Notifications.push(notification); });
+  const makerNotifications: NotificationMessage[] = [];
+  const takerNotifications: NotificationMessage[] = [];
+  await ctx.maker.havenod!.addNotificationListener(notification => { makerNotifications.push(notification); });
+  await ctx.taker.havenod!.addNotificationListener(notification => { takerNotifications.push(notification); });
 
   // send simple conversation and verify the list of messages
-  const user1Msg = "Hi I'm user1";
-  await user1.sendChatMessage(ctx.offerId!, user1Msg);
+  const makerMsg = "Hi I'm the maker";
+  await await ctx.maker.havenod!.sendChatMessage(ctx.offerId!, makerMsg);
   await wait(ctx.maxTimePeerNoticeMs);
-  messages = await user2.getChatMessages(ctx.offerId!);
+  messages = await ctx.taker.havenod!.getChatMessages(ctx.offerId!);
   expect(messages.length).toEqual(2);
   expect(messages[0].getIsSystemMessage()).toEqual(true); // first message is system
-  expect(messages[1].getMessage()).toEqual(user1Msg);
+  expect(messages[1].getMessage()).toEqual(makerMsg);
 
-  const user2Msg = "Hello I'm user2";
-  await user2.sendChatMessage(ctx.offerId!, user2Msg);
+  const takerMsg = "Hello I'm the taker";
+  await ctx.taker.havenod!.sendChatMessage(ctx.offerId!, takerMsg);
   await wait(ctx.maxTimePeerNoticeMs);
-  messages = await user1.getChatMessages(ctx.offerId!);
+  messages = await ctx.maker.havenod!.getChatMessages(ctx.offerId!);
   expect(messages.length).toEqual(3);
   expect(messages[0].getIsSystemMessage()).toEqual(true);
-  expect(messages[1].getMessage()).toEqual(user1Msg);
-  expect(messages[2].getMessage()).toEqual(user2Msg);
+  expect(messages[1].getMessage()).toEqual(makerMsg);
+  expect(messages[2].getMessage()).toEqual(takerMsg);
 
   // verify notifications
-  let chatNotifications = getNotifications(user1Notifications, NotificationMessage.NotificationType.CHAT_MESSAGE);
-  expect(chatNotifications.length).toBe(1);
-  expect(chatNotifications[0].getChatMessage()?.getMessage()).toEqual(user2Msg);
-  chatNotifications = getNotifications(user2Notifications, NotificationMessage.NotificationType.CHAT_MESSAGE);
-  expect(chatNotifications.length).toBe(1);
-  expect(chatNotifications[0].getChatMessage()?.getMessage()).toEqual(user1Msg);
+  let chatNotifications = getNotifications(makerNotifications, NotificationMessage.NotificationType.CHAT_MESSAGE);
+  if (ctx.concurrentTrades) {
+    expect(chatNotifications.length).toBeGreaterThanOrEqual(1);
+  } else {
+    expect(chatNotifications.length).toBe(1);
+    expect(chatNotifications[0].getChatMessage()?.getMessage()).toEqual(takerMsg);
+  }
+  chatNotifications = getNotifications(takerNotifications, NotificationMessage.NotificationType.CHAT_MESSAGE);
+  if (ctx.concurrentTrades) {
+    expect(chatNotifications.length).toBeGreaterThanOrEqual(1);
+  } else {
+    expect(chatNotifications.length).toBe(1);
+    expect(chatNotifications[0].getChatMessage()?.getMessage()).toEqual(makerMsg);
+  }
 
   // additional msgs
   const msgs = ["", "  ", "<script>alert('test');</script>", "さようなら"];
   for(const msg of msgs) {
-    await user1.sendChatMessage(ctx.offerId!, msg);
+    await ctx.maker.havenod!.sendChatMessage(ctx.offerId!, msg);
     await wait(1000); // the async operation can result in out of order messages
   }
   await wait(ctx.maxTimePeerNoticeMs);
-  messages = await user2.getChatMessages(ctx.offerId!);
+  messages = await ctx.taker.havenod!.getChatMessages(ctx.offerId!);
   let offset = 3; // 3 existing messages
   expect(messages.length).toEqual(offset + msgs.length);
   expect(messages[0].getIsSystemMessage()).toEqual(true);
-  expect(messages[1].getMessage()).toEqual(user1Msg);
-  expect(messages[2].getMessage()).toEqual(user2Msg);
+  expect(messages[1].getMessage()).toEqual(makerMsg);
+  expect(messages[2].getMessage()).toEqual(takerMsg);
   for (let i = 0; i < msgs.length; i++) {
     expect(messages[i + offset].getMessage()).toEqual(msgs[i]);
   }
 
-  chatNotifications = getNotifications(user2Notifications, NotificationMessage.NotificationType.CHAT_MESSAGE);
+  chatNotifications = getNotifications(takerNotifications, NotificationMessage.NotificationType.CHAT_MESSAGE);
   offset = 1; // 1 existing notification
-  expect(chatNotifications.length).toBe(offset + msgs.length);
-  expect(chatNotifications[0].getChatMessage()?.getMessage()).toEqual(user1Msg);
-  for (let i = 0; i < msgs.length; i++) {
-    expect(chatNotifications[i + offset].getChatMessage()?.getMessage()).toEqual(msgs[i]);
+  if (ctx.concurrentTrades) {
+    expect(chatNotifications.length).toBeGreaterThanOrEqual(offset + msgs.length);
+  } else {
+    expect(chatNotifications.length).toBe(offset + msgs.length);
+    expect(chatNotifications[0].getChatMessage()?.getMessage()).toEqual(makerMsg);
+    for (let i = 0; i < msgs.length; i++) {
+      expect(chatNotifications[i + offset].getChatMessage()?.getMessage()).toEqual(msgs[i]);
+    }
   }
+
+  ctx.tradeChatMessagesTested = true; // mark trade chat as tested
 }
 
 // ---------------------------- OTHER HELPERS ---------------------------------
