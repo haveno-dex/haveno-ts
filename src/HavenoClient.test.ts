@@ -2547,7 +2547,7 @@ test("Can bootstrap a network", async () => {
     if (await isFixedPrice(ctxP)) ctxP.price = ctxP.direction === OfferDirection.BUY ? getRandomFloat(125, 155) : getRandomFloat(160, 190);
   
     // randomize trade config
-    if (ctxP.takeOffer === undefined) ctxP.takeOffer = getRandomOutcome(3/5);
+    if (ctxP.takeOffer === undefined) ctxP.takeOffer = getRandomOutcome(1/2);
     if (ctxP.tradeAmount === undefined) ctxP.tradeAmount = isRangeOffer ? getRandomBigIntWithinRange(ctxP.offerMinAmount!, ctxP.offerAmount) : ctxP.offerAmount;
     if (ctxP.buyerSendsPayment === undefined) ctxP.buyerSendsPayment = completeAllTrades || getRandomOutcome(1/2);
     if (ctxP.priceMargin === undefined && ctxP.price === undefined) ctxP.priceMargin = parseFloat(getRandomFloat(0, .3).toFixed(10));
@@ -4561,8 +4561,8 @@ function getValidFormInputAux(form: PaymentAccountForm, fieldId: PaymentAccountF
       if (field.getComponent() === PaymentAccountFormField.Component.SELECT_ONE) {
         if (form.getId() === PaymentAccountForm.FormId.F2F) return "XAU";
         if (form.getId() === PaymentAccountForm.FormId.PAY_BY_MAIL) return "XGB";
-        let randomIndex = moneroTs.GenUtils.getRandomInt(0, field.getSupportedCurrenciesList().length - 1);
-        return field.getSupportedCurrenciesList()[randomIndex]!.getCode();
+        let currencyIdx = getRandomOutcome(2/3) ? 0 : moneroTs.GenUtils.getRandomInt(0, field.getSupportedCurrenciesList().length - 1); // prefer index 0 to simulate common currency
+        return field.getSupportedCurrenciesList()[currencyIdx]!.getCode();
       }
       else return field.getSupportedCurrenciesList().map(currency => currency.getCode()).join(',');
     case PaymentAccountFormField.FieldId.USERNAME:
