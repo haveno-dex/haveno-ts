@@ -1836,6 +1836,22 @@ test("Cannot post offer outside of trade limits (Test, CI, sanity check)", async
     if (err.message.indexOf("must be above minimum") < 0) throw err;
   }
 
+  // test setting trigger price for fixed price offer
+  try {
+    await executeTrade({
+      price: 142.23,
+      triggerPrice: 150.0,
+      offerAmount: TestConfig.minAmount,
+      direction: OfferDirection.SELL,
+      assetCode: assetCode,
+      makerPaymentAccountId: account.getId(),
+      takeOffer: false
+    });
+    throw new Error("Should have rejected posting offer with fixed price and trigger price")
+  } catch (err: any) {
+    if (err.message.toLowerCase().indexOf("cannot set trigger price for fixed price offers.") < 0) throw err;
+  }
+
   // test minimum offer limit
   let offerId = await executeTrade({
     offerAmount: TestConfig.minAmount,
