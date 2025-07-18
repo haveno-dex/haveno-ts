@@ -441,7 +441,6 @@ const TestConfig = {
         }
     ],
     maxFee: HavenoUtils.xmrToAtomicUnits(0.5), // local testnet fees can be relatively high
-    minSecurityDeposit: moneroTs.MoneroUtils.xmrToAtomicUnits(0.1),
     maxAdjustmentPct: 0.2,
     daemonPollPeriodMs: 5000,
     maxWalletStartupMs: 10000, // TODO (woodser): make shorter by switching to jni
@@ -493,7 +492,12 @@ const TestConfig = {
     },
     tradeStepTimeoutMs: getBaseCurrencyNetwork() === BaseCurrencyNetwork.XMR_LOCAL ? 60000 : 180000,
     testTimeout: getBaseCurrencyNetwork() === BaseCurrencyNetwork.XMR_LOCAL ? 2400000 : 5400000, // timeout in ms for each test to complete (40 minutes for private network, 90 minutes for public network)
-    trade: new TradeContext(defaultTradeConfig)
+    trade: new TradeContext(defaultTradeConfig),
+    minAmount: moneroTs.MoneroUtils.xmrToAtomicUnits(0.05),
+    minSecurityDeposit: moneroTs.MoneroUtils.xmrToAtomicUnits(0.1),
+    maxAmountNoDeposit: moneroTs.MoneroUtils.xmrToAtomicUnits(1.5),
+    maxBuyAmountWithChargeback: moneroTs.MoneroUtils.xmrToAtomicUnits(3),
+    maxSellAmountWithChargeback: moneroTs.MoneroUtils.xmrToAtomicUnits(12)
 };
 
 interface HavenodContext {
@@ -1742,14 +1746,15 @@ test("Can reserve exact amount needed for offer (Test, CI)", async () => {
   });
 });
 
-test("Cannot post offer exceeding trade limit (Test, CI, sanity check)", async () => {
+test("Cannot post offer outside of trade limits (Test, CI, sanity check)", async () => {
   let assetCode = "USD";
   const account = await createPaymentAccount(user1, assetCode, "zelle");
+  const diff = 10000000000n;
 
   // test posting buy offer above limit
   try {
     await executeTrade({
-      offerAmount: moneroTs.MoneroUtils.xmrToAtomicUnits(3.1),
+      offerAmount: TestConfig.maxBuyAmountWithChargeback + diff,
       direction: OfferDirection.BUY,
       assetCode: assetCode,
       makerPaymentAccountId: account.getId(),
@@ -1763,7 +1768,7 @@ test("Cannot post offer exceeding trade limit (Test, CI, sanity check)", async (
   // test posting sell offer above limit
   try {
     await executeTrade({
-      offerAmount: moneroTs.MoneroUtils.xmrToAtomicUnits(12.1),
+      offerAmount: TestConfig.maxSellAmountWithChargeback + diff,
       direction: OfferDirection.SELL,
       assetCode: assetCode,
       makerPaymentAccountId: account.getId(),
@@ -1774,27 +1779,73 @@ test("Cannot post offer exceeding trade limit (Test, CI, sanity check)", async (
     if (err.message.indexOf("amount is larger than") < 0) throw err;
   }
 
-    // test posting sell offer above limit without buyer deposit
-    try {
-      await executeTrade({
-        offerAmount: moneroTs.MoneroUtils.xmrToAtomicUnits(1.6), // limit is 1.5 xmr without deposit or fee
-        offerMinAmount: moneroTs.MoneroUtils.xmrToAtomicUnits(0.25),
-        direction: OfferDirection.SELL,
-        assetCode: assetCode,
-        makerPaymentAccountId: account.getId(),
-        isPrivateOffer: true,
-        buyerAsTakerWithoutDeposit: true,
-        takeOffer: false,
-        price: 142.23
-      });
-      throw new Error("Should have rejected posting offer above trade limit")
-    } catch (err: any) {
-      if (err.message.indexOf("amount is larger than") < 0) throw err;
-    }
+  // test posting sell offer below limit
+  try {
+    await executeTrade({
+      offerAmount: moneroTs.MoneroUtils.xmrToAtomicUnits(1.6),
+      offerMinAmount: TestConfig.minAmount - diff,
+      direction: OfferDirection.SELL,
+      assetCode: assetCode,
+      makerPaymentAccountId: account.getId(),
+      isPrivateOffer: false,
+      buyerAsTakerWithoutDeposit: false,
+      takeOffer: false,
+      price: 142.23
+    });
+    throw new Error("Should have rejected posting offer above trade limit")
+  } catch (err: any) {
+    if (err.message.indexOf("must be above minimum") < 0) throw err;
+  }
+
+  // test posting sell offer above limit without buyer deposit
+  try {
+    await executeTrade({
+      offerAmount: TestConfig.maxAmountNoDeposit + diff,
+      offerMinAmount: moneroTs.MoneroUtils.xmrToAtomicUnits(0.25),
+      direction: OfferDirection.SELL,
+      assetCode: assetCode,
+      makerPaymentAccountId: account.getId(),
+      isPrivateOffer: true,
+      buyerAsTakerWithoutDeposit: true,
+      takeOffer: false,
+      price: 142.23
+    });
+    throw new Error("Should have rejected posting offer above trade limit")
+  } catch (err: any) {
+    if (err.message.indexOf("must be below maximum") < 0) throw err;
+  }
+
+  // test posting sell offer below limit without buyer deposit
+  try {
+    await executeTrade({
+      offerAmount: moneroTs.MoneroUtils.xmrToAtomicUnits(1.4),
+      offerMinAmount: TestConfig.minAmount - diff,
+      direction: OfferDirection.SELL,
+      assetCode: assetCode,
+      makerPaymentAccountId: account.getId(),
+      isPrivateOffer: true,
+      buyerAsTakerWithoutDeposit: true,
+      takeOffer: false,
+      price: 142.23
+    });
+    throw new Error("Should have rejected posting offer above trade limit")
+  } catch (err: any) {
+    if (err.message.indexOf("must be above minimum") < 0) throw err;
+  }
+
+  // test minimum offer limit
+  let offerId = await executeTrade({
+    offerAmount: TestConfig.minAmount,
+    direction: OfferDirection.SELL,
+    assetCode: assetCode,
+    makerPaymentAccountId: account.getId(),
+    takeOffer: false
+  });
+  await user1.removeOffer(offerId);
 
   // test that sell limit is higher than buy limit
-  let offerId = await executeTrade({
-    offerAmount: 2100000000000n,
+  offerId = await executeTrade({
+    offerAmount: HavenoUtils.xmrToAtomicUnits(2.1),
     direction: OfferDirection.SELL,
     assetCode: assetCode,
     makerPaymentAccountId: account.getId(),
@@ -3187,8 +3238,8 @@ async function takeOffer(ctxP: Partial<TradeContext>): Promise<TradeInfo> {
 async function testTrade(trade: TradeInfo, ctx: TradeContext, havenod?: HavenoClient): Promise<void> {
   expect(BigInt(trade.getAmount())).toEqual(ctx!.tradeAmount);
 
-  // test security deposit = max(0.1, trade amount * security deposit pct)
-  const expectedSecurityDeposit = HavenoUtils.max(HavenoUtils.xmrToAtomicUnits(.1), HavenoUtils.multiply(ctx.tradeAmount!, ctx.securityDepositPct!));
+  // test security deposit = max(min security deposit, trade amount * security deposit pct)
+  const expectedSecurityDeposit = HavenoUtils.max(TestConfig.minSecurityDeposit, HavenoUtils.multiply(ctx.tradeAmount!, ctx.securityDepositPct!));
   expect(BigInt(trade.getBuyerSecurityDeposit())).toEqual(ctx.hasBuyerAsTakerWithoutDeposit() ? 0n : expectedSecurityDeposit - ctx.getBuyer().depositTxFee!);
   expect(BigInt(trade.getSellerSecurityDeposit())).toEqual(expectedSecurityDeposit - ctx.getSeller().depositTxFee!);
 
