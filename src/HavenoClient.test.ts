@@ -146,7 +146,8 @@ const defaultTradeConfig: Partial<TradeContext> = {
   disputeSummary: "Seller is winner",
   walletSyncPeriodMs: 5000,
   maxTimePeerNoticeMs: 6000,
-  testChatMessages: true,
+  testTradeChatMessages: true,
+  testDisputeChatMessages: true,
   stopOnFailure: false, // TODO: setting to true can cause error: Http response at 400 or 500 level, http status code: 503
   testPayoutConfirmed: true,
   testPayoutUnlocked: false,
@@ -203,7 +204,8 @@ class TradeContext {
   offerId?: string;
   takerPaymentAccountId?: string;
   challenge?: string;
-  testTraderChat?: boolean;
+  testTradeChatMessages?: boolean;
+  tradeChatMessagesTested?: boolean;
 
   // resolve dispute
   resolveDispute?: boolean
@@ -230,7 +232,8 @@ class TradeContext {
   sellerOpenedDispute?: boolean;
   walletSyncPeriodMs!: number;
   maxTimePeerNoticeMs!: number;
-  testChatMessages!: boolean;
+  testDisputeChatMessages!: boolean;
+  disputeChatMessagesTested!: boolean;
   stopOnFailure?: boolean;
   buyerAppName?: string;
   sellerAppName?: string;
@@ -441,7 +444,6 @@ const TestConfig = {
         }
     ],
     maxFee: HavenoUtils.xmrToAtomicUnits(0.5), // local testnet fees can be relatively high
-    minSecurityDeposit: moneroTs.MoneroUtils.xmrToAtomicUnits(0.1),
     maxAdjustmentPct: 0.2,
     daemonPollPeriodMs: 5000,
     maxWalletStartupMs: 10000, // TODO (woodser): make shorter by switching to jni
@@ -493,7 +495,12 @@ const TestConfig = {
     },
     tradeStepTimeoutMs: getBaseCurrencyNetwork() === BaseCurrencyNetwork.XMR_LOCAL ? 60000 : 180000,
     testTimeout: getBaseCurrencyNetwork() === BaseCurrencyNetwork.XMR_LOCAL ? 2400000 : 5400000, // timeout in ms for each test to complete (40 minutes for private network, 90 minutes for public network)
-    trade: new TradeContext(defaultTradeConfig)
+    trade: new TradeContext(defaultTradeConfig),
+    minAmount: moneroTs.MoneroUtils.xmrToAtomicUnits(0.05),
+    minSecurityDeposit: moneroTs.MoneroUtils.xmrToAtomicUnits(0.1),
+    maxAmountNoDeposit: moneroTs.MoneroUtils.xmrToAtomicUnits(1.5),
+    maxBuyAmountWithChargeback: moneroTs.MoneroUtils.xmrToAtomicUnits(3),
+    maxSellAmountWithChargeback: moneroTs.MoneroUtils.xmrToAtomicUnits(12)
 };
 
 interface HavenodContext {
@@ -1194,7 +1201,7 @@ test("Can get market depth (Test, CI, sanity check)", async () => {
     await clearOffers(user2, assetCode);
     async function clearOffers(havenod: HavenoClient, assetCode: string) {
       for (const offer of await havenod.getMyOffers(assetCode)) {
-        if (offer.getBaseCurrencyCode().toLowerCase() === assetCode.toLowerCase()) {
+        if (offer.getCounterCurrencyCode().toLowerCase() === assetCode.toLowerCase()) {
             await havenod.removeOffer(offer.getId());
         }
       }
@@ -1229,18 +1236,18 @@ test("Can get market depth (Test, CI, sanity check)", async () => {
 
     // test buy prices and depths
     const buyOffers = (await user2.getOffers(assetCode, OfferDirection.BUY)).concat(await user2.getMyOffers(assetCode, OfferDirection.BUY)).sort(function(a, b) { return parseFloat(a.getPrice()) - parseFloat(b.getPrice()) });
-    expect(marketDepth.getBuyPricesList()[0]).toEqual(1 / parseFloat(buyOffers[0].getPrice())); // TODO: price when posting offer is reversed. this assumes crypto counter currency
-    expect(marketDepth.getBuyPricesList()[1]).toEqual(1 / parseFloat(buyOffers[1].getPrice()));
-    expect(marketDepth.getBuyPricesList()[2]).toEqual(1 / parseFloat(buyOffers[2].getPrice()));
-    expect(marketDepth.getBuyDepthList()[0]).toEqual(0.15);
-    expect(marketDepth.getBuyDepthList()[1]).toEqual(0.30);
+    expect(marketDepth.getBuyPricesList()[0]).toEqual(parseFloat(buyOffers[2].getPrice()));
+    expect(marketDepth.getBuyPricesList()[1]).toEqual(parseFloat(buyOffers[1].getPrice()));
+    expect(marketDepth.getBuyPricesList()[2]).toEqual(parseFloat(buyOffers[0].getPrice()));
+    expect(marketDepth.getBuyDepthList()[0]).toEqual(0.35);
+    expect(marketDepth.getBuyDepthList()[1]).toEqual(0.5);
     expect(marketDepth.getBuyDepthList()[2]).toEqual(0.65);
 
     // test sell prices and depths
     const sellOffers = (await user2.getOffers(assetCode, OfferDirection.SELL)).concat(await user2.getMyOffers(assetCode, OfferDirection.SELL)).sort(function(a, b) { return parseFloat(b.getPrice()) - parseFloat(a.getPrice()) });
-    expect(marketDepth.getSellPricesList()[0]).toEqual(1 / parseFloat(sellOffers[0].getPrice()));
-    expect(marketDepth.getSellPricesList()[1]).toEqual(1 / parseFloat(sellOffers[1].getPrice()));
-    expect(marketDepth.getSellPricesList()[2]).toEqual(1 / parseFloat(sellOffers[2].getPrice()));
+    expect(marketDepth.getSellPricesList()[0]).toEqual(parseFloat(sellOffers[2].getPrice()));
+    expect(marketDepth.getSellPricesList()[1]).toEqual(parseFloat(sellOffers[1].getPrice()));
+    expect(marketDepth.getSellPricesList()[2]).toEqual(parseFloat(sellOffers[0].getPrice()));
     expect(marketDepth.getSellDepthList()[0]).toEqual(0.3);
     expect(marketDepth.getSellDepthList()[1]).toEqual(0.6);
     expect(marketDepth.getSellDepthList()[2]).toEqual(1);
@@ -1295,7 +1302,7 @@ test("Can get my offers (Test, CI)", async () => {
     const offers: OfferInfo[] = await user1.getMyOffers(assetCode);
     for (const offer of offers) {
       testOffer(offer, undefined, true);
-      expect(assetCode).toEqual(isCrypto(assetCode) ? offer.getBaseCurrencyCode() : offer.getCounterCurrencyCode()); // crypto asset codes are base
+      expect(assetCode).toEqual(offer.getCounterCurrencyCode());
     }
   }
 });
@@ -1509,13 +1516,12 @@ test("Can post and remove an offer (Test, CI, sanity check)", async () => {
   // post crypto offer
   let assetCode = "BCH";
   let price = 1 / 17;
-  price = 1 / price; // TODO: price in crypto offer is inverted
   let ctx: Partial<TradeContext> = {maker: {havenod: user1}, assetCode: assetCode, price: price, extraInfo: "My extra info"};
   let offer: OfferInfo = await makeOffer(ctx);;
   assert.equal(offer.getState(), "AVAILABLE");
-  assert.equal(offer.getBaseCurrencyCode(), assetCode); // TODO: base and counter currencies inverted in crypto offer
-  assert.equal(offer.getCounterCurrencyCode(), "XMR");
-  assert.equal(parseFloat(offer.getPrice()), price);
+  assert.equal(offer.getCounterCurrencyCode(), assetCode);
+  assert.equal(offer.getBaseCurrencyCode(), "XMR");
+  assert.equal(parseFloat(offer.getPrice()), price.toFixed(8));
 
   // has offer
   offer = await user1.getMyOffer(offer.getId());
@@ -1595,8 +1601,8 @@ test("Can clone offers (Test, CI, sanity check)", async () => {
   });
   assert.notEqual(clonedOffer.getId(), offer.getId());
   assert.equal(clonedOffer.getState(), "DEACTIVATED"); // deactivated if same payment method and currency
-  assert.equal(clonedOffer.getBaseCurrencyCode(), assetCode);
-  assert.equal(clonedOffer.getCounterCurrencyCode(), "XMR");
+  assert.equal(clonedOffer.getCounterCurrencyCode(), assetCode);
+  assert.equal(clonedOffer.getBaseCurrencyCode(), "XMR");
   assert.equal(clonedOffer.getAmount(), offer.getAmount());
   assert.equal(clonedOffer.getMinAmount(), offer.getMinAmount());
   assert.equal(clonedOffer.getIsPrivateOffer(), offer.getIsPrivateOffer());
@@ -1743,14 +1749,15 @@ test("Can reserve exact amount needed for offer (Test, CI)", async () => {
   });
 });
 
-test("Cannot post offer exceeding trade limit (Test, CI, sanity check)", async () => {
+test("Cannot post offer outside of trade limits (Test, CI, sanity check)", async () => {
   let assetCode = "USD";
   const account = await createPaymentAccount(user1, assetCode, "zelle");
+  const diff = 10000000000n;
 
   // test posting buy offer above limit
   try {
     await executeTrade({
-      offerAmount: moneroTs.MoneroUtils.xmrToAtomicUnits(3.1),
+      offerAmount: TestConfig.maxBuyAmountWithChargeback + diff,
       direction: OfferDirection.BUY,
       assetCode: assetCode,
       makerPaymentAccountId: account.getId(),
@@ -1764,7 +1771,7 @@ test("Cannot post offer exceeding trade limit (Test, CI, sanity check)", async (
   // test posting sell offer above limit
   try {
     await executeTrade({
-      offerAmount: moneroTs.MoneroUtils.xmrToAtomicUnits(12.1),
+      offerAmount: TestConfig.maxSellAmountWithChargeback + diff,
       direction: OfferDirection.SELL,
       assetCode: assetCode,
       makerPaymentAccountId: account.getId(),
@@ -1775,27 +1782,89 @@ test("Cannot post offer exceeding trade limit (Test, CI, sanity check)", async (
     if (err.message.indexOf("amount is larger than") < 0) throw err;
   }
 
-    // test posting sell offer above limit without buyer deposit
-    try {
-      await executeTrade({
-        offerAmount: moneroTs.MoneroUtils.xmrToAtomicUnits(1.6), // limit is 1.5 xmr without deposit or fee
-        offerMinAmount: moneroTs.MoneroUtils.xmrToAtomicUnits(0.25),
-        direction: OfferDirection.SELL,
-        assetCode: assetCode,
-        makerPaymentAccountId: account.getId(),
-        isPrivateOffer: true,
-        buyerAsTakerWithoutDeposit: true,
-        takeOffer: false,
-        price: 142.23
-      });
-      throw new Error("Should have rejected posting offer above trade limit")
-    } catch (err: any) {
-      if (err.message.indexOf("amount is larger than") < 0) throw err;
-    }
+  // test posting sell offer below limit
+  try {
+    await executeTrade({
+      offerAmount: moneroTs.MoneroUtils.xmrToAtomicUnits(1.6),
+      offerMinAmount: TestConfig.minAmount - diff,
+      direction: OfferDirection.SELL,
+      assetCode: assetCode,
+      makerPaymentAccountId: account.getId(),
+      isPrivateOffer: false,
+      buyerAsTakerWithoutDeposit: false,
+      takeOffer: false,
+      price: 142.23
+    });
+    throw new Error("Should have rejected posting offer above trade limit")
+  } catch (err: any) {
+    if (err.message.indexOf("must be above minimum") < 0) throw err;
+  }
+
+  // test posting sell offer above limit without buyer deposit
+  try {
+    await executeTrade({
+      offerAmount: TestConfig.maxAmountNoDeposit + diff,
+      offerMinAmount: moneroTs.MoneroUtils.xmrToAtomicUnits(0.25),
+      direction: OfferDirection.SELL,
+      assetCode: assetCode,
+      makerPaymentAccountId: account.getId(),
+      isPrivateOffer: true,
+      buyerAsTakerWithoutDeposit: true,
+      takeOffer: false,
+      price: 142.23
+    });
+    throw new Error("Should have rejected posting offer above trade limit")
+  } catch (err: any) {
+    if (err.message.indexOf("must be below maximum") < 0) throw err;
+  }
+
+  // test posting sell offer below limit without buyer deposit
+  try {
+    await executeTrade({
+      offerAmount: moneroTs.MoneroUtils.xmrToAtomicUnits(1.4),
+      offerMinAmount: TestConfig.minAmount - diff,
+      direction: OfferDirection.SELL,
+      assetCode: assetCode,
+      makerPaymentAccountId: account.getId(),
+      isPrivateOffer: true,
+      buyerAsTakerWithoutDeposit: true,
+      takeOffer: false,
+      price: 142.23
+    });
+    throw new Error("Should have rejected posting offer above trade limit")
+  } catch (err: any) {
+    if (err.message.indexOf("must be above minimum") < 0) throw err;
+  }
+
+  // test setting trigger price for fixed price offer
+  try {
+    await executeTrade({
+      price: 142.23,
+      triggerPrice: 150.0,
+      offerAmount: TestConfig.minAmount,
+      direction: OfferDirection.SELL,
+      assetCode: assetCode,
+      makerPaymentAccountId: account.getId(),
+      takeOffer: false
+    });
+    throw new Error("Should have rejected posting offer with fixed price and trigger price")
+  } catch (err: any) {
+    if (err.message.toLowerCase().indexOf("cannot set trigger price for fixed price offers.") < 0) throw err;
+  }
+
+  // test minimum offer limit
+  let offerId = await executeTrade({
+    offerAmount: TestConfig.minAmount,
+    direction: OfferDirection.SELL,
+    assetCode: assetCode,
+    makerPaymentAccountId: account.getId(),
+    takeOffer: false
+  });
+  await user1.removeOffer(offerId);
 
   // test that sell limit is higher than buy limit
-  let offerId = await executeTrade({
-    offerAmount: 2100000000000n,
+  offerId = await executeTrade({
+    offerAmount: HavenoUtils.xmrToAtomicUnits(2.1),
     direction: OfferDirection.SELL,
     assetCode: assetCode,
     makerPaymentAccountId: account.getId(),
@@ -2447,12 +2516,12 @@ test("Can bootstrap a network", async () => {
   async function getRandomBootstrapConfig(ctxP?: Partial<TradeContext>): Promise<TradeContext> {
     if (!ctxP) ctxP = {};
 
-    // customize configs
+    // customize config
     //ctxP.paymentMethodId = "BLOCK_CHAINS";
     //ctxP.assetCode = "BTC";
     const completeAllTrades = false;
   
-    // randomize offer config
+    // randomize basic offer config
     const user1AsMaker = getRandomOutcome(1/2);
     if (ctxP.maker === undefined) ctxP.maker = {};
     if (ctxP.taker === undefined) ctxP.taker = {};
@@ -2475,13 +2544,19 @@ test("Can bootstrap a network", async () => {
     if (!ctxP.makerPaymentAccountId) ctxP.makerPaymentAccountId = (await createPaymentAccount2(ctxP.maker.havenod!, ctxP.paymentMethodId, ctxP.assetCode)).getId();
     if (!ctxP.takerPaymentAccountId) ctxP.takerPaymentAccountId = (await createPaymentAccount2(ctxP.taker.havenod!, ctxP.paymentMethodId, ctxP.assetCode)).getId();
     if (!ctxP.assetCode) ctxP.assetCode = getRandomAssetCodeForPaymentAccount(await ctxP.maker.havenod.getPaymentAccount(ctxP.makerPaymentAccountId));
+
+    // randomize offer price
     if (await isFixedPrice(ctxP)) ctxP.price = ctxP.direction === OfferDirection.BUY ? getRandomFloat(125, 155) : getRandomFloat(160, 190);
+    if (ctxP.price === undefined) {
+      if (ctxP.priceMargin === undefined) ctxP.priceMargin = parseFloat(getRandomFloat(0, .3).toFixed(10));
+      const currentPrice = await ctxP.maker.havenod.getPrice(ctxP.assetCode!)
+      if (getRandomOutcome(1/2)) ctxP.triggerPrice = ctxP.direction === OfferDirection.BUY ? currentPrice! * (1 + getRandomFloat(0, .1)) : currentPrice! * (1 - getRandomFloat(0, .1));
+    }
   
     // randomize trade config
-    if (ctxP.takeOffer === undefined) ctxP.takeOffer = getRandomOutcome(3/5);
+    if (ctxP.takeOffer === undefined) ctxP.takeOffer = getRandomOutcome(1/2);
     if (ctxP.tradeAmount === undefined) ctxP.tradeAmount = isRangeOffer ? getRandomBigIntWithinRange(ctxP.offerMinAmount!, ctxP.offerAmount) : ctxP.offerAmount;
     if (ctxP.buyerSendsPayment === undefined) ctxP.buyerSendsPayment = completeAllTrades || getRandomOutcome(1/2);
-    if (ctxP.priceMargin === undefined && ctxP.price === undefined) ctxP.priceMargin = parseFloat(getRandomFloat(0, .3).toFixed(10));
     if (ctxP.sellerReceivesPayment === undefined) ctxP.sellerReceivesPayment = completeAllTrades || getRandomOutcome(1/2);
     if (ctxP.buyerDisputeContext === undefined) ctxP.buyerDisputeContext = getRandomOutcome(1/14) ? DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK : undefined;
     if (ctxP.buyerDisputeContext === undefined) ctxP.buyerDisputeContext = getRandomOutcome(1/14) ? DisputeContext.OPEN_AFTER_PAYMENT_SENT : undefined;
@@ -2656,7 +2731,7 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
 
     // test trader chat
     if (ctx.isStopped) return ctx.offerId!;
-    if (ctx.testTraderChat) await testTradeChat(ctx);
+    if (ctx.testTradeChatMessages && !ctx.tradeChatMessagesTested) await testTradeChat(ctx); // test trader chat once
 
     // get expected payment account payloads
     if (ctx.isStopped) return ctx.offerId!;
@@ -3020,7 +3095,6 @@ async function makeOffer(ctxP?: Partial<TradeContext>): Promise<OfferInfo> {
     sourceOfferId: ctx.sourceOfferId
   });
 
-
   // test offer
   testOffer(offer, ctx, true);
 
@@ -3142,6 +3216,8 @@ async function takeOffer(ctxP: Partial<TradeContext>): Promise<TradeInfo> {
   }
 
   // test trade model
+  assert.equal(ctx.maker.trade!.getDate(), ctx.taker.trade!.getDate(), "Expected trade date to match");
+  assert.equal(ctx.taker.trade!.getDate(), ctx.arbitrator.trade!.getDate(), "Expected trade date to match");
   await testTrade(takerTrade, ctx);
 
   // test buyer and seller balances after offer taken
@@ -3187,8 +3263,8 @@ async function takeOffer(ctxP: Partial<TradeContext>): Promise<TradeInfo> {
 async function testTrade(trade: TradeInfo, ctx: TradeContext, havenod?: HavenoClient): Promise<void> {
   expect(BigInt(trade.getAmount())).toEqual(ctx!.tradeAmount);
 
-  // test security deposit = max(0.1, trade amount * security deposit pct)
-  const expectedSecurityDeposit = HavenoUtils.max(HavenoUtils.xmrToAtomicUnits(.1), HavenoUtils.multiply(ctx.tradeAmount!, ctx.securityDepositPct!));
+  // test security deposit = max(min security deposit, trade amount * security deposit pct)
+  const expectedSecurityDeposit = HavenoUtils.max(TestConfig.minSecurityDeposit, HavenoUtils.multiply(ctx.tradeAmount!, ctx.securityDepositPct!));
   expect(BigInt(trade.getBuyerSecurityDeposit())).toEqual(ctx.hasBuyerAsTakerWithoutDeposit() ? 0n : expectedSecurityDeposit - ctx.getBuyer().depositTxFee!);
   expect(BigInt(trade.getSellerSecurityDeposit())).toEqual(expectedSecurityDeposit - ctx.getSeller().depositTxFee!);
 
@@ -3294,7 +3370,7 @@ async function testOpenDispute(ctxP: Partial<TradeContext>) {
   await arbitrator.addNotificationListener(notification => { HavenoUtils.log(3, "Arbitrator received notification " + notification.getType() + " " + (notification.getChatMessage() ? notification.getChatMessage()?.getMessage() : "")); arbitratorNotifications.push(notification); });
 
   // test chat messages
-  if (ctx.testChatMessages) {
+  if (ctx.testDisputeChatMessages && !ctx.disputeChatMessagesTested) {
 
     // arbitrator sends chat messages to traders
     HavenoUtils.log(1, "Arbitrator sending chat messages to traders. tradeId=" + ctx.offerId + ", disputeId=" + openerDispute.getId());
@@ -3368,6 +3444,8 @@ async function testOpenDispute(ctxP: Partial<TradeContext>) {
     expect(attachments[1].getFileName()).toEqual("proof.png");
     expect(attachments[1].getBytes()).toEqual(bytes2);
     expect(chatNotifications[1].getChatMessage()?.getMessage()).toEqual("Dispute peer chat message");
+
+    ctx.disputeChatMessagesTested = true; // mark chat messages as tested
   }
 }
 
@@ -3561,74 +3639,88 @@ async function testTradeChat(ctxP: Partial<TradeContext>) {
 
   // invalid trade should throw error
   try {
-    await user1.getChatMessages("invalid");
+    await ctx.maker.havenod!.getChatMessages("invalid");
     throw new Error("get chat messages with invalid id should fail");
   } catch (err: any) {
     assert.equal(err.message, "trade with id 'invalid' not found");
   }
 
   // trade chat should be in initial state
-  let messages = await user1.getChatMessages(ctx.offerId!);
-  assert(messages.length === 0);
-  messages = await user2.getChatMessages(ctx.offerId!);
-  assert(messages.length === 0);
+  let messages = await ctx.maker.havenod!.getChatMessages(ctx.offerId!);
+  expect(messages.length).toEqual(0);
+  messages = await ctx.taker.havenod!.getChatMessages(ctx.offerId!);
+  expect(messages.length).toEqual(0);
 
   // add notification handlers and send some messages
-  const user1Notifications: NotificationMessage[] = [];
-  const user2Notifications: NotificationMessage[] = [];
-  await user1.addNotificationListener(notification => { user1Notifications.push(notification); });
-  await user2.addNotificationListener(notification => { user2Notifications.push(notification); });
+  const makerNotifications: NotificationMessage[] = [];
+  const takerNotifications: NotificationMessage[] = [];
+  await ctx.maker.havenod!.addNotificationListener(notification => { makerNotifications.push(notification); });
+  await ctx.taker.havenod!.addNotificationListener(notification => { takerNotifications.push(notification); });
 
   // send simple conversation and verify the list of messages
-  const user1Msg = "Hi I'm user1";
-  await user1.sendChatMessage(ctx.offerId!, user1Msg);
+  const makerMsg = "Hi I'm the maker";
+  await await ctx.maker.havenod!.sendChatMessage(ctx.offerId!, makerMsg);
   await wait(ctx.maxTimePeerNoticeMs);
-  messages = await user2.getChatMessages(ctx.offerId!);
+  messages = await ctx.taker.havenod!.getChatMessages(ctx.offerId!);
   expect(messages.length).toEqual(2);
   expect(messages[0].getIsSystemMessage()).toEqual(true); // first message is system
-  expect(messages[1].getMessage()).toEqual(user1Msg);
+  expect(messages[1].getMessage()).toEqual(makerMsg);
 
-  const user2Msg = "Hello I'm user2";
-  await user2.sendChatMessage(ctx.offerId!, user2Msg);
+  const takerMsg = "Hello I'm the taker";
+  await ctx.taker.havenod!.sendChatMessage(ctx.offerId!, takerMsg);
   await wait(ctx.maxTimePeerNoticeMs);
-  messages = await user1.getChatMessages(ctx.offerId!);
+  messages = await ctx.maker.havenod!.getChatMessages(ctx.offerId!);
   expect(messages.length).toEqual(3);
   expect(messages[0].getIsSystemMessage()).toEqual(true);
-  expect(messages[1].getMessage()).toEqual(user1Msg);
-  expect(messages[2].getMessage()).toEqual(user2Msg);
+  expect(messages[1].getMessage()).toEqual(makerMsg);
+  expect(messages[2].getMessage()).toEqual(takerMsg);
 
   // verify notifications
-  let chatNotifications = getNotifications(user1Notifications, NotificationMessage.NotificationType.CHAT_MESSAGE);
-  expect(chatNotifications.length).toBe(1);
-  expect(chatNotifications[0].getChatMessage()?.getMessage()).toEqual(user2Msg);
-  chatNotifications = getNotifications(user2Notifications, NotificationMessage.NotificationType.CHAT_MESSAGE);
-  expect(chatNotifications.length).toBe(1);
-  expect(chatNotifications[0].getChatMessage()?.getMessage()).toEqual(user1Msg);
+  let chatNotifications = getNotifications(makerNotifications, NotificationMessage.NotificationType.CHAT_MESSAGE);
+  if (ctx.concurrentTrades) {
+    expect(chatNotifications.length).toBeGreaterThanOrEqual(1);
+  } else {
+    expect(chatNotifications.length).toBe(1);
+    expect(chatNotifications[0].getChatMessage()?.getMessage()).toEqual(takerMsg);
+  }
+  chatNotifications = getNotifications(takerNotifications, NotificationMessage.NotificationType.CHAT_MESSAGE);
+  if (ctx.concurrentTrades) {
+    expect(chatNotifications.length).toBeGreaterThanOrEqual(1);
+  } else {
+    expect(chatNotifications.length).toBe(1);
+    expect(chatNotifications[0].getChatMessage()?.getMessage()).toEqual(makerMsg);
+  }
 
   // additional msgs
   const msgs = ["", "  ", "<script>alert('test');</script>", "さようなら"];
   for(const msg of msgs) {
-    await user1.sendChatMessage(ctx.offerId!, msg);
+    await ctx.maker.havenod!.sendChatMessage(ctx.offerId!, msg);
     await wait(1000); // the async operation can result in out of order messages
   }
   await wait(ctx.maxTimePeerNoticeMs);
-  messages = await user2.getChatMessages(ctx.offerId!);
+  messages = await ctx.taker.havenod!.getChatMessages(ctx.offerId!);
   let offset = 3; // 3 existing messages
   expect(messages.length).toEqual(offset + msgs.length);
   expect(messages[0].getIsSystemMessage()).toEqual(true);
-  expect(messages[1].getMessage()).toEqual(user1Msg);
-  expect(messages[2].getMessage()).toEqual(user2Msg);
+  expect(messages[1].getMessage()).toEqual(makerMsg);
+  expect(messages[2].getMessage()).toEqual(takerMsg);
   for (let i = 0; i < msgs.length; i++) {
     expect(messages[i + offset].getMessage()).toEqual(msgs[i]);
   }
 
-  chatNotifications = getNotifications(user2Notifications, NotificationMessage.NotificationType.CHAT_MESSAGE);
+  chatNotifications = getNotifications(takerNotifications, NotificationMessage.NotificationType.CHAT_MESSAGE);
   offset = 1; // 1 existing notification
-  expect(chatNotifications.length).toBe(offset + msgs.length);
-  expect(chatNotifications[0].getChatMessage()?.getMessage()).toEqual(user1Msg);
-  for (let i = 0; i < msgs.length; i++) {
-    expect(chatNotifications[i + offset].getChatMessage()?.getMessage()).toEqual(msgs[i]);
+  if (ctx.concurrentTrades) {
+    expect(chatNotifications.length).toBeGreaterThanOrEqual(offset + msgs.length);
+  } else {
+    expect(chatNotifications.length).toBe(offset + msgs.length);
+    expect(chatNotifications[0].getChatMessage()?.getMessage()).toEqual(makerMsg);
+    for (let i = 0; i < msgs.length; i++) {
+      expect(chatNotifications[i + offset].getChatMessage()?.getMessage()).toEqual(msgs[i]);
+    }
   }
+
+  ctx.tradeChatMessagesTested = true; // mark trade chat as tested
 }
 
 // ---------------------------- OTHER HELPERS ---------------------------------
@@ -4332,8 +4424,8 @@ function testOffer(offer: OfferInfo, ctxP?: Partial<TradeContext>, isMyOffer?: b
     }
     if (ctx.extraInfo) expect(offer.getExtraInfo().indexOf(ctx.extraInfo)).toBeGreaterThanOrEqual(0); // may contain extra info from payment account
     expect(offer.getSellerSecurityDepositPct()).toEqual(ctx.securityDepositPct);
-    expect(offer.getUseMarketBasedPrice()).toEqual(!ctx?.price);
-    expect(offer.getMarketPriceMarginPct()).toEqual(ctx?.priceMargin ? ctx.priceMargin : 0);
+    expect(offer.getUseMarketBasedPrice()).toEqual(!ctx.price);
+    expect(offer.getMarketPriceMarginPct()).toEqual(ctx.priceMargin ? ctx.priceMargin : 0);
 
     // TODO: test rest of offer
   }
@@ -4475,8 +4567,8 @@ function getValidFormInputAux(form: PaymentAccountForm, fieldId: PaymentAccountF
       if (field.getComponent() === PaymentAccountFormField.Component.SELECT_ONE) {
         if (form.getId() === PaymentAccountForm.FormId.F2F) return "XAU";
         if (form.getId() === PaymentAccountForm.FormId.PAY_BY_MAIL) return "XGB";
-        let randomIndex = moneroTs.GenUtils.getRandomInt(0, field.getSupportedCurrenciesList().length - 1);
-        return field.getSupportedCurrenciesList()[randomIndex]!.getCode();
+        let currencyIdx = getRandomOutcome(2/3) ? 0 : moneroTs.GenUtils.getRandomInt(0, field.getSupportedCurrenciesList().length - 1); // prefer index 0 to simulate common currency
+        return field.getSupportedCurrenciesList()[currencyIdx]!.getCode();
       }
       else return field.getSupportedCurrenciesList().map(currency => currency.getCode()).join(',');
     case PaymentAccountFormField.FieldId.USERNAME:
