@@ -2516,12 +2516,12 @@ test("Can bootstrap a network", async () => {
   async function getRandomBootstrapConfig(ctxP?: Partial<TradeContext>): Promise<TradeContext> {
     if (!ctxP) ctxP = {};
 
-    // customize configs
+    // customize config
     //ctxP.paymentMethodId = "BLOCK_CHAINS";
     //ctxP.assetCode = "BTC";
     const completeAllTrades = false;
   
-    // randomize offer config
+    // randomize basic offer config
     const user1AsMaker = getRandomOutcome(1/2);
     if (ctxP.maker === undefined) ctxP.maker = {};
     if (ctxP.taker === undefined) ctxP.taker = {};
@@ -2544,13 +2544,19 @@ test("Can bootstrap a network", async () => {
     if (!ctxP.makerPaymentAccountId) ctxP.makerPaymentAccountId = (await createPaymentAccount2(ctxP.maker.havenod!, ctxP.paymentMethodId, ctxP.assetCode)).getId();
     if (!ctxP.takerPaymentAccountId) ctxP.takerPaymentAccountId = (await createPaymentAccount2(ctxP.taker.havenod!, ctxP.paymentMethodId, ctxP.assetCode)).getId();
     if (!ctxP.assetCode) ctxP.assetCode = getRandomAssetCodeForPaymentAccount(await ctxP.maker.havenod.getPaymentAccount(ctxP.makerPaymentAccountId));
+
+    // randomize offer price
     if (await isFixedPrice(ctxP)) ctxP.price = ctxP.direction === OfferDirection.BUY ? getRandomFloat(125, 155) : getRandomFloat(160, 190);
+    if (ctxP.price === undefined) {
+      if (ctxP.priceMargin === undefined) ctxP.priceMargin = parseFloat(getRandomFloat(0, .3).toFixed(10));
+      const currentPrice = await ctxP.maker.havenod.getPrice(ctxP.assetCode!)
+      if (getRandomOutcome(1/2)) ctxP.triggerPrice = ctxP.direction === OfferDirection.BUY ? currentPrice! * (1 + getRandomFloat(0, .1)) : currentPrice! * (1 - getRandomFloat(0, .1));
+    }
   
     // randomize trade config
     if (ctxP.takeOffer === undefined) ctxP.takeOffer = getRandomOutcome(1/2);
     if (ctxP.tradeAmount === undefined) ctxP.tradeAmount = isRangeOffer ? getRandomBigIntWithinRange(ctxP.offerMinAmount!, ctxP.offerAmount) : ctxP.offerAmount;
     if (ctxP.buyerSendsPayment === undefined) ctxP.buyerSendsPayment = completeAllTrades || getRandomOutcome(1/2);
-    if (ctxP.priceMargin === undefined && ctxP.price === undefined) ctxP.priceMargin = parseFloat(getRandomFloat(0, .3).toFixed(10));
     if (ctxP.sellerReceivesPayment === undefined) ctxP.sellerReceivesPayment = completeAllTrades || getRandomOutcome(1/2);
     if (ctxP.buyerDisputeContext === undefined) ctxP.buyerDisputeContext = getRandomOutcome(1/14) ? DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK : undefined;
     if (ctxP.buyerDisputeContext === undefined) ctxP.buyerDisputeContext = getRandomOutcome(1/14) ? DisputeContext.OPEN_AFTER_PAYMENT_SENT : undefined;
