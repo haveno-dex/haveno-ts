@@ -1216,10 +1216,10 @@ test("Can get market depth (Test, CI, sanity check)", async () => {
     expect(marketDepth.getSellDepthList().length).toEqual(0);
 
     // post offers to buy and sell
-    await makeOffer({maker: {havenod: user1}, direction: OfferDirection.BUY, offerAmount: 150000000000n, assetCode: assetCode, price: 17.0});
-    await makeOffer({maker: {havenod: user1}, direction: OfferDirection.BUY, offerAmount: 150000000000n, assetCode: assetCode, price: 17.2});
-    await makeOffer({maker: {havenod: user1}, direction: OfferDirection.BUY, offerAmount: 200000000000n, assetCode: assetCode, price: 17.3});
-    await makeOffer({maker: {havenod: user1}, direction: OfferDirection.BUY, offerAmount: 150000000000n, assetCode: assetCode, price: 17.3});
+    await makeOffer({maker: {havenod: user1}, direction: OfferDirection.BUY, offerAmount: 150000000000n, assetCode: assetCode, price: 0.081});
+    await makeOffer({maker: {havenod: user1}, direction: OfferDirection.BUY, offerAmount: 150000000000n, assetCode: assetCode, price: 0.082});
+    await makeOffer({maker: {havenod: user1}, direction: OfferDirection.BUY, offerAmount: 200000000000n, assetCode: assetCode, price: 0.083});
+    await makeOffer({maker: {havenod: user1}, direction: OfferDirection.BUY, offerAmount: 150000000000n, assetCode: assetCode, price: 0.083});
     await makeOffer({maker: {havenod: user1}, direction: OfferDirection.SELL, offerAmount: 300000000000n, assetCode: assetCode, priceMargin: 0.00});
     await makeOffer({maker: {havenod: user1}, direction: OfferDirection.SELL, offerAmount: 300000000000n, assetCode: assetCode, priceMargin: 0.02});
     await makeOffer({maker: {havenod: user1}, direction: OfferDirection.SELL, offerAmount: 400000000000n, assetCode: assetCode, priceMargin: 0.05});
@@ -1253,8 +1253,8 @@ test("Can get market depth (Test, CI, sanity check)", async () => {
     expect(marketDepth.getSellDepthList()[2]).toEqual(1);
 
     // clear offers
-    await clearOffers(user1, assetCode);
-    await clearOffers(user2, assetCode);
+    // await clearOffers(user1, assetCode);
+    // await clearOffers(user2, assetCode);
 
     // test invalid currency
     await expect(async () => {await user1.getMarketDepth("INVALID_CURRENCY")})
