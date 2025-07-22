@@ -2303,7 +2303,8 @@ test("Can handle unexpected errors during trade initialization (Test)", async ()
 
     // trader 1 spends trade funds after initializing trade
     let paymentAccount = await createPaymentAccount(traders[1], TestConfig.trade.assetCode!);
-    wait(3000).then(async function() {
+    const spendDelay = 1500;
+    wait(spendDelay).then(async function() {
       try {
         const traderWallet = await moneroTs.connectToWalletRpc("http://127.0.0.1:" + traders[1].getWalletRpcPort(), TestConfig.defaultHavenod.walletUsername, TestConfig.defaultHavenod.walletDefaultPassword);
         for (const frozenOutput of await traderWallet.getOutputs({isFrozen: true})) await traderWallet.thawOutput(frozenOutput.getKeyImage().getHex());
@@ -2337,7 +2338,7 @@ test("Can handle unexpected errors during trade initialization (Test)", async ()
     }
 
     // trader 0 spends trade funds after trader 2 takes offer
-    wait(3000).then(async function() {
+    wait(spendDelay).then(async function() {
       try {
         const traderWallet = await moneroTs.connectToWalletRpc("http://127.0.0.1:" + traders[0].getWalletRpcPort(), TestConfig.defaultHavenod.walletUsername, TestConfig.defaultHavenod.walletDefaultPassword);
         for (const frozenOutput of await traderWallet.getOutputs({isFrozen: true})) await traderWallet.thawOutput(frozenOutput.getKeyImage().getHex());
