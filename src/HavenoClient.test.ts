@@ -2302,7 +2302,7 @@ test("Can handle unexpected errors during trade initialization (Test)", async ()
     await wait(TestConfig.trade.walletSyncPeriodMs * 2);
 
     // trader 1 spends trade funds after initializing trade
-    let paymentAccount = await createCryptoPaymentAccount(traders[1]); // TODO: this is different account type than maker's offer, but accounts should not be used in this test
+    let paymentAccount = await createPaymentAccount(traders[1], TestConfig.trade.assetCode!);
     wait(3000).then(async function() {
       try {
         const traderWallet = await moneroTs.connectToWalletRpc("http://127.0.0.1:" + traders[1].getWalletRpcPort(), TestConfig.defaultHavenod.walletUsername, TestConfig.defaultHavenod.walletDefaultPassword);
