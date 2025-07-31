@@ -4507,8 +4507,8 @@ export namespace FasterPaymentsAccountPayload {
 }
 
 export class InteracETransferAccountPayload extends jspb.Message {
-  getEmail(): string;
-  setEmail(value: string): InteracETransferAccountPayload;
+  getEmailOrMobileNr(): string;
+  setEmailOrMobileNr(value: string): InteracETransferAccountPayload;
 
   getHolderName(): string;
   setHolderName(value: string): InteracETransferAccountPayload;
@@ -4529,7 +4529,7 @@ export class InteracETransferAccountPayload extends jspb.Message {
 
 export namespace InteracETransferAccountPayload {
   export type AsObject = {
-    email: string,
+    emailOrMobileNr: string,
     holderName: string,
     question: string,
     answer: string,
@@ -5020,8 +5020,8 @@ export class TransferwiseUsdAccountPayload extends jspb.Message {
   getHolderName(): string;
   setHolderName(value: string): TransferwiseUsdAccountPayload;
 
-  getBeneficiaryAddress(): string;
-  setBeneficiaryAddress(value: string): TransferwiseUsdAccountPayload;
+  getHolderAddress(): string;
+  setHolderAddress(value: string): TransferwiseUsdAccountPayload;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): TransferwiseUsdAccountPayload.AsObject;
@@ -5035,7 +5035,7 @@ export namespace TransferwiseUsdAccountPayload {
   export type AsObject = {
     email: string,
     holderName: string,
-    beneficiaryAddress: string,
+    holderAddress: string,
   }
 }
 
@@ -7796,6 +7796,14 @@ export namespace PaymentAccountForm {
     PAYPAL = 17,
     VENMO = 18,
     PAYSAFE = 19,
+    WECHAT_PAY = 20,
+    ALI_PAY = 21,
+    SWISH = 22,
+    TRANSFERWISE_USD = 23,
+    AMAZON_GIFT_CARD = 24,
+    ACH_TRANSFER = 25,
+    INTERAC_E_TRANSFER = 26,
+    US_POSTAL_MONEY_ORDER = 27,
   }
 }
 

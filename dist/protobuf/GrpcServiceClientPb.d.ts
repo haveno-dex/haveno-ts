@@ -443,9 +443,12 @@ export declare class WalletsClient {
     methodDescriptorCreateXmrTx: grpcWeb.MethodDescriptor<grpc_pb.CreateXmrTxRequest, grpc_pb.CreateXmrTxReply>;
     createXmrTx(request: grpc_pb.CreateXmrTxRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.CreateXmrTxReply>;
     createXmrTx(request: grpc_pb.CreateXmrTxRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.CreateXmrTxReply) => void): grpcWeb.ClientReadableStream<grpc_pb.CreateXmrTxReply>;
-    methodDescriptorrelayXmrTx: grpcWeb.MethodDescriptor<grpc_pb.RelayXmrTxRequest, grpc_pb.RelayXmrTxReply>;
-    relayXmrTx(request: grpc_pb.RelayXmrTxRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.RelayXmrTxReply>;
-    relayXmrTx(request: grpc_pb.RelayXmrTxRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.RelayXmrTxReply) => void): grpcWeb.ClientReadableStream<grpc_pb.RelayXmrTxReply>;
+    methodDescriptorCreateXmrSweepTxs: grpcWeb.MethodDescriptor<grpc_pb.CreateXmrSweepTxsRequest, grpc_pb.CreateXmrSweepTxsReply>;
+    createXmrSweepTxs(request: grpc_pb.CreateXmrSweepTxsRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.CreateXmrSweepTxsReply>;
+    createXmrSweepTxs(request: grpc_pb.CreateXmrSweepTxsRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.CreateXmrSweepTxsReply) => void): grpcWeb.ClientReadableStream<grpc_pb.CreateXmrSweepTxsReply>;
+    methodDescriptorRelayXmrTxs: grpcWeb.MethodDescriptor<grpc_pb.RelayXmrTxsRequest, grpc_pb.RelayXmrTxsReply>;
+    relayXmrTxs(request: grpc_pb.RelayXmrTxsRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.RelayXmrTxsReply>;
+    relayXmrTxs(request: grpc_pb.RelayXmrTxsRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.RelayXmrTxsReply) => void): grpcWeb.ClientReadableStream<grpc_pb.RelayXmrTxsReply>;
     methodDescriptorGetAddressBalance: grpcWeb.MethodDescriptor<grpc_pb.GetAddressBalanceRequest, grpc_pb.GetAddressBalanceReply>;
     getAddressBalance(request: grpc_pb.GetAddressBalanceRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.GetAddressBalanceReply>;
     getAddressBalance(request: grpc_pb.GetAddressBalanceRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.GetAddressBalanceReply) => void): grpcWeb.ClientReadableStream<grpc_pb.GetAddressBalanceReply>;

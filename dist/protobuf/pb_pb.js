@@ -38400,7 +38400,7 @@ proto.io.haveno.protobuffer.InteracETransferAccountPayload.prototype.toObject = 
  */
 proto.io.haveno.protobuffer.InteracETransferAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-email: jspb.Message.getFieldWithDefault(msg, 1, ""),
+emailOrMobileNr: jspb.Message.getFieldWithDefault(msg, 1, ""),
 holderName: jspb.Message.getFieldWithDefault(msg, 2, ""),
 question: jspb.Message.getFieldWithDefault(msg, 3, ""),
 answer: jspb.Message.getFieldWithDefault(msg, 4, "")
@@ -38442,7 +38442,7 @@ proto.io.haveno.protobuffer.InteracETransferAccountPayload.deserializeBinaryFrom
     switch (field) {
     case 1:
       var value = /** @type {string} */ (reader.readString());
-      msg.setEmail(value);
+      msg.setEmailOrMobileNr(value);
       break;
     case 2:
       var value = /** @type {string} */ (reader.readString());
@@ -38485,7 +38485,7 @@ proto.io.haveno.protobuffer.InteracETransferAccountPayload.prototype.serializeBi
  */
 proto.io.haveno.protobuffer.InteracETransferAccountPayload.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getEmail();
+  f = message.getEmailOrMobileNr();
   if (f.length > 0) {
     writer.writeString(
       1,
@@ -38517,10 +38517,10 @@ proto.io.haveno.protobuffer.InteracETransferAccountPayload.serializeBinaryToWrit
 
 
 /**
- * optional string email = 1;
+ * optional string email_or_mobile_nr = 1;
  * @return {string}
  */
-proto.io.haveno.protobuffer.InteracETransferAccountPayload.prototype.getEmail = function() {
+proto.io.haveno.protobuffer.InteracETransferAccountPayload.prototype.getEmailOrMobileNr = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
@@ -38529,7 +38529,7 @@ proto.io.haveno.protobuffer.InteracETransferAccountPayload.prototype.getEmail = 
  * @param {string} value
  * @return {!proto.io.haveno.protobuffer.InteracETransferAccountPayload} returns this
  */
-proto.io.haveno.protobuffer.InteracETransferAccountPayload.prototype.setEmail = function(value) {
+proto.io.haveno.protobuffer.InteracETransferAccountPayload.prototype.setEmailOrMobileNr = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
@@ -42065,7 +42065,7 @@ proto.io.haveno.protobuffer.TransferwiseUsdAccountPayload.toObject = function(in
   var f, obj = {
 email: jspb.Message.getFieldWithDefault(msg, 1, ""),
 holderName: jspb.Message.getFieldWithDefault(msg, 2, ""),
-beneficiaryAddress: jspb.Message.getFieldWithDefault(msg, 3, "")
+holderAddress: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
   if (includeInstance) {
@@ -42112,7 +42112,7 @@ proto.io.haveno.protobuffer.TransferwiseUsdAccountPayload.deserializeBinaryFromR
       break;
     case 3:
       var value = /** @type {string} */ (reader.readString());
-      msg.setBeneficiaryAddress(value);
+      msg.setHolderAddress(value);
       break;
     default:
       reader.skipField();
@@ -42157,7 +42157,7 @@ proto.io.haveno.protobuffer.TransferwiseUsdAccountPayload.serializeBinaryToWrite
       f
     );
   }
-  f = message.getBeneficiaryAddress();
+  f = message.getHolderAddress();
   if (f.length > 0) {
     writer.writeString(
       3,
@@ -42204,10 +42204,10 @@ proto.io.haveno.protobuffer.TransferwiseUsdAccountPayload.prototype.setHolderNam
 
 
 /**
- * optional string beneficiary_address = 3;
+ * optional string holder_address = 3;
  * @return {string}
  */
-proto.io.haveno.protobuffer.TransferwiseUsdAccountPayload.prototype.getBeneficiaryAddress = function() {
+proto.io.haveno.protobuffer.TransferwiseUsdAccountPayload.prototype.getHolderAddress = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
@@ -42216,7 +42216,7 @@ proto.io.haveno.protobuffer.TransferwiseUsdAccountPayload.prototype.getBeneficia
  * @param {string} value
  * @return {!proto.io.haveno.protobuffer.TransferwiseUsdAccountPayload} returns this
  */
-proto.io.haveno.protobuffer.TransferwiseUsdAccountPayload.prototype.setBeneficiaryAddress = function(value) {
+proto.io.haveno.protobuffer.TransferwiseUsdAccountPayload.prototype.setHolderAddress = function(value) {
   return jspb.Message.setProto3StringField(this, 3, value);
 };
 
@@ -62484,7 +62484,15 @@ proto.io.haveno.protobuffer.PaymentAccountForm.FormId = {
   CASH_APP: 16,
   PAYPAL: 17,
   VENMO: 18,
-  PAYSAFE: 19
+  PAYSAFE: 19,
+  WECHAT_PAY: 20,
+  ALI_PAY: 21,
+  SWISH: 22,
+  TRANSFERWISE_USD: 23,
+  AMAZON_GIFT_CARD: 24,
+  ACH_TRANSFER: 25,
+  INTERAC_E_TRANSFER: 26,
+  US_POSTAL_MONEY_ORDER: 27
 };
 
 /**

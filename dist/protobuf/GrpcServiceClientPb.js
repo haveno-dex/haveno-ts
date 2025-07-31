@@ -972,9 +972,12 @@ class WalletsClient {
         this.methodDescriptorCreateXmrTx = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.Wallets/CreateXmrTx', grpcWeb.MethodType.UNARY, grpc_pb.CreateXmrTxRequest, grpc_pb.CreateXmrTxReply, (request) => {
             return request.serializeBinary();
         }, grpc_pb.CreateXmrTxReply.deserializeBinary);
-        this.methodDescriptorrelayXmrTx = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.Wallets/relayXmrTx', grpcWeb.MethodType.UNARY, grpc_pb.RelayXmrTxRequest, grpc_pb.RelayXmrTxReply, (request) => {
+        this.methodDescriptorCreateXmrSweepTxs = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.Wallets/CreateXmrSweepTxs', grpcWeb.MethodType.UNARY, grpc_pb.CreateXmrSweepTxsRequest, grpc_pb.CreateXmrSweepTxsReply, (request) => {
             return request.serializeBinary();
-        }, grpc_pb.RelayXmrTxReply.deserializeBinary);
+        }, grpc_pb.CreateXmrSweepTxsReply.deserializeBinary);
+        this.methodDescriptorRelayXmrTxs = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.Wallets/RelayXmrTxs', grpcWeb.MethodType.UNARY, grpc_pb.RelayXmrTxsRequest, grpc_pb.RelayXmrTxsReply, (request) => {
+            return request.serializeBinary();
+        }, grpc_pb.RelayXmrTxsReply.deserializeBinary);
         this.methodDescriptorGetAddressBalance = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.Wallets/GetAddressBalance', grpcWeb.MethodType.UNARY, grpc_pb.GetAddressBalanceRequest, grpc_pb.GetAddressBalanceReply, (request) => {
             return request.serializeBinary();
         }, grpc_pb.GetAddressBalanceReply.deserializeBinary);
@@ -1051,13 +1054,21 @@ class WalletsClient {
         return this.client_.unaryCall(this.hostname_ +
             '/io.haveno.protobuffer.Wallets/CreateXmrTx', request, metadata || {}, this.methodDescriptorCreateXmrTx);
     }
-    relayXmrTx(request, metadata, callback) {
+    createXmrSweepTxs(request, metadata, callback) {
         if (callback !== undefined) {
             return this.client_.rpcCall(this.hostname_ +
-                '/io.haveno.protobuffer.Wallets/relayXmrTx', request, metadata || {}, this.methodDescriptorrelayXmrTx, callback);
+                '/io.haveno.protobuffer.Wallets/CreateXmrSweepTxs', request, metadata || {}, this.methodDescriptorCreateXmrSweepTxs, callback);
         }
         return this.client_.unaryCall(this.hostname_ +
-            '/io.haveno.protobuffer.Wallets/relayXmrTx', request, metadata || {}, this.methodDescriptorrelayXmrTx);
+            '/io.haveno.protobuffer.Wallets/CreateXmrSweepTxs', request, metadata || {}, this.methodDescriptorCreateXmrSweepTxs);
+    }
+    relayXmrTxs(request, metadata, callback) {
+        if (callback !== undefined) {
+            return this.client_.rpcCall(this.hostname_ +
+                '/io.haveno.protobuffer.Wallets/RelayXmrTxs', request, metadata || {}, this.methodDescriptorRelayXmrTxs, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/io.haveno.protobuffer.Wallets/RelayXmrTxs', request, metadata || {}, this.methodDescriptorRelayXmrTxs);
     }
     getAddressBalance(request, metadata, callback) {
         if (callback !== undefined) {

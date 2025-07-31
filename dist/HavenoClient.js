@@ -735,6 +735,7 @@ class HavenoClient {
     /**
      * Create but do not relay a transaction to send funds from the Monero wallet.
      *
+     * @param {XmrDestination[]} destinations - the destinations to send funds to
      * @return {XmrTx} the created transaction
      */
     async createXmrTx(destinations) {
@@ -746,13 +747,27 @@ class HavenoClient {
         }
     }
     /**
+     * Create but do not relay transactions to sweep all funds from the Monero wallet.
+     *
+     * @param {string} address - the address to sweep funds to
+     * @return {XmrTx} the created transactions
+     */
+    async createXmrSweepTxs(address) {
+        try {
+            return (await this._walletsClient.createXmrSweepTxs(new grpc_pb_1.CreateXmrSweepTxsRequest().setAddress(address), { password: this._password })).getTxsList();
+        }
+        catch (e) {
+            throw new HavenoError_1.default(e.message, e.code);
+        }
+    }
+    /**
      * Relay a previously created transaction to send funds from the Monero wallet.
      *
      * @return {string} the hash of the relayed transaction
      */
-    async relayXmrTx(metadata) {
+    async relayXmrTxs(metadatas) {
         try {
-            return (await this._walletsClient.relayXmrTx(new grpc_pb_1.RelayXmrTxRequest().setMetadata(metadata), { password: this._password })).getHash();
+            return (await this._walletsClient.relayXmrTxs(new grpc_pb_1.RelayXmrTxsRequest().setMetadatasList(metadatas), { password: this._password })).getHashesList();
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
@@ -782,7 +797,7 @@ class HavenoClient {
             return (await this._priceClient.getMarketPrice(new grpc_pb_1.MarketPriceRequest().setCurrencyCode(assetCode), { password: this._password })).getPrice();
         }
         catch (e) {
-            if (e.message.indexOf("not found") >= 0)
+            if (e.message.indexOf("not found") >= 0 || e.message.indexOf("not available") >= 0)
                 return undefined; // TODO: return unknown price server side (0?)
             throw new HavenoError_1.default(e.message, e.code);
         }
@@ -934,15 +949,17 @@ class HavenoClient {
      * @param {string} accountName - description of the account
      * @param {string} assetCode - traded asset code
      * @param {string} address - payment address of the account
+     * @param {boolean} [instant] - whether to use instant trades (default false)
      * @return {PaymentAccount} the created payment account
      */
-    async createCryptoPaymentAccount(accountName, assetCode, address) {
+    async createCryptoPaymentAccount(accountName, assetCode, address, instant) {
         try {
             const request = new grpc_pb_1.CreateCryptoCurrencyPaymentAccountRequest()
                 .setAccountName(accountName)
                 .setCurrencyCode(assetCode)
-                .setAddress(address)
-                .setTradeInstant(false); // not using instant trades
+                .setAddress(address);
+            if (instant !== undefined)
+                request.setTradeInstant(instant);
             return (await this._paymentAccountsClient.createCryptoCurrencyPaymentAccount(request, { password: this._password })).getPaymentAccount();
         }
         catch (e) {
