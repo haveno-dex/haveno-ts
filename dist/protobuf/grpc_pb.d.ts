@@ -2855,6 +2855,15 @@ export class TradeInfo extends jspb.Message {
   getPayoutTxId(): string;
   setPayoutTxId(value: string): TradeInfo;
 
+  getStartTime(): number;
+  setStartTime(value: number): TradeInfo;
+
+  getMaxDurationMs(): number;
+  setMaxDurationMs(value: number): TradeInfo;
+
+  getDeadlineTime(): number;
+  setDeadlineTime(value: number): TradeInfo;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): TradeInfo.AsObject;
   static toObject(includeInstance: boolean, msg: TradeInfo): TradeInfo.AsObject;
@@ -2904,6 +2913,9 @@ export namespace TradeInfo {
     makerDepositTxId: string,
     takerDepositTxId: string,
     payoutTxId: string,
+    startTime: number,
+    maxDurationMs: number,
+    deadlineTime: number,
   }
 }
 
@@ -3321,39 +3333,81 @@ export namespace CreateXmrTxReply {
   }
 }
 
-export class RelayXmrTxRequest extends jspb.Message {
-  getMetadata(): string;
-  setMetadata(value: string): RelayXmrTxRequest;
+export class CreateXmrSweepTxsRequest extends jspb.Message {
+  getAddress(): string;
+  setAddress(value: string): CreateXmrSweepTxsRequest;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): RelayXmrTxRequest.AsObject;
-  static toObject(includeInstance: boolean, msg: RelayXmrTxRequest): RelayXmrTxRequest.AsObject;
-  static serializeBinaryToWriter(message: RelayXmrTxRequest, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): RelayXmrTxRequest;
-  static deserializeBinaryFromReader(message: RelayXmrTxRequest, reader: jspb.BinaryReader): RelayXmrTxRequest;
+  toObject(includeInstance?: boolean): CreateXmrSweepTxsRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: CreateXmrSweepTxsRequest): CreateXmrSweepTxsRequest.AsObject;
+  static serializeBinaryToWriter(message: CreateXmrSweepTxsRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): CreateXmrSweepTxsRequest;
+  static deserializeBinaryFromReader(message: CreateXmrSweepTxsRequest, reader: jspb.BinaryReader): CreateXmrSweepTxsRequest;
 }
 
-export namespace RelayXmrTxRequest {
+export namespace CreateXmrSweepTxsRequest {
   export type AsObject = {
-    metadata: string,
+    address: string,
   }
 }
 
-export class RelayXmrTxReply extends jspb.Message {
-  getHash(): string;
-  setHash(value: string): RelayXmrTxReply;
+export class CreateXmrSweepTxsReply extends jspb.Message {
+  getTxsList(): Array<XmrTx>;
+  setTxsList(value: Array<XmrTx>): CreateXmrSweepTxsReply;
+  clearTxsList(): CreateXmrSweepTxsReply;
+  addTxs(value?: XmrTx, index?: number): XmrTx;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): RelayXmrTxReply.AsObject;
-  static toObject(includeInstance: boolean, msg: RelayXmrTxReply): RelayXmrTxReply.AsObject;
-  static serializeBinaryToWriter(message: RelayXmrTxReply, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): RelayXmrTxReply;
-  static deserializeBinaryFromReader(message: RelayXmrTxReply, reader: jspb.BinaryReader): RelayXmrTxReply;
+  toObject(includeInstance?: boolean): CreateXmrSweepTxsReply.AsObject;
+  static toObject(includeInstance: boolean, msg: CreateXmrSweepTxsReply): CreateXmrSweepTxsReply.AsObject;
+  static serializeBinaryToWriter(message: CreateXmrSweepTxsReply, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): CreateXmrSweepTxsReply;
+  static deserializeBinaryFromReader(message: CreateXmrSweepTxsReply, reader: jspb.BinaryReader): CreateXmrSweepTxsReply;
 }
 
-export namespace RelayXmrTxReply {
+export namespace CreateXmrSweepTxsReply {
   export type AsObject = {
-    hash: string,
+    txsList: Array<XmrTx.AsObject>,
+  }
+}
+
+export class RelayXmrTxsRequest extends jspb.Message {
+  getMetadatasList(): Array<string>;
+  setMetadatasList(value: Array<string>): RelayXmrTxsRequest;
+  clearMetadatasList(): RelayXmrTxsRequest;
+  addMetadatas(value: string, index?: number): RelayXmrTxsRequest;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): RelayXmrTxsRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: RelayXmrTxsRequest): RelayXmrTxsRequest.AsObject;
+  static serializeBinaryToWriter(message: RelayXmrTxsRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): RelayXmrTxsRequest;
+  static deserializeBinaryFromReader(message: RelayXmrTxsRequest, reader: jspb.BinaryReader): RelayXmrTxsRequest;
+}
+
+export namespace RelayXmrTxsRequest {
+  export type AsObject = {
+    metadatasList: Array<string>,
+  }
+}
+
+export class RelayXmrTxsReply extends jspb.Message {
+  getHashesList(): Array<string>;
+  setHashesList(value: Array<string>): RelayXmrTxsReply;
+  clearHashesList(): RelayXmrTxsReply;
+  addHashes(value: string, index?: number): RelayXmrTxsReply;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): RelayXmrTxsReply.AsObject;
+  static toObject(includeInstance: boolean, msg: RelayXmrTxsReply): RelayXmrTxsReply.AsObject;
+  static serializeBinaryToWriter(message: RelayXmrTxsReply, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): RelayXmrTxsReply;
+  static deserializeBinaryFromReader(message: RelayXmrTxsReply, reader: jspb.BinaryReader): RelayXmrTxsReply;
+}
+
+export namespace RelayXmrTxsReply {
+  export type AsObject = {
+    hashesList: Array<string>,
   }
 }
 

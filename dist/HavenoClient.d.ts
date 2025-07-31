@@ -326,15 +326,23 @@ export default class HavenoClient {
     /**
      * Create but do not relay a transaction to send funds from the Monero wallet.
      *
+     * @param {XmrDestination[]} destinations - the destinations to send funds to
      * @return {XmrTx} the created transaction
      */
     createXmrTx(destinations: XmrDestination[]): Promise<XmrTx>;
+    /**
+     * Create but do not relay transactions to sweep all funds from the Monero wallet.
+     *
+     * @param {string} address - the address to sweep funds to
+     * @return {XmrTx} the created transactions
+     */
+    createXmrSweepTxs(address: string): Promise<XmrTx[]>;
     /**
      * Relay a previously created transaction to send funds from the Monero wallet.
      *
      * @return {string} the hash of the relayed transaction
      */
-    relayXmrTx(metadata: string): Promise<string>;
+    relayXmrTxs(metadatas: string[]): Promise<string[]>;
     /**
      * Get all asset codes with price information.
      *
@@ -411,9 +419,10 @@ export default class HavenoClient {
      * @param {string} accountName - description of the account
      * @param {string} assetCode - traded asset code
      * @param {string} address - payment address of the account
+     * @param {boolean} [instant] - whether to use instant trades (default false)
      * @return {PaymentAccount} the created payment account
      */
-    createCryptoPaymentAccount(accountName: string, assetCode: string, address: string): Promise<PaymentAccount>;
+    createCryptoPaymentAccount(accountName: string, assetCode: string, address: string, instant?: boolean): Promise<PaymentAccount>;
     /**
      * Delete a payment account.
      *
