@@ -1190,6 +1190,7 @@ test("Can get market prices (Test, CI, sanity check)", async () => {
   // get market prices of primary assets
   for (const assetCode of TestConfig.assetCodes) {
     const price = await user1.getPrice(assetCode);
+    expect(price).toBeDefined();
     expect(price).toBeGreaterThan(0);
   }
 
