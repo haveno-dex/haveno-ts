@@ -2400,7 +2400,7 @@ test("Can handle unexpected errors during trade initialization (Test)", async ()
 });
 
 // TODO: test opening and resolving dispute as arbitrator and traders go offline
-test("Selects arbitrators which are online, registered, and least used (Test)", async () => {
+test("Selects arbitrators randomly which are online and registered (Test)", async () => {
 
   // complete 2 trades using main arbitrator so it's most used
   // TODO: these trades are not registered with seednode until it's restarted
@@ -2435,11 +2435,11 @@ test("Selects arbitrators which are online, registered, and least used (Test)", 
     }
     await wait(TestConfig.trade.walletSyncPeriodMs * 2);
 
-    // complete a trade which uses arbitrator2 since it's least used
-    HavenoUtils.log(1, "Completing trade using arbitrator2");
-    await executeTrade({maker: {havenod: user1}, taker: {havenod: user2}, arbitrator: {havenod: arbitrator2}, offerId: offer1.getId(), makerPaymentAccountId: offer1.getPaymentAccountId(), testPayoutConfirmed: false});
+    // complete a trade which uses either arbitrator randomly
+    HavenoUtils.log(1, "Completing trade using either arbitrator");
+    await executeTrade({maker: {havenod: user1}, taker: {havenod: user2}, offerId: offer1.getId(), makerPaymentAccountId: offer1.getPaymentAccountId(), testPayoutConfirmed: false});
     let trade = await user1.getTrade(offer1.getId());
-    assert.equal(trade.getArbitratorNodeAddress(), arbitrator2ApiUrl);
+    assert(trade.getArbitratorNodeAddress() === arbitrator1ApiUrl || trade.getArbitratorNodeAddress() === arbitrator2ApiUrl);
 
     // arbitrator2 goes offline without unregistering
     HavenoUtils.log(1, "Arbitrator2 going offline");
