@@ -222,7 +222,7 @@ class TradeContext {
   isOfferTaken?: boolean;
   isPaymentSent?: boolean;
   isPaymentReceived?: boolean;
-  phase?: string;
+  phase?: string[];
   payoutState?: string[];
   disputeState?: string;
   isCompleted?: boolean;
@@ -303,8 +303,8 @@ class TradeContext {
     return this.buyerOfflineAfterDisputeOpened || this.sellerOfflineAfterDisputeOpened || this.buyerOfflineAfterPaymentSent || this.buyerOfflineAfterTake || this.sellerOfflineAfterTake;
   }
 
-  getPhase() {
-    return this.isPaymentReceived ? "PAYMENT_RECEIVED" : this.isPaymentSent ? "PAYMENT_SENT" : "DEPOSITS_UNLOCKED";
+  getPhase(): string[] {
+    return this.isPaymentReceived ? ["PAYMENT_RECEIVED"] : this.isPaymentSent ? ["PAYMENT_SENT"] : ["DEPOSITS_UNLOCKED", "DEPOSITS_FINALIZED"];
   }
 
   hasBuyerAsTakerWithoutDeposit() {
@@ -2818,20 +2818,19 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
 
     // test buyer trade state if online
     if (ctx.isStopped) return ctx.offerId!;
-    const expectedState = ctx.isPaymentSent ? "PAYMENT_SENT" : "DEPOSITS_UNLOCKED" // TODO: test COMPLETED, PAYMENT_RECEIVED states?
+    const expectedPhases = ctx.isPaymentSent ? ["PAYMENT_SENT"] : ["DEPOSITS_UNLOCKED", "DEPOSITS_FINALIZED"] // TODO: test COMPLETED, PAYMENT_RECEIVED states?
     if (ctx.getBuyer().havenod) {
-      expect((await ctx.getBuyer().havenod!.getTrade(ctx.offer!.getId())).getPhase()).toEqual(expectedState);
+      assert(moneroTs.GenUtils.arrayContains(expectedPhases, (await ctx.getBuyer().havenod!.getTrade(ctx.offer!.getId())).getPhase()));
       fetchedTrade = await ctx.getBuyer().havenod!.getTrade(ctx.offerId!);
       expect(fetchedTrade.getIsDepositsUnlocked()).toBe(true);
-      expect(fetchedTrade.getPhase()).toEqual(expectedState);
+      assert(moneroTs.GenUtils.arrayContains(expectedPhases, fetchedTrade.getPhase()));
     }
 
-    // test seller trade state if online
     if (ctx.isStopped) return ctx.offerId!;
     if (ctx.getSeller().havenod) {
       fetchedTrade = await ctx.getSeller().havenod!.getTrade(trade.getTradeId());
       expect(fetchedTrade.getIsDepositsUnlocked()).toBe(true);
-      expect(fetchedTrade.getPhase()).toEqual(expectedState);
+      assert(moneroTs.GenUtils.arrayContains(expectedPhases, fetchedTrade.getPhase()));
     }
 
     // buyer has seller's payment account payload after first confirmation
@@ -2961,14 +2960,14 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
       fetchedTrade = await ctx.getSeller().havenod!.getTrade(trade.getTradeId());
       expect(fetchedTrade.getPhase()).toEqual("PAYMENT_RECEIVED");
       await wait(ctx.walletSyncPeriodMs * 2); // buyer or arbitrator will sign and publish payout tx
-      await testTradeState(await ctx.getSeller().havenod!.getTrade(trade.getTradeId()), {phase: "PAYMENT_RECEIVED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED", "PAYOUT_FINALIZED"], isCompleted: false, isPayoutPublished: true});
+      await testTradeState(await ctx.getSeller().havenod!.getTrade(trade.getTradeId()), {phase: ["PAYMENT_RECEIVED"], payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED", "PAYOUT_FINALIZED"], isCompleted: false, isPayoutPublished: true});
     }
 
     // payout tx is published by buyer (priority) or arbitrator
     if (ctx.isStopped) return ctx.offerId!;
     await wait(ctx.walletSyncPeriodMs);
-    await testTradeState(await ctx.getSeller().havenod!.getTrade(trade.getTradeId()), {phase: "PAYMENT_RECEIVED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED", "PAYOUT_FINALIZED"], isCompleted: false, isPayoutPublished: true});
-    await testTradeState(await ctx.arbitrator.havenod!.getTrade(trade.getTradeId()), {phase: "PAYMENT_RECEIVED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED", "PAYOUT_FINALIZED"], isCompleted: true, isPayoutPublished: true}); // arbitrator trade auto completes
+    await testTradeState(await ctx.getSeller().havenod!.getTrade(trade.getTradeId()), {phase: ["PAYMENT_RECEIVED"], payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED", "PAYOUT_FINALIZED"], isCompleted: false, isPayoutPublished: true});
+    await testTradeState(await ctx.arbitrator.havenod!.getTrade(trade.getTradeId()), {phase: ["PAYMENT_RECEIVED"], payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED", "PAYOUT_FINALIZED"], isCompleted: true, isPayoutPublished: true}); // arbitrator trade auto completes
 
     // buyer comes online if offline
     if (ctx.isStopped) return ctx.offerId!;
@@ -2982,14 +2981,14 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
       await wait(TestConfig.maxWalletStartupMs + ctx.walletSyncPeriodMs);
     }
     if (ctx.isStopped) return ctx.offerId!;
-    await testTradeState(await ctx.getBuyer().havenod!.getTrade(trade.getTradeId()), {phase: "PAYMENT_RECEIVED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED", "PAYOUT_FINALIZED"], isCompleted: false, isPayoutPublished: true});
+    await testTradeState(await ctx.getBuyer().havenod!.getTrade(trade.getTradeId()), {phase: ["PAYMENT_RECEIVED"], payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED", "PAYOUT_FINALIZED"], isCompleted: false, isPayoutPublished: true});
 
     // test trade completion
     if (ctx.isStopped) return ctx.offerId!;
     await ctx.getBuyer().havenod!.completeTrade(trade.getTradeId());
-    await testTradeState(await ctx.getBuyer().havenod!.getTrade(trade.getTradeId()), {phase: "PAYMENT_RECEIVED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED", "PAYOUT_FINALIZED"], isCompleted: true, isPayoutPublished: true});
+    await testTradeState(await ctx.getBuyer().havenod!.getTrade(trade.getTradeId()), {phase: ["PAYMENT_RECEIVED"], payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED", "PAYOUT_FINALIZED"], isCompleted: true, isPayoutPublished: true});
     await ctx.getSeller().havenod!.completeTrade(trade.getTradeId());
-    await testTradeState(await ctx.getSeller().havenod!.getTrade(trade.getTradeId()), {phase: "PAYMENT_RECEIVED", payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED", "PAYOUT_FINALIZED"], isCompleted: true, isPayoutPublished: true});
+    await testTradeState(await ctx.getSeller().havenod!.getTrade(trade.getTradeId()), {phase: ["PAYMENT_RECEIVED"], payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED", "PAYOUT_FINALIZED"], isCompleted: true, isPayoutPublished: true});
 
     // record balances on completion
     if (ctx.isStopped) return ctx.offerId!;
