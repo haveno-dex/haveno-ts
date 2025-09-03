@@ -3048,7 +3048,7 @@ async function testTradePayoutUnlock(ctxP: Partial<TradeContext>) {
   // test after payout finalized
   if (ctx.testPayoutFinalized) {
     trade = await ctx.arbitrator.havenod!.getTrade(ctx.offerId!);
-    if (!isPayoutFinalized(trade.getPayoutState())) await mineToHeight(height + 60);
+    if (!isPayoutFinalized(trade.getPayoutState())) await mineToHeight(height + (ctx.testPayoutUnlocked ? 50 : 60));
     await wait(TestConfig.maxWalletStartupMs + ctx.walletSyncPeriodMs * 2);
     if (await ctx.getBuyer().havenod) await testTradeState(await ctx.getBuyer().havenod!.getTrade(ctx.offerId!), {phase: ctx.getPhase(), disputeState: disputeState, payoutState: ["PAYOUT_FINALIZED"]});
     if (await ctx.getSeller().havenod) await testTradeState(await ctx.getSeller().havenod!.getTrade(ctx.offerId!), {phase: ctx.getPhase(), disputeState: disputeState, payoutState: ["PAYOUT_FINALIZED"]});
