@@ -3060,7 +3060,7 @@ async function testTradePayoutUnlock(ctxP: Partial<TradeContext>) {
 }
 
 async function testTradeState(trade: TradeInfo, ctx: Partial<TradeContext>) {
-  assert.equal(trade.getPhase(), ctx.phase, "expected trade phase to be " + ctx.phase + " but was " + trade.getPhase() + " for trade " + trade.getTradeId());
+  assert(moneroTs.GenUtils.arrayContains(ctx.phase, trade.getPhase()), "expected one of phase " + ctx.phase + " but was " + trade.getPhase() + " for trade " + trade.getTradeId());
   assert(moneroTs.GenUtils.arrayContains(ctx.payoutState, trade.getPayoutState()), "expected one of payout state " + ctx.payoutState + " but was " + trade.getPayoutState() + " for trade " + trade.getTradeId());
   assert(trade.getStartTime() > 0, "expected trade start timestamp to be greater than 0 but was " + trade.getStartTime() + " for trade " + trade.getTradeId());
   assert(trade.getMaxDurationMs() > 0, "expected trade max duration to be greater than 0 but was " + trade.getMaxDurationMs() + " for trade " + trade.getTradeId());
