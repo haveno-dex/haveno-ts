@@ -2820,17 +2820,16 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
     if (ctx.isStopped) return ctx.offerId!;
     const expectedPhases = ctx.isPaymentSent ? ["PAYMENT_SENT"] : ["DEPOSITS_UNLOCKED", "DEPOSITS_FINALIZED"] // TODO: test COMPLETED, PAYMENT_RECEIVED states?
     if (ctx.getBuyer().havenod) {
-      assert(moneroTs.GenUtils.arrayContains(expectedPhases, (await ctx.getBuyer().havenod!.getTrade(ctx.offer!.getId())).getPhase()));
       fetchedTrade = await ctx.getBuyer().havenod!.getTrade(ctx.offerId!);
+      assert(moneroTs.GenUtils.arrayContains(expectedPhases, fetchedTrade.getPhase()), "expected one of phase " + expectedPhases + " but was " + fetchedTrade.getPhase() + " for trade " + trade.getTradeId());
       expect(fetchedTrade.getIsDepositsUnlocked()).toBe(true);
-      assert(moneroTs.GenUtils.arrayContains(expectedPhases, fetchedTrade.getPhase()));
     }
 
     if (ctx.isStopped) return ctx.offerId!;
     if (ctx.getSeller().havenod) {
       fetchedTrade = await ctx.getSeller().havenod!.getTrade(trade.getTradeId());
+      assert(moneroTs.GenUtils.arrayContains(expectedPhases, fetchedTrade.getPhase()), "expected one of phase " + expectedPhases + " but was " + fetchedTrade.getPhase() + " for trade " + trade.getTradeId());
       expect(fetchedTrade.getIsDepositsUnlocked()).toBe(true);
-      assert(moneroTs.GenUtils.arrayContains(expectedPhases, fetchedTrade.getPhase()));
     }
 
     // buyer has seller's payment account payload after first confirmation
