@@ -1978,7 +1978,8 @@ test("Can complete all trade combinations (Test, stress)", async () => {
                 disputeWinner: DISPUTE_WINNER_OPTS[m],
                 resolveDispute: RESOLVE_DISPUTE_OPTS[n],
                 disputeSummary: "After much deliberation, " + (DISPUTE_WINNER_OPTS[m] === DisputeResult.Winner.BUYER ? "buyer" : "seller") + " is winner",
-                offerAmount: getRandomBigIntWithinPercent(TestConfig.trade.offerAmount!, 0.15)
+                offerAmount: getRandomBigIntWithinPercent(TestConfig.trade.offerAmount!, 0.15),
+                testPayoutFinalized: true // TODO: must wait until payouts finalized to not overwhelm test; could idle trades with payout unlocked?
               };
               ctxs.push(new TradeContext(Object.assign({}, new TradeContext(TestConfig.trade), ctx)));
             }
@@ -3006,7 +3007,7 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
 
     // test payout unlock
     if (ctx.isStopped) return ctx.offerId!;
-    await testTradePayoutUnlock(ctx);
+    await testTradePayoutFinalized(ctx);
     if (ctx.offer!.getId() !== ctx.offerId) throw new Error("Expected offer ids to match");
     return ctx.offer!.getId();
   } catch (err: any) {
@@ -3016,7 +3017,7 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
   }
 }
 
-async function testTradePayoutUnlock(ctxP: Partial<TradeContext>) {
+async function testTradePayoutFinalized(ctxP: Partial<TradeContext>) {
   let ctx = TradeContext.init(ctxP);
 
   // test after payout confirmed
@@ -3589,7 +3590,7 @@ async function resolveDispute(ctxP: Partial<TradeContext>) {
   if (!ctx.concurrentTrades) await testAmountsAfterComplete(ctx);
 
   // test payout unlock
-  await testTradePayoutUnlock(ctx);
+  await testTradePayoutFinalized(ctx);
 }
 
 async function testAmountsAfterComplete(tradeCtx: TradeContext) {
