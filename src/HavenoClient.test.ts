@@ -553,6 +553,17 @@ function getMaxConcurrency() {
   return isGitHubActions() ? 4 : 20;
 }
 
+function getNumBlocksPayoutFinalized() {
+  switch (getBaseCurrencyNetwork()) {
+      case BaseCurrencyNetwork.XMR_LOCAL:
+        return 60;
+      case BaseCurrencyNetwork.XMR_STAGENET:
+      case BaseCurrencyNetwork.XMR_MAINNET:
+        return 720;
+      default: throw new Error("Unhandled base currency network: " + getBaseCurrencyNetwork());
+  }
+}
+
 function isGitHubActions() {
   return process.env.GITHUB_ACTIONS === 'true';
 }
@@ -1943,6 +1954,7 @@ test("Can complete trades at the same time (Test, CI, sanity check)", async () =
     if (ctxs[i].assetCode === "EUR") paymentMethodId = "revolut";
     ctxs[i].makerPaymentAccountId = (await createPaymentAccount(ctxs[i].maker.havenod!, ctxs[i].assetCode!, paymentMethodId)).getId();
     ctxs[i].takerPaymentAccountId = (await createPaymentAccount(ctxs[i].taker.havenod!, ctxs[i].assetCode!, paymentMethodId)).getId();
+    ctxs[i].testPayoutFinalized = true;
   }
 
   // execute trades with capped concurrency for CI tests
@@ -1979,7 +1991,6 @@ test("Can complete all trade combinations (Test, stress)", async () => {
                 resolveDispute: RESOLVE_DISPUTE_OPTS[n],
                 disputeSummary: "After much deliberation, " + (DISPUTE_WINNER_OPTS[m] === DisputeResult.Winner.BUYER ? "buyer" : "seller") + " is winner",
                 offerAmount: getRandomBigIntWithinPercent(TestConfig.trade.offerAmount!, 0.15),
-                testPayoutFinalized: true // TODO: must wait until payouts finalized to not overwhelm test; could idle trades with payout unlocked?
               };
               ctxs.push(new TradeContext(Object.assign({}, new TradeContext(TestConfig.trade), ctx)));
             }
@@ -3049,7 +3060,7 @@ async function testTradePayoutFinalized(ctxP: Partial<TradeContext>) {
   // test after payout finalized
   if (ctx.testPayoutFinalized) {
     trade = await ctx.arbitrator.havenod!.getTrade(ctx.offerId!);
-    if (!isPayoutFinalized(trade.getPayoutState())) await mineToHeight(height + 60);
+    if (!isPayoutFinalized(trade.getPayoutState())) await mineToHeight(height + getNumBlocksPayoutFinalized());
     await wait(TestConfig.maxWalletStartupMs + ctx.walletSyncPeriodMs * 2);
     if (await ctx.getBuyer().havenod) await testTradeState(await ctx.getBuyer().havenod!.getTrade(ctx.offerId!), {phase: ctx.getPhase(), disputeState: disputeState, payoutState: ["PAYOUT_FINALIZED"]});
     if (await ctx.getSeller().havenod) await testTradeState(await ctx.getSeller().havenod!.getTrade(ctx.offerId!), {phase: ctx.getPhase(), disputeState: disputeState, payoutState: ["PAYOUT_FINALIZED"]});
