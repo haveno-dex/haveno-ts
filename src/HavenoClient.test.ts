@@ -451,6 +451,7 @@ const TestConfig = {
     maxAdjustmentPct: 0.2,
     daemonPollPeriodMs: 5000,
     maxWalletStartupMs: 10000, // TODO (woodser): make shorter by switching to jni
+    idlePeriodTestMs: 30000,
     maxCpuPct: 0.25,
     paymentMethods: Object.keys(PaymentAccountForm.FormId), // all supported payment methods
     assetCodes: ["USD", "GBP", "EUR", "ETH", "BTC", "BCH", "LTC", "DOGE", "XRP", "ADA", "TRX", "SOL", "USDT-ERC20", "USDT-TRC20", "USDC-ERC20", "DAI-ERC20"],
@@ -3061,7 +3062,7 @@ async function testTradePayoutFinalized(ctxP: Partial<TradeContext>) {
   if (ctx.testPayoutFinalized) {
     trade = await ctx.arbitrator.havenod!.getTrade(ctx.offerId!);
     if (!isPayoutFinalized(trade.getPayoutState())) await mineToHeight(height + getNumBlocksPayoutFinalized());
-    await wait(TestConfig.maxWalletStartupMs + ctx.walletSyncPeriodMs * 2);
+    await wait(TestConfig.maxWalletStartupMs + TestConfig.idlePeriodTestMs);
     if (await ctx.getBuyer().havenod) await testTradeState(await ctx.getBuyer().havenod!.getTrade(ctx.offerId!), {phase: ctx.getPhase(), disputeState: disputeState, payoutState: ["PAYOUT_FINALIZED"]});
     if (await ctx.getSeller().havenod) await testTradeState(await ctx.getSeller().havenod!.getTrade(ctx.offerId!), {phase: ctx.getPhase(), disputeState: disputeState, payoutState: ["PAYOUT_FINALIZED"]});
     await testTradeState(await ctx.arbitrator.havenod!.getTrade(ctx.offerId!), {phase: ctx.getPhase(), disputeState: disputeState, payoutState: ["PAYOUT_FINALIZED"]});
