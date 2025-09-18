@@ -146,8 +146,8 @@ const defaultTradeConfig: Partial<TradeContext> = {
   disputeSummary: "Seller is winner",
   walletSyncPeriodMs: 5000,
   maxTimePeerNoticeMs: 6000,
-  testTradeChatMessages: true,
-  testDisputeChatMessages: true,
+  testChatMessagesTrade: true,
+  testChatMessagesDispute: true,
   stopOnFailure: false, // TODO: setting to true can cause error: Http response at 400 or 500 level, http status code: 503
   testPayoutConfirmed: true,
   testPayoutUnlocked: false,
@@ -205,7 +205,7 @@ class TradeContext {
   offerId?: string;
   takerPaymentAccountId?: string;
   challenge?: string;
-  testTradeChatMessages?: boolean;
+  testChatMessagesTrade?: boolean;
   tradeChatMessagesTested?: boolean;
 
   // resolve dispute
@@ -234,7 +234,7 @@ class TradeContext {
   sellerOpenedDispute?: boolean;
   walletSyncPeriodMs!: number;
   maxTimePeerNoticeMs!: number;
-  testDisputeChatMessages!: boolean;
+  testChatMessagesDispute!: boolean;
   disputeChatMessagesTested!: boolean;
   stopOnFailure?: boolean;
   buyerAppName?: string;
@@ -451,9 +451,10 @@ const TestConfig = {
     maxAdjustmentPct: 0.2,
     daemonPollPeriodMs: 5000,
     maxWalletStartupMs: 10000, // TODO (woodser): make shorter by switching to jni
+    idlePeriodTestMs: 30000,
     maxCpuPct: 0.25,
     paymentMethods: Object.keys(PaymentAccountForm.FormId), // all supported payment methods
-    assetCodes: ["USD", "GBP", "EUR", "ETH", "BTC", "BCH", "LTC", "DOGE", "XRP", "ADA", "TRX", "SOL", "USDT-ERC20", "USDT-TRC20", "USDC-ERC20", "DAI-ERC20"],
+    assetCodes: ["USD", "GBP", "EUR", "ETH", "BTC", "BCH", "LTC", "DOGE", "XRP", "ADA", "TRX", "SOL", "USDT-ERC20", "USDT-TRC20", "USDC-ERC20"],
     fixedPriceAssetCodes: ["XAG", "XAU", "XGB"],
     fixedPricePaymentMethods: [],
     cryptoAddresses: [{
@@ -551,6 +552,17 @@ const OFFLINE_ERR_MSG = "Http response at 400 or 500 level";
 
 function getMaxConcurrency() {
   return isGitHubActions() ? 4 : 20;
+}
+
+function getNumBlocksPayoutFinalized() {
+  switch (getBaseCurrencyNetwork()) {
+      case BaseCurrencyNetwork.XMR_LOCAL:
+        return 60;
+      case BaseCurrencyNetwork.XMR_STAGENET:
+      case BaseCurrencyNetwork.XMR_MAINNET:
+        return 720;
+      default: throw new Error("Unhandled base currency network: " + getBaseCurrencyNetwork());
+  }
 }
 
 function isGitHubActions() {
@@ -1943,6 +1955,7 @@ test("Can complete trades at the same time (Test, CI, sanity check)", async () =
     if (ctxs[i].assetCode === "EUR") paymentMethodId = "revolut";
     ctxs[i].makerPaymentAccountId = (await createPaymentAccount(ctxs[i].maker.havenod!, ctxs[i].assetCode!, paymentMethodId)).getId();
     ctxs[i].takerPaymentAccountId = (await createPaymentAccount(ctxs[i].taker.havenod!, ctxs[i].assetCode!, paymentMethodId)).getId();
+    ctxs[i].testPayoutFinalized = true;
   }
 
   // execute trades with capped concurrency for CI tests
@@ -1979,7 +1992,6 @@ test("Can complete all trade combinations (Test, stress)", async () => {
                 resolveDispute: RESOLVE_DISPUTE_OPTS[n],
                 disputeSummary: "After much deliberation, " + (DISPUTE_WINNER_OPTS[m] === DisputeResult.Winner.BUYER ? "buyer" : "seller") + " is winner",
                 offerAmount: getRandomBigIntWithinPercent(TestConfig.trade.offerAmount!, 0.15),
-                testPayoutFinalized: true // TODO: must wait until payouts finalized to not overwhelm test; could idle trades with payout unlocked?
               };
               ctxs.push(new TradeContext(Object.assign({}, new TradeContext(TestConfig.trade), ctx)));
             }
@@ -2753,7 +2765,7 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
 
     // test trader chat
     if (ctx.isStopped) return ctx.offerId!;
-    if (ctx.testTradeChatMessages && !ctx.tradeChatMessagesTested) await testTradeChat(ctx); // test trader chat once
+    if (ctx.testChatMessagesTrade && !ctx.tradeChatMessagesTested) await testTradeChat(ctx); // test trader chat once
 
     // get expected payment account payloads
     if (ctx.isStopped) return ctx.offerId!;
@@ -3049,8 +3061,8 @@ async function testTradePayoutFinalized(ctxP: Partial<TradeContext>) {
   // test after payout finalized
   if (ctx.testPayoutFinalized) {
     trade = await ctx.arbitrator.havenod!.getTrade(ctx.offerId!);
-    if (!isPayoutFinalized(trade.getPayoutState())) await mineToHeight(height + 60);
-    await wait(TestConfig.maxWalletStartupMs + ctx.walletSyncPeriodMs * 2);
+    if (!isPayoutFinalized(trade.getPayoutState())) await mineToHeight(height + getNumBlocksPayoutFinalized());
+    await wait(TestConfig.maxWalletStartupMs + TestConfig.idlePeriodTestMs);
     if (await ctx.getBuyer().havenod) await testTradeState(await ctx.getBuyer().havenod!.getTrade(ctx.offerId!), {phase: ctx.getPhase(), disputeState: disputeState, payoutState: ["PAYOUT_FINALIZED"]});
     if (await ctx.getSeller().havenod) await testTradeState(await ctx.getSeller().havenod!.getTrade(ctx.offerId!), {phase: ctx.getPhase(), disputeState: disputeState, payoutState: ["PAYOUT_FINALIZED"]});
     await testTradeState(await ctx.arbitrator.havenod!.getTrade(ctx.offerId!), {phase: ctx.getPhase(), disputeState: disputeState, payoutState: ["PAYOUT_FINALIZED"]});
@@ -3409,7 +3421,7 @@ async function testOpenDispute(ctxP: Partial<TradeContext>) {
   await arbitrator.addNotificationListener(notification => { HavenoUtils.log(3, "Arbitrator received notification " + notification.getType() + " " + (notification.getChatMessage() ? notification.getChatMessage()?.getMessage() : "")); arbitratorNotifications.push(notification); });
 
   // test chat messages
-  if (ctx.testDisputeChatMessages && !ctx.disputeChatMessagesTested) {
+  if (ctx.testChatMessagesDispute && !ctx.disputeChatMessagesTested) {
 
     // arbitrator sends chat messages to traders
     HavenoUtils.log(1, "Arbitrator sending chat messages to traders. tradeId=" + ctx.offerId + ", disputeId=" + openerDispute.getId());
