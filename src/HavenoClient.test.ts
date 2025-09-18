@@ -146,8 +146,8 @@ const defaultTradeConfig: Partial<TradeContext> = {
   disputeSummary: "Seller is winner",
   walletSyncPeriodMs: 5000,
   maxTimePeerNoticeMs: 6000,
-  testTradeChatMessages: true,
-  testDisputeChatMessages: true,
+  testChatMessagesTrade: true,
+  testChatMessagesDispute: true,
   stopOnFailure: false, // TODO: setting to true can cause error: Http response at 400 or 500 level, http status code: 503
   testPayoutConfirmed: true,
   testPayoutUnlocked: false,
@@ -205,7 +205,7 @@ class TradeContext {
   offerId?: string;
   takerPaymentAccountId?: string;
   challenge?: string;
-  testTradeChatMessages?: boolean;
+  testChatMessagesTrade?: boolean;
   tradeChatMessagesTested?: boolean;
 
   // resolve dispute
@@ -234,7 +234,7 @@ class TradeContext {
   sellerOpenedDispute?: boolean;
   walletSyncPeriodMs!: number;
   maxTimePeerNoticeMs!: number;
-  testDisputeChatMessages!: boolean;
+  testChatMessagesDispute!: boolean;
   disputeChatMessagesTested!: boolean;
   stopOnFailure?: boolean;
   buyerAppName?: string;
@@ -2765,7 +2765,7 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
 
     // test trader chat
     if (ctx.isStopped) return ctx.offerId!;
-    if (ctx.testTradeChatMessages && !ctx.tradeChatMessagesTested) await testTradeChat(ctx); // test trader chat once
+    if (ctx.testChatMessagesTrade && !ctx.tradeChatMessagesTested) await testTradeChat(ctx); // test trader chat once
 
     // get expected payment account payloads
     if (ctx.isStopped) return ctx.offerId!;
@@ -3421,7 +3421,7 @@ async function testOpenDispute(ctxP: Partial<TradeContext>) {
   await arbitrator.addNotificationListener(notification => { HavenoUtils.log(3, "Arbitrator received notification " + notification.getType() + " " + (notification.getChatMessage() ? notification.getChatMessage()?.getMessage() : "")); arbitratorNotifications.push(notification); });
 
   // test chat messages
-  if (ctx.testDisputeChatMessages && !ctx.disputeChatMessagesTested) {
+  if (ctx.testChatMessagesDispute && !ctx.disputeChatMessagesTested) {
 
     // arbitrator sends chat messages to traders
     HavenoUtils.log(1, "Arbitrator sending chat messages to traders. tradeId=" + ctx.offerId + ", disputeId=" + openerDispute.getId());
