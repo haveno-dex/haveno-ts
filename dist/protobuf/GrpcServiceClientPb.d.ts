@@ -197,9 +197,9 @@ export declare class XmrConnectionsClient {
     methodDescriptorStopCheckingConnection: grpcWeb.MethodDescriptor<grpc_pb.StopCheckingConnectionRequest, grpc_pb.StopCheckingConnectionReply>;
     stopCheckingConnection(request: grpc_pb.StopCheckingConnectionRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.StopCheckingConnectionReply>;
     stopCheckingConnection(request: grpc_pb.StopCheckingConnectionRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.StopCheckingConnectionReply) => void): grpcWeb.ClientReadableStream<grpc_pb.StopCheckingConnectionReply>;
-    methodDescriptorGetBestAvailableConnection: grpcWeb.MethodDescriptor<grpc_pb.GetBestAvailableConnectionRequest, grpc_pb.GetBestAvailableConnectionReply>;
-    getBestAvailableConnection(request: grpc_pb.GetBestAvailableConnectionRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.GetBestAvailableConnectionReply>;
-    getBestAvailableConnection(request: grpc_pb.GetBestAvailableConnectionRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.GetBestAvailableConnectionReply) => void): grpcWeb.ClientReadableStream<grpc_pb.GetBestAvailableConnectionReply>;
+    methodDescriptorGetBestConnection: grpcWeb.MethodDescriptor<grpc_pb.GetBestConnectionRequest, grpc_pb.GetBestConnectionReply>;
+    getBestConnection(request: grpc_pb.GetBestConnectionRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.GetBestConnectionReply>;
+    getBestConnection(request: grpc_pb.GetBestConnectionRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.GetBestConnectionReply) => void): grpcWeb.ClientReadableStream<grpc_pb.GetBestConnectionReply>;
     methodDescriptorSetAutoSwitch: grpcWeb.MethodDescriptor<grpc_pb.SetAutoSwitchRequest, grpc_pb.SetAutoSwitchReply>;
     setAutoSwitch(request: grpc_pb.SetAutoSwitchRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.SetAutoSwitchReply>;
     setAutoSwitch(request: grpc_pb.SetAutoSwitchRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.SetAutoSwitchReply) => void): grpcWeb.ClientReadableStream<grpc_pb.SetAutoSwitchReply>;
@@ -443,9 +443,12 @@ export declare class WalletsClient {
     methodDescriptorCreateXmrTx: grpcWeb.MethodDescriptor<grpc_pb.CreateXmrTxRequest, grpc_pb.CreateXmrTxReply>;
     createXmrTx(request: grpc_pb.CreateXmrTxRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.CreateXmrTxReply>;
     createXmrTx(request: grpc_pb.CreateXmrTxRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.CreateXmrTxReply) => void): grpcWeb.ClientReadableStream<grpc_pb.CreateXmrTxReply>;
-    methodDescriptorrelayXmrTx: grpcWeb.MethodDescriptor<grpc_pb.RelayXmrTxRequest, grpc_pb.RelayXmrTxReply>;
-    relayXmrTx(request: grpc_pb.RelayXmrTxRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.RelayXmrTxReply>;
-    relayXmrTx(request: grpc_pb.RelayXmrTxRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.RelayXmrTxReply) => void): grpcWeb.ClientReadableStream<grpc_pb.RelayXmrTxReply>;
+    methodDescriptorCreateXmrSweepTxs: grpcWeb.MethodDescriptor<grpc_pb.CreateXmrSweepTxsRequest, grpc_pb.CreateXmrSweepTxsReply>;
+    createXmrSweepTxs(request: grpc_pb.CreateXmrSweepTxsRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.CreateXmrSweepTxsReply>;
+    createXmrSweepTxs(request: grpc_pb.CreateXmrSweepTxsRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.CreateXmrSweepTxsReply) => void): grpcWeb.ClientReadableStream<grpc_pb.CreateXmrSweepTxsReply>;
+    methodDescriptorRelayXmrTxs: grpcWeb.MethodDescriptor<grpc_pb.RelayXmrTxsRequest, grpc_pb.RelayXmrTxsReply>;
+    relayXmrTxs(request: grpc_pb.RelayXmrTxsRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.RelayXmrTxsReply>;
+    relayXmrTxs(request: grpc_pb.RelayXmrTxsRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.RelayXmrTxsReply) => void): grpcWeb.ClientReadableStream<grpc_pb.RelayXmrTxsReply>;
     methodDescriptorGetAddressBalance: grpcWeb.MethodDescriptor<grpc_pb.GetAddressBalanceRequest, grpc_pb.GetAddressBalanceReply>;
     getAddressBalance(request: grpc_pb.GetAddressBalanceRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.GetAddressBalanceReply>;
     getAddressBalance(request: grpc_pb.GetAddressBalanceRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.GetAddressBalanceReply) => void): grpcWeb.ClientReadableStream<grpc_pb.GetAddressBalanceReply>;

@@ -16,24 +16,21 @@
 <a href="#haveno-typescript-library" id="haveno-typescript-library" style="color: inherit; text-decoration: none;">
   <h1>Haveno TypeScript Library</h1>
 </a>
-<p><img src="https://img.shields.io/github/actions/workflow/status/haveno-dex/haveno-ts/build.yml?branch=master" alt="GitHub Workflow Status">
+<p><a href="https://github.com/haveno-dex/haveno-ts/actions"><img src="https://img.shields.io/github/actions/workflow/status/haveno-dex/haveno-ts/build.yml?branch=master" alt="GitHub Workflow Status"></a>
 <a href="https://twitter.com/havenodex"><img src="https://img.shields.io/twitter/follow/HavenoDEX?style=social" alt="Twitter Follow"></a>
 <a href="https://matrix.to/#/#haveno:monero.social"><img src="https://img.shields.io/badge/Matrix%20room-%23haveno-blue" alt="Matrix rooms"></a></p>
 <p>TypeScript library for using Haveno.</p>
-
-<a href="#install" id="install" style="color: inherit; text-decoration: none;">
-  <h2>Install</h2>
-</a>
-<ol>
-<li>Start a Haveno daemon (see <a href="https://github.com/haveno-dex/haveno/blob/master/docs/installing.md">installing.md</a>).</li>
-<li>Install haveno-ts in your project: <code>npm install haveno-ts</code></li>
-</ol>
 
 <a href="#sample-code" id="sample-code" style="color: inherit; text-decoration: none;">
   <h2>Sample code</h2>
 </a>
 <pre><code class="language-js"><span class="hl-0">import</span><span class="hl-1"> { </span><span class="hl-2">HavenoClient</span><span class="hl-1"> } </span><span class="hl-0">from</span><span class="hl-1"> </span><span class="hl-3">&quot;haveno-ts&quot;</span><span class="hl-1">;</span><br/><br/><span class="hl-4">// create client connected to Haveno daemon</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-6">alice</span><span class="hl-1"> = </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-7">HavenoClient</span><span class="hl-1">(</span><span class="hl-3">&quot;http://localhost:8080&quot;</span><span class="hl-1">, </span><span class="hl-3">&quot;apitest&quot;</span><span class="hl-1">);</span><br/><br/><span class="hl-4">// use Haveno daemon</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-6">balances</span><span class="hl-1"> = </span><span class="hl-0">await</span><span class="hl-1"> </span><span class="hl-2">alice</span><span class="hl-1">.</span><span class="hl-7">getBalances</span><span class="hl-1">();</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-6">paymentAccounts</span><span class="hl-1"> = </span><span class="hl-0">await</span><span class="hl-1"> </span><span class="hl-2">alice</span><span class="hl-1">.</span><span class="hl-7">getPaymentAccounts</span><span class="hl-1">();</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-6">myOffers</span><span class="hl-1"> = </span><span class="hl-0">await</span><span class="hl-1"> </span><span class="hl-2">alice</span><span class="hl-1">.</span><span class="hl-7">getMyOffers</span><span class="hl-1">(</span><span class="hl-3">&quot;ETH&quot;</span><span class="hl-1">);</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-6">offers</span><span class="hl-1"> = </span><span class="hl-0">await</span><span class="hl-1"> </span><span class="hl-2">alice</span><span class="hl-1">.</span><span class="hl-7">getOffers</span><span class="hl-1">(</span><span class="hl-3">&quot;ETH&quot;</span><span class="hl-1">, </span><span class="hl-3">&quot;BUY&quot;</span><span class="hl-1">);</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-6">trade</span><span class="hl-1"> = </span><span class="hl-0">await</span><span class="hl-1"> </span><span class="hl-2">alice</span><span class="hl-1">.</span><span class="hl-7">takeOffer</span><span class="hl-1">(</span><span class="hl-2">offers</span><span class="hl-1">[</span><span class="hl-8">0</span><span class="hl-1">].</span><span class="hl-7">getId</span><span class="hl-1">(), </span><span class="hl-2">paymentAccounts</span><span class="hl-1">[</span><span class="hl-8">0</span><span class="hl-1">].</span><span class="hl-7">getId</span><span class="hl-1">());</span><br/><br/><span class="hl-4">// disconnect client</span><br/><span class="hl-0">await</span><span class="hl-1"> </span><span class="hl-2">alice</span><span class="hl-1">.</span><span class="hl-7">disconnect</span><span class="hl-1">();</span>
 </code></pre>
+
+<a href="#sample-application" id="sample-application" style="color: inherit; text-decoration: none;">
+  <h2>Sample application</h2>
+</a>
+<p>See the <a href="https://github.com/haveno-dex/haveno-sample-app">sample application</a> to start a Haveno daemon and connect to it from haveno-ts.</p>
 
 <a href="#typedocs" id="typedocs" style="color: inherit; text-decoration: none;">
   <h2>TypeDocs</h2>
@@ -80,8 +77,8 @@
   <h3>Run client tests</h3>
 </a>
 <ol start="5">
-<li>Install protobuf compiler <a href="https://github.com/protocolbuffers/protobuf/releases/tag/v3.20.3">v3.20.3</a> for your system.</li>
-<li>Download <code>protoc-gen-grpc-web</code> plugin and make executable as <a href="https://github.com/grpc/grpc-web#code-generator-plugin">shown here</a>.</li>
+<li>Install protobuf compiler <a href="https://github.com/protocolbuffers/protobuf/releases/tag/v29.3">v29.3</a> for your system.</li>
+<li>Download <code>protoc-gen-js</code> and <code>protoc-gen-grpc-web</code> plugins and make executable as <a href="https://github.com/grpc/grpc-web#code-generator-plugins">shown here</a>.</li>
 <li><code>cd haveno-ts</code></li>
 <li><code>npm install</code></li>
 <li><code>npm run test -- --baseCurrencyNetwork=XMR_LOCAL</code> to run all tests or <code>npm run test -- --baseCurrencyNetwork=XMR_LOCAL -t &quot;Can get the version&quot;</code> to run tests by name.</li>
@@ -150,6 +147,8 @@
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.CreateCryptoCurrencyPaymentAccountRequest.html">Create<wbr/>Crypto<wbr/>Currency<wbr/>Payment<wbr/>Account<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.CreatePaymentAccountReply.html">Create<wbr/>Payment<wbr/>Account<wbr/>Reply</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.CreatePaymentAccountRequest.html">Create<wbr/>Payment<wbr/>Account<wbr/>Request</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.CreateXmrSweepTxsReply.html">Create<wbr/>Xmr<wbr/>Sweep<wbr/>Txs<wbr/>Reply</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.CreateXmrSweepTxsRequest.html">Create<wbr/>Xmr<wbr/>Sweep<wbr/>Txs<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.CreateXmrTxReply.html">Create<wbr/>Xmr<wbr/>Tx<wbr/>Reply</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.CreateXmrTxRequest.html">Create<wbr/>Xmr<wbr/>Tx<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.DeleteAccountReply.html">Delete<wbr/>Account<wbr/>Reply</a></li>
@@ -162,8 +161,8 @@
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetAutoSwitchRequest.html">Get<wbr/>Auto<wbr/>Switch<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetBalancesReply.html">Get<wbr/>Balances<wbr/>Reply</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetBalancesRequest.html">Get<wbr/>Balances<wbr/>Request</a></li>
-<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetBestAvailableConnectionReply.html">Get<wbr/>Best<wbr/>Available<wbr/>Connection<wbr/>Reply</a></li>
-<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetBestAvailableConnectionRequest.html">Get<wbr/>Best<wbr/>Available<wbr/>Connection<wbr/>Request</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetBestConnectionReply.html">Get<wbr/>Best<wbr/>Connection<wbr/>Reply</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetBestConnectionRequest.html">Get<wbr/>Best<wbr/>Connection<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetChatMessagesReply.html">Get<wbr/>Chat<wbr/>Messages<wbr/>Reply</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetChatMessagesRequest.html">Get<wbr/>Chat<wbr/>Messages<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetConnectionReply.html">Get<wbr/>Connection<wbr/>Reply</a></li>
@@ -241,8 +240,8 @@
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.RegisterDisputeAgentReply.html">Register<wbr/>Dispute<wbr/>Agent<wbr/>Reply</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.RegisterDisputeAgentRequest.html">Register<wbr/>Dispute<wbr/>Agent<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.RegisterNotificationListenerRequest.html">Register<wbr/>Notification<wbr/>Listener<wbr/>Request</a></li>
-<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.RelayXmrTxReply.html">Relay<wbr/>Xmr<wbr/>Tx<wbr/>Reply</a></li>
-<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.RelayXmrTxRequest.html">Relay<wbr/>Xmr<wbr/>Tx<wbr/>Request</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.RelayXmrTxsReply.html">Relay<wbr/>Xmr<wbr/>Txs<wbr/>Reply</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.RelayXmrTxsRequest.html">Relay<wbr/>Xmr<wbr/>Txs<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.RemoveConnectionReply.html">Remove<wbr/>Connection<wbr/>Reply</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.RemoveConnectionRequest.html">Remove<wbr/>Connection<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.RemoveWalletPasswordReply.html">Remove<wbr/>Wallet<wbr/>Password<wbr/>Reply</a></li>
@@ -402,6 +401,7 @@
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.PaymentMethod.html">Payment<wbr/>Method</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.PaymentReceivedMessage.html">Payment<wbr/>Received<wbr/>Message</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.PaymentSentMessage.html">Payment<wbr/>Sent<wbr/>Message</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.PaysafeAccountPayload.html">Paysafe<wbr/>Account<wbr/>Payload</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.PayseraAccountPayload.html">Paysera<wbr/>Account<wbr/>Payload</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.PaytmAccountPayload.html">Paytm<wbr/>Account<wbr/>Payload</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_pb_pb.Peer.html">Peer</a></li>

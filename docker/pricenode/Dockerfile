@@ -12,6 +12,10 @@ RUN set -ex && adduser --system --group --disabled-password pricenode && \
 
 USER pricenode
 
+# Ensure HOME is set correctly
+ENV HOME=/home/pricenode
+ENV GRADLE_USER_HOME=$HOME/.gradle
+
 RUN set -ex && git clone --recursive https://github.com/haveno-dex/haveno-pricenode.git /home/pricenode
 
 WORKDIR /home/pricenode

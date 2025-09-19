@@ -98,7 +98,7 @@ class HavenoUtils {
      * @return {bigint} amount in atomic units
      */
     static xmrToAtomicUnits(amountXmr) {
-        return BigInt(new decimal_js_1.default(amountXmr).mul(HavenoUtils.AU_PER_XMR.toString()).toFixed(0));
+        return BigInt(new decimal_js_1.default(amountXmr).mul(HavenoUtils.AU_PER_XMR.toString()).toDecimalPlaces(0, decimal_js_1.default.ROUND_HALF_UP).toFixed(0));
     }
     /**
      * Convert atomic units to XMR.
@@ -107,7 +107,7 @@ class HavenoUtils {
      * @return {number} amount in XMR
      */
     static atomicUnitsToXmr(amountAtomicUnits) {
-        return new decimal_js_1.default(amountAtomicUnits.toString()).div(HavenoUtils.AU_PER_XMR.toString()).toNumber();
+        return new decimal_js_1.default(amountAtomicUnits.toString()).div(HavenoUtils.AU_PER_XMR.toString()).toDecimalPlaces(12, decimal_js_1.default.ROUND_HALF_UP).toNumber();
     }
     /**
      * Divide one atomic units by another.
@@ -117,7 +117,7 @@ class HavenoUtils {
      * @returns {number} the result
      */
     static divide(au1, au2) {
-        return this.atomicUnitsToXmr(au1) / this.atomicUnitsToXmr(au2);
+        return new decimal_js_1.default(au1.toString()).div(new decimal_js_1.default(au2.toString())).toDecimalPlaces(12, decimal_js_1.default.ROUND_HALF_UP).toNumber();
     }
     /**
      * Multiply a bigint by a number or bigint.
@@ -127,7 +127,7 @@ class HavenoUtils {
      * @returns the product as a bigint
      */
     static multiply(a, b) {
-        return BigInt((new decimal_js_1.default(a.toString()).mul(new decimal_js_1.default(b.toString())).toFixed(0)));
+        return BigInt(new decimal_js_1.default(a.toString()).mul(new decimal_js_1.default(b.toString())).toDecimalPlaces(0, decimal_js_1.default.ROUND_HALF_UP).toString());
     }
     /**
      * Calculate the difference from a first bigint to a second, as a percentage (float).

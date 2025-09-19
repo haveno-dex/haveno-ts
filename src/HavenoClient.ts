@@ -21,8 +21,29 @@ import HavenoUtils from "./utils/HavenoUtils";
 import TaskLooper from "./utils/TaskLooper";
 import type * as grpcWeb from "grpc-web";
 import { GetTradeStatisticsClient, GetVersionClient, AccountClient, XmrConnectionsClient, DisputesClient, DisputeAgentsClient, NotificationsClient, WalletsClient, PriceClient, OffersClient, PaymentAccountsClient, TradesClient, ShutdownServerClient, XmrNodeClient } from './protobuf/GrpcServiceClientPb';
-import { GetTradeStatisticsRequest, GetTradeStatisticsReply, GetVersionRequest, GetVersionReply, IsAppInitializedRequest, IsAppInitializedReply, RegisterDisputeAgentRequest, UnregisterDisputeAgentRequest, MarketPriceRequest, MarketPriceReply, MarketPricesRequest, MarketPricesReply, MarketPriceInfo, MarketDepthRequest, MarketDepthReply, MarketDepthInfo, GetBalancesRequest, GetBalancesReply, XmrBalanceInfo, GetMyOfferRequest, GetMyOfferReply, GetOffersRequest, GetOffersReply, OfferInfo, GetPaymentMethodsRequest, GetPaymentMethodsReply, GetPaymentAccountFormRequest, CreatePaymentAccountRequest, ValidateFormFieldRequest, CreatePaymentAccountReply, GetPaymentAccountFormReply, GetPaymentAccountsRequest, GetPaymentAccountsReply, CreateCryptoCurrencyPaymentAccountRequest, CreateCryptoCurrencyPaymentAccountReply, DeletePaymentAccountRequest, DeletePaymentAccountReply, PostOfferRequest, PostOfferReply, CancelOfferRequest, TakeOfferRequest, TakeOfferReply, TradeInfo, GetTradeRequest, GetTradeReply, GetTradesRequest, GetTradesReply, GetXmrSeedRequest, GetXmrSeedReply, GetXmrPrimaryAddressRequest, GetXmrPrimaryAddressReply, GetXmrNewSubaddressRequest, GetXmrNewSubaddressReply, ConfirmPaymentSentRequest, ConfirmPaymentReceivedRequest, CompleteTradeRequest, XmrTx, GetXmrTxsRequest, GetXmrTxsReply, XmrDestination, CreateXmrTxRequest, CreateXmrTxReply, RelayXmrTxRequest, RelayXmrTxReply, CreateAccountRequest, AccountExistsRequest, AccountExistsReply, DeleteAccountRequest, OpenAccountRequest, IsAccountOpenRequest, IsAccountOpenReply, CloseAccountRequest, ChangePasswordRequest, BackupAccountRequest, BackupAccountReply, RestoreAccountRequest, StopRequest, NotificationMessage, RegisterNotificationListenerRequest, SendNotificationRequest, UrlConnection, AddConnectionRequest, RemoveConnectionRequest, GetConnectionRequest, GetConnectionsRequest, SetConnectionRequest, CheckConnectionRequest, CheckConnectionsReply, CheckConnectionsRequest, StartCheckingConnectionRequest, StopCheckingConnectionRequest, GetBestAvailableConnectionRequest, SetAutoSwitchRequest, GetAutoSwitchRequest, CheckConnectionReply, GetConnectionsReply, GetConnectionReply, GetBestAvailableConnectionReply, GetDisputeRequest, GetDisputeReply, GetDisputesRequest, GetDisputesReply, OpenDisputeRequest, ResolveDisputeRequest, SendDisputeChatMessageRequest, SendChatMessageRequest, GetChatMessagesRequest, GetChatMessagesReply, StartXmrNodeRequest, StopXmrNodeRequest, IsXmrNodeOnlineRequest, IsXmrNodeOnlineReply, GetXmrNodeSettingsRequest, GetXmrNodeSettingsReply } from "./protobuf/grpc_pb";
+import { GetTradeStatisticsRequest, GetTradeStatisticsReply, GetVersionRequest, GetVersionReply, IsAppInitializedRequest, IsAppInitializedReply, RegisterDisputeAgentRequest, UnregisterDisputeAgentRequest, MarketPriceRequest, MarketPriceReply, MarketPricesRequest, MarketPricesReply, MarketPriceInfo, MarketDepthRequest, MarketDepthReply, MarketDepthInfo, GetBalancesRequest, GetBalancesReply, XmrBalanceInfo, GetMyOfferRequest, GetMyOfferReply, GetOffersRequest, GetOffersReply, OfferInfo, GetPaymentMethodsRequest, GetPaymentMethodsReply, GetPaymentAccountFormRequest, CreatePaymentAccountRequest, ValidateFormFieldRequest, CreatePaymentAccountReply, GetPaymentAccountFormReply, GetPaymentAccountsRequest, GetPaymentAccountsReply, CreateCryptoCurrencyPaymentAccountRequest, CreateCryptoCurrencyPaymentAccountReply, DeletePaymentAccountRequest, DeletePaymentAccountReply, PostOfferRequest, PostOfferReply, CancelOfferRequest, TakeOfferRequest, TakeOfferReply, TradeInfo, GetTradeRequest, GetTradeReply, GetTradesRequest, GetTradesReply, GetXmrSeedRequest, GetXmrSeedReply, GetXmrPrimaryAddressRequest, GetXmrPrimaryAddressReply, GetXmrNewSubaddressRequest, GetXmrNewSubaddressReply, ConfirmPaymentSentRequest, ConfirmPaymentReceivedRequest, CompleteTradeRequest, XmrTx, GetXmrTxsRequest, GetXmrTxsReply, XmrDestination, CreateXmrTxRequest, CreateXmrTxReply, CreateXmrSweepTxsRequest, CreateXmrSweepTxsReply, RelayXmrTxsRequest, RelayXmrTxsReply, CreateAccountRequest, AccountExistsRequest, AccountExistsReply, DeleteAccountRequest, OpenAccountRequest, IsAccountOpenRequest, IsAccountOpenReply, CloseAccountRequest, ChangePasswordRequest, BackupAccountRequest, BackupAccountReply, RestoreAccountRequest, StopRequest, NotificationMessage, RegisterNotificationListenerRequest, SendNotificationRequest, UrlConnection, AddConnectionRequest, RemoveConnectionRequest, GetConnectionRequest, GetConnectionsRequest, SetConnectionRequest, CheckConnectionRequest, CheckConnectionsReply, CheckConnectionsRequest, StartCheckingConnectionRequest, StopCheckingConnectionRequest, GetBestConnectionRequest, SetAutoSwitchRequest, GetAutoSwitchRequest, CheckConnectionReply, GetConnectionsReply, GetConnectionReply, GetBestConnectionReply, GetDisputeRequest, GetDisputeReply, GetDisputesRequest, GetDisputesReply, OpenDisputeRequest, ResolveDisputeRequest, SendDisputeChatMessageRequest, SendChatMessageRequest, GetChatMessagesRequest, GetChatMessagesReply, StartXmrNodeRequest, StopXmrNodeRequest, IsXmrNodeOnlineRequest, IsXmrNodeOnlineReply, GetXmrNodeSettingsRequest, GetXmrNodeSettingsReply } from "./protobuf/grpc_pb";
 import { TradeStatistics3, OfferDirection, PaymentMethod, PaymentAccountForm, PaymentAccountFormField, PaymentAccount, PaymentAccountPayload, AvailabilityResult, Attachment, DisputeResult, Dispute, ChatMessage, XmrNodeSettings } from "./protobuf/pb_pb";
+
+
+/**
+ * Configuration to post, clone, or edit an offer.
+ */
+export interface OfferConfig {
+    direction?: OfferDirection;
+    amount?: bigint;
+    minAmount?: bigint;
+    assetCode?: string;
+    paymentAccountId?: string;
+    securityDepositPct?: number;
+    price?: number;
+    marketPriceMarginPct?: number;
+    triggerPrice?: number;
+    reserveExactAmount?: boolean;
+    isPrivateOffer?: boolean;
+    buyerAsTakerWithoutDeposit?: boolean;
+    extraInfo?: string;
+    sourceOfferId?: string;
+}
 
 /**
  * Haveno daemon client.
@@ -564,13 +585,13 @@ export default class HavenoClient {
   }
 
   /**
-   * Get the best available connection in order of priority then response time.
+   * Get the best connection in order of priority then response time.
    *
-   * @return {UrlConnection | undefined} the best available connection in order of priority then response time, undefined if no connections available
+   * @return {UrlConnection | undefined} the best connection in order of priority then response time, undefined if no connections
    */
-  async getBestAvailableConnection(): Promise<UrlConnection | undefined> {
+  async getBestConnection(): Promise<UrlConnection | undefined> {
     try {
-      return (await this._xmrConnectionsClient.getBestAvailableConnection(new GetBestAvailableConnectionRequest(), {password: this._password})).getConnection();
+      return (await this._xmrConnectionsClient.getBestConnection(new GetBestConnectionRequest(), {password: this._password})).getConnection();
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);
     }
@@ -762,11 +783,26 @@ export default class HavenoClient {
   /**
    * Create but do not relay a transaction to send funds from the Monero wallet.
    * 
+   * @param {XmrDestination[]} destinations - the destinations to send funds to
    * @return {XmrTx} the created transaction
    */
   async createXmrTx(destinations: XmrDestination[]): Promise<XmrTx> {
     try {
       return (await this._walletsClient.createXmrTx(new CreateXmrTxRequest().setDestinationsList(destinations), {password: this._password})).getTx()!;
+    } catch (e: any) {
+      throw new HavenoError(e.message, e.code);
+    }
+  }
+
+  /**
+   * Create but do not relay transactions to sweep all funds from the Monero wallet.
+   * 
+   * @param {string} address - the address to sweep funds to
+   * @return {XmrTx} the created transactions
+   */
+  async createXmrSweepTxs(address: string): Promise<XmrTx[]> {
+    try {
+      return (await this._walletsClient.createXmrSweepTxs(new CreateXmrSweepTxsRequest().setAddress(address), {password: this._password})).getTxsList()!;
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);
     }
@@ -777,9 +813,9 @@ export default class HavenoClient {
    * 
    * @return {string} the hash of the relayed transaction
    */
-  async relayXmrTx(metadata: string): Promise<string> {
+  async relayXmrTxs(metadatas: string[]): Promise<string[]> {
     try {
-      return (await this._walletsClient.relayXmrTx(new RelayXmrTxRequest().setMetadata(metadata), {password: this._password})).getHash();
+      return (await this._walletsClient.relayXmrTxs(new RelayXmrTxsRequest().setMetadatasList(metadatas), {password: this._password})).getHashesList();
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);
     }
@@ -802,12 +838,13 @@ export default class HavenoClient {
    * Get the current market price per 1 XMR in the given currency.
    *
    * @param {string} assetCode - asset code to get the price of
-   * @return {number} the price of the asset per 1 XMR
+   * @return {number|undefined} the price of the asset per 1 XMR
    */
-  async getPrice(assetCode: string): Promise<number> {
+  async getPrice(assetCode: string): Promise<number|undefined> {
     try {
       return (await this._priceClient.getMarketPrice(new MarketPriceRequest().setCurrencyCode(assetCode), {password: this._password})).getPrice();
     } catch (e: any) {
+      if (e.message.indexOf("not found") >= 0 || e.message.indexOf("not available") >= 0) return undefined; // TODO: return unknown price server side (0?)
       throw new HavenoError(e.message, e.code);
     }
   }
@@ -957,15 +994,16 @@ export default class HavenoClient {
    * @param {string} accountName - description of the account
    * @param {string} assetCode - traded asset code
    * @param {string} address - payment address of the account
+   * @param {boolean} [instant] - whether to use instant trades (default false)
    * @return {PaymentAccount} the created payment account
    */
-  async createCryptoPaymentAccount(accountName: string, assetCode: string, address: string): Promise<PaymentAccount> {
+  async createCryptoPaymentAccount(accountName: string, assetCode: string, address: string, instant?: boolean): Promise<PaymentAccount> {
     try {
       const request = new CreateCryptoCurrencyPaymentAccountRequest()
           .setAccountName(accountName)
           .setCurrencyCode(assetCode)
-          .setAddress(address)
-          .setTradeInstant(false); // not using instant trades
+          .setAddress(address);
+      if (instant !== undefined) request.setTradeInstant(instant);
       return (await this._paymentAccountsClient.createCryptoCurrencyPaymentAccount(request, {password: this._password})).getPaymentAccount()!;
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);
@@ -1034,50 +1072,44 @@ export default class HavenoClient {
   }
   
   /**
-   * Post an offer.
+   * Post or clone an offer.
    * 
-   * @param {OfferDirection} direction - "buy" or "sell" XMR
-   * @param {bigint} amount - amount of XMR to trade
-   * @param {string} assetCode - asset code to trade for XMR
-   * @param {string} paymentAccountId - payment account id
-   * @param {number} securityDepositPct - security deposit as % of trade amount for buyer and seller
-   * @param {number} price - trade price (optional, default to market price)
-   * @param {number} marketPriceMarginPct - if using market price, % from market price to accept (optional, default 0%)
-   * @param {number} triggerPrice - price to remove offer (optional)
-   * @param {bigint} minAmount - minimum amount to trade (optional, default to fixed amount)
-   * @param {number} reserveExactAmount - reserve exact amount needed for offer, incurring on-chain transaction and 10 confirmations before the offer goes live (default = false)
-   * @param {boolean} isPrivateOffer - whether the offer is private (default = false)
-   * @param {boolean} buyerAsTakerWithoutDeposit - waive buyer as taker deposit and fee (default false)
+   * @param {OfferConfig} config - configures the offer to post or clone
+   * @param {OfferDirection} [config.direction] - specifies to buy or sell xmr (default buy)
+   * @param {bigint} [config.amount] - amount of XMR to trade
+   * @param {string} [config.assetCode] - asset code to trade for XMR
+   * @param {string} [config.paymentAccountId] - payment account id
+   * @param {number} [config.securityDepositPct] - security deposit as % of trade amount for buyer and seller
+   * @param {number} [config.price] - trade price (optional, default to market price)
+   * @param {number} [config.marketPriceMarginPct] - if using market price, % from market price to accept (optional, default 0%)
+   * @param {number} [config.triggerPrice] - price to remove offer (optional)
+   * @param {bigint} [config.minAmount] - minimum amount to trade (optional, default to fixed amount)
+   * @param {number} [config.reserveExactAmount] - reserve exact amount needed for offer, incurring on-chain transaction and 10 confirmations before the offer goes live (default = false)
+   * @param {boolean} [config.isPrivateOffer] - whether the offer is private (default = false)
+   * @param {boolean} [config.buyerAsTakerWithoutDeposit] - waive buyer as taker deposit and fee (default false)
+   * @param {string} [config.extraInfo] - extra information to include with the offer (optional)
+   * @param {string} [config.sourceOfferId] - create a clone of a source offer which shares the same reserved funds. overrides other fields which are immutable or unspecified (optional)
    * @return {OfferInfo} the posted offer
    */
-  async postOffer(direction: OfferDirection,
-                  amount: bigint,
-                  assetCode: string,
-                  paymentAccountId: string,
-                  securityDepositPct: number,
-                  price?: number,
-                  marketPriceMarginPct?: number,
-                  triggerPrice?: number,
-                  minAmount?: bigint,
-                  reserveExactAmount?: boolean,
-                  isPrivateOffer?: boolean,
-                  buyerAsTakerWithoutDeposit?: boolean): Promise<OfferInfo> {
-    console.log("Posting offer with security deposit %: " + securityDepositPct)
+  async postOffer(config: OfferConfig): Promise<OfferInfo> {
+    console.log("Posting offer with security deposit %: " + config.securityDepositPct)
     try {
-      const request = new PostOfferRequest()
-          .setDirection(direction === OfferDirection.BUY ? "buy" : "sell")
-          .setAmount(amount.toString())
-          .setCurrencyCode(assetCode)
-          .setPaymentAccountId(paymentAccountId)
-          .setSecurityDepositPct(securityDepositPct)
-          .setUseMarketBasedPrice(price === undefined)
-          .setMinAmount(minAmount ? minAmount.toString() : amount.toString());
-      if (price) request.setPrice(price.toString());
-      if (marketPriceMarginPct) request.setMarketPriceMarginPct(marketPriceMarginPct);
-      if (triggerPrice) request.setTriggerPrice(triggerPrice.toString());
-      if (reserveExactAmount) request.setReserveExactAmount(true);
-      if (isPrivateOffer) request.setIsPrivateOffer(true);
-      if (buyerAsTakerWithoutDeposit) request.setBuyerAsTakerWithoutDeposit(true);
+      const request = new PostOfferRequest();
+      if (config.direction) request.setDirection(config.direction === OfferDirection.BUY ? "buy" : "sell");
+      if (config.amount) request.setAmount(config.amount.toString());
+      request.setMinAmount(config.minAmount ? config.minAmount.toString() : config.amount!.toString());
+      if (config.assetCode) request.setCurrencyCode(config.assetCode);
+      if (config.paymentAccountId) request.setPaymentAccountId(config.paymentAccountId);
+      if (config.securityDepositPct) request.setSecurityDepositPct(config.securityDepositPct);
+      request.setUseMarketBasedPrice(config.price === undefined);
+      if (config.price) request.setPrice(config.price?.toString())
+      if (config.marketPriceMarginPct) request.setMarketPriceMarginPct(config.marketPriceMarginPct);
+      if (config.triggerPrice) request.setTriggerPrice(config.triggerPrice.toString());
+      if (config.reserveExactAmount) request.setReserveExactAmount(true);
+      if (config.isPrivateOffer) request.setIsPrivateOffer(true);
+      if (config.buyerAsTakerWithoutDeposit) request.setBuyerAsTakerWithoutDeposit(true);
+      if (config.extraInfo) request.setExtraInfo(config.extraInfo);
+      if (config.sourceOfferId) request.setSourceOfferId(config.sourceOfferId);
       return (await this._offersClient.postOffer(request, {password: this._password})).getOffer()!;
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);
@@ -1330,7 +1362,15 @@ export default class HavenoClient {
       await this._shutdownServerClient.stop(new StopRequest(), {password: this._password}); // process receives 'exit' event
       if (this._process) await HavenoUtils.kill(this._process);
     } catch (e: any) {
-      throw new HavenoError(e.message, e.code);
+      console.error("Error gracefully shutting down havenod: " + e.message);
+      if (this._process) {
+        try {
+          await HavenoUtils.kill(this._process);
+        } catch (e: any) {
+          console.error("Error terminating havenod process: " + e.message + ". Stopping forcefully");
+          await HavenoUtils.kill(this._process, "SIGKILL");
+        }
+      }
     }
   }
   

@@ -1,15 +1,10 @@
 # Haveno TypeScript Library
 
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/haveno-dex/haveno-ts/build.yml?branch=master)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/haveno-dex/haveno-ts/build.yml?branch=master)](https://github.com/haveno-dex/haveno-ts/actions)
 [![Twitter Follow](https://img.shields.io/twitter/follow/HavenoDEX?style=social)](https://twitter.com/havenodex)
 [![Matrix rooms](https://img.shields.io/badge/Matrix%20room-%23haveno-blue)](https://matrix.to/#/#haveno:monero.social)
 
 TypeScript library for using Haveno.
-
-## Install
-
-1. Start a Haveno daemon (see [installing.md](https://github.com/haveno-dex/haveno/blob/master/docs/installing.md)).
-2. Install haveno-ts in your project: `npm install haveno-ts`
 
 ## Sample code
 
@@ -29,6 +24,10 @@ const trade = await alice.takeOffer(offers[0].getId(), paymentAccounts[0].getId(
 // disconnect client
 await alice.disconnect();
 ```
+
+## Sample application
+
+See the [sample application](https://github.com/haveno-dex/haveno-sample-app) to start a Haveno daemon and connect to it from haveno-ts.
 
 ## TypeDocs
 
@@ -66,8 +65,8 @@ Start a local Haveno network with docker:
 
 ### Run client tests
 
-5. Install protobuf compiler [v3.20.3](https://github.com/protocolbuffers/protobuf/releases/tag/v3.20.3) for your system.
-6. Download `protoc-gen-grpc-web` plugin and make executable as [shown here](https://github.com/grpc/grpc-web#code-generator-plugin).
+5. Install protobuf compiler [v29.3](https://github.com/protocolbuffers/protobuf/releases/tag/v29.3) for your system.
+6. Download `protoc-gen-js` and `protoc-gen-grpc-web` plugins and make executable as [shown here](https://github.com/grpc/grpc-web#code-generator-plugins).
 7. `cd haveno-ts`
 8. `npm install`
 9. `npm run test -- --baseCurrencyNetwork=XMR_LOCAL` to run all tests or `npm run test -- --baseCurrencyNetwork=XMR_LOCAL -t "Can get the version"` to run tests by name.

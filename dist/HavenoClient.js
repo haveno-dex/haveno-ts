@@ -537,13 +537,13 @@ class HavenoClient {
         }
     }
     /**
-     * Get the best available connection in order of priority then response time.
+     * Get the best connection in order of priority then response time.
      *
-     * @return {UrlConnection | undefined} the best available connection in order of priority then response time, undefined if no connections available
+     * @return {UrlConnection | undefined} the best connection in order of priority then response time, undefined if no connections
      */
-    async getBestAvailableConnection() {
+    async getBestConnection() {
         try {
-            return (await this._xmrConnectionsClient.getBestAvailableConnection(new grpc_pb_1.GetBestAvailableConnectionRequest(), { password: this._password })).getConnection();
+            return (await this._xmrConnectionsClient.getBestConnection(new grpc_pb_1.GetBestConnectionRequest(), { password: this._password })).getConnection();
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
@@ -735,6 +735,7 @@ class HavenoClient {
     /**
      * Create but do not relay a transaction to send funds from the Monero wallet.
      *
+     * @param {XmrDestination[]} destinations - the destinations to send funds to
      * @return {XmrTx} the created transaction
      */
     async createXmrTx(destinations) {
@@ -746,13 +747,27 @@ class HavenoClient {
         }
     }
     /**
+     * Create but do not relay transactions to sweep all funds from the Monero wallet.
+     *
+     * @param {string} address - the address to sweep funds to
+     * @return {XmrTx} the created transactions
+     */
+    async createXmrSweepTxs(address) {
+        try {
+            return (await this._walletsClient.createXmrSweepTxs(new grpc_pb_1.CreateXmrSweepTxsRequest().setAddress(address), { password: this._password })).getTxsList();
+        }
+        catch (e) {
+            throw new HavenoError_1.default(e.message, e.code);
+        }
+    }
+    /**
      * Relay a previously created transaction to send funds from the Monero wallet.
      *
      * @return {string} the hash of the relayed transaction
      */
-    async relayXmrTx(metadata) {
+    async relayXmrTxs(metadatas) {
         try {
-            return (await this._walletsClient.relayXmrTx(new grpc_pb_1.RelayXmrTxRequest().setMetadata(metadata), { password: this._password })).getHash();
+            return (await this._walletsClient.relayXmrTxs(new grpc_pb_1.RelayXmrTxsRequest().setMetadatasList(metadatas), { password: this._password })).getHashesList();
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
@@ -775,13 +790,15 @@ class HavenoClient {
      * Get the current market price per 1 XMR in the given currency.
      *
      * @param {string} assetCode - asset code to get the price of
-     * @return {number} the price of the asset per 1 XMR
+     * @return {number|undefined} the price of the asset per 1 XMR
      */
     async getPrice(assetCode) {
         try {
             return (await this._priceClient.getMarketPrice(new grpc_pb_1.MarketPriceRequest().setCurrencyCode(assetCode), { password: this._password })).getPrice();
         }
         catch (e) {
+            if (e.message.indexOf("not found") >= 0 || e.message.indexOf("not available") >= 0)
+                return undefined; // TODO: return unknown price server side (0?)
             throw new HavenoError_1.default(e.message, e.code);
         }
     }
@@ -932,15 +949,17 @@ class HavenoClient {
      * @param {string} accountName - description of the account
      * @param {string} assetCode - traded asset code
      * @param {string} address - payment address of the account
+     * @param {boolean} [instant] - whether to use instant trades (default false)
      * @return {PaymentAccount} the created payment account
      */
-    async createCryptoPaymentAccount(accountName, assetCode, address) {
+    async createCryptoPaymentAccount(accountName, assetCode, address, instant) {
         try {
             const request = new grpc_pb_1.CreateCryptoCurrencyPaymentAccountRequest()
                 .setAccountName(accountName)
                 .setCurrencyCode(assetCode)
-                .setAddress(address)
-                .setTradeInstant(false); // not using instant trades
+                .setAddress(address);
+            if (instant !== undefined)
+                request.setTradeInstant(instant);
             return (await this._paymentAccountsClient.createCryptoCurrencyPaymentAccount(request, { password: this._password })).getPaymentAccount();
         }
         catch (e) {
@@ -950,7 +969,7 @@ class HavenoClient {
     /**
      * Delete a payment account.
      *
-     * @param paymentAccountId {string} the id of the payment account to delete
+     * @param {string} paymentAccountId the id of the payment account to delete
      */
     async deletePaymentAccount(paymentAccountId) {
         try {
@@ -1012,39 +1031,57 @@ class HavenoClient {
         }
     }
     /**
-     * Post an offer.
+     * Post or clone an offer.
      *
-     * @param {OfferDirection} direction - "buy" or "sell" XMR
-     * @param {bigint} amount - amount of XMR to trade
-     * @param {string} assetCode - asset code to trade for XMR
-     * @param {string} paymentAccountId - payment account id
-     * @param {number} securityDepositPct - security deposit as % of trade amount for buyer and seller
-     * @param {number} price - trade price (optional, default to market price)
-     * @param {number} marketPriceMarginPct - if using market price, % from market price to accept (optional, default 0%)
-     * @param {number} triggerPrice - price to remove offer (optional)
-     * @param {bigint} minAmount - minimum amount to trade (optional, default to fixed amount)
-     * @param {number} reserveExactAmount - reserve exact amount needed for offer, incurring on-chain transaction and 10 confirmations before the offer goes live (default = false)
+     * @param {OfferConfig} config - configures the offer to post or clone
+     * @param {OfferDirection} [config.direction] - specifies to buy or sell xmr (default buy)
+     * @param {bigint} [config.amount] - amount of XMR to trade
+     * @param {string} [config.assetCode] - asset code to trade for XMR
+     * @param {string} [config.paymentAccountId] - payment account id
+     * @param {number} [config.securityDepositPct] - security deposit as % of trade amount for buyer and seller
+     * @param {number} [config.price] - trade price (optional, default to market price)
+     * @param {number} [config.marketPriceMarginPct] - if using market price, % from market price to accept (optional, default 0%)
+     * @param {number} [config.triggerPrice] - price to remove offer (optional)
+     * @param {bigint} [config.minAmount] - minimum amount to trade (optional, default to fixed amount)
+     * @param {number} [config.reserveExactAmount] - reserve exact amount needed for offer, incurring on-chain transaction and 10 confirmations before the offer goes live (default = false)
+     * @param {boolean} [config.isPrivateOffer] - whether the offer is private (default = false)
+     * @param {boolean} [config.buyerAsTakerWithoutDeposit] - waive buyer as taker deposit and fee (default false)
+     * @param {string} [config.extraInfo] - extra information to include with the offer (optional)
+     * @param {string} [config.sourceOfferId] - create a clone of a source offer which shares the same reserved funds. overrides other fields which are immutable or unspecified (optional)
      * @return {OfferInfo} the posted offer
      */
-    async postOffer(direction, amount, assetCode, paymentAccountId, securityDepositPct, price, marketPriceMarginPct, triggerPrice, minAmount, reserveExactAmount) {
-        console_1.default.log("Posting offer with security deposit %: " + securityDepositPct);
+    async postOffer(config) {
+        console_1.default.log("Posting offer with security deposit %: " + config.securityDepositPct);
         try {
-            const request = new grpc_pb_1.PostOfferRequest()
-                .setDirection(direction === pb_pb_1.OfferDirection.BUY ? "buy" : "sell")
-                .setAmount(amount.toString())
-                .setCurrencyCode(assetCode)
-                .setPaymentAccountId(paymentAccountId)
-                .setBuyerSecurityDepositPct(securityDepositPct)
-                .setUseMarketBasedPrice(price === undefined)
-                .setMinAmount(minAmount ? minAmount.toString() : amount.toString());
-            if (price)
-                request.setPrice(price.toString());
-            if (marketPriceMarginPct)
-                request.setMarketPriceMarginPct(marketPriceMarginPct);
-            if (triggerPrice)
-                request.setTriggerPrice(triggerPrice.toString());
-            if (reserveExactAmount)
-                request.setReserveExactAmount(reserveExactAmount);
+            const request = new grpc_pb_1.PostOfferRequest();
+            if (config.direction)
+                request.setDirection(config.direction === pb_pb_1.OfferDirection.BUY ? "buy" : "sell");
+            if (config.amount)
+                request.setAmount(config.amount.toString());
+            request.setMinAmount(config.minAmount ? config.minAmount.toString() : config.amount.toString());
+            if (config.assetCode)
+                request.setCurrencyCode(config.assetCode);
+            if (config.paymentAccountId)
+                request.setPaymentAccountId(config.paymentAccountId);
+            if (config.securityDepositPct)
+                request.setSecurityDepositPct(config.securityDepositPct);
+            request.setUseMarketBasedPrice(config.price === undefined);
+            if (config.price)
+                request.setPrice(config.price?.toString());
+            if (config.marketPriceMarginPct)
+                request.setMarketPriceMarginPct(config.marketPriceMarginPct);
+            if (config.triggerPrice)
+                request.setTriggerPrice(config.triggerPrice.toString());
+            if (config.reserveExactAmount)
+                request.setReserveExactAmount(true);
+            if (config.isPrivateOffer)
+                request.setIsPrivateOffer(true);
+            if (config.buyerAsTakerWithoutDeposit)
+                request.setBuyerAsTakerWithoutDeposit(true);
+            if (config.extraInfo)
+                request.setExtraInfo(config.extraInfo);
+            if (config.sourceOfferId)
+                request.setSourceOfferId(config.sourceOfferId);
             return (await this._offersClient.postOffer(request, { password: this._password })).getOffer();
         }
         catch (e) {
@@ -1070,15 +1107,18 @@ class HavenoClient {
      * @param {string} offerId - id of the offer to take
      * @param {string} paymentAccountId - id of the payment account
      * @param {bigint|undefined} amount - amount the taker chooses to buy or sell within the offer range (default is max offer amount)
+     * @param {string|undefined} challenge - the challenge to use for the private offer
      * @return {TradeInfo} the initialized trade
      */
-    async takeOffer(offerId, paymentAccountId, amount) {
+    async takeOffer(offerId, paymentAccountId, amount, challenge) {
         try {
             const request = new grpc_pb_1.TakeOfferRequest()
                 .setOfferId(offerId)
                 .setPaymentAccountId(paymentAccountId);
             if (amount)
                 request.setAmount(amount.toString());
+            if (challenge)
+                request.setChallenge(challenge);
             const resp = await this._tradesClient.takeOffer(request, { password: this._password });
             if (resp.getTrade())
                 return resp.getTrade();
@@ -1293,10 +1333,19 @@ class HavenoClient {
             await this.disconnect();
             await this._shutdownServerClient.stop(new grpc_pb_1.StopRequest(), { password: this._password }); // process receives 'exit' event
             if (this._process)
-                return HavenoUtils_1.default.kill(this._process);
+                await HavenoUtils_1.default.kill(this._process);
         }
         catch (e) {
-            throw new HavenoError_1.default(e.message, e.code);
+            console_1.default.error("Error gracefully shutting down havenod: " + e.message);
+            if (this._process) {
+                try {
+                    await HavenoUtils_1.default.kill(this._process);
+                }
+                catch (e) {
+                    console_1.default.error("Error terminating havenod process: " + e.message + ". Stopping forcefully");
+                    await HavenoUtils_1.default.kill(this._process, "SIGKILL");
+                }
+            }
         }
     }
     // ------------------------------- HELPERS ----------------------------------

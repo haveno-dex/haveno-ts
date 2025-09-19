@@ -3,6 +3,25 @@ import { GetTradeStatisticsClient, GetVersionClient, AccountClient, XmrConnectio
 import { MarketPriceInfo, MarketDepthInfo, XmrBalanceInfo, OfferInfo, TradeInfo, XmrTx, XmrDestination, NotificationMessage, UrlConnection } from "./protobuf/grpc_pb";
 import { TradeStatistics3, OfferDirection, PaymentMethod, PaymentAccountForm, PaymentAccountFormField, PaymentAccount, PaymentAccountPayload, Attachment, DisputeResult, Dispute, ChatMessage, XmrNodeSettings } from "./protobuf/pb_pb";
 /**
+ * Configuration to post, clone, or edit an offer.
+ */
+export interface OfferConfig {
+    direction?: OfferDirection;
+    amount?: bigint;
+    minAmount?: bigint;
+    assetCode?: string;
+    paymentAccountId?: string;
+    securityDepositPct?: number;
+    price?: number;
+    marketPriceMarginPct?: number;
+    triggerPrice?: number;
+    reserveExactAmount?: boolean;
+    isPrivateOffer?: boolean;
+    buyerAsTakerWithoutDeposit?: boolean;
+    extraInfo?: string;
+    sourceOfferId?: string;
+}
+/**
  * Haveno daemon client.
  */
 export default class HavenoClient {
@@ -219,11 +238,11 @@ export default class HavenoClient {
      */
     stopCheckingConnection(): Promise<void>;
     /**
-     * Get the best available connection in order of priority then response time.
+     * Get the best connection in order of priority then response time.
      *
-     * @return {UrlConnection | undefined} the best available connection in order of priority then response time, undefined if no connections available
+     * @return {UrlConnection | undefined} the best connection in order of priority then response time, undefined if no connections
      */
-    getBestAvailableConnection(): Promise<UrlConnection | undefined>;
+    getBestConnection(): Promise<UrlConnection | undefined>;
     /**
      * Automatically switch to the best available connection if current connection is disconnected after being checked.
      *
@@ -307,15 +326,23 @@ export default class HavenoClient {
     /**
      * Create but do not relay a transaction to send funds from the Monero wallet.
      *
+     * @param {XmrDestination[]} destinations - the destinations to send funds to
      * @return {XmrTx} the created transaction
      */
     createXmrTx(destinations: XmrDestination[]): Promise<XmrTx>;
+    /**
+     * Create but do not relay transactions to sweep all funds from the Monero wallet.
+     *
+     * @param {string} address - the address to sweep funds to
+     * @return {XmrTx} the created transactions
+     */
+    createXmrSweepTxs(address: string): Promise<XmrTx[]>;
     /**
      * Relay a previously created transaction to send funds from the Monero wallet.
      *
      * @return {string} the hash of the relayed transaction
      */
-    relayXmrTx(metadata: string): Promise<string>;
+    relayXmrTxs(metadatas: string[]): Promise<string[]>;
     /**
      * Get all asset codes with price information.
      *
@@ -328,9 +355,9 @@ export default class HavenoClient {
      * Get the current market price per 1 XMR in the given currency.
      *
      * @param {string} assetCode - asset code to get the price of
-     * @return {number} the price of the asset per 1 XMR
+     * @return {number|undefined} the price of the asset per 1 XMR
      */
-    getPrice(assetCode: string): Promise<number>;
+    getPrice(assetCode: string): Promise<number | undefined>;
     /**
      * Get the current market prices of all a.
      *
@@ -392,13 +419,14 @@ export default class HavenoClient {
      * @param {string} accountName - description of the account
      * @param {string} assetCode - traded asset code
      * @param {string} address - payment address of the account
+     * @param {boolean} [instant] - whether to use instant trades (default false)
      * @return {PaymentAccount} the created payment account
      */
-    createCryptoPaymentAccount(accountName: string, assetCode: string, address: string): Promise<PaymentAccount>;
+    createCryptoPaymentAccount(accountName: string, assetCode: string, address: string, instant?: boolean): Promise<PaymentAccount>;
     /**
      * Delete a payment account.
      *
-     * @param paymentAccountId {string} the id of the payment account to delete
+     * @param {string} paymentAccountId the id of the payment account to delete
      */
     deletePaymentAccount(paymentAccountId: string): Promise<void>;
     /**
@@ -425,21 +453,26 @@ export default class HavenoClient {
      */
     getMyOffer(offerId: string): Promise<OfferInfo>;
     /**
-     * Post an offer.
+     * Post or clone an offer.
      *
-     * @param {OfferDirection} direction - "buy" or "sell" XMR
-     * @param {bigint} amount - amount of XMR to trade
-     * @param {string} assetCode - asset code to trade for XMR
-     * @param {string} paymentAccountId - payment account id
-     * @param {number} securityDepositPct - security deposit as % of trade amount for buyer and seller
-     * @param {number} price - trade price (optional, default to market price)
-     * @param {number} marketPriceMarginPct - if using market price, % from market price to accept (optional, default 0%)
-     * @param {number} triggerPrice - price to remove offer (optional)
-     * @param {bigint} minAmount - minimum amount to trade (optional, default to fixed amount)
-     * @param {number} reserveExactAmount - reserve exact amount needed for offer, incurring on-chain transaction and 10 confirmations before the offer goes live (default = false)
+     * @param {OfferConfig} config - configures the offer to post or clone
+     * @param {OfferDirection} [config.direction] - specifies to buy or sell xmr (default buy)
+     * @param {bigint} [config.amount] - amount of XMR to trade
+     * @param {string} [config.assetCode] - asset code to trade for XMR
+     * @param {string} [config.paymentAccountId] - payment account id
+     * @param {number} [config.securityDepositPct] - security deposit as % of trade amount for buyer and seller
+     * @param {number} [config.price] - trade price (optional, default to market price)
+     * @param {number} [config.marketPriceMarginPct] - if using market price, % from market price to accept (optional, default 0%)
+     * @param {number} [config.triggerPrice] - price to remove offer (optional)
+     * @param {bigint} [config.minAmount] - minimum amount to trade (optional, default to fixed amount)
+     * @param {number} [config.reserveExactAmount] - reserve exact amount needed for offer, incurring on-chain transaction and 10 confirmations before the offer goes live (default = false)
+     * @param {boolean} [config.isPrivateOffer] - whether the offer is private (default = false)
+     * @param {boolean} [config.buyerAsTakerWithoutDeposit] - waive buyer as taker deposit and fee (default false)
+     * @param {string} [config.extraInfo] - extra information to include with the offer (optional)
+     * @param {string} [config.sourceOfferId] - create a clone of a source offer which shares the same reserved funds. overrides other fields which are immutable or unspecified (optional)
      * @return {OfferInfo} the posted offer
      */
-    postOffer(direction: OfferDirection, amount: bigint, assetCode: string, paymentAccountId: string, securityDepositPct: number, price?: number, marketPriceMarginPct?: number, triggerPrice?: number, minAmount?: bigint, reserveExactAmount?: boolean): Promise<OfferInfo>;
+    postOffer(config: OfferConfig): Promise<OfferInfo>;
     /**
      * Remove a posted offer, releasing its reserved funds.
      *
@@ -452,9 +485,10 @@ export default class HavenoClient {
      * @param {string} offerId - id of the offer to take
      * @param {string} paymentAccountId - id of the payment account
      * @param {bigint|undefined} amount - amount the taker chooses to buy or sell within the offer range (default is max offer amount)
+     * @param {string|undefined} challenge - the challenge to use for the private offer
      * @return {TradeInfo} the initialized trade
      */
-    takeOffer(offerId: string, paymentAccountId: string, amount?: bigint): Promise<TradeInfo>;
+    takeOffer(offerId: string, paymentAccountId: string, amount?: bigint, challenge?: string): Promise<TradeInfo>;
     /**
      * Get a trade by id.
      *

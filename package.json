@@ -1,10 +1,11 @@
 {
   "name": "haveno-ts",
-  "version": "0.0.30",
+  "version": "0.0.37",
   "description": "Haveno TypeScript client",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
+    "dist",
     "dist/**/*"
   ],
   "scripts": {
@@ -28,8 +29,10 @@
   "dependencies": {
     "@types/node": "^18.14.2",
     "console": "^0.7.2",
-    "google-protobuf": "^3.20.3",
-    "grpc-web": "^1.4.2"
+    "decimal.js": "^10.4.3",
+    "google-protobuf": "^3.21.4",
+    "grpc-web": "^1.5.0",
+    "node-xmlhttprequest": "^1.0.6"
   },
   "devDependencies": {
     "@babel/core": "^7.21.0",
@@ -39,15 +42,13 @@
     "@typescript-eslint/eslint-plugin": "5.53.0",
     "@typescript-eslint/parser": "^5.53.0",
     "babel-jest": "^29.4.3",
-    "decimal.js": "^10.4.3",
     "eslint": "^8.35.0",
     "eslint-config-prettier": "^8.6.0",
     "eslint-import-resolver-typescript": "^3.5.3",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-jsx-a11y": "^6.7.1",
     "jest": "^29.7.0",
-    "monero-ts": "^0.11.1",
-    "node-xmlhttprequest": "^1.0.6",
+    "monero-ts": "^0.11.5",
     "ts-jest": "^29.2.5",
     "ts-jest-resolver": "^2.0.1",
     "typedoc": "^0.23.26",
