@@ -3049,7 +3049,7 @@ async function testTradePayoutFinalized(ctxP: Partial<TradeContext>) {
   // test after payout unlocked
   if (ctx.testPayoutUnlocked) {
     trade = await ctx.arbitrator.havenod!.getTrade(ctx.offerId!);
-    if (!isPayoutUnlocked(trade.getPayoutState())) await mineToHeight(height + 10);
+    if (!trade.getIsPayoutUnlocked()) await mineToHeight(height + 10);
     await wait(TestConfig.maxWalletStartupMs + ctx.walletSyncPeriodMs * 2);
     if (await ctx.getBuyer().havenod) await testTradeState(await ctx.getBuyer().havenod!.getTrade(ctx.offerId!), {phase: ctx.getPhase(), disputeState: disputeState, payoutState: ["PAYOUT_UNLOCKED", "PAYOUT_FINALIZED"]});
     if (await ctx.getSeller().havenod) await testTradeState(await ctx.getSeller().havenod!.getTrade(ctx.offerId!), {phase: ctx.getPhase(), disputeState: disputeState, payoutState: ["PAYOUT_UNLOCKED", "PAYOUT_FINALIZED"]});
@@ -3061,7 +3061,7 @@ async function testTradePayoutFinalized(ctxP: Partial<TradeContext>) {
   // test after payout finalized
   if (ctx.testPayoutFinalized) {
     trade = await ctx.arbitrator.havenod!.getTrade(ctx.offerId!);
-    if (!isPayoutFinalized(trade.getPayoutState())) await mineToHeight(height + getNumBlocksPayoutFinalized());
+    if (!trade.getIsPayoutFinalized()) await mineToHeight(height + getNumBlocksPayoutFinalized());
     await wait(TestConfig.maxWalletStartupMs + TestConfig.idlePeriodTestMs);
     if (await ctx.getBuyer().havenod) await testTradeState(await ctx.getBuyer().havenod!.getTrade(ctx.offerId!), {phase: ctx.getPhase(), disputeState: disputeState, payoutState: ["PAYOUT_FINALIZED"]});
     if (await ctx.getSeller().havenod) await testTradeState(await ctx.getSeller().havenod!.getTrade(ctx.offerId!), {phase: ctx.getPhase(), disputeState: disputeState, payoutState: ["PAYOUT_FINALIZED"]});
@@ -3076,7 +3076,7 @@ async function testTradeState(trade: TradeInfo, ctx: Partial<TradeContext>) {
   assert(trade.getStartTime() > 0, "expected trade start timestamp to be greater than 0 but was " + trade.getStartTime() + " for trade " + trade.getTradeId());
   assert(trade.getMaxDurationMs() > 0, "expected trade max duration to be greater than 0 but was " + trade.getMaxDurationMs() + " for trade " + trade.getTradeId());
   assert(trade.getDeadlineTime() > 0, "expected trade deadline timestamp to be greater than 0 but was " + trade.getDeadlineTime() + " for trade " + trade.getTradeId());
-  if (isPayoutFinalized(trade.getPayoutState())) { // start time is continuously updated until payout finalized, so only test when finalized
+  if (trade.getIsDepositsFinalized()) { // start time is continuously updated until deposits finalized, so only test then
     assert(trade.getStartTime() + trade.getMaxDurationMs() === trade.getDeadlineTime(), "expected trade deadline to be equal to start timestamp + max duration but " + trade.getStartTime() + " + " + trade.getMaxDurationMs() + " != " + trade.getDeadlineTime() + " for trade " + trade.getTradeId());
   }
   if (ctx.disputeState) expect(trade.getDisputeState()).toEqual(ctx.disputeState);
@@ -4414,14 +4414,6 @@ async function hasPaymentAccount(config: { trader: HavenoClient; assetCode?: str
 
 function isCrypto(assetCode: string) {
   return getCryptoAddress(assetCode) !== undefined;
-}
-
-function isPayoutUnlocked(tradeState: string) {
-  return tradeState === "PAYOUT_UNLOCKED" || tradeState === "PAYOUT_FINALIZED";
-}
-
-function isPayoutFinalized(tradeState: string) {
-  return tradeState === "PAYOUT_FINALIZED";
 }
 
 function getCryptoAddress(currencyCode: string): string|undefined {
