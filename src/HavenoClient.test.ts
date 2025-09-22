@@ -4019,6 +4019,9 @@ async function prepareForTrading(numTrades: number, ...havenods: HavenoClient[])
   const wallets: moneroTs.MoneroWallet[] = [];
   for (const havenod of havenods) wallets.push(await getWallet(havenod));
   await fundOutputs(wallets, tradeAmount * 2n, numTrades);
+
+  // wait for havenods to observe balance
+  await wait(TestConfig.trade.walletSyncPeriodMs);
 }
 
 async function getWallet(havenod: HavenoClient) {
