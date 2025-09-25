@@ -2817,6 +2817,9 @@ export class TradeInfo extends jspb.Message {
   getIsDepositsUnlocked(): boolean;
   setIsDepositsUnlocked(value: boolean): TradeInfo;
 
+  getIsDepositsFinalized(): boolean;
+  setIsDepositsFinalized(value: boolean): TradeInfo;
+
   getIsPaymentSent(): boolean;
   setIsPaymentSent(value: boolean): TradeInfo;
 
@@ -2831,6 +2834,9 @@ export class TradeInfo extends jspb.Message {
 
   getIsPayoutUnlocked(): boolean;
   setIsPayoutUnlocked(value: boolean): TradeInfo;
+
+  getIsPayoutFinalized(): boolean;
+  setIsPayoutFinalized(value: boolean): TradeInfo;
 
   getIsCompleted(): boolean;
   setIsCompleted(value: boolean): TradeInfo;
@@ -2901,11 +2907,13 @@ export namespace TradeInfo {
     isDepositsPublished: boolean,
     isDepositsConfirmed: boolean,
     isDepositsUnlocked: boolean,
+    isDepositsFinalized: boolean,
     isPaymentSent: boolean,
     isPaymentReceived: boolean,
     isPayoutPublished: boolean,
     isPayoutConfirmed: boolean,
     isPayoutUnlocked: boolean,
+    isPayoutFinalized: boolean,
     isCompleted: boolean,
     contractAsJson: string,
     contract?: ContractInfo.AsObject,

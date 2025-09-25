@@ -24033,11 +24033,13 @@ disputeState: jspb.Message.getFieldWithDefault(msg, 24, ""),
 isDepositsPublished: jspb.Message.getBooleanFieldWithDefault(msg, 25, false),
 isDepositsConfirmed: jspb.Message.getBooleanFieldWithDefault(msg, 26, false),
 isDepositsUnlocked: jspb.Message.getBooleanFieldWithDefault(msg, 27, false),
+isDepositsFinalized: jspb.Message.getBooleanFieldWithDefault(msg, 43, false),
 isPaymentSent: jspb.Message.getBooleanFieldWithDefault(msg, 28, false),
 isPaymentReceived: jspb.Message.getBooleanFieldWithDefault(msg, 29, false),
 isPayoutPublished: jspb.Message.getBooleanFieldWithDefault(msg, 30, false),
 isPayoutConfirmed: jspb.Message.getBooleanFieldWithDefault(msg, 31, false),
 isPayoutUnlocked: jspb.Message.getBooleanFieldWithDefault(msg, 32, false),
+isPayoutFinalized: jspb.Message.getBooleanFieldWithDefault(msg, 44, false),
 isCompleted: jspb.Message.getBooleanFieldWithDefault(msg, 33, false),
 contractAsJson: jspb.Message.getFieldWithDefault(msg, 34, ""),
 contract: (f = msg.getContract()) && proto.io.haveno.protobuffer.ContractInfo.toObject(includeInstance, f),
@@ -24193,6 +24195,10 @@ proto.io.haveno.protobuffer.TradeInfo.deserializeBinaryFromReader = function(msg
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setIsDepositsUnlocked(value);
       break;
+    case 43:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setIsDepositsFinalized(value);
+      break;
     case 28:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setIsPaymentSent(value);
@@ -24212,6 +24218,10 @@ proto.io.haveno.protobuffer.TradeInfo.deserializeBinaryFromReader = function(msg
     case 32:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setIsPayoutUnlocked(value);
+      break;
+    case 44:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setIsPayoutFinalized(value);
       break;
     case 33:
       var value = /** @type {boolean} */ (reader.readBool());
@@ -24473,6 +24483,13 @@ proto.io.haveno.protobuffer.TradeInfo.serializeBinaryToWriter = function(message
       f
     );
   }
+  f = message.getIsDepositsFinalized();
+  if (f) {
+    writer.writeBool(
+      43,
+      f
+    );
+  }
   f = message.getIsPaymentSent();
   if (f) {
     writer.writeBool(
@@ -24505,6 +24522,13 @@ proto.io.haveno.protobuffer.TradeInfo.serializeBinaryToWriter = function(message
   if (f) {
     writer.writeBool(
       32,
+      f
+    );
+  }
+  f = message.getIsPayoutFinalized();
+  if (f) {
+    writer.writeBool(
+      44,
       f
     );
   }
@@ -25088,6 +25112,24 @@ proto.io.haveno.protobuffer.TradeInfo.prototype.setIsDepositsUnlocked = function
 
 
 /**
+ * optional bool is_deposits_finalized = 43;
+ * @return {boolean}
+ */
+proto.io.haveno.protobuffer.TradeInfo.prototype.getIsDepositsFinalized = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 43, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
+ */
+proto.io.haveno.protobuffer.TradeInfo.prototype.setIsDepositsFinalized = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 43, value);
+};
+
+
+/**
  * optional bool is_payment_sent = 28;
  * @return {boolean}
  */
@@ -25174,6 +25216,24 @@ proto.io.haveno.protobuffer.TradeInfo.prototype.getIsPayoutUnlocked = function()
  */
 proto.io.haveno.protobuffer.TradeInfo.prototype.setIsPayoutUnlocked = function(value) {
   return jspb.Message.setProto3BooleanField(this, 32, value);
+};
+
+
+/**
+ * optional bool is_payout_finalized = 44;
+ * @return {boolean}
+ */
+proto.io.haveno.protobuffer.TradeInfo.prototype.getIsPayoutFinalized = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 44, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.io.haveno.protobuffer.TradeInfo} returns this
+ */
+proto.io.haveno.protobuffer.TradeInfo.prototype.setIsPayoutFinalized = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 44, value);
 };
 
 

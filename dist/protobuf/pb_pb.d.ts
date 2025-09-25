@@ -1490,6 +1490,9 @@ export class PaymentReceivedMessage extends jspb.Message {
   getSellerSignature_asB64(): string;
   setSellerSignature(value: Uint8Array | string): PaymentReceivedMessage;
 
+  getPayoutTxId(): string;
+  setPayoutTxId(value: string): PaymentReceivedMessage;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PaymentReceivedMessage.AsObject;
   static toObject(includeInstance: boolean, msg: PaymentReceivedMessage): PaymentReceivedMessage.AsObject;
@@ -1511,6 +1514,7 @@ export namespace PaymentReceivedMessage {
     buyerSignedWitness?: SignedWitness.AsObject,
     paymentSentMessage?: PaymentSentMessage.AsObject,
     sellerSignature: Uint8Array | string,
+    payoutTxId: string,
   }
 }
 
@@ -6306,6 +6310,7 @@ export namespace Trade {
     DEPOSIT_TXS_SEEN_IN_NETWORK = 13,
     DEPOSIT_TXS_CONFIRMED_IN_BLOCKCHAIN = 14,
     DEPOSIT_TXS_UNLOCKED_IN_BLOCKCHAIN = 15,
+    DEPOSIT_TXS_FINALIZED_IN_BLOCKCHAIN = 28,
     BUYER_CONFIRMED_PAYMENT_SENT = 16,
     BUYER_SENT_PAYMENT_SENT_MSG = 17,
     BUYER_SEND_FAILED_PAYMENT_SENT_MSG = 18,
@@ -6327,6 +6332,7 @@ export namespace Trade {
     DEPOSITS_PUBLISHED = 3,
     DEPOSITS_CONFIRMED = 4,
     DEPOSITS_UNLOCKED = 5,
+    DEPOSITS_FINALIZED = 8,
     PAYMENT_SENT = 6,
     PAYMENT_RECEIVED = 7,
   }
@@ -6336,11 +6342,13 @@ export namespace Trade {
     PAYOUT_PUBLISHED = 1,
     PAYOUT_CONFIRMED = 2,
     PAYOUT_UNLOCKED = 3,
+    PAYOUT_FINALIZED = 4,
   }
 
   export enum DisputeState { 
     PB_ERROR_DISPUTE_STATE = 0,
     NO_DISPUTE = 1,
+    DISPUTE_PREPARING = 15,
     DISPUTE_REQUESTED = 2,
     DISPUTE_OPENED = 3,
     ARBITRATOR_SENT_DISPUTE_CLOSED_MSG = 4,
@@ -6541,6 +6549,12 @@ export class ProcessModel extends jspb.Message {
   getImportMultisigHexScheduled(): boolean;
   setImportMultisigHexScheduled(value: boolean): ProcessModel;
 
+  getPaymentSentPayoutTxStale(): boolean;
+  setPaymentSentPayoutTxStale(value: boolean): ProcessModel;
+
+  getErrorOnPaymentReceivedMsg(): boolean;
+  setErrorOnPaymentReceivedMsg(value: boolean): ProcessModel;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ProcessModel.AsObject;
   static toObject(includeInstance: boolean, msg: ProcessModel): ProcessModel.AsObject;
@@ -6571,6 +6585,8 @@ export namespace ProcessModel {
     tradeProtocolErrorHeight: number,
     tradeFeeAddress: string,
     importMultisigHexScheduled: boolean,
+    paymentSentPayoutTxStale: boolean,
+    errorOnPaymentReceivedMsg: boolean,
   }
 }
 

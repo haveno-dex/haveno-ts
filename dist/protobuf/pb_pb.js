@@ -15332,7 +15332,8 @@ deferPublishPayout: jspb.Message.getBooleanFieldWithDefault(msg, 7, false),
 buyerAccountAgeWitness: (f = msg.getBuyerAccountAgeWitness()) && proto.io.haveno.protobuffer.AccountAgeWitness.toObject(includeInstance, f),
 buyerSignedWitness: (f = msg.getBuyerSignedWitness()) && proto.io.haveno.protobuffer.SignedWitness.toObject(includeInstance, f),
 paymentSentMessage: (f = msg.getPaymentSentMessage()) && proto.io.haveno.protobuffer.PaymentSentMessage.toObject(includeInstance, f),
-sellerSignature: msg.getSellerSignature_asB64()
+sellerSignature: msg.getSellerSignature_asB64(),
+payoutTxId: jspb.Message.getFieldWithDefault(msg, 12, "")
   };
 
   if (includeInstance) {
@@ -15416,6 +15417,10 @@ proto.io.haveno.protobuffer.PaymentReceivedMessage.deserializeBinaryFromReader =
     case 11:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setSellerSignature(value);
+      break;
+    case 12:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setPayoutTxId(value);
       break;
     default:
       reader.skipField();
@@ -15524,6 +15529,13 @@ proto.io.haveno.protobuffer.PaymentReceivedMessage.serializeBinaryToWriter = fun
   if (f.length > 0) {
     writer.writeBytes(
       11,
+      f
+    );
+  }
+  f = message.getPayoutTxId();
+  if (f.length > 0) {
+    writer.writeString(
+      12,
       f
     );
   }
@@ -15825,6 +15837,24 @@ proto.io.haveno.protobuffer.PaymentReceivedMessage.prototype.getSellerSignature_
  */
 proto.io.haveno.protobuffer.PaymentReceivedMessage.prototype.setSellerSignature = function(value) {
   return jspb.Message.setProto3BytesField(this, 11, value);
+};
+
+
+/**
+ * optional string payout_tx_id = 12;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.PaymentReceivedMessage.prototype.getPayoutTxId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 12, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.PaymentReceivedMessage} returns this
+ */
+proto.io.haveno.protobuffer.PaymentReceivedMessage.prototype.setPayoutTxId = function(value) {
+  return jspb.Message.setProto3StringField(this, 12, value);
 };
 
 
@@ -50763,6 +50793,7 @@ proto.io.haveno.protobuffer.Trade.State = {
   DEPOSIT_TXS_SEEN_IN_NETWORK: 13,
   DEPOSIT_TXS_CONFIRMED_IN_BLOCKCHAIN: 14,
   DEPOSIT_TXS_UNLOCKED_IN_BLOCKCHAIN: 15,
+  DEPOSIT_TXS_FINALIZED_IN_BLOCKCHAIN: 28,
   BUYER_CONFIRMED_PAYMENT_SENT: 16,
   BUYER_SENT_PAYMENT_SENT_MSG: 17,
   BUYER_SEND_FAILED_PAYMENT_SENT_MSG: 18,
@@ -50787,6 +50818,7 @@ proto.io.haveno.protobuffer.Trade.Phase = {
   DEPOSITS_PUBLISHED: 3,
   DEPOSITS_CONFIRMED: 4,
   DEPOSITS_UNLOCKED: 5,
+  DEPOSITS_FINALIZED: 8,
   PAYMENT_SENT: 6,
   PAYMENT_RECEIVED: 7
 };
@@ -50798,7 +50830,8 @@ proto.io.haveno.protobuffer.Trade.PayoutState = {
   PAYOUT_UNPUBLISHED: 0,
   PAYOUT_PUBLISHED: 1,
   PAYOUT_CONFIRMED: 2,
-  PAYOUT_UNLOCKED: 3
+  PAYOUT_UNLOCKED: 3,
+  PAYOUT_FINALIZED: 4
 };
 
 /**
@@ -50807,6 +50840,7 @@ proto.io.haveno.protobuffer.Trade.PayoutState = {
 proto.io.haveno.protobuffer.Trade.DisputeState = {
   PB_ERROR_DISPUTE_STATE: 0,
   NO_DISPUTE: 1,
+  DISPUTE_PREPARING: 15,
   DISPUTE_REQUESTED: 2,
   DISPUTE_OPENED: 3,
   ARBITRATOR_SENT_DISPUTE_CLOSED_MSG: 4,
@@ -52318,7 +52352,9 @@ buyerPayoutAmountFromMediation: jspb.Message.getFieldWithDefault(msg, 16, 0),
 sellerPayoutAmountFromMediation: jspb.Message.getFieldWithDefault(msg, 17, 0),
 tradeProtocolErrorHeight: jspb.Message.getFieldWithDefault(msg, 18, 0),
 tradeFeeAddress: jspb.Message.getFieldWithDefault(msg, 19, ""),
-importMultisigHexScheduled: jspb.Message.getBooleanFieldWithDefault(msg, 20, false)
+importMultisigHexScheduled: jspb.Message.getBooleanFieldWithDefault(msg, 20, false),
+paymentSentPayoutTxStale: jspb.Message.getBooleanFieldWithDefault(msg, 21, false),
+errorOnPaymentReceivedMsg: jspb.Message.getBooleanFieldWithDefault(msg, 22, false)
   };
 
   if (includeInstance) {
@@ -52439,6 +52475,14 @@ proto.io.haveno.protobuffer.ProcessModel.deserializeBinaryFromReader = function(
     case 20:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setImportMultisigHexScheduled(value);
+      break;
+    case 21:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setPaymentSentPayoutTxStale(value);
+      break;
+    case 22:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setErrorOnPaymentReceivedMsg(value);
       break;
     default:
       reader.skipField();
@@ -52611,6 +52655,20 @@ proto.io.haveno.protobuffer.ProcessModel.serializeBinaryToWriter = function(mess
   if (f) {
     writer.writeBool(
       20,
+      f
+    );
+  }
+  f = message.getPaymentSentPayoutTxStale();
+  if (f) {
+    writer.writeBool(
+      21,
+      f
+    );
+  }
+  f = message.getErrorOnPaymentReceivedMsg();
+  if (f) {
+    writer.writeBool(
+      22,
       f
     );
   }
@@ -53141,6 +53199,42 @@ proto.io.haveno.protobuffer.ProcessModel.prototype.getImportMultisigHexScheduled
  */
 proto.io.haveno.protobuffer.ProcessModel.prototype.setImportMultisigHexScheduled = function(value) {
   return jspb.Message.setProto3BooleanField(this, 20, value);
+};
+
+
+/**
+ * optional bool payment_sent_payout_tx_stale = 21;
+ * @return {boolean}
+ */
+proto.io.haveno.protobuffer.ProcessModel.prototype.getPaymentSentPayoutTxStale = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 21, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.io.haveno.protobuffer.ProcessModel} returns this
+ */
+proto.io.haveno.protobuffer.ProcessModel.prototype.setPaymentSentPayoutTxStale = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 21, value);
+};
+
+
+/**
+ * optional bool error_on_payment_received_msg = 22;
+ * @return {boolean}
+ */
+proto.io.haveno.protobuffer.ProcessModel.prototype.getErrorOnPaymentReceivedMsg = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 22, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.io.haveno.protobuffer.ProcessModel} returns this
+ */
+proto.io.haveno.protobuffer.ProcessModel.prototype.setErrorOnPaymentReceivedMsg = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 22, value);
 };
 
 
