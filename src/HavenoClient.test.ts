@@ -1925,7 +1925,6 @@ test("Can complete a trade within a range and without a buyer deposit (Test, CI)
     offerAmount: offerAmount,
     offerMinAmount: offerMinAmount,
     tradeAmount: getRandomBigIntWithinRange(offerMinAmount, offerAmount),
-    testPayoutFinalized: true, // override to test unlock
     makerPaymentAccountId: makerPaymentAccount.getId(),
     takerPaymentAccountId: takerPaymentAccount.getId(),
     assetCode: assetCode,
