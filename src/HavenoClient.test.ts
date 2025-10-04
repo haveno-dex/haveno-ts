@@ -1538,7 +1538,7 @@ test("Can prepare for trading (Test, CI)", async () => {
   await prepareForTrading(5, user1, user2);
 });
 
-test("Can post and remove an offer (Test, CI, sanity check)", async () => {
+test("Can post, deactivate, activate, and remove an offer (Test, CI, sanity check)", async () => {
 
   // wait for user1 to have unlocked balance to post offer
   await waitForAvailableBalance(250000000000n * 2n, user1);
@@ -1590,6 +1590,26 @@ test("Can post and remove an offer (Test, CI, sanity check)", async () => {
   assert.equal(parseFloat(offer.getPrice()), price);
 
   // has offer
+  offer = await user1.getMyOffer(offer.getId());
+  assert.equal(offer.getState(), "AVAILABLE");
+
+  // peer sees offer
+  await wait(TestConfig.trade.maxTimePeerNoticeMs);
+  peerOffer = getOffer(await user2.getOffers(assetCode, TestConfig.trade.direction), offer.getId());
+  if (!peerOffer) throw new Error("Offer " + offer.getId() + " was not found in peer's offers after posted");
+  testOffer(peerOffer, ctx, false);
+
+  // deactivate offer
+  await user1.deactivateOffer(offer.getId());
+  offer = await user1.getMyOffer(offer.getId());
+  assert.equal(offer.getState(), "DEACTIVATED");
+
+  // peer does not see offer
+  await wait(TestConfig.trade.maxTimePeerNoticeMs);
+  if (getOffer(await user2.getOffers(assetCode, TestConfig.trade.direction), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in peer's offers after removed");
+
+  // activate offer
+  await user1.activateOffer(offer.getId());
   offer = await user1.getMyOffer(offer.getId());
   assert.equal(offer.getState(), "AVAILABLE");
 
