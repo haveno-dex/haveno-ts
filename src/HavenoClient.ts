@@ -21,7 +21,7 @@ import HavenoUtils from "./utils/HavenoUtils";
 import TaskLooper from "./utils/TaskLooper";
 import type * as grpcWeb from "grpc-web";
 import { GetTradeStatisticsClient, GetVersionClient, AccountClient, XmrConnectionsClient, DisputesClient, DisputeAgentsClient, NotificationsClient, WalletsClient, PriceClient, OffersClient, PaymentAccountsClient, TradesClient, ShutdownServerClient, XmrNodeClient } from './protobuf/GrpcServiceClientPb';
-import { GetTradeStatisticsRequest, GetTradeStatisticsReply, GetVersionRequest, GetVersionReply, IsAppInitializedRequest, IsAppInitializedReply, RegisterDisputeAgentRequest, UnregisterDisputeAgentRequest, MarketPriceRequest, MarketPriceReply, MarketPricesRequest, MarketPricesReply, MarketPriceInfo, MarketDepthRequest, MarketDepthReply, MarketDepthInfo, GetBalancesRequest, GetBalancesReply, XmrBalanceInfo, GetMyOfferRequest, GetMyOfferReply, GetOffersRequest, GetOffersReply, OfferInfo, GetPaymentMethodsRequest, GetPaymentMethodsReply, GetPaymentAccountFormRequest, CreatePaymentAccountRequest, ValidateFormFieldRequest, CreatePaymentAccountReply, GetPaymentAccountFormReply, GetPaymentAccountsRequest, GetPaymentAccountsReply, CreateCryptoCurrencyPaymentAccountRequest, CreateCryptoCurrencyPaymentAccountReply, DeletePaymentAccountRequest, DeletePaymentAccountReply, PostOfferRequest, PostOfferReply, DeactivateOfferRequest, ActivateOfferRequest, CancelOfferRequest, TakeOfferRequest, TakeOfferReply, TradeInfo, GetTradeRequest, GetTradeReply, GetTradesRequest, GetTradesReply, GetXmrSeedRequest, GetXmrSeedReply, GetXmrPrimaryAddressRequest, GetXmrPrimaryAddressReply, GetXmrNewSubaddressRequest, GetXmrNewSubaddressReply, ConfirmPaymentSentRequest, ConfirmPaymentReceivedRequest, CompleteTradeRequest, XmrTx, GetXmrTxsRequest, GetXmrTxsReply, XmrDestination, CreateXmrTxRequest, CreateXmrTxReply, CreateXmrSweepTxsRequest, CreateXmrSweepTxsReply, RelayXmrTxsRequest, RelayXmrTxsReply, CreateAccountRequest, AccountExistsRequest, AccountExistsReply, DeleteAccountRequest, OpenAccountRequest, IsAccountOpenRequest, IsAccountOpenReply, CloseAccountRequest, ChangePasswordRequest, BackupAccountRequest, BackupAccountReply, RestoreAccountRequest, StopRequest, NotificationMessage, RegisterNotificationListenerRequest, SendNotificationRequest, UrlConnection, AddConnectionRequest, RemoveConnectionRequest, GetConnectionRequest, GetConnectionsRequest, SetConnectionRequest, CheckConnectionRequest, CheckConnectionsReply, CheckConnectionsRequest, StartCheckingConnectionRequest, StopCheckingConnectionRequest, GetBestConnectionRequest, SetAutoSwitchRequest, GetAutoSwitchRequest, CheckConnectionReply, GetConnectionsReply, GetConnectionReply, GetBestConnectionReply, GetDisputeRequest, GetDisputeReply, GetDisputesRequest, GetDisputesReply, OpenDisputeRequest, ResolveDisputeRequest, SendDisputeChatMessageRequest, SendChatMessageRequest, GetChatMessagesRequest, GetChatMessagesReply, StartXmrNodeRequest, StopXmrNodeRequest, IsXmrNodeOnlineRequest, IsXmrNodeOnlineReply, GetXmrNodeSettingsRequest, GetXmrNodeSettingsReply } from "./protobuf/grpc_pb";
+import { GetTradeStatisticsRequest, GetTradeStatisticsReply, GetVersionRequest, GetVersionReply, IsAppInitializedRequest, IsAppInitializedReply, RegisterDisputeAgentRequest, UnregisterDisputeAgentRequest, MarketPriceRequest, MarketPriceReply, MarketPricesRequest, MarketPricesReply, MarketPriceInfo, MarketDepthRequest, MarketDepthReply, MarketDepthInfo, GetBalancesRequest, GetBalancesReply, XmrBalanceInfo, GetMyOfferRequest, GetMyOfferReply, GetOffersRequest, GetOffersReply, OfferInfo, GetPaymentMethodsRequest, GetPaymentMethodsReply, GetPaymentAccountFormRequest, CreatePaymentAccountRequest, ValidateFormFieldRequest, CreatePaymentAccountReply, GetPaymentAccountFormReply, GetPaymentAccountsRequest, GetPaymentAccountsReply, CreateCryptoCurrencyPaymentAccountRequest, CreateCryptoCurrencyPaymentAccountReply, DeletePaymentAccountRequest, DeletePaymentAccountReply, PostOfferRequest, PostOfferReply, EditOfferRequest, EditOfferReply, DeactivateOfferRequest, ActivateOfferRequest, CancelOfferRequest, TakeOfferRequest, TakeOfferReply, TradeInfo, GetTradeRequest, GetTradeReply, GetTradesRequest, GetTradesReply, GetXmrSeedRequest, GetXmrSeedReply, GetXmrPrimaryAddressRequest, GetXmrPrimaryAddressReply, GetXmrNewSubaddressRequest, GetXmrNewSubaddressReply, ConfirmPaymentSentRequest, ConfirmPaymentReceivedRequest, CompleteTradeRequest, XmrTx, GetXmrTxsRequest, GetXmrTxsReply, XmrDestination, CreateXmrTxRequest, CreateXmrTxReply, CreateXmrSweepTxsRequest, CreateXmrSweepTxsReply, RelayXmrTxsRequest, RelayXmrTxsReply, CreateAccountRequest, AccountExistsRequest, AccountExistsReply, DeleteAccountRequest, OpenAccountRequest, IsAccountOpenRequest, IsAccountOpenReply, CloseAccountRequest, ChangePasswordRequest, BackupAccountRequest, BackupAccountReply, RestoreAccountRequest, StopRequest, NotificationMessage, RegisterNotificationListenerRequest, SendNotificationRequest, UrlConnection, AddConnectionRequest, RemoveConnectionRequest, GetConnectionRequest, GetConnectionsRequest, SetConnectionRequest, CheckConnectionRequest, CheckConnectionsReply, CheckConnectionsRequest, StartCheckingConnectionRequest, StopCheckingConnectionRequest, GetBestConnectionRequest, SetAutoSwitchRequest, GetAutoSwitchRequest, CheckConnectionReply, GetConnectionsReply, GetConnectionReply, GetBestConnectionReply, GetDisputeRequest, GetDisputeReply, GetDisputesRequest, GetDisputesReply, OpenDisputeRequest, ResolveDisputeRequest, SendDisputeChatMessageRequest, SendChatMessageRequest, GetChatMessagesRequest, GetChatMessagesReply, StartXmrNodeRequest, StopXmrNodeRequest, IsXmrNodeOnlineRequest, IsXmrNodeOnlineReply, GetXmrNodeSettingsRequest, GetXmrNodeSettingsReply } from "./protobuf/grpc_pb";
 import { TradeStatistics3, OfferDirection, PaymentMethod, PaymentAccountForm, PaymentAccountFormField, PaymentAccount, PaymentAccountPayload, AvailabilityResult, Attachment, DisputeResult, Dispute, ChatMessage, XmrNodeSettings } from "./protobuf/pb_pb";
 
 
@@ -1111,6 +1111,41 @@ export default class HavenoClient {
       if (config.extraInfo) request.setExtraInfo(config.extraInfo);
       if (config.sourceOfferId) request.setSourceOfferId(config.sourceOfferId);
       return (await this._offersClient.postOffer(request, {password: this._password})).getOffer()!;
+    } catch (e: any) {
+      throw new HavenoError(e.message, e.code);
+    }
+  }
+
+  /**
+   * Edit an existing offer.
+   * 
+   * @param {string} offerId - id of the offer to edit
+   * @param {string} currencyCode - traded asset code (optional, default to existing)
+   * @param {number} price - trade price (optional, default to market price)
+   * @param {number} marketPriceMarginPct - if using market price, % from market price to accept (optional, default 0%)
+   * @param {number} triggerPrice - price to remove offer (optional)
+   * @param {string} paymentAccountId - payment account id (optional, default to existing)
+   * @param {string} extraInfo - set the offer's extra information (optional, default to none)
+   * @return {OfferInfo} the edited offer
+   */
+  async editOffer(offerId: string,
+                  currencyCode: string | undefined,
+                  price: number | undefined,
+                  marketPriceMarginPct: number | undefined,
+                  triggerPrice: number | undefined,
+                  paymentAccountId: string | undefined,
+                  extraInfo: string | undefined): Promise<OfferInfo> {
+    try {
+      const request = new EditOfferRequest();
+      request.setOfferId(offerId);
+      if (currencyCode) request.setCurrencyCode(currencyCode!);
+      if (price) request.setPrice(price!.toString());
+      request.setUseMarketBasedPrice(price === undefined);
+      request.setMarketPriceMarginPct(marketPriceMarginPct ? marketPriceMarginPct : 0);
+      if (triggerPrice) request.setTriggerPrice(triggerPrice!.toString());
+      if (paymentAccountId) request.setPaymentAccountId(paymentAccountId!);
+      request.setExtraInfo(extraInfo ? extraInfo : ""); // clear existing extra info if undefined
+      return (await this._offersClient.editOffer(request, {password: this._password})).getOffer()!;
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);
     }

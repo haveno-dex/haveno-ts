@@ -1538,7 +1538,7 @@ test("Can prepare for trading (Test, CI)", async () => {
   await prepareForTrading(5, user1, user2);
 });
 
-test("Can post, deactivate, activate, and remove an offer (Test, CI, sanity check)", async () => {
+test("Can post, deactivate, activate, edit, and remove an offer (Test, CI, sanity check)", async () => {
 
   // wait for user1 to have unlocked balance to post offer
   await waitForAvailableBalance(250000000000n * 2n, user1);
@@ -1618,6 +1618,28 @@ test("Can post, deactivate, activate, and remove an offer (Test, CI, sanity chec
   peerOffer = getOffer(await user2.getOffers(assetCode, TestConfig.trade.direction), offer.getId());
   if (!peerOffer) throw new Error("Offer " + offer.getId() + " was not found in peer's offers after posted");
   testOffer(peerOffer, ctx, false);
+
+  // edit offer
+  ctx.extraInfo = "My edited extra info";
+  offer = await user1.editOffer(offer.getId(),
+      undefined, // currency code
+      170, // price
+      undefined, // market price margin pct
+      undefined, // trigger price
+      undefined, // payment account id
+      ctx.extraInfo // extra info
+  );
+  assert.equal(offer.getState(), "AVAILABLE");
+  assert.equal(parseFloat(offer.getPrice()), 170);
+  expect(offer.getExtraInfo()).toContain("My edited extra info");
+
+  // peer sees edited offer
+  await wait(TestConfig.trade.maxTimePeerNoticeMs);
+  peerOffer = getOffer(await user2.getOffers(assetCode, TestConfig.trade.direction), offer.getId());
+  if (!peerOffer) throw new Error("Offer " + offer.getId() + " was not found in peer's offers after posted");
+  testOffer(peerOffer, ctx, false);
+  expect(peerOffer.getExtraInfo()).toContain("My edited extra info");
+  expect(parseFloat(peerOffer.getPrice())).toEqual(170);
 
   // cancel offer
   await user1.removeOffer(offer.getId());
@@ -3163,6 +3185,7 @@ async function makeOffer(ctxP?: Partial<TradeContext>): Promise<OfferInfo> {
     extraInfo: ctx.extraInfo,
     sourceOfferId: ctx.sourceOfferId
   });
+  HavenoUtils.log(0, "Posted offer " + offer.getId() + " for " + ctx.assetCode + " at index " + ctx.index);
 
   // test offer
   testOffer(offer, ctx, true);
