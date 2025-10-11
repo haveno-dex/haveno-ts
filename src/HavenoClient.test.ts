@@ -1636,7 +1636,7 @@ test("Can post, deactivate, activate, edit, and remove an offer (Test, CI, sanit
   // peer sees edited offer
   await wait(TestConfig.trade.maxTimePeerNoticeMs);
   peerOffer = getOffer(await user2.getOffers(assetCode, TestConfig.trade.direction), offer.getId());
-  if (!peerOffer) throw new Error("Offer " + offer.getId() + " was not found in peer's offers after posted");
+  if (!peerOffer) throw new Error("Offer " + offer.getId() + " was not found in peer's offers after edited");
   testOffer(peerOffer, ctx, false);
   expect(peerOffer.getExtraInfo()).toContain("My edited extra info");
   expect(parseFloat(peerOffer.getPrice())).toEqual(170);
