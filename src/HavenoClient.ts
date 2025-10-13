@@ -1528,12 +1528,10 @@ export default class HavenoClient {
           }
         });
         this._keepAliveLooper.start(this._keepAlivePeriodMs);
-
         await HavenoUtils.waitFor(1000); // TODO: call returns before listener registered
       } else {
         this._notificationStream!.removeListener('data', this._onNotification);
         this._keepAliveLooper.stop();
-        this._notificationStream!.cancel();
         this._notificationStream = undefined;
       }
     } catch (e: any) {
