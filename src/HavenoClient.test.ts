@@ -672,8 +672,8 @@ async function shutDown() {
   }
   await Promise.all(promises);
 
-  // terminate monero-ts worker
-  await moneroTs.LibraryUtils.terminateWorker();
+  // terminate monero-ts library
+  await moneroTs.shutdown();
 }
 
 // ----------------------------------- TESTS ----------------------------------
