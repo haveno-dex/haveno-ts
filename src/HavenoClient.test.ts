@@ -3111,11 +3111,11 @@ async function testTradePayoutFinalized(ctxP: Partial<TradeContext>) {
 }
 
 async function testTradeState(trade: TradeInfo, ctx: Partial<TradeContext>) {
-  assert(moneroTs.GenUtils.arrayContains(ctx.phase, trade.getPhase()), "expected one of phase " + ctx.phase + " but was " + trade.getPhase() + " for trade " + trade.getTradeId());
-  assert(moneroTs.GenUtils.arrayContains(ctx.payoutState, trade.getPayoutState()), "expected one of payout state " + ctx.payoutState + " but was " + trade.getPayoutState() + " for trade " + trade.getTradeId());
-  assert(trade.getStartTime() > 0, "expected trade start timestamp to be greater than 0 but was " + trade.getStartTime() + " for trade " + trade.getTradeId());
-  assert(trade.getMaxDurationMs() > 0, "expected trade max duration to be greater than 0 but was " + trade.getMaxDurationMs() + " for trade " + trade.getTradeId());
-  assert(trade.getDeadlineTime() > 0, "expected trade deadline timestamp to be greater than 0 but was " + trade.getDeadlineTime() + " for trade " + trade.getTradeId());
+  assert(moneroTs.GenUtils.arrayContains(ctx.phase, trade.getPhase()), "expected one of phase " + ctx.phase + " but was " + trade.getPhase() + " for " + trade.getRole() + " " + trade.getTradeId());
+  assert(moneroTs.GenUtils.arrayContains(ctx.payoutState, trade.getPayoutState()), "expected one of payout state " + ctx.payoutState + " but was " + trade.getPayoutState() + " for " + trade.getRole() + " " + trade.getTradeId());
+  assert(trade.getStartTime() > 0, "expected trade start timestamp to be greater than 0 but was " + trade.getStartTime() + " for " + trade.getRole() + " " + trade.getTradeId());
+  assert(trade.getMaxDurationMs() > 0, "expected trade max duration to be greater than 0 but was " + trade.getMaxDurationMs() + " for " + trade.getRole() + " " + trade.getTradeId());
+  assert(trade.getDeadlineTime() > 0, "expected trade deadline timestamp to be greater than 0 but was " + trade.getDeadlineTime() + " for " + trade.getRole() + " " + trade.getTradeId());
   if (trade.getIsDepositsFinalized()) { // start time is continuously updated until deposits finalized, so only test then
     assert(trade.getStartTime() + trade.getMaxDurationMs() === trade.getDeadlineTime(), "expected trade deadline to be equal to start timestamp + max duration but " + trade.getStartTime() + " + " + trade.getMaxDurationMs() + " != " + trade.getDeadlineTime() + " for trade " + trade.getTradeId());
   }
