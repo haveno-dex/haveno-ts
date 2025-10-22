@@ -95,6 +95,7 @@ class PeerContext {
   havenod?: HavenoClient;
   wallet?: moneroTs.MoneroWallet;
   trade?: TradeInfo;
+  appName?: string;
 
   // context to test balances after trade
   balancesBeforeOffer?: XmrBalanceInfo;
@@ -238,8 +239,6 @@ class TradeContext {
   testChatMessagesDispute!: boolean;
   disputeChatMessagesTested!: boolean;
   stopOnFailure?: boolean;
-  buyerAppName?: string;
-  sellerAppName?: string;
   usedPorts?: string[];
   testPayoutConfirmed?: boolean;
   testPayoutUnlocked?: boolean;
@@ -2083,9 +2082,9 @@ test("Can go offline while completing a trade (Test, CI, sanity check)", async (
     err = e;
   }
 
-  // stop traders
-  if (ctx.maker.havenod) await releaseHavenoProcess(ctx.maker.havenod, true);
-  if (ctx.taker.havenod) await releaseHavenoProcess(ctx.taker.havenod, true);
+  // release traders
+  await releaseHavenoPeer(ctx.maker, true);
+  await releaseHavenoPeer(ctx.taker, true);
   if (err) throw err;
 });
 
@@ -2222,9 +2221,8 @@ test("Can go offline while resolving a dispute (Test, CI)", async () => {
   }
 
   // stop and delete traders
-  if (ctx.maker && ctx.maker.havenod) await releaseHavenoProcess(ctx.maker!.havenod!, true);
-  if (ctx.taker && ctx.taker.havenod) await releaseHavenoProcess(ctx.taker!.havenod!, true); // closing this client after first induces HttpClientImpl.shutdown() to hang, so this tests timeout handling
-  if (ctx.sellerAppName) deleteHavenoInstanceByAppName(ctx.sellerAppName!); // seller is offline
+  if (ctx.maker) await releaseHavenoPeer(ctx.maker, true);
+  if (ctx.taker) await releaseHavenoPeer(ctx.taker, true); // closing this client after first induces HttpClientImpl.shutdown() to hang, so this tests timeout handling
   if (err) throw err;
 });
 
@@ -2831,7 +2829,7 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
     if (ctx.isStopped) return ctx.offerId!;
     ctx.usedPorts = [getPort(ctx.getBuyer().havenod!.getUrl()), getPort(ctx.getSeller().havenod!.getUrl())];
     const promises: Promise<void>[] = [];
-    ctx.buyerAppName = ctx.getBuyer().havenod!.getAppName();
+    ctx.getBuyer().appName = ctx.getBuyer().havenod!.getAppName();
     if (ctx.buyerOfflineAfterTake) {
       HavenoUtils.log(0, "Buyer going offline");
       assertNotStaticClient(ctx.getBuyer().havenod!);
@@ -2839,7 +2837,7 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
       if (ctx.isBuyerMaker()) ctx.maker.havenod = undefined;
       else ctx.taker.havenod = undefined;
     }
-    ctx.sellerAppName = ctx.getSeller().havenod!.getAppName();
+    ctx.getSeller().appName = ctx.getSeller().havenod!.getAppName();
     if (ctx.sellerOfflineAfterTake) {
       HavenoUtils.log(0, "Seller going offline");
       assertNotStaticClient(ctx.getSeller().havenod!);
@@ -2858,7 +2856,7 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
     if (ctx.isStopped) return ctx.offerId!;
     if (ctx.buyerOfflineAfterTake && ((ctx.buyerSendsPayment && !ctx.isPaymentSent && ctx.sellerDisputeContext !== DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK) || (ctx.buyerDisputeContext === DisputeContext.OPEN_AFTER_DEPOSITS_UNLOCK && !ctx.buyerOpenedDispute))) {
       HavenoUtils.log(0, "Buyer coming online");
-      const buyer = await initHaveno({appName: ctx.buyerAppName, excludePorts: ctx.usedPorts}); // change buyer's node address
+      const buyer = await initHaveno({appName: ctx.getBuyer().appName, excludePorts: ctx.usedPorts}); // change buyer's node address
       if (ctx.isBuyerMaker()) ctx.maker.havenod = buyer;
       else ctx.taker.havenod = buyer;
       ctx.usedPorts.push(getPort(buyer.getUrl()));
@@ -2954,7 +2952,7 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
     if (ctx.isStopped) return ctx.offerId!;
     if (!ctx.getSeller().havenod) {
       HavenoUtils.log(0, "Seller coming online");
-      const seller = await initHaveno({appName: ctx.sellerAppName, excludePorts: ctx.usedPorts});
+      const seller = await initHaveno({appName: ctx.getSeller().appName, excludePorts: ctx.usedPorts});
       if (ctx.isBuyerMaker()) ctx.taker.havenod = seller;
       else ctx.maker.havenod = seller;
       ctx.usedPorts.push(getPort(ctx.getSeller().havenod!.getUrl()))
@@ -3024,7 +3022,7 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
     if (ctx.isStopped) return ctx.offerId!;
     if (ctx.buyerOfflineAfterPaymentSent) {
       HavenoUtils.log(0, "Buyer coming online");
-      const buyer = await initHaveno({appName: ctx.buyerAppName, excludePorts: ctx.usedPorts});
+      const buyer = await initHaveno({appName: ctx.getBuyer().appName, excludePorts: ctx.usedPorts});
       if (ctx.isBuyerMaker()) ctx.maker.havenod = buyer;
       else ctx.taker.havenod = buyer;
       ctx.usedPorts.push(getPort(buyer.getUrl()));
@@ -3598,13 +3596,13 @@ async function resolveDispute(ctxP: Partial<TradeContext>) {
   // start buyer or seller depending on configuration
   if (!ctx.getBuyer().havenod && ctx.buyerOfflineAfterDisputeOpened === false) {
     // TODO: wait additional time before starting to avoid 503? need to wait after shut down?
-    const buyer = await initHaveno({appName: ctx.buyerAppName, excludePorts: ctx.usedPorts}); // start buyer
+    const buyer = await initHaveno({appName: ctx.getBuyer().appName, excludePorts: ctx.usedPorts}); // start buyer
     if (ctx.isBuyerMaker()) ctx.maker.havenod = buyer;
     else ctx.taker.havenod = buyer;
     ctx.usedPorts!.push(getPort(buyer.getUrl()));
   }
   if (!ctx.getSeller().havenod && ctx.sellerOfflineAfterDisputeOpened === false) {
-    const seller = await initHaveno({appName: ctx.sellerAppName, excludePorts: ctx.usedPorts}); // start seller
+    const seller = await initHaveno({appName: ctx.getSeller().appName, excludePorts: ctx.usedPorts}); // start seller
     if (ctx.isBuyerMaker()) ctx.taker.havenod = seller;
     else ctx.maker.havenod = seller;
     ctx.usedPorts!.push(getPort(ctx.getSeller().havenod!.getUrl()))
@@ -3973,6 +3971,11 @@ async function releaseHavenoProcess(havenod: HavenoClient, deleteAppDir?: boolea
   if (deleteAppDir) deleteHavenoInstance(havenod);
   moneroTs.GenUtils.remove(HAVENO_CLIENTS, havenod);
   moneroTs.GenUtils.remove(HAVENO_PROCESS_PORTS, getPort(havenod.getUrl()));
+}
+
+async function releaseHavenoPeer(peer: PeerContext, deleteAppDir?: boolean) {
+  if (peer.havenod) await releaseHavenoProcess(peer.havenod, deleteAppDir);
+  else if (peer.appName && deleteAppDir) deleteHavenoInstanceByAppName(peer.appName);
 }
 
 function testsOwnProcess(havenod: HavenoClient) {
