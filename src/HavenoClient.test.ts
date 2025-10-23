@@ -3008,7 +3008,8 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
       ctx.isPaymentReceived = true;
       fetchedTrade = await ctx.getSeller().havenod!.getTrade(trade.getTradeId());
       expect(fetchedTrade.getPhase()).toEqual("PAYMENT_RECEIVED");
-      await wait(ctx.walletSyncPeriodMs * 2); // buyer or arbitrator will sign and publish payout tx
+      let isBuyerOffline = ctx.getBuyer().havenod === undefined;
+      await wait((isBuyerOffline ? TestConfig.maxWalletStartupMs : 0) + ctx.walletSyncPeriodMs * 2); // buyer or arbitrator will sign and publish payout tx (arbitrator is idling)
       await testTradeState(await ctx.getSeller().havenod!.getTrade(trade.getTradeId()), {phase: ["PAYMENT_RECEIVED"], payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED", "PAYOUT_FINALIZED"], isCompleted: false, isPayoutPublished: true});
     }
 
