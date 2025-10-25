@@ -147,6 +147,7 @@ const defaultTradeConfig: Partial<TradeContext> = {
   disputeSummary: "Seller is winner",
   walletSyncPeriodMs: 5000,
   maxTimePeerNoticeMs: 6000,
+  maxWalletStartupMs: 10000, // TODO (woodser): make shorter by switching to jni
   testChatMessagesTrade: true,
   testChatMessagesDispute: true,
   stopOnFailure: false, // TODO: setting to true can cause error: Http response at 400 or 500 level, http status code: 503
@@ -236,6 +237,7 @@ class TradeContext {
   sellerOpenedDispute?: boolean;
   walletSyncPeriodMs!: number;
   maxTimePeerNoticeMs!: number;
+  maxWalletStartupMs!: number;
   testChatMessagesDispute!: boolean;
   disputeChatMessagesTested!: boolean;
   stopOnFailure?: boolean;
@@ -450,7 +452,6 @@ const TestConfig = {
     maxFee: HavenoUtils.xmrToAtomicUnits(0.5), // local testnet fees can be relatively high
     maxAdjustmentPct: 0.2,
     daemonPollPeriodMs: 5000,
-    maxWalletStartupMs: 10000, // TODO (woodser): make shorter by switching to jni
     idlePeriodTestMs: 30000,
     maxCpuPct: 0.25,
     paymentMethods: Object.keys(PaymentAccountForm.FormId), // all supported payment methods
@@ -2864,7 +2865,7 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
 
     // wait for traders to observe
     if (ctx.isStopped) return ctx.offerId!;
-    await wait(TestConfig.maxWalletStartupMs + ctx.walletSyncPeriodMs * 2);
+    await wait(ctx.maxWalletStartupMs + ctx.walletSyncPeriodMs * 2);
 
     // test buyer trade state if online
     if (ctx.isStopped) return ctx.offerId!;
@@ -2960,7 +2961,7 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
 
     // seller notified payment is sent
     if (ctx.isStopped) return ctx.offerId!;
-    await wait(ctx.maxTimePeerNoticeMs + TestConfig.maxWalletStartupMs); // TODO: test notification
+    await wait(ctx.maxTimePeerNoticeMs + ctx.maxWalletStartupMs); // TODO: test notification
     if (ctx.sellerOfflineAfterTake) await wait(ctx.walletSyncPeriodMs); // wait to process mailbox messages
     fetchedTrade = await ctx.getSeller().havenod!.getTrade(trade.getTradeId());
     expect(fetchedTrade.getPhase()).toEqual("PAYMENT_SENT");
@@ -3009,7 +3010,7 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
       fetchedTrade = await ctx.getSeller().havenod!.getTrade(trade.getTradeId());
       expect(fetchedTrade.getPhase()).toEqual("PAYMENT_RECEIVED");
       let isBuyerOffline = ctx.getBuyer().havenod === undefined;
-      await wait((isBuyerOffline ? TestConfig.maxWalletStartupMs : 0) + ctx.walletSyncPeriodMs * 2); // buyer or arbitrator will sign and publish payout tx (arbitrator is idling)
+      await wait((isBuyerOffline ? ctx.maxWalletStartupMs : 0) + ctx.walletSyncPeriodMs * 2); // buyer or arbitrator will sign and publish payout tx (arbitrator is idling)
       await testTradeState(await ctx.getSeller().havenod!.getTrade(trade.getTradeId()), {phase: ["PAYMENT_RECEIVED"], payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED", "PAYOUT_FINALIZED"], isCompleted: false, isPayoutPublished: true});
     }
 
@@ -3028,7 +3029,7 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
       else ctx.taker.havenod = buyer;
       ctx.usedPorts.push(getPort(buyer.getUrl()));
       HavenoUtils.log(1, "Done starting buyer");
-      await wait(TestConfig.maxWalletStartupMs + ctx.walletSyncPeriodMs);
+      await wait(ctx.maxWalletStartupMs + ctx.walletSyncPeriodMs);
     }
     if (ctx.isStopped) return ctx.offerId!;
     await testTradeState(await ctx.getBuyer().havenod!.getTrade(trade.getTradeId()), {phase: ["PAYMENT_RECEIVED"], payoutState: ["PAYOUT_PUBLISHED", "PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED", "PAYOUT_FINALIZED"], isCompleted: false, isPayoutPublished: true});
@@ -3077,7 +3078,7 @@ async function testTradePayoutFinalized(ctxP: Partial<TradeContext>) {
   const payoutTxId = (await ctx.arbitrator.havenod!.getTrade(ctx.offerId!)).getPayoutTxId();
   let trade = await ctx.arbitrator.havenod!.getTrade(ctx.offerId!);
   if (trade.getPayoutState() !== "PAYOUT_CONFIRMED") await mineToHeight(height + 1);
-  await wait(TestConfig.maxWalletStartupMs + ctx.walletSyncPeriodMs * 2);
+  await wait(ctx.maxWalletStartupMs + ctx.walletSyncPeriodMs * 2);
   const disputeState = ctx.wasDisputeOpened() ? "DISPUTE_CLOSED" : "NO_DISPUTE";
   if (ctx.getBuyer().havenod) await testTradeState(await ctx.getBuyer().havenod!.getTrade(ctx.offerId!), {phase: ctx.getPhase(), disputeState: disputeState, payoutState: ["PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED", "PAYOUT_FINALIZED"]});
   if (ctx.getSeller().havenod) await testTradeState(await ctx.getSeller().havenod!.getTrade(ctx.offerId!), {phase: ctx.getPhase(), disputeState: disputeState, payoutState: ["PAYOUT_CONFIRMED", "PAYOUT_UNLOCKED", "PAYOUT_FINALIZED"]});
@@ -3089,7 +3090,7 @@ async function testTradePayoutFinalized(ctxP: Partial<TradeContext>) {
   if (ctx.testPayoutUnlocked) {
     trade = await ctx.arbitrator.havenod!.getTrade(ctx.offerId!);
     if (!trade.getIsPayoutUnlocked()) await mineToHeight(height + 10);
-    await wait(TestConfig.maxWalletStartupMs + ctx.walletSyncPeriodMs * 2);
+    await wait(ctx.maxWalletStartupMs + ctx.walletSyncPeriodMs * 2);
     if (await ctx.getBuyer().havenod) await testTradeState(await ctx.getBuyer().havenod!.getTrade(ctx.offerId!), {phase: ctx.getPhase(), disputeState: disputeState, payoutState: ["PAYOUT_UNLOCKED", "PAYOUT_FINALIZED"]});
     if (await ctx.getSeller().havenod) await testTradeState(await ctx.getSeller().havenod!.getTrade(ctx.offerId!), {phase: ctx.getPhase(), disputeState: disputeState, payoutState: ["PAYOUT_UNLOCKED", "PAYOUT_FINALIZED"]});
     await testTradeState(await ctx.arbitrator.havenod!.getTrade(ctx.offerId!), {phase: ctx.getPhase(), disputeState: disputeState, payoutState: ["PAYOUT_UNLOCKED", "PAYOUT_FINALIZED"]});
@@ -3101,7 +3102,7 @@ async function testTradePayoutFinalized(ctxP: Partial<TradeContext>) {
   if (ctx.testPayoutFinalized) {
     trade = await ctx.arbitrator.havenod!.getTrade(ctx.offerId!);
     if (!trade.getIsPayoutFinalized()) await mineToHeight(height + getNumBlocksPayoutFinalized());
-    await wait(TestConfig.maxWalletStartupMs + TestConfig.idlePeriodTestMs);
+    await wait(ctx.maxWalletStartupMs + TestConfig.idlePeriodTestMs);
     if (await ctx.getBuyer().havenod) await testTradeState(await ctx.getBuyer().havenod!.getTrade(ctx.offerId!), {phase: ctx.getPhase(), disputeState: disputeState, payoutState: ["PAYOUT_FINALIZED"]});
     if (await ctx.getSeller().havenod) await testTradeState(await ctx.getSeller().havenod!.getTrade(ctx.offerId!), {phase: ctx.getPhase(), disputeState: disputeState, payoutState: ["PAYOUT_FINALIZED"]});
     await testTradeState(await ctx.arbitrator.havenod!.getTrade(ctx.offerId!), {phase: ctx.getPhase(), disputeState: disputeState, payoutState: ["PAYOUT_FINALIZED"]});
@@ -3422,7 +3423,7 @@ async function testOpenDispute(ctxP: Partial<TradeContext>) {
   }
 
   // peer sees the dispute
-  await wait(ctx.maxTimePeerNoticeMs + TestConfig.maxWalletStartupMs);
+  await wait(ctx.maxTimePeerNoticeMs + ctx.maxWalletStartupMs + ctx.walletSyncPeriodMs);
   const peerDispute = await ctx.getDisputePeer()!.havenod!.getDispute(ctx.offerId!);
   expect(peerDispute.getTradeId()).toEqual(ctx.offerId);
   expect(peerDispute.getIsOpener()).toBe(false || ctx.buyerDisputeContext === ctx.sellerDisputeContext); // TODO: both peers think they're the opener if disputes opened at same time since not waiting for ack
@@ -3610,7 +3611,7 @@ async function resolveDispute(ctxP: Partial<TradeContext>) {
   }
 
   // test resolved dispute
-  await wait(TestConfig.maxWalletStartupMs + ctx.walletSyncPeriodMs * 2);
+  await wait(ctx.maxWalletStartupMs + ctx.walletSyncPeriodMs * 2);
   if (ctx.getDisputeOpener()!.havenod) {
     const dispute = await ctx.getDisputeOpener()!.havenod!.getDispute(ctx.offerId!);
     assert(dispute.getIsClosed(), "Dispute is not closed for opener, trade " + ctx.offerId);
@@ -3692,7 +3693,7 @@ async function testAmountsAfterComplete(tradeCtx: TradeContext) {
   // TODO: payout tx is unknown to offline non-signer until confirmed
   if (isResolvedByDispute || tradeCtx.isOfflineFlow()) {
     await mineToHeight(await monerod.getHeight() + 1);
-    await wait(TestConfig.maxWalletStartupMs + tradeCtx.walletSyncPeriodMs * 2);
+    await wait(tradeCtx.maxWalletStartupMs + tradeCtx.walletSyncPeriodMs * 2);
   }
 
   // test trade payouts
