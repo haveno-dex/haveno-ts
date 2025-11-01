@@ -552,7 +552,7 @@ const HAVENO_WALLETS: Map<HavenoClient, any> = new Map<HavenoClient, any>();
 const OFFLINE_ERR_MSG = "Http response at 400 or 500 level";
 
 function getMaxConcurrency() {
-  return isGitHubActions() ? 4 : 20;
+  return isGitHubActions() ? 4 : 40;
 }
 
 function getNumBlocksPayoutFinalized() {
