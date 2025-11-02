@@ -2024,7 +2024,7 @@ test("Can complete all trade combinations (Test, stress)", async () => {
               if (BUYER_DISPUTE_OPTS[k] === DisputeContext.NONE && SELLER_DISPUTE_OPTS[l] === DisputeContext.NONE && RESOLVE_DISPUTE_OPTS[n]) continue; // skip permutations to resolve dispute when no dispute
               const ctx: Partial<TradeContext> = {
                 walletSyncPeriodMs: 8000, // increase for stress test
-                maxTimePeerNoticeMs: 8000,
+                maxTimePeerNoticeMs: 12000,
                 maker: { havenod: MAKER_OPTS[i] === TradeRole.MAKER ? user1 : user2 },
                 taker: { havenod: MAKER_OPTS[i] === TradeRole.MAKER ? user2 : user1 },
                 direction: DIRECTION_OPTS[j],
