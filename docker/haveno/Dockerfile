@@ -6,9 +6,8 @@ RUN set -ex && \
         make \
         git
 
-RUN set -ex && adduser --system --group --disabled-password haveno && \
-    mkdir -p /home/haveno && \
-    chown -R haveno:haveno /home/haveno
+RUN set -ex && \
+    useradd -m -d /home/haveno -s /bin/bash haveno
 
 USER haveno
 
