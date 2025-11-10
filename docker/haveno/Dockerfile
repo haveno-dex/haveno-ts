@@ -1,4 +1,4 @@
-FROM openjdk:21-jdk-bullseye
+FROM eclipse-temurin:21
 
 RUN set -ex && \
     apt update && \
