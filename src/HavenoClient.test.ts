@@ -2768,7 +2768,6 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
       ctx.offer = await makeOffer(ctx);
       expect(ctx.offer.getState()).toEqual(ctx.reserveExactAmount ? "PENDING" : "AVAILABLE");
       ctx.offerId = ctx.offer.getId();
-      await wait(ctx.maxTimePeerNoticeMs);
     } else {
       ctx.offer = getOffer(await ctx.maker.havenod!.getMyOffers(ctx.assetCode!, ctx.direction), ctx.offerId!);
       if (!ctx.offer) {
@@ -2778,6 +2777,7 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
         } catch (err) { /* ignore */ }
       }
     }
+    await wait(ctx.maxTimePeerNoticeMs); //wait for taker and arbitrator to see offer
 
     // TODO (woodser): test error message taking offer before posted
 
