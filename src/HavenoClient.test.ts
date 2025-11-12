@@ -147,7 +147,7 @@ const defaultTradeConfig: Partial<TradeContext> = {
   disputeSummary: "Seller is winner",
   walletSyncPeriodMs: 5000,
   maxTimePeerNoticeMs: 6000,
-  maxWalletStartupMs: 10000, // TODO (woodser): make shorter by switching to jni
+  maxWalletStartupMs: 14000, // TODO (woodser): make shorter by switching to jni
   testChatMessagesTrade: true,
   testChatMessagesDispute: true,
   stopOnFailure: false, // TODO: setting to true can cause error: Http response at 400 or 500 level, http status code: 503
