@@ -3423,7 +3423,7 @@ async function testOpenDispute(ctxP: Partial<TradeContext>) {
   }
 
   // peer sees the dispute
-  await wait(ctx.maxTimePeerNoticeMs + ctx.maxWalletStartupMs + ctx.walletSyncPeriodMs);
+  await wait(ctx.maxTimePeerNoticeMs + ctx.maxWalletStartupMs + ctx.walletSyncPeriodMs * 2); // both arbitrator and peer will sync / process
   const peerDispute = await ctx.getDisputePeer()!.havenod!.getDispute(ctx.offerId!);
   expect(peerDispute.getTradeId()).toEqual(ctx.offerId);
   expect(peerDispute.getIsOpener()).toBe(false || ctx.buyerDisputeContext === ctx.sellerDisputeContext); // TODO: both peers think they're the opener if disputes opened at same time since not waiting for ack
