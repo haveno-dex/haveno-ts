@@ -2326,11 +2326,8 @@ test("Invalidates offers when reserved funds are spent (Test, CI)", async () => 
     tx = await user1Wallet.sweepOutput({keyImage: reservedKeyImages[0], address: await user1Wallet.getPrimaryAddress(), relay: false});
     await monerod.submitTxHex(tx.getFullHex()!, true);
 
-    // mine block so spend is confirmed
-    await mineBlocks(1);
-
     // offer is removed from peer offers
-    await wait(20000);
+    await wait(20000); // TODO: why can't it be sync period * 2?
     if (getOffer(await user2.getOffers(assetCode, OfferDirection.BUY), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in peer's offers after reserved funds spent");
 
     // offer is removed from my offers
@@ -3687,7 +3684,7 @@ async function testAmountsAfterComplete(tradeCtx: TradeContext) {
     }
   }
 
-  // TODO: payout tx is unknown to offline non-signer until confirmed
+  // TODO: payout tx is unknown to non-signer until confirmed
   if (isResolvedByDispute || tradeCtx.isOfflineFlow()) {
     await mineToHeight(await monerod.getHeight() + 1);
     await wait(tradeCtx.maxWalletStartupMs + tradeCtx.walletSyncPeriodMs * 2);
