@@ -2326,11 +2326,8 @@ test("Invalidates offers when reserved funds are spent (Test, CI)", async () => 
     tx = await user1Wallet.sweepOutput({keyImage: reservedKeyImages[0], address: await user1Wallet.getPrimaryAddress(), relay: false});
     await monerod.submitTxHex(tx.getFullHex()!, true);
 
-    // mine block so spend is confirmed
-    await mineBlocks(1);
-
     // offer is removed from peer offers
-    await wait(20000);
+    await wait(20000); // TODO: why can't it be sync period * 2?
     if (getOffer(await user2.getOffers(assetCode, OfferDirection.BUY), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in peer's offers after reserved funds spent");
 
     // offer is removed from my offers
@@ -2348,7 +2345,6 @@ test("Invalidates offers when reserved funds are spent (Test, CI)", async () => 
   }
 
   // flush tx from pool
-  if (tx) await monerod.flushTxPool(tx.getHash());
   if (err) throw err;
 });
 
@@ -3688,7 +3684,7 @@ async function testAmountsAfterComplete(tradeCtx: TradeContext) {
     }
   }
 
-  // TODO: payout tx is unknown to offline non-signer until confirmed
+  // TODO: payout tx is unknown to non-signer until confirmed
   if (isResolvedByDispute || tradeCtx.isOfflineFlow()) {
     await mineToHeight(await monerod.getHeight() + 1);
     await wait(tradeCtx.maxWalletStartupMs + tradeCtx.walletSyncPeriodMs * 2);
@@ -3705,6 +3701,7 @@ async function testPeerAmountsAfterComplete(tradeCtx: TradeContext, peerCtx: Pee
   const trade = await peerCtx.havenod!.getTrade(tradeCtx.offerId!);
 
   // test trade amounts
+  HavenoUtils.log(1, "Testing trade amounts for offer " + tradeCtx.offerId + " for " + peerCtx.appName);
   const isBuyer = tradeCtx.getBuyer() === peerCtx;
   if (isBuyer) expect(BigInt(trade.getBuyerDepositTxFee())).toEqual(tradeCtx.getBuyer().depositTxFee); // TODO: get and test peer's security deposit tx fee?
   else expect(BigInt(trade.getSellerDepositTxFee())).toEqual(tradeCtx.getSeller().depositTxFee);
@@ -3714,8 +3711,9 @@ async function testPeerAmountsAfterComplete(tradeCtx: TradeContext, peerCtx: Pee
   expect(BigInt(trade.getSellerPayoutAmount())).toEqual(tradeCtx.getSeller().payoutAmount);
 
   // test balance change after payout tx
+  HavenoUtils.log(1, "Testing payout amounts for offer " + tradeCtx.offerId + " for " + peerCtx.appName);
   const differenceAfterPayout = BigInt(peerCtx.balancesAfterPayout?.getBalance()!) - BigInt(peerCtx.balancesBeforePayout?.getBalance()!);
-  expect(differenceAfterPayout).toEqual(peerCtx.payoutAmount);
+  assert.equal(differenceAfterPayout, peerCtx.payoutAmount, "Unexpected balance after payout for offerId=" + tradeCtx.offerId + ", balance before = " + BigInt(peerCtx.balancesBeforePayout?.getBalance()!) + ", balance after = " + BigInt(peerCtx.balancesAfterPayout?.getBalance()!) + ", difference = " + differenceAfterPayout + ", expected payout amount = " + peerCtx.payoutAmount);
 
   // test balance change since before offer
   if (tradeCtx.testBalanceChangeEndToEnd) {
