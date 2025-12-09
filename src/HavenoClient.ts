@@ -26,9 +26,9 @@ import { TradeStatistics3, OfferDirection, PaymentMethod, PaymentAccountForm, Pa
 
 
 /**
- * Configuration to post, clone, or edit an offer.
+ * Configuration to post or clone an offer.
  */
-export interface OfferConfig {
+export interface PostOfferConfig {
     direction?: OfferDirection;
     amount?: bigint;
     minAmount?: bigint;
@@ -43,6 +43,19 @@ export interface OfferConfig {
     buyerAsTakerWithoutDeposit?: boolean;
     extraInfo?: string;
     sourceOfferId?: string;
+}
+
+/**
+ * Configuration to edit an offer.
+ */
+export interface EditOfferConfig {
+    offerId: string;
+    assetCode?: string;
+    paymentAccountId?: string;
+    price?: number;
+    marketPriceMarginPct?: number;
+    triggerPrice?: number;
+    extraInfo?: string;
 }
 
 /**
@@ -1074,7 +1087,7 @@ export default class HavenoClient {
   /**
    * Post or clone an offer.
    * 
-   * @param {OfferConfig} config - configures the offer to post or clone
+   * @param {PostOfferConfig} config - configures the offer to post or clone
    * @param {OfferDirection} [config.direction] - specifies to buy or sell xmr (default buy)
    * @param {bigint} [config.amount] - amount of XMR to trade
    * @param {string} [config.assetCode] - asset code to trade for XMR
@@ -1091,7 +1104,7 @@ export default class HavenoClient {
    * @param {string} [config.sourceOfferId] - create a clone of a source offer which shares the same reserved funds. overrides other fields which are immutable or unspecified (optional)
    * @return {OfferInfo} the posted offer
    */
-  async postOffer(config: OfferConfig): Promise<OfferInfo> {
+  async postOffer(config: PostOfferConfig): Promise<OfferInfo> {
     console.log("Posting offer with security deposit %: " + config.securityDepositPct)
     try {
       const request = new PostOfferRequest();
@@ -1119,32 +1132,27 @@ export default class HavenoClient {
   /**
    * Edit an existing offer.
    * 
-   * @param {string} offerId - id of the offer to edit
-   * @param {string} currencyCode - traded asset code (optional, default to existing)
-   * @param {number} price - trade price (optional, default to market price)
-   * @param {number} marketPriceMarginPct - if using market price, % from market price to accept (optional, default 0%)
-   * @param {number} triggerPrice - price to remove offer (optional)
-   * @param {string} paymentAccountId - payment account id (optional, default to existing)
-   * @param {string} extraInfo - set the offer's extra information (optional, default to none)
+   * @param {EditOfferConfig} config - configures the offer to edit
+   * @param {string} [config.offerId] - id of the offer to edit
+   * @param {string} [config.assetCode] - traded asset code (optional, default to existing)
+   * @param {number} [config.price] - trade price (optional, default to market price)
+   * @param {number} [config.marketPriceMarginPct] - if using market price, % from market price to accept (optional, default 0%)
+   * @param {number} [config.triggerPrice] - price to remove offer (optional)
+   * @param {string} [config.paymentAccountId] - payment account id (optional, default to existing)
+   * @param {string} [config.extraInfo] - set the offer's extra information (optional, default to none)
    * @return {OfferInfo} the edited offer
    */
-  async editOffer(offerId: string,
-                  currencyCode: string | undefined,
-                  price: number | undefined,
-                  marketPriceMarginPct: number | undefined,
-                  triggerPrice: number | undefined,
-                  paymentAccountId: string | undefined,
-                  extraInfo: string | undefined): Promise<OfferInfo> {
+  async editOffer(config: EditOfferConfig): Promise<OfferInfo> {
     try {
       const request = new EditOfferRequest();
-      request.setOfferId(offerId);
-      if (currencyCode) request.setCurrencyCode(currencyCode!);
-      if (price) request.setPrice(price!.toString());
-      request.setUseMarketBasedPrice(price === undefined);
-      request.setMarketPriceMarginPct(marketPriceMarginPct ? marketPriceMarginPct : 0);
-      if (triggerPrice) request.setTriggerPrice(triggerPrice!.toString());
-      if (paymentAccountId) request.setPaymentAccountId(paymentAccountId!);
-      request.setExtraInfo(extraInfo ? extraInfo : ""); // clear existing extra info if undefined
+      request.setOfferId(config.offerId);
+      if (config.assetCode) request.setCurrencyCode(config.assetCode);
+      if (config.price) request.setPrice(config.price.toString());
+      request.setUseMarketBasedPrice(config.price === undefined);
+      request.setMarketPriceMarginPct(config.marketPriceMarginPct ? config.marketPriceMarginPct : 0);
+      if (config.triggerPrice) request.setTriggerPrice(config.triggerPrice.toString());
+      if (config.paymentAccountId) request.setPaymentAccountId(config.paymentAccountId);
+      request.setExtraInfo(config.extraInfo ? config.extraInfo : ""); // clear existing extra info if undefined
       return (await this._offersClient.editOffer(request, {password: this._password})).getOffer()!;
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);
