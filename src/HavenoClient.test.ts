@@ -1840,7 +1840,7 @@ test("Cannot post offer outside of trade limits (Test, CI, sanity check)", async
     });
     throw new Error("Should have rejected posting offer above trade limit")
   } catch (err: any) {
-    if (err.message.indexOf("amount is larger than") < 0) throw err;
+    if (err.message.indexOf("Amount is larger than") < 0) throw err;
   }
 
   // test posting sell offer above limit
@@ -1854,7 +1854,7 @@ test("Cannot post offer outside of trade limits (Test, CI, sanity check)", async
     });
     throw new Error("Should have rejected posting offer above trade limit")
   } catch (err: any) {
-    if (err.message.indexOf("amount is larger than") < 0) throw err;
+    if (err.message.indexOf("Amount is larger than") < 0) throw err;
   }
 
   // test posting sell offer below limit
@@ -1924,7 +1924,7 @@ test("Cannot post offer outside of trade limits (Test, CI, sanity check)", async
     });
     throw new Error("Should have rejected posting offer with fixed price and trigger price")
   } catch (err: any) {
-    if (err.message.toLowerCase().indexOf("cannot set trigger price for fixed price offers.") < 0) throw err;
+    if (err.message.indexOf("Cannot set trigger price for fixed price offers.") < 0) throw err;
   }
 
   // test minimum offer limit
@@ -2243,7 +2243,7 @@ test("Cannot make or take offer with insufficient funds (Test, CI, sanity check)
       await makeOffer({maker: {havenod: user3}, makerPaymentAccountId: paymentAccount.getId(), awaitFundsToMakeOffer: false});
       throw new Error("Should have failed making offer with insufficient funds")
     } catch (err: any) {
-      if (!err.message.includes("not enough funds")) throw err;
+      if (!err.message.includes("Not enough funds")) throw err;
       const errTyped = err as HavenoError;
       assert.equal(errTyped.code, 2);
     }
@@ -2432,7 +2432,7 @@ test("Can handle unexpected errors during trade initialization (Test)", async ()
       let expected = false;
       const expectedErrMsgs = ["not enough unlocked money", "timeout reached. protocol did not complete", "trade is already taken", "open offer has been removed"];
       for (const expectedErrMsg of expectedErrMsgs) {
-        if (err.message.indexOf(expectedErrMsg) >= 0) {
+        if (err.message.toLowerCase().indexOf(expectedErrMsg) >= 0) {
           expected = true;
           break;
         }
