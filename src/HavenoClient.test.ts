@@ -195,7 +195,7 @@ class TradeContext {
   makerPaymentAccountId?: string;
   securityDepositPct?: number;
   price?: number;
-  priceMargin?: number;
+  marketPriceMarginPct?: number;
   triggerPrice?: number;
   reserveExactAmount?: boolean;
   isPrivateOffer?: boolean;
@@ -1253,9 +1253,9 @@ test("Can get market depth (Test, CI, sanity check)", async () => {
     await makeOffer({maker: {havenod: user1}, direction: OfferDirection.BUY, offerAmount: 150000000000n, assetCode: assetCode, price: 0.082});
     await makeOffer({maker: {havenod: user1}, direction: OfferDirection.BUY, offerAmount: 200000000000n, assetCode: assetCode, price: 0.083});
     await makeOffer({maker: {havenod: user1}, direction: OfferDirection.BUY, offerAmount: 150000000000n, assetCode: assetCode, price: 0.083});
-    await makeOffer({maker: {havenod: user1}, direction: OfferDirection.SELL, offerAmount: 300000000000n, assetCode: assetCode, priceMargin: 0.00});
-    await makeOffer({maker: {havenod: user1}, direction: OfferDirection.SELL, offerAmount: 300000000000n, assetCode: assetCode, priceMargin: 0.02});
-    await makeOffer({maker: {havenod: user1}, direction: OfferDirection.SELL, offerAmount: 400000000000n, assetCode: assetCode, priceMargin: 0.05});
+    await makeOffer({maker: {havenod: user1}, direction: OfferDirection.SELL, offerAmount: 300000000000n, assetCode: assetCode, marketPriceMarginPct: 0.00});
+    await makeOffer({maker: {havenod: user1}, direction: OfferDirection.SELL, offerAmount: 300000000000n, assetCode: assetCode, marketPriceMarginPct: 0.02});
+    await makeOffer({maker: {havenod: user1}, direction: OfferDirection.SELL, offerAmount: 400000000000n, assetCode: assetCode, marketPriceMarginPct: 0.05});
 
     // get user2's market depth
     await wait(TestConfig.trade.maxTimePeerNoticeMs);
@@ -1621,16 +1621,19 @@ test("Can post, deactivate, activate, edit, and remove an offer (Test, CI, sanit
 
   // edit offer
   ctx.extraInfo = "My edited extra info";
+  ctx.price = undefined;
+  ctx.marketPriceMarginPct = 0.15;
   offer = await user1.editOffer(offer.getId(),
       undefined, // currency code
-      170, // price
-      undefined, // market price margin pct
+      ctx.price, // price
+      ctx.marketPriceMarginPct, // market price margin pct
       undefined, // trigger price
       undefined, // payment account id
       ctx.extraInfo // extra info
   );
   assert.equal(offer.getState(), "AVAILABLE");
-  assert.equal(parseFloat(offer.getPrice()), 170);
+  if (ctx.marketPriceMarginPct) assert.equal(offer.getMarketPriceMarginPct(), ctx.marketPriceMarginPct);
+  if (ctx.price) expect(parseFloat(offer.getPrice())).toEqual(ctx.price);
   expect(offer.getExtraInfo()).toContain("My edited extra info");
 
   // peer sees edited offer
@@ -1639,7 +1642,8 @@ test("Can post, deactivate, activate, edit, and remove an offer (Test, CI, sanit
   if (!peerOffer) throw new Error("Offer " + offer.getId() + " was not found in peer's offers after edited");
   testOffer(peerOffer, ctx, false);
   expect(peerOffer.getExtraInfo()).toContain("My edited extra info");
-  expect(parseFloat(peerOffer.getPrice())).toEqual(170);
+  if (ctx.marketPriceMarginPct) assert.equal(peerOffer.getMarketPriceMarginPct(), ctx.marketPriceMarginPct);
+  if (ctx.price) expect(parseFloat(peerOffer.getPrice())).toEqual(ctx.price);
 
   // cancel offer
   await user1.removeOffer(offer.getId());
@@ -2617,7 +2621,7 @@ test("Can bootstrap a network", async () => {
     // randomize offer price
     if (await isFixedPrice(ctxP)) ctxP.price = ctxP.direction === OfferDirection.BUY ? getRandomFloat(125, 155) : getRandomFloat(160, 190);
     if (ctxP.price === undefined) {
-      if (ctxP.priceMargin === undefined) ctxP.priceMargin = parseFloat(getRandomFloat(0, .3).toFixed(10));
+      if (ctxP.marketPriceMarginPct === undefined) ctxP.marketPriceMarginPct = parseFloat(getRandomFloat(0, .3).toFixed(10));
       const currentPrice = await ctxP.maker.havenod.getPrice(ctxP.assetCode!)
       if (getRandomOutcome(1/2)) ctxP.triggerPrice = ctxP.direction === OfferDirection.BUY ? currentPrice! * (1 + getRandomFloat(0, .1)) : currentPrice! * (1 - getRandomFloat(0, .1));
     }
@@ -3170,7 +3174,7 @@ async function makeOffer(ctxP?: Partial<TradeContext>): Promise<OfferInfo> {
     paymentAccountId: ctx.makerPaymentAccountId,
     securityDepositPct: ctx.securityDepositPct,
     price: ctx.price,
-    marketPriceMarginPct: ctx.priceMargin,
+    marketPriceMarginPct: ctx.marketPriceMarginPct,
     triggerPrice: ctx.triggerPrice,
     minAmount: ctx.offerMinAmount,
     reserveExactAmount: ctx.reserveExactAmount,
@@ -4554,7 +4558,7 @@ function testOffer(offer: OfferInfo, ctxP?: Partial<TradeContext>, isMyOffer?: b
     if (ctx.extraInfo) expect(offer.getExtraInfo().indexOf(ctx.extraInfo)).toBeGreaterThanOrEqual(0); // may contain extra info from payment account
     expect(offer.getSellerSecurityDepositPct()).toEqual(ctx.securityDepositPct);
     expect(offer.getUseMarketBasedPrice()).toEqual(!ctx.price);
-    expect(offer.getMarketPriceMarginPct()).toEqual(ctx.priceMargin ? ctx.priceMargin : 0);
+    expect(offer.getMarketPriceMarginPct()).toEqual(ctx.marketPriceMarginPct ? ctx.marketPriceMarginPct : 0);
 
     // TODO: test rest of offer
   }
