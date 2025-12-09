@@ -1623,14 +1623,12 @@ test("Can post, deactivate, activate, edit, and remove an offer (Test, CI, sanit
   ctx.extraInfo = "My edited extra info";
   ctx.price = undefined;
   ctx.marketPriceMarginPct = 0.15;
-  offer = await user1.editOffer(offer.getId(),
-      undefined, // currency code
-      ctx.price, // price
-      ctx.marketPriceMarginPct, // market price margin pct
-      undefined, // trigger price
-      undefined, // payment account id
-      ctx.extraInfo // extra info
-  );
+  offer = await user1.editOffer({
+    offerId: offer.getId(),
+    price: ctx.price,
+    marketPriceMarginPct: ctx.marketPriceMarginPct,
+    extraInfo: ctx.extraInfo
+  });
   assert.equal(offer.getState(), "AVAILABLE");
   if (ctx.marketPriceMarginPct) assert.equal(offer.getMarketPriceMarginPct(), ctx.marketPriceMarginPct);
   if (ctx.price) expect(parseFloat(offer.getPrice())).toEqual(ctx.price);
