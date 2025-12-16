@@ -878,6 +878,8 @@ test("Can manage Monero daemon connections (Test, CI)", async () => {
       "--zmq-rpc-bind-port", TestConfig.monerod3.zmqRpcBindPort,
       "--log-level", "0",
       "--confirm-external-bind",
+      "--add-exclusive-node", "127.0.0.1:28080",
+      "--add-exclusive-node", "127.0.0.1:48080",
       "--rpc-access-control-origins", "http://127.0.0.1:8080",
       "--fixed-difficulty", "500",
       "--disable-rpc-ban",
@@ -886,6 +888,7 @@ test("Can manage Monero daemon connections (Test, CI)", async () => {
     ];
     if (getBaseCurrencyNetwork() !== BaseCurrencyNetwork.XMR_MAINNET) cmd.push("--" + moneroTs.MoneroNetworkType.toString(TestConfig.networkType).toLowerCase());
     if (TestConfig.monerod3.username) cmd.push("--rpc-login", TestConfig.monerod3.username + ":" + TestConfig.monerod3.password);
+    HavenoUtils.log(0, "Starting monerod3 with command: " + cmd.join(" "));
     monerod3 = await moneroTs.connectToDaemonRpc(cmd);
 
     // connection is online and not authenticated
