@@ -27,6 +27,7 @@ services:
     entrypoint: [ "./.localnet/monerod" ]
     command: [
       "--testnet",
+      "--offline",
       "--no-igd",
       "--hide-my-port",
       "--data-dir=./.localnet/xmr_local/node1",
@@ -51,6 +52,7 @@ services:
     entrypoint: [ "./.localnet/monerod" ]
     command: [
       "--testnet",
+      "--offline",
       "--no-igd",
       "--hide-my-port",
       "--data-dir=./.localnet/xmr_local/node2",

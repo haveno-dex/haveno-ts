@@ -869,6 +869,7 @@ test("Can manage Monero daemon connections (Test, CI)", async () => {
     // start monerod3
     const cmd = [
       TestConfig.moneroBinsDir + "/monerod",
+      "--offline",
       "--no-igd",
       "--hide-my-port",
       "--data-dir",  TestConfig.moneroBinsDir + "/" + TestConfig.baseCurrencyNetwork.toLowerCase() + "/node3",
