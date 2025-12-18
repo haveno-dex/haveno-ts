@@ -280,7 +280,59 @@ export default class HavenoClient {
       throw new HavenoError(e.message, e.code);
     }
   }
-  
+
+  /**
+   * Check whether the application is fully initialized with an account and a
+   * connection to the Haveno network.
+   * 
+   * @return {Promise<boolean>} true if the application is initialized, false otherwise
+   */
+  async isAppInitialized(): Promise<boolean> {
+    try {
+      return (await this._accountClient.isAppInitialized(new IsAppInitializedRequest(), {password: this._password})).getIsAppInitialized();
+    } catch (e: any) {
+      throw new HavenoError(e.message, e.code);
+    }
+  }
+
+  /**
+   * Wait for the application to be fully initialized with an account and a
+   * connection to the Haveno network.
+   * 
+   * TODO:
+   *  
+   * Currently when the application starts, the account is first initialized with createAccount()
+   * or openAccount() which return immediately. A notification is sent after all setup is complete and
+   * the application is connected to the Haveno network.
+   * 
+   * Ideally when the application starts, the system checks the Haveno network connection, supporting
+   * havenod.isHavenoConnectionInitialized() and havenod.awaitHavenoConnectionInitialized().
+   * Independently, gRPC createAccount() and openAccount() return after all account setup and reading from disk.
+   * 
+   * @private
+   */
+  async awaitAppInitialized(): Promise<void> {
+    try {
+      // eslint-disable-next-line no-async-promise-executor
+      await new Promise<void>(async (resolve) => {
+        let isResolved = false;
+        const resolveOnce = async () => {
+          if (isResolved) return;
+          isResolved = true;
+          await this.removeNotificationListener(listener);
+          resolve();
+        };
+        const listener = async function(notification: NotificationMessage) {
+          if (notification.getType() === NotificationMessage.NotificationType.APP_INITIALIZED) await resolveOnce();
+        }
+        await this.addNotificationListener(listener);
+        if (await this.isAppInitialized()) await resolveOnce();
+      });
+    } catch (e: any) {
+      throw new HavenoError(e.message, e.code);
+    }
+  }
+
   /**
    * Indicates if connected and authenticated with the Haveno daemon.
    * 
@@ -329,7 +381,7 @@ export default class HavenoClient {
   async createAccount(password: string): Promise<void> {
     try {
       await this._accountClient.createAccount(new CreateAccountRequest().setPassword(password), {password: this._password});
-      await this._awaitAppInitialized(); // TODO: grpc should not return before setup is complete
+      await this.awaitAppInitialized(); // TODO: grpc should not return before setup is complete?
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);
     }
@@ -343,7 +395,7 @@ export default class HavenoClient {
   async openAccount(password: string): Promise<void> {
     try {
       await this._accountClient.openAccount(new OpenAccountRequest().setPassword(password), {password: this._password});
-      return this._awaitAppInitialized(); // TODO: grpc should not return before setup is complete
+      return this.awaitAppInitialized(); // TODO: grpc should not return before setup is complete?
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);
     }
@@ -1445,52 +1497,6 @@ export default class HavenoClient {
   
   // ------------------------------- HELPERS ----------------------------------
   
-  /**
-   * Wait for the application to be fully initialized with an account and a
-   * connection to the Haveno network.
-   * 
-   * TODO:
-   *  
-   * Currently when the application starts, the account is first initialized with createAccount()
-   * or openAccount() which return immediately. A notification is sent after all setup is complete and
-   * the application is connected to the Haveno network.
-   * 
-   * Ideally when the application starts, the system checks the Haveno network connection, supporting
-   * havenod.isHavenoConnectionInitialized() and havenod.awaitHavenoConnectionInitialized().
-   * Independently, gRPC createAccount() and openAccount() return after all account setup and reading from disk.
-   * 
-   * @private
-   */
-  async _awaitAppInitialized(): Promise<void> {
-    try {
-      // eslint-disable-next-line no-async-promise-executor
-      await new Promise<void>(async (resolve) => {
-        let isResolved = false;
-        const resolveOnce = async () => {
-          if (isResolved) return;
-          isResolved = true;
-          await this.removeNotificationListener(listener);
-          resolve();
-        };
-        const listener = async function(notification: NotificationMessage) {
-          if (notification.getType() === NotificationMessage.NotificationType.APP_INITIALIZED) await resolveOnce();
-        }
-        await this.addNotificationListener(listener);
-        if (await this._isAppInitialized()) await resolveOnce();
-      });
-    } catch (e: any) {
-      throw new HavenoError(e.message, e.code);
-    }
-  }
-  
-  /** @private */
-  async _isAppInitialized(): Promise<boolean> {
-    try {
-      return (await this._accountClient.isAppInitialized(new IsAppInitializedRequest(), {password: this._password})).getIsAppInitialized();
-    } catch (e: any) {
-      throw new HavenoError(e.message, e.code);
-    }
-  }
   
   /**
    * Callback for grpc notifications.
