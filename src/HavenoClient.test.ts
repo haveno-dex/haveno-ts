@@ -707,15 +707,15 @@ test("Can manage an account (Test, CI)", async () => {
     if (await user3.isConnectedToMonero()) await user3.getBalances(); // only connected if local node running
     assert(await user3.accountExists());
     assert(await user3.isAccountOpen());
+    assert(await user3.isAppInitialized());
 
     // create payment account
     const paymentAccount = await user3.createCryptoPaymentAccount("My ETH account", TestConfig.cryptoAddresses[0].currencyCode, TestConfig.cryptoAddresses[0].address);
 
     // close account
     await user3.closeAccount();
-    assert(await user3.accountExists());
-    assert(!await user3.isAccountOpen());
     await testAccountNotOpen(user3);
+    assert(await user3.accountExists());
 
     // open account with wrong password
     try {
@@ -729,18 +729,20 @@ test("Can manage an account (Test, CI)", async () => {
     await user3.openAccount(password);
     assert(await user3.accountExists());
     assert(await user3.isAccountOpen());
+    assert(await user3.isAppInitialized());
 
     // restart user3
     const user3Config = {appName: user3.getAppName(), autoLogin: false}
     await releaseHavenoProcess(user3);
     user3 = await initHaveno(user3Config);
     assert(await user3.accountExists());
-    assert(!await user3.isAccountOpen());
+    await testAccountNotOpen(user3);
 
     // open account
     await user3.openAccount(password);
     assert(await user3.accountExists());
     assert(await user3.isAccountOpen());
+    assert(await user3.isAppInitialized());
 
     // try changing incorrect password
     try {
@@ -764,6 +766,7 @@ test("Can manage an account (Test, CI)", async () => {
     password = newPassword;
     assert(await user3.accountExists());
     assert(await user3.isAccountOpen());
+    assert(await user3.isAppInitialized());
 
     // restart user3
     await releaseHavenoProcess(user3);
@@ -774,6 +777,7 @@ test("Can manage an account (Test, CI)", async () => {
     await user3.openAccount(password);
     assert(await user3.accountExists());
     assert(await user3.isAccountOpen());
+    assert(await user3.isAppInitialized());
 
     // backup account to zip file
     const zipFile = TestConfig.testDataDir + "/backup.zip";
@@ -789,6 +793,7 @@ test("Can manage an account (Test, CI)", async () => {
     while(!await user3.isConnectedToDaemon());
     HavenoUtils.log(1, "Reconnecting to havenod");
     assert(!await user3.accountExists());
+    assert(!await user3.isAppInitialized());
 
     // restore account
     const zipBytes: Uint8Array = new Uint8Array(fs.readFileSync(zipFile));
@@ -796,10 +801,13 @@ test("Can manage an account (Test, CI)", async () => {
     do { await wait(1000); }
     while(!await user3.isConnectedToDaemon());
     assert(await user3.accountExists());
+    assert(!await user3.isAccountOpen());
+    assert(!await user3.isAppInitialized());
 
     // open restored account
     await user3.openAccount(password);
     assert(await user3.isAccountOpen());
+    assert(await user3.isAppInitialized());
 
     // check the persisted payment account
     const paymentAccount2 = await user3.getPaymentAccount(paymentAccount.getId());
@@ -813,6 +821,8 @@ test("Can manage an account (Test, CI)", async () => {
   if (err) throw err;
 
   async function testAccountNotOpen(havenod: HavenoClient): Promise<void> { // TODO: generalize this?
+    assert(!await havenod.isAccountOpen());
+    assert(!await havenod.isAppInitialized());
     try { await havenod.getMoneroConnections(); throw new Error("Should have thrown"); }
     catch (err: any) { assert.equal(err.message, "Account not open"); }
     try { await havenod.getXmrTxs(); throw new Error("Should have thrown"); }
