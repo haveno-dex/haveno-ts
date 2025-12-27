@@ -885,7 +885,7 @@ test("Can manage Monero daemon connections (Test, CI)", async () => {
       "--p2p-bind-ip", "127.0.0.1",
       "--p2p-bind-port", TestConfig.monerod3.p2pBindPort,
       "--rpc-bind-port", TestConfig.monerod3.rpcBindPort,
-      "--zmq-rpc-bind-port", TestConfig.monerod3.zmqRpcBindPort,
+      "--no-zmq",
       "--add-exclusive-node", "127.0.0.1:28080",
       "--add-exclusive-node", "127.0.0.1:48080",
       "--log-level", "0",
