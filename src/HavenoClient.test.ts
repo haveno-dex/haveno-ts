@@ -896,6 +896,7 @@ test("Can manage Monero daemon connections (Test, CI)", async () => {
     ];
     if (getBaseCurrencyNetwork() !== BaseCurrencyNetwork.XMR_MAINNET) cmd.push("--" + moneroTs.MoneroNetworkType.toString(TestConfig.networkType).toLowerCase());
     if (TestConfig.monerod3.username) cmd.push("--rpc-login", TestConfig.monerod3.username + ":" + TestConfig.monerod3.password);
+    HavenoUtils.log(1, "Starting monerod3 with command: " + cmd.join(" "));
     monerod3 = await moneroTs.connectToDaemonRpc(cmd);
 
     // connection is online and not authenticated
