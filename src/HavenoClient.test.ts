@@ -921,15 +921,22 @@ test("Can manage Monero daemon connections (Test, CI)", async () => {
     connection = await user3.checkMoneroConnection();
     assert(await user3.isConnectedToMonero());
     testConnection(connection!, TestConfig.monerod3.url, OnlineStatus.ONLINE, AuthenticationStatus.AUTHENTICATED, 1);
+    HavenoUtils.log(1, "monerod3 connection established");
 
     // change account password
     const newPassword = "newPassword";
     await user3.changePassword(TestConfig.defaultHavenod.accountPassword, newPassword);
 
+    HavenoUtils.log(1, "Done setting password");
+    assert(await user3.isConnectedToMonero());
+    HavenoUtils.log(1, "monerod3 connection still established");
+
     // restart user3
     const appName = user3.getAppName();
     await releaseHavenoProcess(user3);
+    HavenoUtils.log(1, "Done releasing haveno process");
     user3 = await initHaveno({appName: appName, accountPassword: newPassword});
+    HavenoUtils.log(1, "Done initializing haveno process");
 
     // connection is restored, online, and authenticated
     await user3.checkMoneroConnection();
