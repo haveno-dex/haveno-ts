@@ -921,7 +921,7 @@ test("Can manage Monero daemon connections (Test, CI)", async () => {
     connection = await user3.checkMoneroConnection();
     assert(await user3.isConnectedToMonero());
     testConnection(connection!, TestConfig.monerod3.url, OnlineStatus.ONLINE, AuthenticationStatus.AUTHENTICATED, 1);
-    HavenoUtils.log(1, "monerod3 connection established");
+    HavenoUtils.log(1, "monerod3 connection established: " + ((await user3.getMoneroConnection())!.toString()));
 
     // change account password
     const newPassword = "newPassword";
