@@ -707,15 +707,15 @@ test("Can manage an account (Test, CI)", async () => {
     if (await user3.isConnectedToMonero()) await user3.getBalances(); // only connected if local node running
     assert(await user3.accountExists());
     assert(await user3.isAccountOpen());
+    assert(await user3.isAppInitialized());
 
     // create payment account
     const paymentAccount = await user3.createCryptoPaymentAccount("My ETH account", TestConfig.cryptoAddresses[0].currencyCode, TestConfig.cryptoAddresses[0].address);
 
     // close account
     await user3.closeAccount();
-    assert(await user3.accountExists());
-    assert(!await user3.isAccountOpen());
     await testAccountNotOpen(user3);
+    assert(await user3.accountExists());
 
     // open account with wrong password
     try {
@@ -729,18 +729,20 @@ test("Can manage an account (Test, CI)", async () => {
     await user3.openAccount(password);
     assert(await user3.accountExists());
     assert(await user3.isAccountOpen());
+    assert(await user3.isAppInitialized());
 
     // restart user3
     const user3Config = {appName: user3.getAppName(), autoLogin: false}
     await releaseHavenoProcess(user3);
     user3 = await initHaveno(user3Config);
     assert(await user3.accountExists());
-    assert(!await user3.isAccountOpen());
+    await testAccountNotOpen(user3);
 
     // open account
     await user3.openAccount(password);
     assert(await user3.accountExists());
     assert(await user3.isAccountOpen());
+    assert(await user3.isAppInitialized());
 
     // try changing incorrect password
     try {
@@ -764,6 +766,7 @@ test("Can manage an account (Test, CI)", async () => {
     password = newPassword;
     assert(await user3.accountExists());
     assert(await user3.isAccountOpen());
+    assert(await user3.isAppInitialized());
 
     // restart user3
     await releaseHavenoProcess(user3);
@@ -774,6 +777,7 @@ test("Can manage an account (Test, CI)", async () => {
     await user3.openAccount(password);
     assert(await user3.accountExists());
     assert(await user3.isAccountOpen());
+    assert(await user3.isAppInitialized());
 
     // backup account to zip file
     const zipFile = TestConfig.testDataDir + "/backup.zip";
@@ -789,6 +793,7 @@ test("Can manage an account (Test, CI)", async () => {
     while(!await user3.isConnectedToDaemon());
     HavenoUtils.log(1, "Reconnecting to havenod");
     assert(!await user3.accountExists());
+    assert(!await user3.isAppInitialized());
 
     // restore account
     const zipBytes: Uint8Array = new Uint8Array(fs.readFileSync(zipFile));
@@ -796,10 +801,13 @@ test("Can manage an account (Test, CI)", async () => {
     do { await wait(1000); }
     while(!await user3.isConnectedToDaemon());
     assert(await user3.accountExists());
+    assert(!await user3.isAccountOpen());
+    assert(!await user3.isAppInitialized());
 
     // open restored account
     await user3.openAccount(password);
     assert(await user3.isAccountOpen());
+    assert(await user3.isAppInitialized());
 
     // check the persisted payment account
     const paymentAccount2 = await user3.getPaymentAccount(paymentAccount.getId());
@@ -813,6 +821,8 @@ test("Can manage an account (Test, CI)", async () => {
   if (err) throw err;
 
   async function testAccountNotOpen(havenod: HavenoClient): Promise<void> { // TODO: generalize this?
+    assert(!await havenod.isAccountOpen());
+    assert(!await havenod.isAppInitialized());
     try { await havenod.getMoneroConnections(); throw new Error("Should have thrown"); }
     catch (err: any) { assert.equal(err.message, "Account not open"); }
     try { await havenod.getXmrTxs(); throw new Error("Should have thrown"); }
@@ -875,17 +885,22 @@ test("Can manage Monero daemon connections (Test, CI)", async () => {
       "--p2p-bind-ip", "127.0.0.1",
       "--p2p-bind-port", TestConfig.monerod3.p2pBindPort,
       "--rpc-bind-port", TestConfig.monerod3.rpcBindPort,
-      "--zmq-rpc-bind-port", TestConfig.monerod3.zmqRpcBindPort,
-      "--log-level", "0",
+      "--no-zmq",
+      "--rpc-bind-ip", "0.0.0.0",
       "--confirm-external-bind",
+      "--add-exclusive-node", "127.0.0.1:28080",
+      "--add-exclusive-node", "127.0.0.1:48080",
+      "--log-level", "0",
       "--rpc-access-control-origins", "http://127.0.0.1:8080",
       "--fixed-difficulty", "500",
       "--disable-rpc-ban",
       "--rpc-max-connections-per-private-ip", "100",
-      "--max-connections-per-ip", "10"
+      "--max-connections-per-ip", "10",
+      "--non-interactive"
     ];
     if (getBaseCurrencyNetwork() !== BaseCurrencyNetwork.XMR_MAINNET) cmd.push("--" + moneroTs.MoneroNetworkType.toString(TestConfig.networkType).toLowerCase());
     if (TestConfig.monerod3.username) cmd.push("--rpc-login", TestConfig.monerod3.username + ":" + TestConfig.monerod3.password);
+    HavenoUtils.log(1, "Starting monerod3 with command: " + cmd.join(" "));
     monerod3 = await moneroTs.connectToDaemonRpc(cmd);
 
     // connection is online and not authenticated
@@ -906,15 +921,22 @@ test("Can manage Monero daemon connections (Test, CI)", async () => {
     connection = await user3.checkMoneroConnection();
     assert(await user3.isConnectedToMonero());
     testConnection(connection!, TestConfig.monerod3.url, OnlineStatus.ONLINE, AuthenticationStatus.AUTHENTICATED, 1);
+    HavenoUtils.log(1, "monerod3 connection established: " + ((await user3.getMoneroConnection())!.toString()));
 
     // change account password
     const newPassword = "newPassword";
     await user3.changePassword(TestConfig.defaultHavenod.accountPassword, newPassword);
 
+    HavenoUtils.log(1, "Done setting password");
+    assert(await user3.isConnectedToMonero());
+    HavenoUtils.log(1, "monerod3 connection still established");
+
     // restart user3
     const appName = user3.getAppName();
     await releaseHavenoProcess(user3);
+    HavenoUtils.log(1, "Done releasing haveno process");
     user3 = await initHaveno({appName: appName, accountPassword: newPassword});
+    HavenoUtils.log(1, "Done initializing haveno process");
 
     // connection is restored, online, and authenticated
     await user3.checkMoneroConnection();
