@@ -881,7 +881,7 @@ test("Can manage Monero daemon connections (Test, CI)", async () => {
       TestConfig.moneroBinsDir + "/monerod",
       "--no-igd",
       "--hide-my-port",
-      "--data-dir",  TestConfig.moneroBinsDir + "/" + TestConfig.baseCurrencyNetwork.toLowerCase() + "/node3",
+      "--data-dir",  "./.localnet/xmr_local/node3",
       "--p2p-bind-ip", "127.0.0.1",
       "--p2p-bind-port", TestConfig.monerod3.p2pBindPort,
       "--rpc-bind-port", TestConfig.monerod3.rpcBindPort,
