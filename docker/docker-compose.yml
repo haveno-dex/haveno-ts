@@ -31,15 +31,17 @@ services:
       "--hide-my-port",
       "--data-dir=./.localnet/xmr_local/node1",
       "--p2p-bind-ip=127.0.0.1",
-      "--p2p-bind-port=48080",
-      "--rpc-bind-port=48081",
       "--no-zmq",
-      "--add-exclusive-node=127.0.0.1:28080",
-      "--max-connections-per-ip=10",
-      "--rpc-max-connections-per-private-ip=100",
+      "--log-level=0",
+      "--add-exclusive-node=127.0.0.1:48080",
+      "--add-exclusive-node=127.0.0.1:58080",
       "--rpc-access-control-origins=http://localhost:8080",
       "--fixed-difficulty=150",
-      "--non-interactive",
+      "--disable-rpc-ban",
+      "--rpc-max-connections=1000",
+      "--max-connections-per-ip=10",
+      "--rpc-max-connections-per-private-ip=1000",
+      "--non-interactive"
     ]
     network_mode: "host"
 
@@ -53,15 +55,18 @@ services:
       "--hide-my-port",
       "--data-dir=./.localnet/xmr_local/node2",
       "--p2p-bind-ip=127.0.0.1",
-      "--rpc-bind-ip=0.0.0.0",
+      "--p2p-bind-port=48080",
+      "--rpc-bind-port=48081",
       "--no-zmq",
-      "--confirm-external-bind",
-      "--add-exclusive-node=127.0.0.1:48080",
-      "--max-connections-per-ip=10",
-      "--rpc-max-connections-per-private-ip=100",
+      "--add-exclusive-node=127.0.0.1:28080",
+      "--add-exclusive-node=127.0.0.1:58080",
       "--rpc-access-control-origins=http://localhost:8080",
       "--fixed-difficulty=150",
-      "--non-interactive",
+      "--disable-rpc-ban",
+      "--rpc-max-connections=1000",
+      "--max-connections-per-ip=10",
+      "--rpc-max-connections-per-private-ip=1000",
+      "--non-interactive"
     ]
     network_mode: "host"
     depends_on:

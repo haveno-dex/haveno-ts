@@ -154,7 +154,7 @@ const defaultTradeConfig: Partial<TradeContext> = {
   testPayoutConfirmed: true,
   testPayoutUnlocked: false,
   testPayoutFinalized: false,
-  maxConcurrency: getMaxConcurrency(),
+  maxConcurrency: isGitHubActions() ? 4 : 40,
   isPrivateOffer: false,
   buyerAsTakerWithoutDeposit: undefined
 }
@@ -386,6 +386,7 @@ const TestConfig = {
     logLevel: 2,
     baseCurrencyNetwork: getBaseCurrencyNetwork(),
     networkType: getBaseCurrencyNetwork() == BaseCurrencyNetwork.XMR_MAINNET ? moneroTs.MoneroNetworkType.MAINNET : getBaseCurrencyNetwork() == BaseCurrencyNetwork.XMR_LOCAL ? moneroTs.MoneroNetworkType.TESTNET : moneroTs.MoneroNetworkType.STAGENET,
+    fixedDifficulty: isGitHubActions() ? 150 : 500, // must match fixed difficulty of monerods
     moneroBinsDir: "../haveno/.localnet",
     testDataDir: "./testdata",
     deferralMs: 25000,
@@ -550,10 +551,6 @@ const HAVENO_WALLETS: Map<HavenoClient, any> = new Map<HavenoClient, any>();
 
 // other config
 const OFFLINE_ERR_MSG = "Http response at 400 or 500 level";
-
-function getMaxConcurrency() {
-  return isGitHubActions() ? 4 : 40;
-}
 
 function getNumBlocksPayoutFinalized() {
   switch (getBaseCurrencyNetwork()) {
@@ -886,16 +883,20 @@ test("Can manage Monero daemon connections (Test, CI)", async () => {
       "--p2p-bind-port", TestConfig.monerod3.p2pBindPort,
       "--rpc-bind-port", TestConfig.monerod3.rpcBindPort,
       "--zmq-rpc-bind-port", TestConfig.monerod3.zmqRpcBindPort,
+      "--add-exclusive-node", "127.0.0.1:28080",
+      "--add-exclusive-node", "127.0.0.1:48080",
       "--log-level", "0",
-      "--confirm-external-bind",
       "--rpc-access-control-origins", "http://127.0.0.1:8080",
-      "--fixed-difficulty", "500",
+      "--fixed-difficulty", TestConfig.fixedDifficulty.toString(),
       "--disable-rpc-ban",
-      "--rpc-max-connections-per-private-ip", "100",
-      "--max-connections-per-ip", "10"
+      "--rpc-max-connections", "1000",
+      "--max-connections-per-ip", "10",
+      "--rpc-max-connections-per-private-ip", "1000",
+      "--non-interactive"
     ];
     if (getBaseCurrencyNetwork() !== BaseCurrencyNetwork.XMR_MAINNET) cmd.push("--" + moneroTs.MoneroNetworkType.toString(TestConfig.networkType).toLowerCase());
     if (TestConfig.monerod3.username) cmd.push("--rpc-login", TestConfig.monerod3.username + ":" + TestConfig.monerod3.password);
+    HavenoUtils.log(1, "Starting monerod3 with command: " + cmd.join(" "));
     monerod3 = await moneroTs.connectToDaemonRpc(cmd);
 
     // connection is online and not authenticated
