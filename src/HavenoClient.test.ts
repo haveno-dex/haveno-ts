@@ -1161,6 +1161,11 @@ test("Has a Monero wallet (Test, CI)", async () => {
   for (const sweepTx of sweepTxs) {
     testTx(sweepTx, {isCreatedTx: true});
   }
+
+  // get wallet heights
+  const walletHeights = await user1.getWalletHeights();
+  expect(walletHeights.getHeight()).toBeGreaterThan(0);
+  expect(walletHeights.getTargetHeight()).toBeGreaterThan(0);
 });
 
 test("Can get balances (Test, CI, sanity check)", async () => {
