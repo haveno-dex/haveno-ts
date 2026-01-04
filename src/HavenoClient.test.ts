@@ -4558,6 +4558,13 @@ function testOffer(offer: OfferInfo, ctxP?: Partial<TradeContext>, isMyOffer?: b
     expect(offer.getUseMarketBasedPrice()).toEqual(!ctx.price);
     expect(offer.getMarketPriceMarginPct()).toEqual(ctx.marketPriceMarginPct ? ctx.marketPriceMarginPct : 0);
 
+    // test F2F country and city
+    if (offer.getPaymentMethodId() === "F2F") {
+      expect(offer.getAcceptedCountryCodesList().length).toEqual(1);
+      expect(offer.getAcceptedCountriesString).toBeDefined();
+      expect(offer.getCity()).toBeDefined();
+    }
+
     // TODO: test rest of offer
   }
 }
