@@ -4071,6 +4071,12 @@ async function initFundingWallet() {
 
 async function prepareForTrading(numTrades: number, ...havenods: HavenoClient[]) {
 
+  // fund wallets
+  const tradeAmount = 500000000000n;
+  const wallets: moneroTs.MoneroWallet[] = [];
+  for (const havenod of havenods) wallets.push(await getWallet(havenod));
+  await fundOutputs(wallets, tradeAmount * 2n, numTrades);
+
   // create payment account for each payment method
   for (const havenod of havenods) {
     for (const paymentMethod of await havenod.getPaymentMethods()) {
@@ -4088,12 +4094,6 @@ async function prepareForTrading(numTrades: number, ...havenods: HavenoClient[])
       await createPaymentAccount(havenod, assetCode);
     }
   }
-
-  // fund wallets
-  const tradeAmount = 500000000000n;
-  const wallets: moneroTs.MoneroWallet[] = [];
-  for (const havenod of havenods) wallets.push(await getWallet(havenod));
-  await fundOutputs(wallets, tradeAmount * 2n, numTrades);
 
   // wait for havenods to observe balance
   await wait(TestConfig.trade.walletSyncPeriodMs);
