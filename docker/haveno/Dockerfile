@@ -11,11 +11,11 @@ RUN set -ex && \
 
 USER haveno
 
-RUN set -ex && git clone https://github.com/haveno-dex/haveno.git /home/haveno/haveno
+RUN set -ex && git clone https://github.com/woodser/haveno.git /home/haveno/haveno
 
 WORKDIR /home/haveno/haveno
 
-RUN set -ex && git fetch origin && git checkout origin/master
+RUN set -ex && git fetch origin && git checkout origin/mainnet_local
 
 RUN set -ex && make skip-tests
 
