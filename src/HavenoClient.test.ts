@@ -1724,6 +1724,7 @@ test("Can schedule offers with locked funds (Test, CI)", async () => {
     // fund user3 with 2 outputs of 0.5 XMR
     const outputAmt = 500000000000n;
     await fundOutputs([user3Wallet], outputAmt, 2, false);
+    await wait(TestConfig.trade.walletSyncPeriodMs); // wait for user3 to sync with wallet
 
     // schedule offer
     const assetCode = "BCH";
