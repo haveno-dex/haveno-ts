@@ -3086,6 +3086,7 @@ async function testTradePayoutFinalized(ctxP: Partial<TradeContext>) {
   let ctx = TradeContext.init(ctxP);
 
   // test after payout confirmed
+  if (ctx.isStopped) return;
   if (!ctx.testPayoutConfirmed) return;
   const height = await monerod.getHeight();
   const payoutTxId = (await ctx.arbitrator.havenod!.getTrade(ctx.offerId!)).getPayoutTxId();
@@ -3100,6 +3101,7 @@ async function testTradePayoutFinalized(ctxP: Partial<TradeContext>) {
   expect(payoutTx?.getIsConfirmed());
 
   // test after payout unlocked
+  if (ctx.isStopped) return;
   if (ctx.testPayoutUnlocked) {
     trade = await ctx.arbitrator.havenod!.getTrade(ctx.offerId!);
     if (!trade.getIsPayoutUnlocked()) await mineToHeight(height + 10);
@@ -3112,6 +3114,7 @@ async function testTradePayoutFinalized(ctxP: Partial<TradeContext>) {
   }
 
   // test after payout finalized
+  if (ctx.isStopped) return;
   if (ctx.testPayoutFinalized) {
     trade = await ctx.arbitrator.havenod!.getTrade(ctx.offerId!);
     if (!trade.getIsPayoutFinalized()) await mineToHeight(height + getNumBlocksPayoutFinalized());
@@ -3436,6 +3439,7 @@ async function testOpenDispute(ctxP: Partial<TradeContext>) {
   }
 
   // peer sees the dispute
+  if (ctx.isStopped) return;
   await wait(ctx.maxTimePeerNoticeMs + ctx.maxWalletStartupMs + ctx.walletSyncPeriodMs * 2); // both arbitrator and peer will sync / process
   const peerDispute = await ctx.getDisputePeer()!.havenod!.getDispute(ctx.offerId!);
   expect(peerDispute.getTradeId()).toEqual(ctx.offerId);
@@ -3486,6 +3490,7 @@ async function testOpenDispute(ctxP: Partial<TradeContext>) {
   await arbitrator.addNotificationListener(notification => { HavenoUtils.log(3, "Arbitrator received notification " + notification.getType() + " " + (notification.getChatMessage() ? notification.getChatMessage()?.getMessage() : "")); arbitratorNotifications.push(notification); });
 
   // test chat messages
+  if (ctx.isStopped) return;
   if (ctx.testChatMessagesDispute && !ctx.disputeChatMessagesTested) {
 
     // arbitrator sends chat messages to traders
@@ -3495,6 +3500,7 @@ async function testOpenDispute(ctxP: Partial<TradeContext>) {
 
     // traders reply to arbitrator chat messages
     await wait(ctx.maxTimePeerNoticeMs); // wait for arbitrator's message to arrive
+    if (ctx.isStopped) return;
     const attachment = new Attachment();
     const bytes = new Uint8Array(Buffer.from("Proof dispute opener was scammed", "utf8"));
     attachment.setBytes(bytes);
@@ -3511,6 +3517,7 @@ async function testOpenDispute(ctxP: Partial<TradeContext>) {
 
     // test trader chat messages
     await wait(ctx.maxTimePeerNoticeMs);
+    if (ctx.isStopped) return;
     let dispute = await ctx.getDisputeOpener()!.havenod!.getDispute(ctx.offerId!);
     let messages = dispute.getChatMessageList();
     expect(messages.length).toBeGreaterThanOrEqual(3); // last messages are chat, first messages are system message and possibly DisputeOpenedMessage acks
@@ -3624,6 +3631,7 @@ async function resolveDispute(ctxP: Partial<TradeContext>) {
   }
 
   // test resolved dispute
+  if (ctx.isStopped) return;
   await wait(ctx.maxWalletStartupMs + ctx.walletSyncPeriodMs * 2);
   if (ctx.getDisputeOpener()!.havenod) {
     const dispute = await ctx.getDisputeOpener()!.havenod!.getDispute(ctx.offerId!);
@@ -3635,6 +3643,7 @@ async function resolveDispute(ctxP: Partial<TradeContext>) {
   }
 
   // wait for deferral of payout publish if applicable
+  if (ctx.isStopped) return;
   if (ctx.getDisputeOpener() && ctx.disputeWinner === DisputeResult.Winner.SELLER && ctx.sellerOfflineAfterDisputeOpened || ctx.disputeWinner === DisputeResult.Winner.BUYER && ctx.buyerOfflineAfterDisputeOpened) {
     HavenoUtils.log(0, "Awaiting deferral of publishing dispute payout tx");
     await wait(TestConfig.deferralMs); // wait for deferral
@@ -3666,9 +3675,11 @@ async function resolveDispute(ctxP: Partial<TradeContext>) {
   }
 
   // test balances after payout tx unless concurrent trades
+  if (ctx.isStopped) return;
   if (!ctx.concurrentTrades) await testAmountsAfterComplete(ctx);
 
   // test payout unlock
+  if (ctx.isStopped) return;
   await testTradePayoutFinalized(ctx);
 }
 
@@ -3706,6 +3717,7 @@ async function testAmountsAfterComplete(tradeCtx: TradeContext) {
   // TODO: payout tx is unknown to non-signer until confirmed
   if (isResolvedByDispute || tradeCtx.isOfflineFlow()) {
     await mineToHeight(await monerod.getHeight() + 1);
+    if (tradeCtx.isStopped) return;
     await wait(tradeCtx.maxWalletStartupMs + tradeCtx.walletSyncPeriodMs * 2);
   }
 
@@ -3715,6 +3727,7 @@ async function testAmountsAfterComplete(tradeCtx: TradeContext) {
 }
 
 async function testPeerAmountsAfterComplete(tradeCtx: TradeContext, peerCtx: PeerContext) {
+  if (tradeCtx.isStopped) return;
 
   // get trade
   const trade = await peerCtx.havenod!.getTrade(tradeCtx.offerId!);
@@ -3776,6 +3789,7 @@ async function testTradeChat(ctxP: Partial<TradeContext>) {
   await ctx.taker.havenod!.addNotificationListener(notification => { takerNotifications.push(notification); });
 
   // send simple conversation and verify the list of messages
+  if (ctx.isStopped) return;
   const makerMsg = "Hi I'm the maker";
   await await ctx.maker.havenod!.sendChatMessage(ctx.offerId!, makerMsg);
   await wait(ctx.maxTimePeerNoticeMs);
@@ -3784,6 +3798,7 @@ async function testTradeChat(ctxP: Partial<TradeContext>) {
   expect(messages[0].getIsSystemMessage()).toEqual(true); // first message is system
   expect(messages[1].getMessage()).toEqual(makerMsg);
 
+  if (ctx.isStopped) return;
   const takerMsg = "Hello I'm the taker";
   await ctx.taker.havenod!.sendChatMessage(ctx.offerId!, takerMsg);
   await wait(ctx.maxTimePeerNoticeMs);
@@ -3810,6 +3825,7 @@ async function testTradeChat(ctxP: Partial<TradeContext>) {
   }
 
   // additional msgs
+  if (ctx.isStopped) return;
   const msgs = ["", "  ", "<script>alert('test');</script>", "さようなら"];
   for(const msg of msgs) {
     await ctx.maker.havenod!.sendChatMessage(ctx.offerId!, msg);
