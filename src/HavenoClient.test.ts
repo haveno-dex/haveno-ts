@@ -2800,10 +2800,16 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
     if (ctx.isStopped) return ctx.offerId!;
     if (ctx.reserveExactAmount) {
       const splitOutputTxId = ctx.offer?.getSplitOutputTxHash();
-      HavenoUtils.log(1, "Waiting for split output tx " + splitOutputTxId + " to unlock");
       if (splitOutputTxId) {
+        HavenoUtils.log(1, "Waiting for split output tx for offer " + ctx.offerId + ", txId=" + splitOutputTxId);
         await mineToUnlock(splitOutputTxId);
-        await wait(TestConfig.trade.walletSyncPeriodMs + TestConfig.trade.maxTimePeerNoticeMs);
+        if (ctx.concurrentTrades) {
+          await ctx.maker.wallet?.sync(); // manually sync main wallet because trade initialization reserves main wallet
+          await wait(TestConfig.trade.walletSyncPeriodMs * 2 + TestConfig.trade.maxTimePeerNoticeMs);
+        } else {
+          await wait(TestConfig.trade.walletSyncPeriodMs+ TestConfig.trade.maxTimePeerNoticeMs);
+        }
+        HavenoUtils.log(1, "Done waiting for split output tx for offer " + ctx.offerId + ", txId=" + splitOutputTxId);
       }
     }
 
