@@ -455,7 +455,7 @@ const TestConfig = {
     idlePeriodTestMs: 30000,
     maxCpuPct: 0.25,
     paymentMethods: Object.keys(PaymentAccountForm.FormId), // all supported payment methods
-    assetCodes: ["USD", "GBP", "EUR", "ETH", "BTC", "BCH", "LTC", "DOGE", "XRP", "ADA", "TRX", "SOL", "USDT-ERC20", "USDT-TRC20", "USDC-ERC20"],
+    assetCodes: ["USD", "GBP", "EUR", "ETH", "BTC", "BCH", "LTC", "DOGE", "XRP", "ADA", "TRX", "SOL", "USDT-ERC20", "USDT-TRC20", "USDC-ERC20", "WOW"],
     fixedPriceAssetCodes: ["XAG", "XAU", "XGB"],
     fixedPricePaymentMethods: [],
     cryptoAddresses: [{
@@ -497,6 +497,9 @@ const TestConfig = {
         }, {
             currencyCode: "DAI-ERC20",
             address: "0x3fDBeb7b074a42D7B5810488d4aAD5992097DF93"
+        }, {
+            currencyCode: "WOW",
+            address: "WW2FZKUtFwaBc7wsdQ1jNHGFmSNw9xq3WKLBgYJob4M5Kbzk3oKYfVT8WEBnre6dbzMYg9q3gacG2fJyCgCyu6TV1THkny26P"
         }
     ],
     ports: new Map<string, string[]>([ // map http ports to havenod api and p2p ports
