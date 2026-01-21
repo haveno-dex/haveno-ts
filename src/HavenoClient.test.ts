@@ -453,6 +453,7 @@ const TestConfig = {
     maxFee: HavenoUtils.xmrToAtomicUnits(0.5), // local testnet fees can be relatively high
     maxAdjustmentPct: 0.2,
     daemonPollPeriodMs: 5000,
+    daemonPollAttemptsLocal: 3,
     idlePeriodTestMs: 30000,
     maxCpuPct: 0.25,
     paymentMethods: Object.keys(PaymentAccountForm.FormId), // all supported payment methods
@@ -851,8 +852,8 @@ test("Can manage Monero daemon connections (Test, CI)", async () => {
 
     // test default connection
     let connection: UrlConnection|undefined = await user3.getMoneroConnection();
-    assert(await user3.isConnectedToMonero());
     testConnection(connection!, monerodUrl1, OnlineStatus.ONLINE, AuthenticationStatus.AUTHENTICATED, 1); // TODO: should be no authentication?
+    assert(await user3.isConnectedToMonero());
 
     // add a new connection
     const fooBarUrl = "http://foo.bar";
@@ -869,9 +870,10 @@ test("Can manage Monero daemon connections (Test, CI)", async () => {
     testConnection(connection!, TestConfig.monerod3.url, undefined, undefined, 1); // status may or may not be known due to periodic connection checking
 
     // connection is offline
-    connection = await user3.checkMoneroConnection();
-    assert(!await user3.isConnectedToMonero());
+    await wait(TestConfig.daemonPollPeriodMs); // wait to observe connection
+    connection = await user3.getMoneroConnection();
     testConnection(connection!, TestConfig.monerod3.url, OnlineStatus.OFFLINE, AuthenticationStatus.NO_AUTHENTICATION, 1);
+    assert(!await user3.isConnectedToMonero());
 
     // start monerod3
     const cmd = [
@@ -900,9 +902,10 @@ test("Can manage Monero daemon connections (Test, CI)", async () => {
     monerod3 = await moneroTs.connectToDaemonRpc(cmd);
 
     // connection is online and not authenticated
-    connection = await user3.checkMoneroConnection();
-    assert(!await user3.isConnectedToMonero());
+    await wait(TestConfig.daemonPollPeriodMs * 2); // wait to observe connection
+    connection = await user3.getMoneroConnection();
     testConnection(connection!, TestConfig.monerod3.url, OnlineStatus.ONLINE, AuthenticationStatus.NOT_AUTHENTICATED, 1);
+    assert(!await user3.isConnectedToMonero());
 
     // set connection credentials
     await user3.setMoneroConnection(new UrlConnection()
@@ -914,9 +917,10 @@ test("Can manage Monero daemon connections (Test, CI)", async () => {
     testConnection(connection!, TestConfig.monerod3.url, undefined, undefined, 1);
 
     // connection is online and authenticated
-    connection = await user3.checkMoneroConnection();
-    assert(await user3.isConnectedToMonero());
+    await wait(TestConfig.daemonPollPeriodMs); // wait to observe connection
+    connection = await user3.getMoneroConnection();
     testConnection(connection!, TestConfig.monerod3.url, OnlineStatus.ONLINE, AuthenticationStatus.AUTHENTICATED, 1);
+    assert(await user3.isConnectedToMonero());
 
     // change account password
     const newPassword = "newPassword";
@@ -928,14 +932,8 @@ test("Can manage Monero daemon connections (Test, CI)", async () => {
     user3 = await initHaveno({appName: appName, accountPassword: newPassword});
 
     // connection is restored, online, and authenticated
-    await user3.checkMoneroConnection();
     connection = await user3.getMoneroConnection();
     testConnection(connection!, TestConfig.monerod3.url, OnlineStatus.ONLINE, AuthenticationStatus.AUTHENTICATED, 1);
-
-    // priority connections are polled
-    await user3.checkMoneroConnections();
-    connections = await user3.getMoneroConnections();
-    testConnection(getConnection(connections, monerodUrl1)!, monerodUrl1, OnlineStatus.ONLINE, AuthenticationStatus.AUTHENTICATED, 1);
 
     // enable auto switch
     await user3.setAutoSwitch(true);
@@ -945,31 +943,23 @@ test("Can manage Monero daemon connections (Test, CI)", async () => {
     //await monerod3.stopProcess(); // TODO (monero-ts): monerod remains available after await monerod.stopProcess() for up to 40 seconds
     await moneroTs.GenUtils.killProcess(monerod3.getProcess(), "SIGKILL");
 
-    // test auto switch after periodic connection check
-    await wait(TestConfig.daemonPollPeriodMs * 2);
-    await user3.checkMoneroConnection();
+    // test auto switch after periodic connection checks
+    await wait(TestConfig.daemonPollPeriodMs * (TestConfig.daemonPollAttemptsLocal + 1));
     connection = await user3.getMoneroConnection();
     testConnection(connection!, monerodUrl1, OnlineStatus.ONLINE, AuthenticationStatus.AUTHENTICATED, 1);
 
     // stop auto switch and checking connection periodically
     await user3.setAutoSwitch(false);
     assert.equal(false, await user3.getAutoSwitch());
-    await user3.stopCheckingConnection();
 
     // remove current connection
     await user3.removeMoneroConnection(monerodUrl1);
-
-    // check current connection
-    connection = await user3.checkMoneroConnection();
+    connection = await user3.getMoneroConnection();
     assert.equal(connection, undefined);
-
-    // check all connections
-    await user3.checkMoneroConnections();
-    connections = await user3.getMoneroConnections();
-    testConnection(getConnection(connections, fooBarUrl)!, fooBarUrl, OnlineStatus.OFFLINE, AuthenticationStatus.NO_AUTHENTICATION, 0);
 
     // set connection to previous url
     await user3.setMoneroConnection(fooBarUrl);
+    await user3.checkMoneroConnection(); // manually check connection for immediate update
     connection = await user3.getMoneroConnection();
     testConnection(connection!, fooBarUrl, OnlineStatus.OFFLINE, AuthenticationStatus.NO_AUTHENTICATION, 0);
 
@@ -978,22 +968,20 @@ test("Can manage Monero daemon connections (Test, CI)", async () => {
     await user3.setMoneroConnection(fooBarUrl2);
     connections = await user3.getMoneroConnections();
     connection = getConnection(connections, fooBarUrl2);
-    testConnection(connection!, fooBarUrl2, OnlineStatus.UNKNOWN, AuthenticationStatus.NO_AUTHENTICATION, 0);
+    testConnection(connection!, fooBarUrl2, [OnlineStatus.UNKNOWN, OnlineStatus.OFFLINE], AuthenticationStatus.NO_AUTHENTICATION, 0);
 
     // reset connection
     await user3.setMoneroConnection();
     assert.equal(await user3.getMoneroConnection(), undefined);
 
     // test auto switch after start checking connection
-    await user3.setAutoSwitch(false);
-    await user3.startCheckingConnection(5000); // checks the connection
     await user3.setAutoSwitch(true);
     await user3.addMoneroConnection(new UrlConnection()
             .setUrl(TestConfig.monerod.url)
             .setUsername(TestConfig.monerod.username)
             .setPassword(TestConfig.monerod.password)
             .setPriority(2));
-    await wait(10000);
+    await wait(TestConfig.daemonPollPeriodMs * (TestConfig.daemonPollAttemptsLocal + 1));
     connection = await user3.getMoneroConnection();
     testConnection(connection!, TestConfig.monerod.url, OnlineStatus.ONLINE, AuthenticationStatus.AUTHENTICATED, 2);
   } catch (err2) {
@@ -1390,17 +1378,20 @@ test("Can validate payment account forms (Test, CI, sanity check)", async () => 
 
   // test form for each payment method
   for (const paymentMethod of paymentMethods) {
+    HavenoUtils.log(1, "Testing payment account form for payment method: " + paymentMethod.getId());
 
     // generate form
     const accountForm = await user1.getPaymentAccountForm(paymentMethod.getId());
 
     // complete form, validating each field
     for (const field of accountForm.getFieldsList()) {
+      HavenoUtils.log(1, "Validating field: " + field.getId());
 
       // validate invalid form field
       const invalidInput = getInvalidFormInput(accountForm, field.getId());
       if (invalidInput !== undefined) {
         try {
+          HavenoUtils.log(1, "Validating invalid form field");
           await user1.validateFormField(accountForm, field.getId(), invalidInput);
           throw new Error("Should have thrown error validating form field '" + field.getId() + "' with invalid value '" + invalidInput + "'");
         } catch (err: any) {
@@ -1411,11 +1402,13 @@ test("Can validate payment account forms (Test, CI, sanity check)", async () => 
 
       // validate valid form field
       const validInput = getValidFormInput(accountForm, field.getId(), user1);
+      HavenoUtils.log(1, "Validating invalid form field");
       await user1.validateFormField(accountForm, field.getId(), validInput);
       field.setValue(validInput);
     }
 
     // create payment account
+    HavenoUtils.log(1, "Creating payment account for payment method: " + paymentMethod.getId());
     const paymentAccount = await user1.createPaymentAccount(accountForm);
 
     // payment account added
@@ -2508,6 +2501,7 @@ test("Selects arbitrators randomly which are online and registered (Test)", asyn
 
     // complete a trade which uses either arbitrator randomly
     HavenoUtils.log(1, "Completing trade using either arbitrator");
+    //if (offer1 && offer2) throw new Error("Test error"); // TODO: this will cause "disputeAgentAddress already exists in disputeAgent map" when run multiple times
     await executeTrade({maker: {havenod: user1}, taker: {havenod: user2}, arbitrator: {}, availableArbitrators: [arbitrator, arbitrator2], offerId: offer1.getId(), makerPaymentAccountId: offer1.getPaymentAccountId(), testPayoutConfirmed: false});
     let trade = await user1.getTrade(offer1.getId());
     assert(trade.getArbitratorNodeAddress() === arbitrator1ApiUrl || trade.getArbitratorNodeAddress() === arbitrator2ApiUrl);
@@ -2570,9 +2564,9 @@ test("Selects arbitrators randomly which are online and registered (Test)", asyn
   if (err) {
     if (arbitrator2) {
       try { await arbitrator2.unregisterDisputeAgent("arbitrator"); }
-      catch (err: any) { console.log("Error unregistering arbitrator2: " + err.message); }
+      catch (err2: any) { console.log("Error unregistering arbitrator2: " + err2.message); }
       try { await releaseHavenoProcess(arbitrator2, true); }
-      catch (err: any) { console.log("Error releasing arbitrator2: " + err.message); }
+      catch (err2: any) { console.log("Error releasing arbitrator2: " + err2.message); }
     }
     throw err;
   }
@@ -2807,7 +2801,7 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
           await ctx.maker.wallet?.sync(); // manually sync main wallet because trade initialization reserves main wallet
           await wait(TestConfig.trade.walletSyncPeriodMs * 2 + TestConfig.trade.maxTimePeerNoticeMs);
         } else {
-          await wait(TestConfig.trade.walletSyncPeriodMs+ TestConfig.trade.maxTimePeerNoticeMs);
+          await wait(TestConfig.trade.walletSyncPeriodMs + TestConfig.trade.maxTimePeerNoticeMs);
         }
         HavenoUtils.log(1, "Done waiting for split output tx for offer " + ctx.offerId + ", txId=" + splitOutputTxId);
       }
@@ -4405,12 +4399,14 @@ function getConnection(connections: UrlConnection[], url: string): UrlConnection
   return undefined;
 }
 
-function testConnection(connection: UrlConnection, url?: string, onlineStatus?: OnlineStatus, authenticationStatus?: AuthenticationStatus, priority?: number) {
+function testConnection(connection: UrlConnection, url?: string, onlineStatus?: OnlineStatus | OnlineStatus[], authenticationStatus?: AuthenticationStatus | AuthenticationStatus[], priority?: number) {
+  onlineStatus = onlineStatus instanceof Array ? onlineStatus : (onlineStatus !== undefined ? [onlineStatus] : undefined);
+  authenticationStatus = authenticationStatus instanceof Array ? authenticationStatus : (authenticationStatus !== undefined ? [authenticationStatus] : undefined);
   if (url) assert.equal(connection.getUrl(), url);
   assert.equal(connection.getPassword(), ""); // TODO (woodser): undefined instead of ""?
   assert.equal(connection.getUsername(), "");
-  if (onlineStatus !== undefined) assert.equal(connection.getOnlineStatus(), onlineStatus);
-  if (authenticationStatus !== undefined) assert.equal(connection.getAuthenticationStatus(), authenticationStatus);
+  if (onlineStatus !== undefined) assert(moneroTs.GenUtils.arrayContains(onlineStatus, connection.getOnlineStatus()), "Expected online status to be one of [" + onlineStatus + "] but found " + connection.getOnlineStatus());
+  if (authenticationStatus !== undefined) assert(moneroTs.GenUtils.arrayContains(authenticationStatus, connection.getAuthenticationStatus()), "Expected authentication status to be one of [" + authenticationStatus + "] but found " + connection.getAuthenticationStatus());
   if (priority !== undefined) assert.equal(connection.getPriority(), priority);
 }
 
@@ -4772,7 +4768,7 @@ function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFo
     case PaymentAccountFormField.FieldId.ACCOUNT_NAME:
       return "";
     case PaymentAccountFormField.FieldId.ACCOUNT_NR:
-      return "123457A";
+      return "1";
     case PaymentAccountFormField.FieldId.ACCOUNT_OWNER:
       return "J";
     case PaymentAccountFormField.FieldId.ACCOUNT_TYPE:

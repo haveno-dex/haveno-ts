@@ -21,7 +21,7 @@ import HavenoUtils from "./utils/HavenoUtils";
 import TaskLooper from "./utils/TaskLooper";
 import type * as grpcWeb from "grpc-web";
 import { GetTradeStatisticsClient, GetVersionClient, AccountClient, XmrConnectionsClient, DisputesClient, DisputeAgentsClient, NotificationsClient, WalletsClient, PriceClient, OffersClient, PaymentAccountsClient, TradesClient, ShutdownServerClient, XmrNodeClient } from './protobuf/GrpcServiceClientPb';
-import { GetTradeStatisticsRequest, GetTradeStatisticsReply, GetVersionRequest, GetVersionReply, IsAppInitializedRequest, IsAppInitializedReply, RegisterDisputeAgentRequest, UnregisterDisputeAgentRequest, MarketPriceRequest, MarketPriceReply, MarketPricesRequest, MarketPricesReply, MarketPriceInfo, MarketDepthRequest, MarketDepthReply, MarketDepthInfo, GetWalletHeightRequest, GetWalletHeightReply, GetBalancesRequest, GetBalancesReply, XmrBalanceInfo, GetMyOfferRequest, GetMyOfferReply, GetOffersRequest, GetOffersReply, OfferInfo, GetPaymentMethodsRequest, GetPaymentMethodsReply, GetPaymentAccountFormRequest, CreatePaymentAccountRequest, ValidateFormFieldRequest, CreatePaymentAccountReply, GetPaymentAccountFormReply, GetPaymentAccountsRequest, GetPaymentAccountsReply, CreateCryptoCurrencyPaymentAccountRequest, CreateCryptoCurrencyPaymentAccountReply, DeletePaymentAccountRequest, DeletePaymentAccountReply, PostOfferRequest, PostOfferReply, EditOfferRequest, EditOfferReply, DeactivateOfferRequest, ActivateOfferRequest, CancelOfferRequest, TakeOfferRequest, TakeOfferReply, TradeInfo, GetTradeRequest, GetTradeReply, GetTradesRequest, GetTradesReply, GetXmrSeedRequest, GetXmrSeedReply, GetXmrPrimaryAddressRequest, GetXmrPrimaryAddressReply, GetXmrNewSubaddressRequest, GetXmrNewSubaddressReply, ConfirmPaymentSentRequest, ConfirmPaymentReceivedRequest, CompleteTradeRequest, XmrTx, GetXmrTxsRequest, GetXmrTxsReply, XmrDestination, CreateXmrTxRequest, CreateXmrTxReply, CreateXmrSweepTxsRequest, CreateXmrSweepTxsReply, RelayXmrTxsRequest, RelayXmrTxsReply, CreateAccountRequest, AccountExistsRequest, AccountExistsReply, DeleteAccountRequest, OpenAccountRequest, IsAccountOpenRequest, IsAccountOpenReply, CloseAccountRequest, ChangePasswordRequest, BackupAccountRequest, BackupAccountReply, RestoreAccountRequest, StopRequest, NotificationMessage, RegisterNotificationListenerRequest, SendNotificationRequest, UrlConnection, AddConnectionRequest, RemoveConnectionRequest, GetConnectionRequest, GetConnectionsRequest, SetConnectionRequest, CheckConnectionRequest, CheckConnectionsReply, CheckConnectionsRequest, StartCheckingConnectionRequest, StopCheckingConnectionRequest, GetBestConnectionRequest, SetAutoSwitchRequest, GetAutoSwitchRequest, CheckConnectionReply, GetConnectionsReply, GetConnectionReply, GetBestConnectionReply, GetDisputeRequest, GetDisputeReply, GetDisputesRequest, GetDisputesReply, OpenDisputeRequest, ResolveDisputeRequest, SendDisputeChatMessageRequest, SendChatMessageRequest, GetChatMessagesRequest, GetChatMessagesReply, StartXmrNodeRequest, StopXmrNodeRequest, IsXmrNodeOnlineRequest, IsXmrNodeOnlineReply, GetXmrNodeSettingsRequest, GetXmrNodeSettingsReply } from "./protobuf/grpc_pb";
+import { GetTradeStatisticsRequest, GetVersionRequest, IsAppInitializedRequest, RegisterDisputeAgentRequest, UnregisterDisputeAgentRequest, MarketPriceRequest, MarketPricesRequest, MarketPriceInfo, MarketDepthRequest, MarketDepthInfo, GetWalletHeightRequest, GetWalletHeightReply, GetBalancesRequest, XmrBalanceInfo, GetMyOfferRequest, GetOffersRequest, OfferInfo, GetPaymentMethodsRequest, GetPaymentAccountFormRequest, CreatePaymentAccountRequest, ValidateFormFieldRequest, GetPaymentAccountsRequest, CreateCryptoCurrencyPaymentAccountRequest, DeletePaymentAccountRequest, PostOfferRequest, EditOfferRequest, DeactivateOfferRequest, ActivateOfferRequest, CancelOfferRequest, TakeOfferRequest, TradeInfo, GetTradeRequest, GetTradesRequest, GetXmrSeedRequest, GetXmrPrimaryAddressRequest, GetXmrNewSubaddressRequest, ConfirmPaymentSentRequest, ConfirmPaymentReceivedRequest, CompleteTradeRequest, XmrTx, GetXmrTxsRequest, XmrDestination, CreateXmrTxRequest, CreateXmrSweepTxsRequest, RelayXmrTxsRequest, CreateAccountRequest, AccountExistsRequest, DeleteAccountRequest, OpenAccountRequest, IsAccountOpenRequest, CloseAccountRequest, ChangePasswordRequest, BackupAccountRequest, BackupAccountReply, RestoreAccountRequest, StopRequest, NotificationMessage, RegisterNotificationListenerRequest, SendNotificationRequest, UrlConnection, AddConnectionRequest, RemoveConnectionRequest, GetConnectionRequest, GetConnectionsRequest, SetConnectionRequest, CheckConnectionRequest, GetBestConnectionRequest, SetAutoSwitchRequest, GetAutoSwitchRequest, GetDisputeRequest, GetDisputesRequest, OpenDisputeRequest, ResolveDisputeRequest, SendDisputeChatMessageRequest, SendChatMessageRequest, GetChatMessagesRequest, StartXmrNodeRequest, StopXmrNodeRequest, IsXmrNodeOnlineRequest, GetXmrNodeSettingsRequest } from "./protobuf/grpc_pb";
 import { TradeStatistics3, OfferDirection, PaymentMethod, PaymentAccountForm, PaymentAccountFormField, PaymentAccount, PaymentAccountPayload, AvailabilityResult, Attachment, DisputeResult, Dispute, ChatMessage, XmrNodeSettings } from "./protobuf/pb_pb";
 
 
@@ -607,43 +607,6 @@ export default class HavenoClient {
   async checkMoneroConnection(): Promise<UrlConnection | undefined> {
     try {
       return (await this._xmrConnectionsClient.checkConnection(new CheckConnectionRequest(), {password: this._password})).getConnection();
-    } catch (e: any) {
-      throw new HavenoError(e.message, e.code);
-    }
-  }
-
-  /**
-   * Check all Monero daemon connections.
-   *
-   * @return {UrlConnection[]} status of all managed connections.
-   */
-  async checkMoneroConnections(): Promise<UrlConnection[]> {
-    try {
-      return (await this._xmrConnectionsClient.checkConnections(new CheckConnectionsRequest(), {password: this._password})).getConnectionsList();
-    } catch (e: any) {
-      throw new HavenoError(e.message, e.code);
-    }
-  }
-
-  /**
-   * Check the connection and start checking the connection periodically.
-   *
-   * @param {number} refreshPeriod - time between checks in milliseconds (default 15000 ms or 15 seconds)
-   */
-  async startCheckingConnection(refreshPeriod: number): Promise<void> {
-    try {
-      await this._xmrConnectionsClient.startCheckingConnection(new StartCheckingConnectionRequest().setRefreshPeriod(refreshPeriod), {password: this._password});
-    } catch (e: any) {
-      throw new HavenoError(e.message, e.code);
-    }
-  }
-
-  /**
-   * Stop checking the connection status periodically.
-   */
-  async stopCheckingConnection(): Promise<void> {
-    try {
-      await this._xmrConnectionsClient.stopCheckingConnection(new StopCheckingConnectionRequest(), {password: this._password});
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);
     }
