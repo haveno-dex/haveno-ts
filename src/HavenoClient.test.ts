@@ -1549,6 +1549,9 @@ test("Can prepare for trading (Test, CI)", async () => {
 
 test("Can post, deactivate, activate, edit, and remove an offer (Test, CI, sanity check)", async () => {
 
+  // test requires to start and stop mining
+  assert.equal(await isMining(), false, "Cannot run test while mining is active");
+
   // wait for user1 to have unlocked balance to post offer
   await waitForAvailableBalance(250000000000n * 2n, user1);
 
@@ -1705,6 +1708,9 @@ test("Can schedule offers with locked funds (Test, CI)", async () => {
   let user3: HavenoClient|undefined;
   let err: any;
   try {
+
+  // test requires to start and stop mining
+  assert.equal(await isMining(), false, "Cannot run test while mining is active");
 
     // configure test
     const completeTrade = true;
@@ -4125,6 +4131,17 @@ async function getWallet(havenod: HavenoClient) {
     HAVENO_WALLETS.set(havenod, wallet);
   }
   return HAVENO_WALLETS.get(havenod);
+}
+
+/**
+ * Tests if mining is active by starting and stopping mining.
+ * 
+ * @return {boolean} true if mining was already started, false otherwise
+ */
+async function isMining(): Promise<boolean> {
+  const miningStarted = await startMining();
+  if (miningStarted) await stopMining();
+  return !miningStarted;
 }
 
 async function startMining(): Promise<boolean> {
