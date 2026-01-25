@@ -171,6 +171,7 @@ class TradeContext {
   availableArbitrators?: HavenoClient[];
 
   // trade flow
+  executionDelay?: number; // delay before executing trade in ms
   concurrentTrades?: boolean; // testing trades at same time
   makeOffer?: boolean;
   takeOffer?: boolean;
@@ -2607,10 +2608,15 @@ test("Can bootstrap a network", async () => {
     // customize config
     //ctxP.paymentMethodId = "BLOCK_CHAINS";
     //ctxP.assetCode = "BTC";
+    //ctxP.reserveExactAmount = true;
+    // ctxP.buyerSendsPayment = false;
+    // ctxP.buyerDisputeContext = DisputeContext.NONE;
+    // ctxP.sellerDisputeContext = DisputeContext.NONE;
     const completeAllTrades = false;
   
     // randomize basic offer config
     const user1AsMaker = getRandomOutcome(1/2);
+    if (ctxP.executionDelay === undefined) ctxP.executionDelay = moneroTs.GenUtils.getRandomInt(0, 5000);
     if (ctxP.maker === undefined) ctxP.maker = {};
     if (ctxP.taker === undefined) ctxP.taker = {};
     if (ctxP.maker.havenod === undefined) ctxP.maker.havenod = user1AsMaker ? user1 : user2;
@@ -2737,8 +2743,12 @@ async function executeTrades(ctxs: Partial<TradeContext>[], executionCtx?: Parti
       for (const ctx of ctxs) tradePromises.push(pool.submit(() => executeTrade(ctx)));
       try {
         offerIds = await Promise.all(tradePromises);
-      } catch (e2) {
-        if (executionCtx.stopOnFailure) for (const ctx of ctxs) ctx.isStopped = true; // stop trades on failure
+      } catch (e2: any) {
+        if (executionCtx.stopOnFailure) {
+          HavenoUtils.log(0, "Stopping other trades after failure: " + e2.message);
+          HavenoUtils.log(0, e2.stack);
+          for (const ctx of ctxs) ctx.isStopped = true; // stop trades on failure
+        }
         try {
           await Promise.allSettled(tradePromises); // wait for other trades to complete
         } catch (e3: any) {
@@ -2766,6 +2776,9 @@ async function executeTrades(ctxs: Partial<TradeContext>[], executionCtx?: Parti
 async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
   let ctx = TradeContext.init(ctxP);
   try {
+
+    // delay execution if configured
+    if (ctx.executionDelay) await wait(ctx.executionDelay);
 
     // fund maker and taker
     if (ctx.isStopped) return ctx.offerId!;
@@ -2801,15 +2814,17 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
     if (ctx.reserveExactAmount) {
       const splitOutputTxId = ctx.offer?.getSplitOutputTxHash();
       if (splitOutputTxId) {
-        HavenoUtils.log(1, "Waiting for split output tx for offer " + ctx.offerId + ", txId=" + splitOutputTxId);
+        HavenoUtils.log(1, "Waiting for split output tx to unlock, offer=" + ctx.offerId + ", txId=" + splitOutputTxId);
         await mineToUnlock(splitOutputTxId);
+
+        // wait for offer to become available after split output tx unlocked
+        HavenoUtils.log(1, "Waiting for split output offer to become available, offer=" + ctx.offerId + ", txId=" + splitOutputTxId);
         if (ctx.concurrentTrades) {
-          await ctx.maker.wallet?.sync(); // manually sync main wallet because trade initialization reserves main wallet
           await wait(TestConfig.trade.walletSyncPeriodMs * 2 + TestConfig.trade.maxTimePeerNoticeMs);
         } else {
           await wait(TestConfig.trade.walletSyncPeriodMs + TestConfig.trade.maxTimePeerNoticeMs);
         }
-        HavenoUtils.log(1, "Done waiting for split output tx for offer " + ctx.offerId + ", txId=" + splitOutputTxId);
+        HavenoUtils.log(1, "Done waiting for split output offer to become available, offer=" + ctx.offerId + ", txId=" + splitOutputTxId);
       }
     }
 
