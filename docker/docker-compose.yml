@@ -118,6 +118,7 @@ services:
       "--apiPort=9998",
       "--walletRpcBindPort=38090",
       "--passwordRequired=false",
+      "--xmrNode=http://localhost:48081",
     ]
     network_mode: "host"
     depends_on:
