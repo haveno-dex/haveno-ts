@@ -383,6 +383,7 @@ class TradeContext {
 /**
  * Default test configuration.
  */
+const monerod2Url = "http://127.0.0.1:48081";
 const TestConfig = {
     logLevel: 2,
     baseCurrencyNetwork: getBaseCurrencyNetwork(),
@@ -397,6 +398,11 @@ const TestConfig = {
     },
     monerod: {
         url: "http://127.0.0.1:" + getNetworkStartPort() + "8081", // 18081, 28081, 38081 for mainnet, testnet, and stagenet, respectively
+        username: "",
+        password: ""
+    },
+    monerod2: {// corresponds to monerod2-local in Makefile
+        url: monerod2Url,
         username: "",
         password: ""
     },
@@ -435,6 +441,7 @@ const TestConfig = {
             port: "8079",
             accountPasswordRequired: false,
             accountPassword: "abctesting123",
+            xmrNode: monerod2Url
         }, {
             appName: "haveno-" + getBaseCurrencyNetwork() + "_user1", // user1
             logProcessOutput: true,
@@ -540,6 +547,7 @@ interface HavenodContext {
     port?: string,
     excludePorts?: string[],
     walletUrl?: string
+    xmrNode?: string
 }
 
 interface TxContext {
@@ -2481,7 +2489,7 @@ test("Selects arbitrators randomly which are online and registered (Test)", asyn
   await prepareForTrading(4, user1, user2);
 
   // start and register arbitrator2
-  let arbitrator2 = await initHaveno();
+  let arbitrator2 = await initHaveno({xmrNode: TestConfig.monerod2.url});
   HavenoUtils.log(1, "Registering arbitrator2");
   await arbitrator2.registerDisputeAgent("arbitrator", getArbitratorPrivKey(1)); // TODO: re-registering with same address corrupts messages (Cannot decrypt) because existing pub key; overwrite? or throw when registration fails because dispute map can't be updated
   await wait(TestConfig.trade.walletSyncPeriodMs * 2);
@@ -3968,6 +3976,10 @@ async function initHaveno(ctx?: HavenodContext): Promise<HavenoClient> {
       "--logLevel", ctx.logLevel!,
       "--disableRateLimits", "true"
     ];
+    if (ctx.xmrNode !== undefined) {
+      cmd.push("--xmrNode");
+      cmd.push(ctx.xmrNode);
+    }
     havenod = await HavenoClient.startProcess(TestConfig.haveno.path, cmd, "http://127.0.0.1:" + ctx.port, ctx.logProcessOutput!);
 
     // wait to process network notifications
