@@ -4127,6 +4127,9 @@ async function prepareForTrading(numTrades: number, ...havenods: HavenoClient[])
   for (const havenod of havenods) wallets.push(await getWallet(havenod));
   await fundOutputs(wallets, tradeAmount * 2n, numTrades);
 
+  // wait for havenods to observe balance
+  await wait(TestConfig.trade.walletSyncPeriodMs);
+
   // create payment account for each payment method
   for (const havenod of havenods) {
     for (const paymentMethod of await havenod.getPaymentMethods()) {
@@ -4144,9 +4147,6 @@ async function prepareForTrading(numTrades: number, ...havenods: HavenoClient[])
       await createPaymentAccount(havenod, assetCode);
     }
   }
-
-  // wait for havenods to observe balance
-  await wait(TestConfig.trade.walletSyncPeriodMs);
 }
 
 async function getWallet(havenod: HavenoClient) {
