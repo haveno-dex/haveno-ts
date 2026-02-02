@@ -2652,7 +2652,7 @@ test("Can bootstrap a network", async () => {
     if (ctxP.price === undefined) {
       if (ctxP.marketPriceMarginPct === undefined) ctxP.marketPriceMarginPct = parseFloat(getRandomFloat(0, .3).toFixed(10));
       const currentPrice = await ctxP.maker.havenod.getPrice(ctxP.assetCode!)
-      if (getRandomOutcome(1/2)) ctxP.triggerPrice = ctxP.direction === OfferDirection.BUY ? currentPrice! * (1 + getRandomFloat(0, .1)) : currentPrice! * (1 - getRandomFloat(0, .1));
+      if (getRandomOutcome(1/2)) ctxP.triggerPrice = ctxP.direction === OfferDirection.BUY ? currentPrice! * (1 + getRandomFloat(.25, .5)) : currentPrice! * (1 - getRandomFloat(.25, .5));
     }
   
     // randomize trade config
