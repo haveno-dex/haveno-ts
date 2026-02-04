@@ -4762,7 +4762,7 @@ function getValidFormInputAux(form: PaymentAccountForm, fieldId: PaymentAccountF
     case PaymentAccountFormField.FieldId.PAYID:
       return havenod.getAppName() + "_john.doe@example.com";
     case PaymentAccountFormField.FieldId.PIX_KEY:
-      throw new Error("Not implemented");
+      return "123456789";
     case PaymentAccountFormField.FieldId.POSTAL_ADDRESS:
       return "123 street";
     case PaymentAccountFormField.FieldId.PROMPT_PAY_ID:
@@ -4902,7 +4902,7 @@ function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFo
     case PaymentAccountFormField.FieldId.PAYID:
       return "A";
     case PaymentAccountFormField.FieldId.PIX_KEY:
-      throw new Error("Not implemented");
+      return "A";
     case PaymentAccountFormField.FieldId.POSTAL_ADDRESS:
       return "";
     case PaymentAccountFormField.FieldId.PROMPT_PAY_ID:
@@ -5069,6 +5069,7 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
         expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getTransferwiseUsdAccountPayload()!.getEmail()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.EMAIL).getValue());
         expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getTransferwiseUsdAccountPayload()!.getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
         expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getTransferwiseUsdAccountPayload()!.getHolderAddress()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_ADDRESS).getValue());
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getCountryCode())!.toEqual("US");
         expect(account.getTradeCurrenciesList().length).toEqual(1);
         expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("USD");
         break;
@@ -5084,7 +5085,6 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
         expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getBankAccountPayload()?.getBranchId()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.BRANCH_ID).getValue());
         expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getBankAccountPayload()?.getAccountNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.ACCOUNT_NR).getValue());
         expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getBankAccountPayload()?.getAccountType()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.ACCOUNT_TYPE).getValue());
-        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getCountryCode()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.COUNTRY).getValue());
         expect(account.getTradeCurrenciesList().length).toEqual(1);
         expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("USD");
         break;
@@ -5099,6 +5099,13 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
         expect(account.getPaymentAccountPayload()!.getUSPostalMoneyOrderAccountPayload()!.getPostalAddress()!).toEqual(getFormField(form, PaymentAccountFormField.FieldId.POSTAL_ADDRESS).getValue());
         expect(account.getTradeCurrenciesList().length).toEqual(1);
         expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("USD");
+        break;
+    case PaymentAccountForm.FormId.PIX:
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getPixAccountPayload()!.getPixKey()!).toEqual(getFormField(form, PaymentAccountFormField.FieldId.PIX_KEY).getValue());
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getPixAccountPayload()!.getHolderName()!).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getCountryCode())!.toEqual("BR");
+        expect(account.getTradeCurrenciesList().length).toEqual(1);
+        expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("BRL");
         break;
       default:
         throw new Error("Unhandled payment method type: " + form.getId());
