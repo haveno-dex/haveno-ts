@@ -19,6 +19,7 @@ import assert from "assert";
 import console from "console";
 import Decimal from 'decimal.js';
 import { PaymentAccountForm, PaymentAccountFormField } from "../protobuf/pb_pb";
+import { exec } from "child_process";
 
 /**
  * Collection of utilities for working with Haveno.
@@ -88,7 +89,14 @@ export default class HavenoUtils {
     return new Promise(function(resolve, reject) {
       process.on("exit", function() { resolve(); });
       process.on("error", function(err: any) { reject(err); });
-      process.kill(signal ? signal : "SIGINT");
+
+      if (global.process.platform === 'win32') {
+        exec(`taskkill /PID ${process.pid} /T /F`, err => {
+          if (err) reject(err);
+        });
+      } else {
+        process.kill(signal ? signal : "SIGINT");
+      }
     });
   }
 

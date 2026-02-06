@@ -3963,7 +3963,7 @@ async function initHaveno(ctx?: HavenodContext): Promise<HavenoClient> {
 
     // start haveno process using configured ports if available
     const cmd: string[] = [
-      "./haveno-daemon",
+      (process.platform === 'win32'? "haveno-daemon.bat" : "./haveno-daemon"),
       "--baseCurrencyNetwork", TestConfig.baseCurrencyNetwork,
       "--useLocalhostForP2P", TestConfig.baseCurrencyNetwork === BaseCurrencyNetwork.XMR_MAINNET ? "false" : "true", // TODO: disable for stagenet too
       "--useDevPrivilegeKeys", TestConfig.baseCurrencyNetwork === BaseCurrencyNetwork.XMR_LOCAL ? "true" : "false",
