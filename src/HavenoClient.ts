@@ -145,7 +145,7 @@ export default class HavenoClient {
         let daemon: HavenoClient | undefined = undefined;
 
         // start process
-        const childProcess = require('child_process').spawn(cmd[0], cmd.slice(1), {cwd: havenoPath});
+        const childProcess = require('child_process').spawn(cmd[0], cmd.slice(1), {cwd: havenoPath, shell: process.platform === 'win32'});
         childProcess.stdout.setEncoding('utf8');
         childProcess.stderr.setEncoding('utf8');
         
