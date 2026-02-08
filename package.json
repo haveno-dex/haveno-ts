@@ -9,7 +9,7 @@
     "dist/**/*"
   ],
   "scripts": {
-    "prepare": "scripts/build_protobuf.sh",
+    "prepare": "bash scripts/build_protobuf.sh",
     "test": "jest --forceExit --detectOpenHandles",
     "eslint": "eslint .",
     "eslintfix": "eslint src/* --fix",
