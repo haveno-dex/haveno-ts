@@ -91,8 +91,12 @@ export default class HavenoUtils {
       process.on("error", function(err: any) { reject(err); });
 
       if (global.process.platform === 'win32') {
-        exec(`taskkill /PID ${process.pid} /T /F`, err => {
-          if (err) reject(err);
+        exec(`tasklist /FI "PID eq ${process.pid}"`, (err, stdout) => {
+          if (stdout.includes(process.pid.toString())) {
+            exec(`taskkill /PID ${process.pid} /T /F`, err => {
+              if (err) reject(err);
+            });
+          }
         });
       } else {
         process.kill(signal ? signal : "SIGINT");
