@@ -1,7 +1,6 @@
 # envoy configuration to test with haveno instances
 
 admin:
-  access_log_path: /tmp/admin_access.log
   address:
     socket_address: { address: 127.0.0.1, port_value: 9901 }
 
