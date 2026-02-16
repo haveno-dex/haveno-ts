@@ -4140,13 +4140,16 @@ async function prepareForTrading(numTrades: number, ...havenods: HavenoClient[])
     }
   }
 
-  // create payment account for each asset code
+  // create payment account for each fixed price asset code
   for (const havenod of havenods) {
     for (const assetCode of TestConfig.assetCodes.concat(TestConfig.fixedPriceAssetCodes)) {
       if (await hasPaymentAccount({trader: havenod, assetCode: assetCode})) continue; // skip if exists
       await createPaymentAccount(havenod, assetCode);
     }
   }
+
+  // TODO: waiting for account witnesses to be published so they're not lost before shutting down. should be part of account creation?
+  await wait(1000);
 }
 
 async function getWallet(havenod: HavenoClient) {
