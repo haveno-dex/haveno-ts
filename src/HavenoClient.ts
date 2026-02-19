@@ -1134,23 +1134,24 @@ export default class HavenoClient {
    */
   async postOffer(config: PostOfferConfig): Promise<OfferInfo> {
     console.log("Posting offer with security deposit %: " + config.securityDepositPct)
+    const request = new PostOfferRequest();
+    if (config.direction) request.setDirection(config.direction === OfferDirection.BUY ? "buy" : "sell");
+    if (config.amount) request.setAmount(config.amount.toString());
+    if (config.minAmount) request.setMinAmount(config.minAmount.toString());
+    else if (config.amount) request.setMinAmount(config.amount.toString());
+    if (config.assetCode) request.setCurrencyCode(config.assetCode);
+    if (config.paymentAccountId) request.setPaymentAccountId(config.paymentAccountId);
+    if (config.securityDepositPct) request.setSecurityDepositPct(config.securityDepositPct);
+    request.setUseMarketBasedPrice(config.price === undefined);
+    if (config.price) request.setPrice(config.price?.toString())
+    if (config.marketPriceMarginPct) request.setMarketPriceMarginPct(config.marketPriceMarginPct);
+    if (config.triggerPrice) request.setTriggerPrice(config.triggerPrice.toString());
+    if (config.reserveExactAmount) request.setReserveExactAmount(true);
+    if (config.isPrivateOffer) request.setIsPrivateOffer(true);
+    if (config.buyerAsTakerWithoutDeposit) request.setBuyerAsTakerWithoutDeposit(true);
+    if (config.extraInfo) request.setExtraInfo(config.extraInfo);
+    if (config.sourceOfferId) request.setSourceOfferId(config.sourceOfferId);
     try {
-      const request = new PostOfferRequest();
-      if (config.direction) request.setDirection(config.direction === OfferDirection.BUY ? "buy" : "sell");
-      if (config.amount) request.setAmount(config.amount.toString());
-      request.setMinAmount(config.minAmount ? config.minAmount.toString() : config.amount!.toString());
-      if (config.assetCode) request.setCurrencyCode(config.assetCode);
-      if (config.paymentAccountId) request.setPaymentAccountId(config.paymentAccountId);
-      if (config.securityDepositPct) request.setSecurityDepositPct(config.securityDepositPct);
-      request.setUseMarketBasedPrice(config.price === undefined);
-      if (config.price) request.setPrice(config.price?.toString())
-      if (config.marketPriceMarginPct) request.setMarketPriceMarginPct(config.marketPriceMarginPct);
-      if (config.triggerPrice) request.setTriggerPrice(config.triggerPrice.toString());
-      if (config.reserveExactAmount) request.setReserveExactAmount(true);
-      if (config.isPrivateOffer) request.setIsPrivateOffer(true);
-      if (config.buyerAsTakerWithoutDeposit) request.setBuyerAsTakerWithoutDeposit(true);
-      if (config.extraInfo) request.setExtraInfo(config.extraInfo);
-      if (config.sourceOfferId) request.setSourceOfferId(config.sourceOfferId);
       return (await this._offersClient.postOffer(request, {password: this._password})).getOffer()!;
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);

@@ -1644,20 +1644,24 @@ test("Can post, deactivate, activate, edit, and remove an offer (Test, CI, sanit
   ctx.extraInfo = "My edited extra info";
   ctx.price = undefined;
   ctx.marketPriceMarginPct = 0.15;
+  const editedAssetCode = "BCH";
+  let paymentAccountId = (await createPaymentAccount(user1, editedAssetCode)).getId();
   offer = await user1.editOffer({
     offerId: offer.getId(),
     price: ctx.price,
     marketPriceMarginPct: ctx.marketPriceMarginPct,
-    extraInfo: ctx.extraInfo
+    extraInfo: ctx.extraInfo,
+    paymentAccountId: paymentAccountId
   });
   assert.equal(offer.getState(), "AVAILABLE");
+  assert.equal(offer.getCounterCurrencyCode(), editedAssetCode);
   if (ctx.marketPriceMarginPct) assert.equal(offer.getMarketPriceMarginPct(), ctx.marketPriceMarginPct);
   if (ctx.price) expect(parseFloat(offer.getPrice())).toEqual(ctx.price);
   expect(offer.getExtraInfo()).toContain("My edited extra info");
 
   // peer sees edited offer
   await wait(TestConfig.trade.maxTimePeerNoticeMs);
-  peerOffer = getOffer(await user2.getOffers(assetCode, TestConfig.trade.direction), offer.getId());
+  peerOffer = getOffer(await user2.getOffers(editedAssetCode, TestConfig.trade.direction), offer.getId());
   if (!peerOffer) throw new Error("Offer " + offer.getId() + " was not found in peer's offers after edited");
   testOffer(peerOffer, ctx, false);
   expect(peerOffer.getExtraInfo()).toContain("My edited extra info");
@@ -1687,15 +1691,14 @@ test("Can clone offers (Test, CI, sanity check)", async () => {
   const availableBalanceBefore = BigInt((await user1.getBalances()).getAvailableBalance());
 
   // post offer
-  let assetCode = "BCH";
-  let ctx: Partial<TradeContext> = {maker: {havenod: user1}, direction: OfferDirection.SELL, isPrivateOffer: true, buyerAsTakerWithoutDeposit: true, assetCode: assetCode, extraInfo: "My extra info"};
+  let assetCode = "USD";
+  let ctx: Partial<TradeContext> = {maker: {havenod: user1}, direction: OfferDirection.SELL, assetCode: assetCode, extraInfo: "My extra info"};
   let offer: OfferInfo = await makeOffer(ctx);
   assert.equal(offer.getState(), "AVAILABLE");
 
-  // clone offer
-  const clonedOffer = await makeOffer({
+  // clone offer with same fiat account
+  let clonedOffer = await user1.postOffer({
     sourceOfferId: offer.getId(),
-    assetCode: "BCH"
   });
   assert.notEqual(clonedOffer.getId(), offer.getId());
   assert.equal(clonedOffer.getState(), "DEACTIVATED"); // deactivated if same payment method and currency
@@ -1704,8 +1707,25 @@ test("Can clone offers (Test, CI, sanity check)", async () => {
   assert.equal(clonedOffer.getAmount(), offer.getAmount());
   assert.equal(clonedOffer.getMinAmount(), offer.getMinAmount());
   assert.equal(clonedOffer.getIsPrivateOffer(), offer.getIsPrivateOffer());
+
+  // clone offer with crypto account
+  const cryptoAssetCode = "BCH";
+  let paymentAccountId = (await createPaymentAccount(user1, cryptoAssetCode)).getId();
+  clonedOffer = await user1.postOffer({
+    sourceOfferId: offer.getId(),
+    paymentAccountId: paymentAccountId
+  });
+  assert.notEqual(clonedOffer.getId(), offer.getId());
+  assert.equal(clonedOffer.getState(), "AVAILABLE");
+  assert.equal(clonedOffer.getCounterCurrencyCode(), cryptoAssetCode);
+  assert.equal(clonedOffer.getBaseCurrencyCode(), "XMR");
+  assert.equal(clonedOffer.getAmount(), offer.getAmount());
+  assert.equal(clonedOffer.getMinAmount(), offer.getMinAmount());
+  assert.equal(clonedOffer.getIsPrivateOffer(), offer.getIsPrivateOffer());
   
-  // TODO: test edited fields on clone, etc
+  // TODO: test edited fields on clone
+
+  // TODO: test peer seeing cloned offers
 
   // remove offers
   await user1.removeOffer(offer.getId());
