@@ -1697,31 +1697,31 @@ test("Can clone offers (Test, CI, sanity check)", async () => {
   assert.equal(offer.getState(), "AVAILABLE");
 
   // clone offer with same fiat account
-  let clonedOffer = await user1.postOffer({
+  const clonedOffer1 = await user1.postOffer({
     sourceOfferId: offer.getId(),
   });
-  assert.notEqual(clonedOffer.getId(), offer.getId());
-  assert.equal(clonedOffer.getState(), "DEACTIVATED"); // deactivated if same payment method and currency
-  assert.equal(clonedOffer.getCounterCurrencyCode(), assetCode);
-  assert.equal(clonedOffer.getBaseCurrencyCode(), "XMR");
-  assert.equal(clonedOffer.getAmount(), offer.getAmount());
-  assert.equal(clonedOffer.getMinAmount(), offer.getMinAmount());
-  assert.equal(clonedOffer.getIsPrivateOffer(), offer.getIsPrivateOffer());
+  assert.notEqual(clonedOffer1.getId(), offer.getId());
+  assert.equal(clonedOffer1.getState(), "DEACTIVATED"); // deactivated if same payment method and currency
+  assert.equal(clonedOffer1.getCounterCurrencyCode(), assetCode);
+  assert.equal(clonedOffer1.getBaseCurrencyCode(), "XMR");
+  assert.equal(clonedOffer1.getAmount(), offer.getAmount());
+  assert.equal(clonedOffer1.getMinAmount(), offer.getMinAmount());
+  assert.equal(clonedOffer1.getIsPrivateOffer(), offer.getIsPrivateOffer());
 
   // clone offer with crypto account
   const cryptoAssetCode = "BCH";
   let paymentAccountId = (await createPaymentAccount(user1, cryptoAssetCode)).getId();
-  clonedOffer = await user1.postOffer({
+  const clonedOffer2 = await user1.postOffer({
     sourceOfferId: offer.getId(),
     paymentAccountId: paymentAccountId
   });
-  assert.notEqual(clonedOffer.getId(), offer.getId());
-  assert.equal(clonedOffer.getState(), "AVAILABLE");
-  assert.equal(clonedOffer.getCounterCurrencyCode(), cryptoAssetCode);
-  assert.equal(clonedOffer.getBaseCurrencyCode(), "XMR");
-  assert.equal(clonedOffer.getAmount(), offer.getAmount());
-  assert.equal(clonedOffer.getMinAmount(), offer.getMinAmount());
-  assert.equal(clonedOffer.getIsPrivateOffer(), offer.getIsPrivateOffer());
+  assert.notEqual(clonedOffer2.getId(), offer.getId());
+  assert.equal(clonedOffer2.getState(), "AVAILABLE");
+  assert.equal(clonedOffer2.getCounterCurrencyCode(), cryptoAssetCode);
+  assert.equal(clonedOffer2.getBaseCurrencyCode(), "XMR");
+  assert.equal(clonedOffer2.getAmount(), offer.getAmount());
+  assert.equal(clonedOffer2.getMinAmount(), offer.getMinAmount());
+  assert.equal(clonedOffer2.getIsPrivateOffer(), offer.getIsPrivateOffer());
   
   // TODO: test edited fields on clone
 
@@ -1729,7 +1729,8 @@ test("Can clone offers (Test, CI, sanity check)", async () => {
 
   // remove offers
   await user1.removeOffer(offer.getId());
-  await user1.removeOffer(clonedOffer.getId());
+  await user1.removeOffer(clonedOffer1.getId());
+  await user1.removeOffer(clonedOffer2.getId());
 });
 
 // TODO: provide number of confirmations in offer status
@@ -2295,17 +2296,25 @@ test("Cannot make or take offer with insufficient funds (Test, CI, sanity check)
       assert.equal(errTyped.code, 2);
     }
 
-    // user1 gets or posts offer
+    // user1 gets or posts available offer
+    let offer: OfferInfo | undefined = undefined;
     const offers: OfferInfo[] = await user1.getMyOffers(TestConfig.trade.assetCode);
-    let offer: OfferInfo;
-    if (offers.length) offer = offers[0];
-    else {
+    for (const anOffer of offers) {
+      if (anOffer.getState() === "AVAILABLE") {
+        offer = anOffer;
+        break;
+      }
+    }
+    if (offer === undefined) {
       const tradeAmount = 250000000000n;
       await waitForAvailableBalance(tradeAmount * 2n, user1);
       offer = await makeOffer({maker: {havenod: user1}, offerAmount: tradeAmount, awaitFundsToMakeOffer: false});
       assert.equal(offer.getState(), "AVAILABLE");
       await wait(TestConfig.trade.walletSyncPeriodMs * 2);
     }
+
+    // user3 sees offer
+    if (!getOffer(await user3.getOffers(offer.getCounterCurrencyCode()), offer.getId())) throw new Error("Offer " + offer.getId() + " was not found in user3's offers");
 
     // user3 cannot take offer with insufficient funds
     try {
