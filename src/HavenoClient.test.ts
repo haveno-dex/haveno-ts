@@ -1872,7 +1872,7 @@ test("Can reserve exact amount needed for offer (Test, CI)", async () => {
   });
 });
 
-test("Cannot post offer outside of trade limits (Test, CI, sanity check)", async () => {
+test("Cannot make or take offer outside of limits (Test, CI, sanity check)", async () => {
   let assetCode = "USD";
   const account = await createPaymentAccount(user1, assetCode, "zelle");
   const diff = 10000000000n;
@@ -1888,7 +1888,7 @@ test("Cannot post offer outside of trade limits (Test, CI, sanity check)", async
     });
     throw new Error("Should have rejected posting offer above trade limit")
   } catch (err: any) {
-    if (err.message.indexOf("Amount is larger than") < 0) throw err;
+    if (err.message.indexOf("must be below maximum") < 0) throw err;
   }
 
   // test posting sell offer above limit
@@ -1902,7 +1902,7 @@ test("Cannot post offer outside of trade limits (Test, CI, sanity check)", async
     });
     throw new Error("Should have rejected posting offer above trade limit")
   } catch (err: any) {
-    if (err.message.indexOf("Amount is larger than") < 0) throw err;
+    if (err.message.indexOf("must be below maximum") < 0) throw err;
   }
 
   // test posting sell offer below limit
@@ -1988,12 +1988,27 @@ test("Cannot post offer outside of trade limits (Test, CI, sanity check)", async
   // test that sell limit is higher than buy limit
   offerId = await executeTrade({
     offerAmount: HavenoUtils.xmrToAtomicUnits(2.1),
+    offerMinAmount: TestConfig.minAmount,
     direction: OfferDirection.SELL,
     assetCode: assetCode,
     makerPaymentAccountId: account.getId(),
     takeOffer: false
   });
   await user1.removeOffer(offerId);
+
+  // cannot take offer outside of range
+  try {
+    await executeTrade({
+      offerAmount: HavenoUtils.xmrToAtomicUnits(2.1),
+      offerMinAmount: TestConfig.minAmount,
+      tradeAmount: HavenoUtils.xmrToAtomicUnits(2.2),
+      direction: OfferDirection.SELL,
+      assetCode: assetCode,
+      makerPaymentAccountId: account.getId(),
+    });
+  } catch (err: any) {
+    if (err.message.indexOf("Trade amount exceeds offer amount") < 0) throw err;
+  }
 });
 
 test("Can complete a trade within a range and without a buyer deposit (Test, CI)", async () => {
@@ -2284,7 +2299,7 @@ test("Cannot make or take offer with insufficient funds (Test, CI, sanity check)
     user3 = await initHaveno();
 
     // user3 creates payment account
-    const paymentAccount = await createPaymentAccount(user3, TestConfig.trade.assetCode!);
+    let paymentAccount = await createPaymentAccount(user3, TestConfig.trade.assetCode!);
 
     // user3 cannot make offer with insufficient funds
     try {
@@ -2317,6 +2332,7 @@ test("Cannot make or take offer with insufficient funds (Test, CI, sanity check)
     if (!getOffer(await user3.getOffers(offer.getCounterCurrencyCode()), offer.getId())) throw new Error("Offer " + offer.getId() + " was not found in user3's offers");
 
     // user3 cannot take offer with insufficient funds
+    paymentAccount = await createPaymentAccount(user3, offer.getCounterCurrencyCode(), offer.getPaymentMethodId());
     try {
       await user3.takeOffer(offer.getId(), paymentAccount.getId());
       throw new Error("Should have failed taking offer with insufficient funds")
