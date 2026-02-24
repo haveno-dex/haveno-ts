@@ -2872,11 +2872,7 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
 
         // wait for offer to become available after split output tx unlocked
         HavenoUtils.log(1, "Waiting for split output offer to become available, offer=" + ctx.offerId + ", txId=" + splitOutputTxId);
-        if (ctx.concurrentTrades) {
-          await wait(TestConfig.trade.walletSyncPeriodMs * 2 + TestConfig.trade.maxTimePeerNoticeMs);
-        } else {
-          await wait(TestConfig.trade.walletSyncPeriodMs + TestConfig.trade.maxTimePeerNoticeMs);
-        }
+        await wait(TestConfig.trade.walletSyncPeriodMs * 2 + TestConfig.trade.maxTimePeerNoticeMs);
         HavenoUtils.log(1, "Done waiting for split output offer to become available, offer=" + ctx.offerId + ", txId=" + splitOutputTxId);
       }
     }
