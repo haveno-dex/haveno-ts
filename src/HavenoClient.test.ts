@@ -4582,7 +4582,7 @@ function multiply(amount: bigint, multiplier: number): bigint {
 }
 
 function getRandomBigIntWithinRange(min: bigint, max: bigint): bigint {
-  return BigInt(Math.floor(Math.random() * (Number(max) - Number(min))) + Number(min));
+  return min + BigInt(Math.floor(Math.random() * Number(max - min + 1n)));
 }
 
 function getRandomAssetCode() {
