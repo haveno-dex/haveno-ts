@@ -22,6 +22,7 @@ const assert_1 = __importDefault(require("assert"));
 const console_1 = __importDefault(require("console"));
 const decimal_js_1 = __importDefault(require("decimal.js"));
 const pb_pb_1 = require("../protobuf/pb_pb");
+const child_process_1 = require("child_process");
 /**
  * Collection of utilities for working with Haveno.
  */
@@ -80,7 +81,19 @@ class HavenoUtils {
         return new Promise(function (resolve, reject) {
             process.on("exit", function () { resolve(); });
             process.on("error", function (err) { reject(err); });
-            process.kill(signal ? signal : "SIGINT");
+            if (global.process.platform === 'win32') {
+                (0, child_process_1.exec)(`tasklist /FI "PID eq ${process.pid}"`, (err, stdout) => {
+                    if (stdout.includes(process.pid.toString())) {
+                        (0, child_process_1.exec)(`taskkill /PID ${process.pid} /T /F`, err => {
+                            if (err)
+                                reject(err);
+                        });
+                    }
+                });
+            }
+            else {
+                process.kill(signal ? signal : "SIGINT");
+            }
         });
     }
     /**

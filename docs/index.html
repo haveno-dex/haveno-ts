@@ -37,52 +37,10 @@
 </a>
 <p>See <a href="https://haveno-dex.github.io/haveno-ts/classes/HavenoClient.HavenoClient.html">TypeDocs</a>.</p>
 
-<a href="#run-tests" id="run-tests" style="color: inherit; text-decoration: none;">
-  <h2>Run tests</h2>
+<a href="#run-api-tests" id="run-api-tests" style="color: inherit; text-decoration: none;">
+  <h2>Run API Tests</h2>
 </a>
-<p>Running the <a href="./src/HavenoClient.test.ts">API tests</a> is the best way to develop and test Haveno end-to-end. <a href="./src/HavenoClient.ts"><code>HavenoClient.ts</code></a> provides the client interface to Haveno&#39;s backend daemon.</p>
-<p>You first need to start a local Haveno network which can be done manually or using docker.</p>
-
-<a href="#start-local-haveno-network-manually" id="start-local-haveno-network-manually" style="color: inherit; text-decoration: none;">
-  <h3>Start local Haveno network manually</h3>
-</a>
-<p>This workflow is useful for local development of <code>haveno</code> and <code>haveno-ts</code></p>
-<ol>
-<li><a href="https://github.com/haveno-dex/haveno/blob/master/docs/installing.md">Run a local Haveno test network</a> and then shut down the arbitrator, user1, and user2 or run them as daemons, e.g. <code>make user1-daemon-local</code>. You may omit the arbitrator registration steps since it&#39;s done automatically in the tests.</li>
-<li>Clone this project to the same parent directory as the haveno project: <code>git clone https://github.com/haveno-dex/haveno-ts</code></li>
-<li>Install <code>envoy</code> proxy from your package manager of choice, for example <code>brew install envoy</code>.</li>
-<li>In a new terminal, start envoy with the config in haveno-ts/config/envoy.local.yaml: <code>envoy -c config/envoy.local.yaml</code></li>
-<li>In a new terminal, start the funding wallet. This wallet will be funded automatically in order to fund the tests.<br>For example: <code>cd ~/git/haveno &amp;&amp; make funding-wallet-local</code>.</li>
-</ol>
-
-<a href="#start-local-haveno-network-with-docker" id="start-local-haveno-network-with-docker" style="color: inherit; text-decoration: none;">
-  <h3>Start local Haveno network with docker</h3>
-</a>
-<p>Alternatively use this wokflow to develop <code>haveno-ts</code> or run tests with dockerized setup:</p>
-<p>Start a local Haveno network with docker:</p>
-<ol>
-<li><code>cd ~/git/haveno-ts/docker</code></li>
-<li><code>sudo docker-compose up</code>. This will start docker and initialize the network.</li>
-</ol>
-<blockquote>
-<p><strong>Docker Tips</strong></p>
-<ul>
-<li>Stop: <code>sudo docker-compose stop</code></li>
-<li>Rebuild: <code>sudo docker-compose build</code></li>
-<li>Stop and delete contains: <code>sudo docker-compose stop</code></li>
-</ul>
-</blockquote>
-
-<a href="#run-client-tests" id="run-client-tests" style="color: inherit; text-decoration: none;">
-  <h3>Run client tests</h3>
-</a>
-<ol start="5">
-<li>Install protobuf compiler <a href="https://github.com/protocolbuffers/protobuf/releases/tag/v29.3">v29.3</a> for your system.</li>
-<li>Download <code>protoc-gen-js</code> and <code>protoc-gen-grpc-web</code> plugins and make executable as <a href="https://github.com/grpc/grpc-web#code-generator-plugins">shown here</a>.</li>
-<li><code>cd haveno-ts</code></li>
-<li><code>npm install</code></li>
-<li><code>npm run test -- --baseCurrencyNetwork=XMR_LOCAL</code> to run all tests or <code>npm run test -- --baseCurrencyNetwork=XMR_LOCAL -t &quot;Can get the version&quot;</code> to run tests by name.</li>
-</ol>
+<p>See <a href="docs/run-api-tests.md">instructions</a>.</p>
 </div></div>
 <div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 <div class="tsd-navigation settings">
@@ -116,6 +74,8 @@
 <ul>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.AccountExistsReply.html">Account<wbr/>Exists<wbr/>Reply</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.AccountExistsRequest.html">Account<wbr/>Exists<wbr/>Request</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.ActivateOfferReply.html">Activate<wbr/>Offer<wbr/>Reply</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.ActivateOfferRequest.html">Activate<wbr/>Offer<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.AddConnectionReply.html">Add<wbr/>Connection<wbr/>Reply</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.AddConnectionRequest.html">Add<wbr/>Connection<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.AddressBalanceInfo.html">Address<wbr/>Balance<wbr/>Info</a></li>
@@ -130,8 +90,6 @@
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.ChangePasswordRequest.html">Change<wbr/>Password<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.CheckConnectionReply.html">Check<wbr/>Connection<wbr/>Reply</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.CheckConnectionRequest.html">Check<wbr/>Connection<wbr/>Request</a></li>
-<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.CheckConnectionsReply.html">Check<wbr/>Connections<wbr/>Reply</a></li>
-<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.CheckConnectionsRequest.html">Check<wbr/>Connections<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.CloseAccountReply.html">Close<wbr/>Account<wbr/>Reply</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.CloseAccountRequest.html">Close<wbr/>Account<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.CompleteTradeReply.html">Complete<wbr/>Trade<wbr/>Reply</a></li>
@@ -151,10 +109,14 @@
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.CreateXmrSweepTxsRequest.html">Create<wbr/>Xmr<wbr/>Sweep<wbr/>Txs<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.CreateXmrTxReply.html">Create<wbr/>Xmr<wbr/>Tx<wbr/>Reply</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.CreateXmrTxRequest.html">Create<wbr/>Xmr<wbr/>Tx<wbr/>Request</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.DeactivateOfferReply.html">Deactivate<wbr/>Offer<wbr/>Reply</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.DeactivateOfferRequest.html">Deactivate<wbr/>Offer<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.DeleteAccountReply.html">Delete<wbr/>Account<wbr/>Reply</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.DeleteAccountRequest.html">Delete<wbr/>Account<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.DeletePaymentAccountReply.html">Delete<wbr/>Payment<wbr/>Account<wbr/>Reply</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.DeletePaymentAccountRequest.html">Delete<wbr/>Payment<wbr/>Account<wbr/>Request</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.EditOfferReply.html">Edit<wbr/>Offer<wbr/>Reply</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.EditOfferRequest.html">Edit<wbr/>Offer<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetAddressBalanceReply.html">Get<wbr/>Address<wbr/>Balance<wbr/>Reply</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetAddressBalanceRequest.html">Get<wbr/>Address<wbr/>Balance<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetAutoSwitchReply.html">Get<wbr/>Auto<wbr/>Switch<wbr/>Reply</a></li>
@@ -203,6 +165,8 @@
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetTradesRequest.html">Get<wbr/>Trades<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetVersionReply.html">Get<wbr/>Version<wbr/>Reply</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetVersionRequest.html">Get<wbr/>Version<wbr/>Request</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetWalletHeightReply.html">Get<wbr/>Wallet<wbr/>Height<wbr/>Reply</a></li>
+<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetWalletHeightRequest.html">Get<wbr/>Wallet<wbr/>Height<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetXmrNewSubaddressReply.html">Get<wbr/>Xmr<wbr/>New<wbr/>Subaddress<wbr/>Reply</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetXmrNewSubaddressRequest.html">Get<wbr/>Xmr<wbr/>New<wbr/>Subaddress<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.GetXmrNodeSettingsReply.html">Get<wbr/>Xmr<wbr/>Node<wbr/>Settings<wbr/>Reply</a></li>
@@ -263,12 +227,8 @@
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.SetConnectionRequest.html">Set<wbr/>Connection<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.SetWalletPasswordReply.html">Set<wbr/>Wallet<wbr/>Password<wbr/>Reply</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.SetWalletPasswordRequest.html">Set<wbr/>Wallet<wbr/>Password<wbr/>Request</a></li>
-<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.StartCheckingConnectionReply.html">Start<wbr/>Checking<wbr/>Connection<wbr/>Reply</a></li>
-<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.StartCheckingConnectionRequest.html">Start<wbr/>Checking<wbr/>Connection<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.StartXmrNodeReply.html">Start<wbr/>Xmr<wbr/>Node<wbr/>Reply</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.StartXmrNodeRequest.html">Start<wbr/>Xmr<wbr/>Node<wbr/>Request</a></li>
-<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.StopCheckingConnectionReply.html">Stop<wbr/>Checking<wbr/>Connection<wbr/>Reply</a></li>
-<li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.StopCheckingConnectionRequest.html">Stop<wbr/>Checking<wbr/>Connection<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.StopReply.html">Stop<wbr/>Reply</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.StopRequest.html">Stop<wbr/>Request</a></li>
 <li class="tsd-kind-namespace tsd-parent-kind-module"><a href="modules/protobuf_grpc_pb.StopXmrNodeReply.html">Stop<wbr/>Xmr<wbr/>Node<wbr/>Reply</a></li>

@@ -4606,6 +4606,9 @@ export class MoneyBeamAccountPayload extends jspb.Message {
   getAccountId(): string;
   setAccountId(value: string): MoneyBeamAccountPayload;
 
+  getHolderName(): string;
+  setHolderName(value: string): MoneyBeamAccountPayload;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MoneyBeamAccountPayload.AsObject;
   static toObject(includeInstance: boolean, msg: MoneyBeamAccountPayload): MoneyBeamAccountPayload.AsObject;
@@ -4617,6 +4620,7 @@ export class MoneyBeamAccountPayload extends jspb.Message {
 export namespace MoneyBeamAccountPayload {
   export type AsObject = {
     accountId: string,
+    holderName: string,
   }
 }
 
@@ -5003,6 +5007,9 @@ export class TransferwiseAccountPayload extends jspb.Message {
   getEmail(): string;
   setEmail(value: string): TransferwiseAccountPayload;
 
+  getHolderName(): string;
+  setHolderName(value: string): TransferwiseAccountPayload;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): TransferwiseAccountPayload.AsObject;
   static toObject(includeInstance: boolean, msg: TransferwiseAccountPayload): TransferwiseAccountPayload.AsObject;
@@ -5014,6 +5021,7 @@ export class TransferwiseAccountPayload extends jspb.Message {
 export namespace TransferwiseAccountPayload {
   export type AsObject = {
     email: string,
+    holderName: string,
   }
 }
 
@@ -5155,6 +5163,9 @@ export class PixAccountPayload extends jspb.Message {
   getPixKey(): string;
   setPixKey(value: string): PixAccountPayload;
 
+  getHolderName(): string;
+  setHolderName(value: string): PixAccountPayload;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PixAccountPayload.AsObject;
   static toObject(includeInstance: boolean, msg: PixAccountPayload): PixAccountPayload.AsObject;
@@ -5166,6 +5177,7 @@ export class PixAccountPayload extends jspb.Message {
 export namespace PixAccountPayload {
   export type AsObject = {
     pixKey: string,
+    holderName: string,
   }
 }
 
@@ -6674,6 +6686,11 @@ export class TradePeer extends jspb.Message {
   hasPaymentReceivedMessage(): boolean;
   clearPaymentReceivedMessage(): TradePeer;
 
+  getDisputeOpenedMessage(): DisputeOpenedMessage | undefined;
+  setDisputeOpenedMessage(value?: DisputeOpenedMessage): TradePeer;
+  hasDisputeOpenedMessage(): boolean;
+  clearDisputeOpenedMessage(): TradePeer;
+
   getDisputeClosedMessage(): DisputeClosedMessage | undefined;
   setDisputeClosedMessage(value?: DisputeClosedMessage): TradePeer;
   hasDisputeClosedMessage(): boolean;
@@ -6741,6 +6758,12 @@ export class TradePeer extends jspb.Message {
   getPaymentReceivedMessageState(): string;
   setPaymentReceivedMessageState(value: string): TradePeer;
 
+  getDisputeOpenedMessageState(): string;
+  setDisputeOpenedMessageState(value: string): TradePeer;
+
+  getDisputeClosedMessageState(): string;
+  setDisputeClosedMessageState(value: string): TradePeer;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): TradePeer.AsObject;
   static toObject(includeInstance: boolean, msg: TradePeer): TradePeer.AsObject;
@@ -6770,6 +6793,7 @@ export namespace TradePeer {
     mediatedPayoutTxSignature: Uint8Array | string,
     paymentSentMessage?: PaymentSentMessage.AsObject,
     paymentReceivedMessage?: PaymentReceivedMessage.AsObject,
+    disputeOpenedMessage?: DisputeOpenedMessage.AsObject,
     disputeClosedMessage?: DisputeClosedMessage.AsObject,
     reserveTxHash: string,
     reserveTxHex: string,
@@ -6791,6 +6815,8 @@ export namespace TradePeer {
     depositsConfirmedMessageState: string,
     paymentSentMessageState: string,
     paymentReceivedMessageState: string,
+    disputeOpenedMessageState: string,
+    disputeClosedMessageState: string,
   }
 }
 
@@ -7820,6 +7846,7 @@ export namespace PaymentAccountForm {
     ACH_TRANSFER = 25,
     INTERAC_E_TRANSFER = 26,
     US_POSTAL_MONEY_ORDER = 27,
+    PIX = 28,
   }
 }
 

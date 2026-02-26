@@ -1023,100 +1023,6 @@ export namespace CheckConnectionReply {
   }
 }
 
-export class CheckConnectionsRequest extends jspb.Message {
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): CheckConnectionsRequest.AsObject;
-  static toObject(includeInstance: boolean, msg: CheckConnectionsRequest): CheckConnectionsRequest.AsObject;
-  static serializeBinaryToWriter(message: CheckConnectionsRequest, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): CheckConnectionsRequest;
-  static deserializeBinaryFromReader(message: CheckConnectionsRequest, reader: jspb.BinaryReader): CheckConnectionsRequest;
-}
-
-export namespace CheckConnectionsRequest {
-  export type AsObject = {
-  }
-}
-
-export class CheckConnectionsReply extends jspb.Message {
-  getConnectionsList(): Array<UrlConnection>;
-  setConnectionsList(value: Array<UrlConnection>): CheckConnectionsReply;
-  clearConnectionsList(): CheckConnectionsReply;
-  addConnections(value?: UrlConnection, index?: number): UrlConnection;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): CheckConnectionsReply.AsObject;
-  static toObject(includeInstance: boolean, msg: CheckConnectionsReply): CheckConnectionsReply.AsObject;
-  static serializeBinaryToWriter(message: CheckConnectionsReply, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): CheckConnectionsReply;
-  static deserializeBinaryFromReader(message: CheckConnectionsReply, reader: jspb.BinaryReader): CheckConnectionsReply;
-}
-
-export namespace CheckConnectionsReply {
-  export type AsObject = {
-    connectionsList: Array<UrlConnection.AsObject>,
-  }
-}
-
-export class StartCheckingConnectionRequest extends jspb.Message {
-  getRefreshPeriod(): number;
-  setRefreshPeriod(value: number): StartCheckingConnectionRequest;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): StartCheckingConnectionRequest.AsObject;
-  static toObject(includeInstance: boolean, msg: StartCheckingConnectionRequest): StartCheckingConnectionRequest.AsObject;
-  static serializeBinaryToWriter(message: StartCheckingConnectionRequest, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): StartCheckingConnectionRequest;
-  static deserializeBinaryFromReader(message: StartCheckingConnectionRequest, reader: jspb.BinaryReader): StartCheckingConnectionRequest;
-}
-
-export namespace StartCheckingConnectionRequest {
-  export type AsObject = {
-    refreshPeriod: number,
-  }
-}
-
-export class StartCheckingConnectionReply extends jspb.Message {
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): StartCheckingConnectionReply.AsObject;
-  static toObject(includeInstance: boolean, msg: StartCheckingConnectionReply): StartCheckingConnectionReply.AsObject;
-  static serializeBinaryToWriter(message: StartCheckingConnectionReply, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): StartCheckingConnectionReply;
-  static deserializeBinaryFromReader(message: StartCheckingConnectionReply, reader: jspb.BinaryReader): StartCheckingConnectionReply;
-}
-
-export namespace StartCheckingConnectionReply {
-  export type AsObject = {
-  }
-}
-
-export class StopCheckingConnectionRequest extends jspb.Message {
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): StopCheckingConnectionRequest.AsObject;
-  static toObject(includeInstance: boolean, msg: StopCheckingConnectionRequest): StopCheckingConnectionRequest.AsObject;
-  static serializeBinaryToWriter(message: StopCheckingConnectionRequest, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): StopCheckingConnectionRequest;
-  static deserializeBinaryFromReader(message: StopCheckingConnectionRequest, reader: jspb.BinaryReader): StopCheckingConnectionRequest;
-}
-
-export namespace StopCheckingConnectionRequest {
-  export type AsObject = {
-  }
-}
-
-export class StopCheckingConnectionReply extends jspb.Message {
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): StopCheckingConnectionReply.AsObject;
-  static toObject(includeInstance: boolean, msg: StopCheckingConnectionReply): StopCheckingConnectionReply.AsObject;
-  static serializeBinaryToWriter(message: StopCheckingConnectionReply, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): StopCheckingConnectionReply;
-  static deserializeBinaryFromReader(message: StopCheckingConnectionReply, reader: jspb.BinaryReader): StopCheckingConnectionReply;
-}
-
-export namespace StopCheckingConnectionReply {
-  export type AsObject = {
-  }
-}
-
 export class GetBestConnectionRequest extends jspb.Message {
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GetBestConnectionRequest.AsObject;
@@ -1597,6 +1503,136 @@ export namespace PostOfferReply {
   }
 }
 
+export class EditOfferRequest extends jspb.Message {
+  getOfferId(): string;
+  setOfferId(value: string): EditOfferRequest;
+
+  getCurrencyCode(): string;
+  setCurrencyCode(value: string): EditOfferRequest;
+
+  getPrice(): string;
+  setPrice(value: string): EditOfferRequest;
+
+  getUseMarketBasedPrice(): boolean;
+  setUseMarketBasedPrice(value: boolean): EditOfferRequest;
+
+  getMarketPriceMarginPct(): number;
+  setMarketPriceMarginPct(value: number): EditOfferRequest;
+
+  getTriggerPrice(): string;
+  setTriggerPrice(value: string): EditOfferRequest;
+
+  getPaymentAccountId(): string;
+  setPaymentAccountId(value: string): EditOfferRequest;
+
+  getExtraInfo(): string;
+  setExtraInfo(value: string): EditOfferRequest;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): EditOfferRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: EditOfferRequest): EditOfferRequest.AsObject;
+  static serializeBinaryToWriter(message: EditOfferRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): EditOfferRequest;
+  static deserializeBinaryFromReader(message: EditOfferRequest, reader: jspb.BinaryReader): EditOfferRequest;
+}
+
+export namespace EditOfferRequest {
+  export type AsObject = {
+    offerId: string,
+    currencyCode: string,
+    price: string,
+    useMarketBasedPrice: boolean,
+    marketPriceMarginPct: number,
+    triggerPrice: string,
+    paymentAccountId: string,
+    extraInfo: string,
+  }
+}
+
+export class EditOfferReply extends jspb.Message {
+  getOffer(): OfferInfo | undefined;
+  setOffer(value?: OfferInfo): EditOfferReply;
+  hasOffer(): boolean;
+  clearOffer(): EditOfferReply;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): EditOfferReply.AsObject;
+  static toObject(includeInstance: boolean, msg: EditOfferReply): EditOfferReply.AsObject;
+  static serializeBinaryToWriter(message: EditOfferReply, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): EditOfferReply;
+  static deserializeBinaryFromReader(message: EditOfferReply, reader: jspb.BinaryReader): EditOfferReply;
+}
+
+export namespace EditOfferReply {
+  export type AsObject = {
+    offer?: OfferInfo.AsObject,
+  }
+}
+
+export class DeactivateOfferRequest extends jspb.Message {
+  getOfferId(): string;
+  setOfferId(value: string): DeactivateOfferRequest;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): DeactivateOfferRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: DeactivateOfferRequest): DeactivateOfferRequest.AsObject;
+  static serializeBinaryToWriter(message: DeactivateOfferRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): DeactivateOfferRequest;
+  static deserializeBinaryFromReader(message: DeactivateOfferRequest, reader: jspb.BinaryReader): DeactivateOfferRequest;
+}
+
+export namespace DeactivateOfferRequest {
+  export type AsObject = {
+    offerId: string,
+  }
+}
+
+export class DeactivateOfferReply extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): DeactivateOfferReply.AsObject;
+  static toObject(includeInstance: boolean, msg: DeactivateOfferReply): DeactivateOfferReply.AsObject;
+  static serializeBinaryToWriter(message: DeactivateOfferReply, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): DeactivateOfferReply;
+  static deserializeBinaryFromReader(message: DeactivateOfferReply, reader: jspb.BinaryReader): DeactivateOfferReply;
+}
+
+export namespace DeactivateOfferReply {
+  export type AsObject = {
+  }
+}
+
+export class ActivateOfferRequest extends jspb.Message {
+  getOfferId(): string;
+  setOfferId(value: string): ActivateOfferRequest;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ActivateOfferRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: ActivateOfferRequest): ActivateOfferRequest.AsObject;
+  static serializeBinaryToWriter(message: ActivateOfferRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ActivateOfferRequest;
+  static deserializeBinaryFromReader(message: ActivateOfferRequest, reader: jspb.BinaryReader): ActivateOfferRequest;
+}
+
+export namespace ActivateOfferRequest {
+  export type AsObject = {
+    offerId: string,
+  }
+}
+
+export class ActivateOfferReply extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ActivateOfferReply.AsObject;
+  static toObject(includeInstance: boolean, msg: ActivateOfferReply): ActivateOfferReply.AsObject;
+  static serializeBinaryToWriter(message: ActivateOfferReply, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ActivateOfferReply;
+  static deserializeBinaryFromReader(message: ActivateOfferReply, reader: jspb.BinaryReader): ActivateOfferReply;
+}
+
+export namespace ActivateOfferReply {
+  export type AsObject = {
+  }
+}
+
 export class CancelOfferRequest extends jspb.Message {
   getId(): string;
   setId(value: string): CancelOfferRequest;
@@ -1732,6 +1768,17 @@ export class OfferInfo extends jspb.Message {
   getExtraInfo(): string;
   setExtraInfo(value: string): OfferInfo;
 
+  getAcceptedCountryCodesList(): Array<string>;
+  setAcceptedCountryCodesList(value: Array<string>): OfferInfo;
+  clearAcceptedCountryCodesList(): OfferInfo;
+  addAcceptedCountryCodes(value: string, index?: number): OfferInfo;
+
+  getAcceptedCountriesString(): string;
+  setAcceptedCountriesString(value: string): OfferInfo;
+
+  getCity(): string;
+  setCity(value: string): OfferInfo;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): OfferInfo.AsObject;
   static toObject(includeInstance: boolean, msg: OfferInfo): OfferInfo.AsObject;
@@ -1776,6 +1823,9 @@ export namespace OfferInfo {
     isPrivateOffer: boolean,
     challenge: string,
     extraInfo: string,
+    acceptedCountryCodesList: Array<string>,
+    acceptedCountriesString: string,
+    city: string,
   }
 }
 
@@ -3770,6 +3820,42 @@ export namespace AddressBalanceInfo {
     balance: number,
     numConfirmations: number,
     isAddressUnused: boolean,
+  }
+}
+
+export class GetWalletHeightRequest extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GetWalletHeightRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: GetWalletHeightRequest): GetWalletHeightRequest.AsObject;
+  static serializeBinaryToWriter(message: GetWalletHeightRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GetWalletHeightRequest;
+  static deserializeBinaryFromReader(message: GetWalletHeightRequest, reader: jspb.BinaryReader): GetWalletHeightRequest;
+}
+
+export namespace GetWalletHeightRequest {
+  export type AsObject = {
+  }
+}
+
+export class GetWalletHeightReply extends jspb.Message {
+  getHeight(): number;
+  setHeight(value: number): GetWalletHeightReply;
+
+  getTargetHeight(): number;
+  setTargetHeight(value: number): GetWalletHeightReply;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GetWalletHeightReply.AsObject;
+  static toObject(includeInstance: boolean, msg: GetWalletHeightReply): GetWalletHeightReply.AsObject;
+  static serializeBinaryToWriter(message: GetWalletHeightReply, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GetWalletHeightReply;
+  static deserializeBinaryFromReader(message: GetWalletHeightReply, reader: jspb.BinaryReader): GetWalletHeightReply;
+}
+
+export namespace GetWalletHeightReply {
+  export type AsObject = {
+    height: number,
+    targetHeight: number,
   }
 }
 

@@ -40,6 +40,7 @@ class HavenoClient {
         /** @private */ this._notificationListeners = [];
         /** @private */ this._registerNotificationListenerCalled = false;
         /** @private */ this._keepAlivePeriodMs = 60000;
+        // ------------------------------- HELPERS ----------------------------------
         /**
          * Callback for grpc notifications.
          *
@@ -91,7 +92,7 @@ class HavenoClient {
                 let isStarted = false;
                 let daemon = undefined;
                 // start process
-                const childProcess = require('child_process').spawn(cmd[0], cmd.slice(1), { cwd: havenoPath });
+                const childProcess = require('child_process').spawn(cmd[0], cmd.slice(1), { cwd: havenoPath, shell: process.platform === 'win32' });
                 childProcess.stdout.setEncoding('utf8');
                 childProcess.stderr.setEncoding('utf8');
                 // handle stdout
@@ -218,6 +219,61 @@ class HavenoClient {
         }
     }
     /**
+     * Check whether the application is fully initialized with an account and a
+     * connection to the Haveno network.
+     *
+     * @return {Promise<boolean>} true if the application is initialized, false otherwise
+     */
+    async isAppInitialized() {
+        try {
+            return (await this._accountClient.isAppInitialized(new grpc_pb_1.IsAppInitializedRequest(), { password: this._password })).getIsAppInitialized();
+        }
+        catch (e) {
+            throw new HavenoError_1.default(e.message, e.code);
+        }
+    }
+    /**
+     * Wait for the application to be fully initialized with an account and a
+     * connection to the Haveno network.
+     *
+     * TODO:
+     *
+     * Currently when the application starts, the account is first initialized with createAccount()
+     * or openAccount() which return immediately. A notification is sent after all setup is complete and
+     * the application is connected to the Haveno network.
+     *
+     * Ideally when the application starts, the system checks the Haveno network connection, supporting
+     * havenod.isHavenoConnectionInitialized() and havenod.awaitHavenoConnectionInitialized().
+     * Independently, gRPC createAccount() and openAccount() return after all account setup and reading from disk.
+     *
+     * @private
+     */
+    async awaitAppInitialized() {
+        try {
+            // eslint-disable-next-line no-async-promise-executor
+            await new Promise(async (resolve) => {
+                let isResolved = false;
+                const resolveOnce = async () => {
+                    if (isResolved)
+                        return;
+                    isResolved = true;
+                    await this.removeNotificationListener(listener);
+                    resolve();
+                };
+                const listener = async function (notification) {
+                    if (notification.getType() === grpc_pb_1.NotificationMessage.NotificationType.APP_INITIALIZED)
+                        await resolveOnce();
+                };
+                await this.addNotificationListener(listener);
+                if (await this.isAppInitialized())
+                    await resolveOnce();
+            });
+        }
+        catch (e) {
+            throw new HavenoError_1.default(e.message, e.code);
+        }
+    }
+    /**
      * Indicates if connected and authenticated with the Haveno daemon.
      *
      * @return {boolean} true if connected with the Haveno daemon, false otherwise
@@ -265,7 +321,7 @@ class HavenoClient {
     async createAccount(password) {
         try {
             await this._accountClient.createAccount(new grpc_pb_1.CreateAccountRequest().setPassword(password), { password: this._password });
-            await this._awaitAppInitialized(); // TODO: grpc should not return before setup is complete
+            await this.awaitAppInitialized(); // TODO: grpc should not return before setup is complete?
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
@@ -279,7 +335,7 @@ class HavenoClient {
     async openAccount(password) {
         try {
             await this._accountClient.openAccount(new grpc_pb_1.OpenAccountRequest().setPassword(password), { password: this._password });
-            return this._awaitAppInitialized(); // TODO: grpc should not return before setup is complete
+            return this.awaitAppInitialized(); // TODO: grpc should not return before setup is complete?
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
@@ -500,43 +556,6 @@ class HavenoClient {
         }
     }
     /**
-     * Check all Monero daemon connections.
-     *
-     * @return {UrlConnection[]} status of all managed connections.
-     */
-    async checkMoneroConnections() {
-        try {
-            return (await this._xmrConnectionsClient.checkConnections(new grpc_pb_1.CheckConnectionsRequest(), { password: this._password })).getConnectionsList();
-        }
-        catch (e) {
-            throw new HavenoError_1.default(e.message, e.code);
-        }
-    }
-    /**
-     * Check the connection and start checking the connection periodically.
-     *
-     * @param {number} refreshPeriod - time between checks in milliseconds (default 15000 ms or 15 seconds)
-     */
-    async startCheckingConnection(refreshPeriod) {
-        try {
-            await this._xmrConnectionsClient.startCheckingConnection(new grpc_pb_1.StartCheckingConnectionRequest().setRefreshPeriod(refreshPeriod), { password: this._password });
-        }
-        catch (e) {
-            throw new HavenoError_1.default(e.message, e.code);
-        }
-    }
-    /**
-     * Stop checking the connection status periodically.
-     */
-    async stopCheckingConnection() {
-        try {
-            await this._xmrConnectionsClient.stopCheckingConnection(new grpc_pb_1.StopCheckingConnectionRequest(), { password: this._password });
-        }
-        catch (e) {
-            throw new HavenoError_1.default(e.message, e.code);
-        }
-    }
-    /**
      * Get the best connection in order of priority then response time.
      *
      * @return {UrlConnection | undefined} the best connection in order of priority then response time, undefined if no connections
@@ -648,6 +667,19 @@ class HavenoClient {
     async unregisterDisputeAgent(disputeAgentType) {
         try {
             await this._disputeAgentsClient.unregisterDisputeAgent(new grpc_pb_1.UnregisterDisputeAgentRequest().setDisputeAgentType(disputeAgentType), { password: this._password });
+        }
+        catch (e) {
+            throw new HavenoError_1.default(e.message, e.code);
+        }
+    }
+    /**
+     * Get heights of the Monero wallet.
+     *
+     * @return {GetWalletHeightReply} has the wallet heights
+     */
+    async getWalletHeights() {
+        try {
+            return (await this._walletsClient.getHeight(new grpc_pb_1.GetWalletHeightRequest(), { password: this._password }));
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
@@ -1033,7 +1065,7 @@ class HavenoClient {
     /**
      * Post or clone an offer.
      *
-     * @param {OfferConfig} config - configures the offer to post or clone
+     * @param {PostOfferConfig} config - configures the offer to post or clone
      * @param {OfferDirection} [config.direction] - specifies to buy or sell xmr (default buy)
      * @param {bigint} [config.amount] - amount of XMR to trade
      * @param {string} [config.assetCode] - asset code to trade for XMR
@@ -1052,37 +1084,100 @@ class HavenoClient {
      */
     async postOffer(config) {
         console_1.default.log("Posting offer with security deposit %: " + config.securityDepositPct);
+        const request = new grpc_pb_1.PostOfferRequest();
+        if (config.direction)
+            request.setDirection(config.direction === pb_pb_1.OfferDirection.BUY ? "buy" : "sell");
+        if (config.amount)
+            request.setAmount(config.amount.toString());
+        if (config.minAmount)
+            request.setMinAmount(config.minAmount.toString());
+        else if (config.amount)
+            request.setMinAmount(config.amount.toString());
+        if (config.assetCode)
+            request.setCurrencyCode(config.assetCode);
+        if (config.paymentAccountId)
+            request.setPaymentAccountId(config.paymentAccountId);
+        if (config.securityDepositPct)
+            request.setSecurityDepositPct(config.securityDepositPct);
+        request.setUseMarketBasedPrice(config.price === undefined);
+        if (config.price)
+            request.setPrice(config.price?.toString());
+        if (config.marketPriceMarginPct)
+            request.setMarketPriceMarginPct(config.marketPriceMarginPct);
+        if (config.triggerPrice)
+            request.setTriggerPrice(config.triggerPrice.toString());
+        if (config.reserveExactAmount)
+            request.setReserveExactAmount(true);
+        if (config.isPrivateOffer)
+            request.setIsPrivateOffer(true);
+        if (config.buyerAsTakerWithoutDeposit)
+            request.setBuyerAsTakerWithoutDeposit(true);
+        if (config.extraInfo)
+            request.setExtraInfo(config.extraInfo);
+        if (config.sourceOfferId)
+            request.setSourceOfferId(config.sourceOfferId);
         try {
-            const request = new grpc_pb_1.PostOfferRequest();
-            if (config.direction)
-                request.setDirection(config.direction === pb_pb_1.OfferDirection.BUY ? "buy" : "sell");
-            if (config.amount)
-                request.setAmount(config.amount.toString());
-            request.setMinAmount(config.minAmount ? config.minAmount.toString() : config.amount.toString());
+            return (await this._offersClient.postOffer(request, { password: this._password })).getOffer();
+        }
+        catch (e) {
+            throw new HavenoError_1.default(e.message, e.code);
+        }
+    }
+    /**
+     * Edit an existing offer.
+     *
+     * @param {EditOfferConfig} config - configures the offer to edit
+     * @param {string} [config.offerId] - id of the offer to edit
+     * @param {string} [config.assetCode] - traded asset code (optional, default to existing)
+     * @param {number} [config.price] - trade price (optional, default to market price)
+     * @param {number} [config.marketPriceMarginPct] - if using market price, % from market price to accept (optional, default 0%)
+     * @param {number} [config.triggerPrice] - price to remove offer (optional)
+     * @param {string} [config.paymentAccountId] - payment account id (optional, default to existing)
+     * @param {string} [config.extraInfo] - set the offer's extra information (optional, default to none)
+     * @return {OfferInfo} the edited offer
+     */
+    async editOffer(config) {
+        try {
+            const request = new grpc_pb_1.EditOfferRequest();
+            request.setOfferId(config.offerId);
             if (config.assetCode)
                 request.setCurrencyCode(config.assetCode);
-            if (config.paymentAccountId)
-                request.setPaymentAccountId(config.paymentAccountId);
-            if (config.securityDepositPct)
-                request.setSecurityDepositPct(config.securityDepositPct);
-            request.setUseMarketBasedPrice(config.price === undefined);
             if (config.price)
-                request.setPrice(config.price?.toString());
-            if (config.marketPriceMarginPct)
-                request.setMarketPriceMarginPct(config.marketPriceMarginPct);
+                request.setPrice(config.price.toString());
+            request.setUseMarketBasedPrice(config.price === undefined);
+            request.setMarketPriceMarginPct(config.marketPriceMarginPct ? config.marketPriceMarginPct : 0);
             if (config.triggerPrice)
                 request.setTriggerPrice(config.triggerPrice.toString());
-            if (config.reserveExactAmount)
-                request.setReserveExactAmount(true);
-            if (config.isPrivateOffer)
-                request.setIsPrivateOffer(true);
-            if (config.buyerAsTakerWithoutDeposit)
-                request.setBuyerAsTakerWithoutDeposit(true);
-            if (config.extraInfo)
-                request.setExtraInfo(config.extraInfo);
-            if (config.sourceOfferId)
-                request.setSourceOfferId(config.sourceOfferId);
-            return (await this._offersClient.postOffer(request, { password: this._password })).getOffer();
+            if (config.paymentAccountId)
+                request.setPaymentAccountId(config.paymentAccountId);
+            request.setExtraInfo(config.extraInfo ? config.extraInfo : ""); // clear existing extra info if undefined
+            return (await this._offersClient.editOffer(request, { password: this._password })).getOffer();
+        }
+        catch (e) {
+            throw new HavenoError_1.default(e.message, e.code);
+        }
+    }
+    /**
+     * Deactivate an offer.
+     *
+     * @param {string} offerId - the offer id to deactivate
+     */
+    async deactivateOffer(offerId) {
+        try {
+            await this._offersClient.deactivateOffer(new grpc_pb_1.DeactivateOfferRequest().setOfferId(offerId), { password: this._password });
+        }
+        catch (e) {
+            throw new HavenoError_1.default(e.message, e.code);
+        }
+    }
+    /**
+     * Activate an offer.
+     *
+     * @param {string} offerId - the offer id to reactivate
+     */
+    async activateOffer(offerId) {
+        try {
+            await this._offersClient.activateOffer(new grpc_pb_1.ActivateOfferRequest().setOfferId(offerId), { password: this._password });
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);
@@ -1348,57 +1443,6 @@ class HavenoClient {
             }
         }
     }
-    // ------------------------------- HELPERS ----------------------------------
-    /**
-     * Wait for the application to be fully initialized with an account and a
-     * connection to the Haveno network.
-     *
-     * TODO:
-     *
-     * Currently when the application starts, the account is first initialized with createAccount()
-     * or openAccount() which return immediately. A notification is sent after all setup is complete and
-     * the application is connected to the Haveno network.
-     *
-     * Ideally when the application starts, the system checks the Haveno network connection, supporting
-     * havenod.isHavenoConnectionInitialized() and havenod.awaitHavenoConnectionInitialized().
-     * Independently, gRPC createAccount() and openAccount() return after all account setup and reading from disk.
-     *
-     * @private
-     */
-    async _awaitAppInitialized() {
-        try {
-            // eslint-disable-next-line no-async-promise-executor
-            await new Promise(async (resolve) => {
-                let isResolved = false;
-                const resolveOnce = async () => {
-                    if (isResolved)
-                        return;
-                    isResolved = true;
-                    await this.removeNotificationListener(listener);
-                    resolve();
-                };
-                const listener = async function (notification) {
-                    if (notification.getType() === grpc_pb_1.NotificationMessage.NotificationType.APP_INITIALIZED)
-                        await resolveOnce();
-                };
-                await this.addNotificationListener(listener);
-                if (await this._isAppInitialized())
-                    await resolveOnce();
-            });
-        }
-        catch (e) {
-            throw new HavenoError_1.default(e.message, e.code);
-        }
-    }
-    /** @private */
-    async _isAppInitialized() {
-        try {
-            return (await this._accountClient.isAppInitialized(new grpc_pb_1.IsAppInitializedRequest(), { password: this._password })).getIsAppInitialized();
-        }
-        catch (e) {
-            throw new HavenoError_1.default(e.message, e.code);
-        }
-    }
     /**
      * Update notification listener registration.
      * Due to the nature of grpc streaming, this method returns a promise
@@ -1437,7 +1481,6 @@ class HavenoClient {
             else {
                 this._notificationStream.removeListener('data', this._onNotification);
                 this._keepAliveLooper.stop();
-                this._notificationStream.cancel();
                 this._notificationStream = undefined;
             }
         }

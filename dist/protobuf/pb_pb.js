@@ -39100,7 +39100,8 @@ proto.io.haveno.protobuffer.MoneyBeamAccountPayload.prototype.toObject = functio
  */
 proto.io.haveno.protobuffer.MoneyBeamAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-accountId: jspb.Message.getFieldWithDefault(msg, 1, "")
+accountId: jspb.Message.getFieldWithDefault(msg, 1, ""),
+holderName: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -39141,6 +39142,10 @@ proto.io.haveno.protobuffer.MoneyBeamAccountPayload.deserializeBinaryFromReader 
       var value = /** @type {string} */ (reader.readString());
       msg.setAccountId(value);
       break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setHolderName(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -39177,6 +39182,13 @@ proto.io.haveno.protobuffer.MoneyBeamAccountPayload.serializeBinaryToWriter = fu
       f
     );
   }
+  f = message.getHolderName();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
 };
 
 
@@ -39195,6 +39207,24 @@ proto.io.haveno.protobuffer.MoneyBeamAccountPayload.prototype.getAccountId = fun
  */
 proto.io.haveno.protobuffer.MoneyBeamAccountPayload.prototype.setAccountId = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional string holder_name = 2;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.MoneyBeamAccountPayload.prototype.getHolderName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.MoneyBeamAccountPayload} returns this
+ */
+proto.io.haveno.protobuffer.MoneyBeamAccountPayload.prototype.setHolderName = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
@@ -41963,7 +41993,8 @@ proto.io.haveno.protobuffer.TransferwiseAccountPayload.prototype.toObject = func
  */
 proto.io.haveno.protobuffer.TransferwiseAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-email: jspb.Message.getFieldWithDefault(msg, 1, "")
+email: jspb.Message.getFieldWithDefault(msg, 1, ""),
+holderName: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -42004,6 +42035,10 @@ proto.io.haveno.protobuffer.TransferwiseAccountPayload.deserializeBinaryFromRead
       var value = /** @type {string} */ (reader.readString());
       msg.setEmail(value);
       break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setHolderName(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -42040,6 +42075,13 @@ proto.io.haveno.protobuffer.TransferwiseAccountPayload.serializeBinaryToWriter =
       f
     );
   }
+  f = message.getHolderName();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
 };
 
 
@@ -42058,6 +42100,24 @@ proto.io.haveno.protobuffer.TransferwiseAccountPayload.prototype.getEmail = func
  */
 proto.io.haveno.protobuffer.TransferwiseAccountPayload.prototype.setEmail = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional string holder_name = 2;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.TransferwiseAccountPayload.prototype.getHolderName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.TransferwiseAccountPayload} returns this
+ */
+proto.io.haveno.protobuffer.TransferwiseAccountPayload.prototype.setHolderName = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
@@ -43063,7 +43123,8 @@ proto.io.haveno.protobuffer.PixAccountPayload.prototype.toObject = function(opt_
  */
 proto.io.haveno.protobuffer.PixAccountPayload.toObject = function(includeInstance, msg) {
   var f, obj = {
-pixKey: jspb.Message.getFieldWithDefault(msg, 1, "")
+pixKey: jspb.Message.getFieldWithDefault(msg, 1, ""),
+holderName: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -43104,6 +43165,10 @@ proto.io.haveno.protobuffer.PixAccountPayload.deserializeBinaryFromReader = func
       var value = /** @type {string} */ (reader.readString());
       msg.setPixKey(value);
       break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setHolderName(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -43140,6 +43205,13 @@ proto.io.haveno.protobuffer.PixAccountPayload.serializeBinaryToWriter = function
       f
     );
   }
+  f = message.getHolderName();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
 };
 
 
@@ -43158,6 +43230,24 @@ proto.io.haveno.protobuffer.PixAccountPayload.prototype.getPixKey = function() {
  */
 proto.io.haveno.protobuffer.PixAccountPayload.prototype.setPixKey = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional string holder_name = 2;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.PixAccountPayload.prototype.getHolderName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.PixAccountPayload} returns this
+ */
+proto.io.haveno.protobuffer.PixAccountPayload.prototype.setHolderName = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
@@ -53296,6 +53386,7 @@ currentDate: jspb.Message.getFieldWithDefault(msg, 21, 0),
 mediatedPayoutTxSignature: msg.getMediatedPayoutTxSignature_asB64(),
 paymentSentMessage: (f = msg.getPaymentSentMessage()) && proto.io.haveno.protobuffer.PaymentSentMessage.toObject(includeInstance, f),
 paymentReceivedMessage: (f = msg.getPaymentReceivedMessage()) && proto.io.haveno.protobuffer.PaymentReceivedMessage.toObject(includeInstance, f),
+disputeOpenedMessage: (f = msg.getDisputeOpenedMessage()) && proto.io.haveno.protobuffer.DisputeOpenedMessage.toObject(includeInstance, f),
 disputeClosedMessage: (f = msg.getDisputeClosedMessage()) && proto.io.haveno.protobuffer.DisputeClosedMessage.toObject(includeInstance, f),
 reserveTxHash: jspb.Message.getFieldWithDefault(msg, 26, ""),
 reserveTxHex: jspb.Message.getFieldWithDefault(msg, 27, ""),
@@ -53316,7 +53407,9 @@ payoutTxFee: jspb.Message.getFieldWithDefault(msg, 41, 0),
 payoutAmount: jspb.Message.getFieldWithDefault(msg, 42, 0),
 depositsConfirmedMessageState: jspb.Message.getFieldWithDefault(msg, 43, ""),
 paymentSentMessageState: jspb.Message.getFieldWithDefault(msg, 44, ""),
-paymentReceivedMessageState: jspb.Message.getFieldWithDefault(msg, 45, "")
+paymentReceivedMessageState: jspb.Message.getFieldWithDefault(msg, 45, ""),
+disputeOpenedMessageState: jspb.Message.getFieldWithDefault(msg, 47, ""),
+disputeClosedMessageState: jspb.Message.getFieldWithDefault(msg, 48, "")
   };
 
   if (includeInstance) {
@@ -53435,6 +53528,11 @@ proto.io.haveno.protobuffer.TradePeer.deserializeBinaryFromReader = function(msg
       reader.readMessage(value,proto.io.haveno.protobuffer.PaymentReceivedMessage.deserializeBinaryFromReader);
       msg.setPaymentReceivedMessage(value);
       break;
+    case 46:
+      var value = new proto.io.haveno.protobuffer.DisputeOpenedMessage;
+      reader.readMessage(value,proto.io.haveno.protobuffer.DisputeOpenedMessage.deserializeBinaryFromReader);
+      msg.setDisputeOpenedMessage(value);
+      break;
     case 25:
       var value = new proto.io.haveno.protobuffer.DisputeClosedMessage;
       reader.readMessage(value,proto.io.haveno.protobuffer.DisputeClosedMessage.deserializeBinaryFromReader);
@@ -53519,6 +53617,14 @@ proto.io.haveno.protobuffer.TradePeer.deserializeBinaryFromReader = function(msg
     case 45:
       var value = /** @type {string} */ (reader.readString());
       msg.setPaymentReceivedMessageState(value);
+      break;
+    case 47:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setDisputeOpenedMessageState(value);
+      break;
+    case 48:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setDisputeClosedMessageState(value);
       break;
     default:
       reader.skipField();
@@ -53688,6 +53794,14 @@ proto.io.haveno.protobuffer.TradePeer.serializeBinaryToWriter = function(message
       proto.io.haveno.protobuffer.PaymentReceivedMessage.serializeBinaryToWriter
     );
   }
+  f = message.getDisputeOpenedMessage();
+  if (f != null) {
+    writer.writeMessage(
+      46,
+      f,
+      proto.io.haveno.protobuffer.DisputeOpenedMessage.serializeBinaryToWriter
+    );
+  }
   f = message.getDisputeClosedMessage();
   if (f != null) {
     writer.writeMessage(
@@ -53833,6 +53947,20 @@ proto.io.haveno.protobuffer.TradePeer.serializeBinaryToWriter = function(message
   if (f.length > 0) {
     writer.writeString(
       45,
+      f
+    );
+  }
+  f = message.getDisputeOpenedMessageState();
+  if (f.length > 0) {
+    writer.writeString(
+      47,
+      f
+    );
+  }
+  f = message.getDisputeClosedMessageState();
+  if (f.length > 0) {
+    writer.writeString(
+      48,
       f
     );
   }
@@ -54464,6 +54592,43 @@ proto.io.haveno.protobuffer.TradePeer.prototype.hasPaymentReceivedMessage = func
 
 
 /**
+ * optional DisputeOpenedMessage dispute_opened_message = 46;
+ * @return {?proto.io.haveno.protobuffer.DisputeOpenedMessage}
+ */
+proto.io.haveno.protobuffer.TradePeer.prototype.getDisputeOpenedMessage = function() {
+  return /** @type{?proto.io.haveno.protobuffer.DisputeOpenedMessage} */ (
+    jspb.Message.getWrapperField(this, proto.io.haveno.protobuffer.DisputeOpenedMessage, 46));
+};
+
+
+/**
+ * @param {?proto.io.haveno.protobuffer.DisputeOpenedMessage|undefined} value
+ * @return {!proto.io.haveno.protobuffer.TradePeer} returns this
+*/
+proto.io.haveno.protobuffer.TradePeer.prototype.setDisputeOpenedMessage = function(value) {
+  return jspb.Message.setWrapperField(this, 46, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.io.haveno.protobuffer.TradePeer} returns this
+ */
+proto.io.haveno.protobuffer.TradePeer.prototype.clearDisputeOpenedMessage = function() {
+  return this.setDisputeOpenedMessage(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.io.haveno.protobuffer.TradePeer.prototype.hasDisputeOpenedMessage = function() {
+  return jspb.Message.getField(this, 46) != null;
+};
+
+
+/**
  * optional DisputeClosedMessage dispute_closed_message = 25;
  * @return {?proto.io.haveno.protobuffer.DisputeClosedMessage}
  */
@@ -54876,6 +55041,42 @@ proto.io.haveno.protobuffer.TradePeer.prototype.getPaymentReceivedMessageState =
  */
 proto.io.haveno.protobuffer.TradePeer.prototype.setPaymentReceivedMessageState = function(value) {
   return jspb.Message.setProto3StringField(this, 45, value);
+};
+
+
+/**
+ * optional string dispute_opened_message_state = 47;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.TradePeer.prototype.getDisputeOpenedMessageState = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 47, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.TradePeer} returns this
+ */
+proto.io.haveno.protobuffer.TradePeer.prototype.setDisputeOpenedMessageState = function(value) {
+  return jspb.Message.setProto3StringField(this, 47, value);
+};
+
+
+/**
+ * optional string dispute_closed_message_state = 48;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.TradePeer.prototype.getDisputeClosedMessageState = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 48, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.TradePeer} returns this
+ */
+proto.io.haveno.protobuffer.TradePeer.prototype.setDisputeClosedMessageState = function(value) {
+  return jspb.Message.setProto3StringField(this, 48, value);
 };
 
 
@@ -62586,7 +62787,8 @@ proto.io.haveno.protobuffer.PaymentAccountForm.FormId = {
   AMAZON_GIFT_CARD: 24,
   ACH_TRANSFER: 25,
   INTERAC_E_TRANSFER: 26,
-  US_POSTAL_MONEY_ORDER: 27
+  US_POSTAL_MONEY_ORDER: 27,
+  PIX: 28
 };
 
 /**

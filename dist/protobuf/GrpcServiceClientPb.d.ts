@@ -188,15 +188,6 @@ export declare class XmrConnectionsClient {
     methodDescriptorCheckConnection: grpcWeb.MethodDescriptor<grpc_pb.CheckConnectionRequest, grpc_pb.CheckConnectionReply>;
     checkConnection(request: grpc_pb.CheckConnectionRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.CheckConnectionReply>;
     checkConnection(request: grpc_pb.CheckConnectionRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.CheckConnectionReply) => void): grpcWeb.ClientReadableStream<grpc_pb.CheckConnectionReply>;
-    methodDescriptorCheckConnections: grpcWeb.MethodDescriptor<grpc_pb.CheckConnectionsRequest, grpc_pb.CheckConnectionsReply>;
-    checkConnections(request: grpc_pb.CheckConnectionsRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.CheckConnectionsReply>;
-    checkConnections(request: grpc_pb.CheckConnectionsRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.CheckConnectionsReply) => void): grpcWeb.ClientReadableStream<grpc_pb.CheckConnectionsReply>;
-    methodDescriptorStartCheckingConnection: grpcWeb.MethodDescriptor<grpc_pb.StartCheckingConnectionRequest, grpc_pb.StartCheckingConnectionReply>;
-    startCheckingConnection(request: grpc_pb.StartCheckingConnectionRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.StartCheckingConnectionReply>;
-    startCheckingConnection(request: grpc_pb.StartCheckingConnectionRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.StartCheckingConnectionReply) => void): grpcWeb.ClientReadableStream<grpc_pb.StartCheckingConnectionReply>;
-    methodDescriptorStopCheckingConnection: grpcWeb.MethodDescriptor<grpc_pb.StopCheckingConnectionRequest, grpc_pb.StopCheckingConnectionReply>;
-    stopCheckingConnection(request: grpc_pb.StopCheckingConnectionRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.StopCheckingConnectionReply>;
-    stopCheckingConnection(request: grpc_pb.StopCheckingConnectionRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.StopCheckingConnectionReply) => void): grpcWeb.ClientReadableStream<grpc_pb.StopCheckingConnectionReply>;
     methodDescriptorGetBestConnection: grpcWeb.MethodDescriptor<grpc_pb.GetBestConnectionRequest, grpc_pb.GetBestConnectionReply>;
     getBestConnection(request: grpc_pb.GetBestConnectionRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.GetBestConnectionReply>;
     getBestConnection(request: grpc_pb.GetBestConnectionRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.GetBestConnectionReply) => void): grpcWeb.ClientReadableStream<grpc_pb.GetBestConnectionReply>;
@@ -263,6 +254,15 @@ export declare class OffersClient {
     methodDescriptorPostOffer: grpcWeb.MethodDescriptor<grpc_pb.PostOfferRequest, grpc_pb.PostOfferReply>;
     postOffer(request: grpc_pb.PostOfferRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.PostOfferReply>;
     postOffer(request: grpc_pb.PostOfferRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.PostOfferReply) => void): grpcWeb.ClientReadableStream<grpc_pb.PostOfferReply>;
+    methodDescriptorEditOffer: grpcWeb.MethodDescriptor<grpc_pb.EditOfferRequest, grpc_pb.EditOfferReply>;
+    editOffer(request: grpc_pb.EditOfferRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.EditOfferReply>;
+    editOffer(request: grpc_pb.EditOfferRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.EditOfferReply) => void): grpcWeb.ClientReadableStream<grpc_pb.EditOfferReply>;
+    methodDescriptorDeactivateOffer: grpcWeb.MethodDescriptor<grpc_pb.DeactivateOfferRequest, grpc_pb.DeactivateOfferReply>;
+    deactivateOffer(request: grpc_pb.DeactivateOfferRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.DeactivateOfferReply>;
+    deactivateOffer(request: grpc_pb.DeactivateOfferRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.DeactivateOfferReply) => void): grpcWeb.ClientReadableStream<grpc_pb.DeactivateOfferReply>;
+    methodDescriptorActivateOffer: grpcWeb.MethodDescriptor<grpc_pb.ActivateOfferRequest, grpc_pb.ActivateOfferReply>;
+    activateOffer(request: grpc_pb.ActivateOfferRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.ActivateOfferReply>;
+    activateOffer(request: grpc_pb.ActivateOfferRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.ActivateOfferReply) => void): grpcWeb.ClientReadableStream<grpc_pb.ActivateOfferReply>;
     methodDescriptorCancelOffer: grpcWeb.MethodDescriptor<grpc_pb.CancelOfferRequest, grpc_pb.CancelOfferReply>;
     cancelOffer(request: grpc_pb.CancelOfferRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.CancelOfferReply>;
     cancelOffer(request: grpc_pb.CancelOfferRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.CancelOfferReply) => void): grpcWeb.ClientReadableStream<grpc_pb.CancelOfferReply>;
@@ -467,4 +467,7 @@ export declare class WalletsClient {
     methodDescriptorUnlockWallet: grpcWeb.MethodDescriptor<grpc_pb.UnlockWalletRequest, grpc_pb.UnlockWalletReply>;
     unlockWallet(request: grpc_pb.UnlockWalletRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.UnlockWalletReply>;
     unlockWallet(request: grpc_pb.UnlockWalletRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.UnlockWalletReply) => void): grpcWeb.ClientReadableStream<grpc_pb.UnlockWalletReply>;
+    methodDescriptorGetHeight: grpcWeb.MethodDescriptor<grpc_pb.GetWalletHeightRequest, grpc_pb.GetWalletHeightReply>;
+    getHeight(request: grpc_pb.GetWalletHeightRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.GetWalletHeightReply>;
+    getHeight(request: grpc_pb.GetWalletHeightRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.GetWalletHeightReply) => void): grpcWeb.ClientReadableStream<grpc_pb.GetWalletHeightReply>;
 }
