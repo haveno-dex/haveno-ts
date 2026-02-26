@@ -25,6 +25,8 @@ var pb_pb = require('./pb_pb.js');
 goog.object.extend(proto, pb_pb);
 goog.exportSymbol('proto.io.haveno.protobuffer.AccountExistsReply', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.AccountExistsRequest', null, global);
+goog.exportSymbol('proto.io.haveno.protobuffer.ActivateOfferReply', null, global);
+goog.exportSymbol('proto.io.haveno.protobuffer.ActivateOfferRequest', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.AddConnectionReply', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.AddConnectionRequest', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.AddressBalanceInfo', null, global);
@@ -39,8 +41,6 @@ goog.exportSymbol('proto.io.haveno.protobuffer.ChangePasswordReply', null, globa
 goog.exportSymbol('proto.io.haveno.protobuffer.ChangePasswordRequest', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.CheckConnectionReply', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.CheckConnectionRequest', null, global);
-goog.exportSymbol('proto.io.haveno.protobuffer.CheckConnectionsReply', null, global);
-goog.exportSymbol('proto.io.haveno.protobuffer.CheckConnectionsRequest', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.CloseAccountReply', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.CloseAccountRequest', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.CompleteTradeReply', null, global);
@@ -60,10 +60,14 @@ goog.exportSymbol('proto.io.haveno.protobuffer.CreateXmrSweepTxsReply', null, gl
 goog.exportSymbol('proto.io.haveno.protobuffer.CreateXmrSweepTxsRequest', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.CreateXmrTxReply', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.CreateXmrTxRequest', null, global);
+goog.exportSymbol('proto.io.haveno.protobuffer.DeactivateOfferReply', null, global);
+goog.exportSymbol('proto.io.haveno.protobuffer.DeactivateOfferRequest', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.DeleteAccountReply', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.DeleteAccountRequest', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.DeletePaymentAccountReply', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.DeletePaymentAccountRequest', null, global);
+goog.exportSymbol('proto.io.haveno.protobuffer.EditOfferReply', null, global);
+goog.exportSymbol('proto.io.haveno.protobuffer.EditOfferRequest', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.GetAddressBalanceReply', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.GetAddressBalanceRequest', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.GetAutoSwitchReply', null, global);
@@ -113,6 +117,8 @@ goog.exportSymbol('proto.io.haveno.protobuffer.GetTradesRequest', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.GetTradesRequest.Category', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.GetVersionReply', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.GetVersionRequest', null, global);
+goog.exportSymbol('proto.io.haveno.protobuffer.GetWalletHeightReply', null, global);
+goog.exportSymbol('proto.io.haveno.protobuffer.GetWalletHeightRequest', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.GetXmrNewSubaddressReply', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.GetXmrNewSubaddressRequest', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.GetXmrNodeSettingsReply', null, global);
@@ -174,12 +180,8 @@ goog.exportSymbol('proto.io.haveno.protobuffer.SetConnectionReply', null, global
 goog.exportSymbol('proto.io.haveno.protobuffer.SetConnectionRequest', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.SetWalletPasswordReply', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.SetWalletPasswordRequest', null, global);
-goog.exportSymbol('proto.io.haveno.protobuffer.StartCheckingConnectionReply', null, global);
-goog.exportSymbol('proto.io.haveno.protobuffer.StartCheckingConnectionRequest', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.StartXmrNodeReply', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.StartXmrNodeRequest', null, global);
-goog.exportSymbol('proto.io.haveno.protobuffer.StopCheckingConnectionReply', null, global);
-goog.exportSymbol('proto.io.haveno.protobuffer.StopCheckingConnectionRequest', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.StopReply', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.StopRequest', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.StopXmrNodeReply', null, global);
@@ -1368,132 +1370,6 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.io.haveno.protobuffer.CheckConnectionsRequest = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.io.haveno.protobuffer.CheckConnectionsRequest, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  /**
-   * @public
-   * @override
-   */
-  proto.io.haveno.protobuffer.CheckConnectionsRequest.displayName = 'proto.io.haveno.protobuffer.CheckConnectionsRequest';
-}
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.io.haveno.protobuffer.CheckConnectionsReply = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.io.haveno.protobuffer.CheckConnectionsReply.repeatedFields_, null);
-};
-goog.inherits(proto.io.haveno.protobuffer.CheckConnectionsReply, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  /**
-   * @public
-   * @override
-   */
-  proto.io.haveno.protobuffer.CheckConnectionsReply.displayName = 'proto.io.haveno.protobuffer.CheckConnectionsReply';
-}
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.io.haveno.protobuffer.StartCheckingConnectionRequest = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.io.haveno.protobuffer.StartCheckingConnectionRequest, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  /**
-   * @public
-   * @override
-   */
-  proto.io.haveno.protobuffer.StartCheckingConnectionRequest.displayName = 'proto.io.haveno.protobuffer.StartCheckingConnectionRequest';
-}
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.io.haveno.protobuffer.StartCheckingConnectionReply = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.io.haveno.protobuffer.StartCheckingConnectionReply, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  /**
-   * @public
-   * @override
-   */
-  proto.io.haveno.protobuffer.StartCheckingConnectionReply.displayName = 'proto.io.haveno.protobuffer.StartCheckingConnectionReply';
-}
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.io.haveno.protobuffer.StopCheckingConnectionRequest = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.io.haveno.protobuffer.StopCheckingConnectionRequest, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  /**
-   * @public
-   * @override
-   */
-  proto.io.haveno.protobuffer.StopCheckingConnectionRequest.displayName = 'proto.io.haveno.protobuffer.StopCheckingConnectionRequest';
-}
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.io.haveno.protobuffer.StopCheckingConnectionReply = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.io.haveno.protobuffer.StopCheckingConnectionReply, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  /**
-   * @public
-   * @override
-   */
-  proto.io.haveno.protobuffer.StopCheckingConnectionReply.displayName = 'proto.io.haveno.protobuffer.StopCheckingConnectionReply';
-}
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
 proto.io.haveno.protobuffer.GetBestConnectionRequest = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
@@ -1998,6 +1874,132 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
+proto.io.haveno.protobuffer.EditOfferRequest = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.io.haveno.protobuffer.EditOfferRequest, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.io.haveno.protobuffer.EditOfferRequest.displayName = 'proto.io.haveno.protobuffer.EditOfferRequest';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.io.haveno.protobuffer.EditOfferReply = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.io.haveno.protobuffer.EditOfferReply, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.io.haveno.protobuffer.EditOfferReply.displayName = 'proto.io.haveno.protobuffer.EditOfferReply';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.io.haveno.protobuffer.DeactivateOfferRequest = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.io.haveno.protobuffer.DeactivateOfferRequest, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.io.haveno.protobuffer.DeactivateOfferRequest.displayName = 'proto.io.haveno.protobuffer.DeactivateOfferRequest';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.io.haveno.protobuffer.DeactivateOfferReply = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.io.haveno.protobuffer.DeactivateOfferReply, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.io.haveno.protobuffer.DeactivateOfferReply.displayName = 'proto.io.haveno.protobuffer.DeactivateOfferReply';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.io.haveno.protobuffer.ActivateOfferRequest = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.io.haveno.protobuffer.ActivateOfferRequest, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.io.haveno.protobuffer.ActivateOfferRequest.displayName = 'proto.io.haveno.protobuffer.ActivateOfferRequest';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.io.haveno.protobuffer.ActivateOfferReply = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.io.haveno.protobuffer.ActivateOfferReply, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.io.haveno.protobuffer.ActivateOfferReply.displayName = 'proto.io.haveno.protobuffer.ActivateOfferReply';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
 proto.io.haveno.protobuffer.CancelOfferRequest = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
@@ -2041,7 +2043,7 @@ if (goog.DEBUG && !COMPILED) {
  * @constructor
  */
 proto.io.haveno.protobuffer.OfferInfo = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.io.haveno.protobuffer.OfferInfo.repeatedFields_, null);
 };
 goog.inherits(proto.io.haveno.protobuffer.OfferInfo, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -3898,6 +3900,48 @@ if (goog.DEBUG && !COMPILED) {
    * @override
    */
   proto.io.haveno.protobuffer.AddressBalanceInfo.displayName = 'proto.io.haveno.protobuffer.AddressBalanceInfo';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.io.haveno.protobuffer.GetWalletHeightRequest = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.io.haveno.protobuffer.GetWalletHeightRequest, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.io.haveno.protobuffer.GetWalletHeightRequest.displayName = 'proto.io.haveno.protobuffer.GetWalletHeightRequest';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.io.haveno.protobuffer.GetWalletHeightReply = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.io.haveno.protobuffer.GetWalletHeightReply, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.io.haveno.protobuffer.GetWalletHeightReply.displayName = 'proto.io.haveno.protobuffer.GetWalletHeightReply';
 }
 
 
@@ -11307,700 +11351,6 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.io.haveno.protobuffer.CheckConnectionsRequest.prototype.toObject = function(opt_includeInstance) {
-  return proto.io.haveno.protobuffer.CheckConnectionsRequest.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.io.haveno.protobuffer.CheckConnectionsRequest} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.io.haveno.protobuffer.CheckConnectionsRequest.toObject = function(includeInstance, msg) {
-  var f, obj = {
-
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.io.haveno.protobuffer.CheckConnectionsRequest}
- */
-proto.io.haveno.protobuffer.CheckConnectionsRequest.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.io.haveno.protobuffer.CheckConnectionsRequest;
-  return proto.io.haveno.protobuffer.CheckConnectionsRequest.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.io.haveno.protobuffer.CheckConnectionsRequest} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.io.haveno.protobuffer.CheckConnectionsRequest}
- */
-proto.io.haveno.protobuffer.CheckConnectionsRequest.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.io.haveno.protobuffer.CheckConnectionsRequest.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.io.haveno.protobuffer.CheckConnectionsRequest.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.io.haveno.protobuffer.CheckConnectionsRequest} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.io.haveno.protobuffer.CheckConnectionsRequest.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-};
-
-
-
-/**
- * List of repeated fields within this message type.
- * @private {!Array<number>}
- * @const
- */
-proto.io.haveno.protobuffer.CheckConnectionsReply.repeatedFields_ = [1];
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.io.haveno.protobuffer.CheckConnectionsReply.prototype.toObject = function(opt_includeInstance) {
-  return proto.io.haveno.protobuffer.CheckConnectionsReply.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.io.haveno.protobuffer.CheckConnectionsReply} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.io.haveno.protobuffer.CheckConnectionsReply.toObject = function(includeInstance, msg) {
-  var f, obj = {
-connectionsList: jspb.Message.toObjectList(msg.getConnectionsList(),
-    proto.io.haveno.protobuffer.UrlConnection.toObject, includeInstance)
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.io.haveno.protobuffer.CheckConnectionsReply}
- */
-proto.io.haveno.protobuffer.CheckConnectionsReply.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.io.haveno.protobuffer.CheckConnectionsReply;
-  return proto.io.haveno.protobuffer.CheckConnectionsReply.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.io.haveno.protobuffer.CheckConnectionsReply} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.io.haveno.protobuffer.CheckConnectionsReply}
- */
-proto.io.haveno.protobuffer.CheckConnectionsReply.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = new proto.io.haveno.protobuffer.UrlConnection;
-      reader.readMessage(value,proto.io.haveno.protobuffer.UrlConnection.deserializeBinaryFromReader);
-      msg.addConnections(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.io.haveno.protobuffer.CheckConnectionsReply.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.io.haveno.protobuffer.CheckConnectionsReply.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.io.haveno.protobuffer.CheckConnectionsReply} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.io.haveno.protobuffer.CheckConnectionsReply.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getConnectionsList();
-  if (f.length > 0) {
-    writer.writeRepeatedMessage(
-      1,
-      f,
-      proto.io.haveno.protobuffer.UrlConnection.serializeBinaryToWriter
-    );
-  }
-};
-
-
-/**
- * repeated UrlConnection connections = 1;
- * @return {!Array<!proto.io.haveno.protobuffer.UrlConnection>}
- */
-proto.io.haveno.protobuffer.CheckConnectionsReply.prototype.getConnectionsList = function() {
-  return /** @type{!Array<!proto.io.haveno.protobuffer.UrlConnection>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.io.haveno.protobuffer.UrlConnection, 1));
-};
-
-
-/**
- * @param {!Array<!proto.io.haveno.protobuffer.UrlConnection>} value
- * @return {!proto.io.haveno.protobuffer.CheckConnectionsReply} returns this
-*/
-proto.io.haveno.protobuffer.CheckConnectionsReply.prototype.setConnectionsList = function(value) {
-  return jspb.Message.setRepeatedWrapperField(this, 1, value);
-};
-
-
-/**
- * @param {!proto.io.haveno.protobuffer.UrlConnection=} opt_value
- * @param {number=} opt_index
- * @return {!proto.io.haveno.protobuffer.UrlConnection}
- */
-proto.io.haveno.protobuffer.CheckConnectionsReply.prototype.addConnections = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.io.haveno.protobuffer.UrlConnection, opt_index);
-};
-
-
-/**
- * Clears the list making it empty but non-null.
- * @return {!proto.io.haveno.protobuffer.CheckConnectionsReply} returns this
- */
-proto.io.haveno.protobuffer.CheckConnectionsReply.prototype.clearConnectionsList = function() {
-  return this.setConnectionsList([]);
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.io.haveno.protobuffer.StartCheckingConnectionRequest.prototype.toObject = function(opt_includeInstance) {
-  return proto.io.haveno.protobuffer.StartCheckingConnectionRequest.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.io.haveno.protobuffer.StartCheckingConnectionRequest} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.io.haveno.protobuffer.StartCheckingConnectionRequest.toObject = function(includeInstance, msg) {
-  var f, obj = {
-refreshPeriod: jspb.Message.getFieldWithDefault(msg, 1, 0)
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.io.haveno.protobuffer.StartCheckingConnectionRequest}
- */
-proto.io.haveno.protobuffer.StartCheckingConnectionRequest.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.io.haveno.protobuffer.StartCheckingConnectionRequest;
-  return proto.io.haveno.protobuffer.StartCheckingConnectionRequest.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.io.haveno.protobuffer.StartCheckingConnectionRequest} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.io.haveno.protobuffer.StartCheckingConnectionRequest}
- */
-proto.io.haveno.protobuffer.StartCheckingConnectionRequest.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {number} */ (reader.readInt32());
-      msg.setRefreshPeriod(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.io.haveno.protobuffer.StartCheckingConnectionRequest.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.io.haveno.protobuffer.StartCheckingConnectionRequest.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.io.haveno.protobuffer.StartCheckingConnectionRequest} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.io.haveno.protobuffer.StartCheckingConnectionRequest.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getRefreshPeriod();
-  if (f !== 0) {
-    writer.writeInt32(
-      1,
-      f
-    );
-  }
-};
-
-
-/**
- * optional int32 refresh_period = 1;
- * @return {number}
- */
-proto.io.haveno.protobuffer.StartCheckingConnectionRequest.prototype.getRefreshPeriod = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.io.haveno.protobuffer.StartCheckingConnectionRequest} returns this
- */
-proto.io.haveno.protobuffer.StartCheckingConnectionRequest.prototype.setRefreshPeriod = function(value) {
-  return jspb.Message.setProto3IntField(this, 1, value);
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.io.haveno.protobuffer.StartCheckingConnectionReply.prototype.toObject = function(opt_includeInstance) {
-  return proto.io.haveno.protobuffer.StartCheckingConnectionReply.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.io.haveno.protobuffer.StartCheckingConnectionReply} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.io.haveno.protobuffer.StartCheckingConnectionReply.toObject = function(includeInstance, msg) {
-  var f, obj = {
-
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.io.haveno.protobuffer.StartCheckingConnectionReply}
- */
-proto.io.haveno.protobuffer.StartCheckingConnectionReply.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.io.haveno.protobuffer.StartCheckingConnectionReply;
-  return proto.io.haveno.protobuffer.StartCheckingConnectionReply.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.io.haveno.protobuffer.StartCheckingConnectionReply} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.io.haveno.protobuffer.StartCheckingConnectionReply}
- */
-proto.io.haveno.protobuffer.StartCheckingConnectionReply.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.io.haveno.protobuffer.StartCheckingConnectionReply.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.io.haveno.protobuffer.StartCheckingConnectionReply.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.io.haveno.protobuffer.StartCheckingConnectionReply} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.io.haveno.protobuffer.StartCheckingConnectionReply.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.io.haveno.protobuffer.StopCheckingConnectionRequest.prototype.toObject = function(opt_includeInstance) {
-  return proto.io.haveno.protobuffer.StopCheckingConnectionRequest.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.io.haveno.protobuffer.StopCheckingConnectionRequest} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.io.haveno.protobuffer.StopCheckingConnectionRequest.toObject = function(includeInstance, msg) {
-  var f, obj = {
-
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.io.haveno.protobuffer.StopCheckingConnectionRequest}
- */
-proto.io.haveno.protobuffer.StopCheckingConnectionRequest.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.io.haveno.protobuffer.StopCheckingConnectionRequest;
-  return proto.io.haveno.protobuffer.StopCheckingConnectionRequest.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.io.haveno.protobuffer.StopCheckingConnectionRequest} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.io.haveno.protobuffer.StopCheckingConnectionRequest}
- */
-proto.io.haveno.protobuffer.StopCheckingConnectionRequest.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.io.haveno.protobuffer.StopCheckingConnectionRequest.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.io.haveno.protobuffer.StopCheckingConnectionRequest.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.io.haveno.protobuffer.StopCheckingConnectionRequest} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.io.haveno.protobuffer.StopCheckingConnectionRequest.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.io.haveno.protobuffer.StopCheckingConnectionReply.prototype.toObject = function(opt_includeInstance) {
-  return proto.io.haveno.protobuffer.StopCheckingConnectionReply.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.io.haveno.protobuffer.StopCheckingConnectionReply} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.io.haveno.protobuffer.StopCheckingConnectionReply.toObject = function(includeInstance, msg) {
-  var f, obj = {
-
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.io.haveno.protobuffer.StopCheckingConnectionReply}
- */
-proto.io.haveno.protobuffer.StopCheckingConnectionReply.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.io.haveno.protobuffer.StopCheckingConnectionReply;
-  return proto.io.haveno.protobuffer.StopCheckingConnectionReply.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.io.haveno.protobuffer.StopCheckingConnectionReply} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.io.haveno.protobuffer.StopCheckingConnectionReply}
- */
-proto.io.haveno.protobuffer.StopCheckingConnectionReply.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.io.haveno.protobuffer.StopCheckingConnectionReply.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.io.haveno.protobuffer.StopCheckingConnectionReply.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.io.haveno.protobuffer.StopCheckingConnectionReply} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.io.haveno.protobuffer.StopCheckingConnectionReply.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
 proto.io.haveno.protobuffer.GetBestConnectionRequest.prototype.toObject = function(opt_includeInstance) {
   return proto.io.haveno.protobuffer.GetBestConnectionRequest.toObject(opt_includeInstance, this);
 };
@@ -15555,6 +14905,959 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
+proto.io.haveno.protobuffer.EditOfferRequest.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.haveno.protobuffer.EditOfferRequest.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.io.haveno.protobuffer.EditOfferRequest} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.haveno.protobuffer.EditOfferRequest.toObject = function(includeInstance, msg) {
+  var f, obj = {
+offerId: jspb.Message.getFieldWithDefault(msg, 1, ""),
+currencyCode: jspb.Message.getFieldWithDefault(msg, 2, ""),
+price: jspb.Message.getFieldWithDefault(msg, 3, ""),
+useMarketBasedPrice: jspb.Message.getBooleanFieldWithDefault(msg, 4, false),
+marketPriceMarginPct: jspb.Message.getFloatingPointFieldWithDefault(msg, 5, 0.0),
+triggerPrice: jspb.Message.getFieldWithDefault(msg, 6, ""),
+paymentAccountId: jspb.Message.getFieldWithDefault(msg, 7, ""),
+extraInfo: jspb.Message.getFieldWithDefault(msg, 8, "")
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.io.haveno.protobuffer.EditOfferRequest}
+ */
+proto.io.haveno.protobuffer.EditOfferRequest.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.io.haveno.protobuffer.EditOfferRequest;
+  return proto.io.haveno.protobuffer.EditOfferRequest.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.io.haveno.protobuffer.EditOfferRequest} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.io.haveno.protobuffer.EditOfferRequest}
+ */
+proto.io.haveno.protobuffer.EditOfferRequest.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setOfferId(value);
+      break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setCurrencyCode(value);
+      break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setPrice(value);
+      break;
+    case 4:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setUseMarketBasedPrice(value);
+      break;
+    case 5:
+      var value = /** @type {number} */ (reader.readDouble());
+      msg.setMarketPriceMarginPct(value);
+      break;
+    case 6:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setTriggerPrice(value);
+      break;
+    case 7:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setPaymentAccountId(value);
+      break;
+    case 8:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setExtraInfo(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.io.haveno.protobuffer.EditOfferRequest.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.io.haveno.protobuffer.EditOfferRequest.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.io.haveno.protobuffer.EditOfferRequest} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.haveno.protobuffer.EditOfferRequest.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getOfferId();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+  f = message.getCurrencyCode();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
+  f = message.getPrice();
+  if (f.length > 0) {
+    writer.writeString(
+      3,
+      f
+    );
+  }
+  f = message.getUseMarketBasedPrice();
+  if (f) {
+    writer.writeBool(
+      4,
+      f
+    );
+  }
+  f = message.getMarketPriceMarginPct();
+  if (f !== 0.0) {
+    writer.writeDouble(
+      5,
+      f
+    );
+  }
+  f = message.getTriggerPrice();
+  if (f.length > 0) {
+    writer.writeString(
+      6,
+      f
+    );
+  }
+  f = message.getPaymentAccountId();
+  if (f.length > 0) {
+    writer.writeString(
+      7,
+      f
+    );
+  }
+  f = message.getExtraInfo();
+  if (f.length > 0) {
+    writer.writeString(
+      8,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string offer_id = 1;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.EditOfferRequest.prototype.getOfferId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.EditOfferRequest} returns this
+ */
+proto.io.haveno.protobuffer.EditOfferRequest.prototype.setOfferId = function(value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional string currency_code = 2;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.EditOfferRequest.prototype.getCurrencyCode = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.EditOfferRequest} returns this
+ */
+proto.io.haveno.protobuffer.EditOfferRequest.prototype.setCurrencyCode = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * optional string price = 3;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.EditOfferRequest.prototype.getPrice = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.EditOfferRequest} returns this
+ */
+proto.io.haveno.protobuffer.EditOfferRequest.prototype.setPrice = function(value) {
+  return jspb.Message.setProto3StringField(this, 3, value);
+};
+
+
+/**
+ * optional bool use_market_based_price = 4;
+ * @return {boolean}
+ */
+proto.io.haveno.protobuffer.EditOfferRequest.prototype.getUseMarketBasedPrice = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 4, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.io.haveno.protobuffer.EditOfferRequest} returns this
+ */
+proto.io.haveno.protobuffer.EditOfferRequest.prototype.setUseMarketBasedPrice = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 4, value);
+};
+
+
+/**
+ * optional double market_price_margin_pct = 5;
+ * @return {number}
+ */
+proto.io.haveno.protobuffer.EditOfferRequest.prototype.getMarketPriceMarginPct = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 5, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.io.haveno.protobuffer.EditOfferRequest} returns this
+ */
+proto.io.haveno.protobuffer.EditOfferRequest.prototype.setMarketPriceMarginPct = function(value) {
+  return jspb.Message.setProto3FloatField(this, 5, value);
+};
+
+
+/**
+ * optional string trigger_price = 6;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.EditOfferRequest.prototype.getTriggerPrice = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.EditOfferRequest} returns this
+ */
+proto.io.haveno.protobuffer.EditOfferRequest.prototype.setTriggerPrice = function(value) {
+  return jspb.Message.setProto3StringField(this, 6, value);
+};
+
+
+/**
+ * optional string payment_account_id = 7;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.EditOfferRequest.prototype.getPaymentAccountId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.EditOfferRequest} returns this
+ */
+proto.io.haveno.protobuffer.EditOfferRequest.prototype.setPaymentAccountId = function(value) {
+  return jspb.Message.setProto3StringField(this, 7, value);
+};
+
+
+/**
+ * optional string extra_info = 8;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.EditOfferRequest.prototype.getExtraInfo = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 8, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.EditOfferRequest} returns this
+ */
+proto.io.haveno.protobuffer.EditOfferRequest.prototype.setExtraInfo = function(value) {
+  return jspb.Message.setProto3StringField(this, 8, value);
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.io.haveno.protobuffer.EditOfferReply.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.haveno.protobuffer.EditOfferReply.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.io.haveno.protobuffer.EditOfferReply} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.haveno.protobuffer.EditOfferReply.toObject = function(includeInstance, msg) {
+  var f, obj = {
+offer: (f = msg.getOffer()) && proto.io.haveno.protobuffer.OfferInfo.toObject(includeInstance, f)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.io.haveno.protobuffer.EditOfferReply}
+ */
+proto.io.haveno.protobuffer.EditOfferReply.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.io.haveno.protobuffer.EditOfferReply;
+  return proto.io.haveno.protobuffer.EditOfferReply.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.io.haveno.protobuffer.EditOfferReply} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.io.haveno.protobuffer.EditOfferReply}
+ */
+proto.io.haveno.protobuffer.EditOfferReply.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = new proto.io.haveno.protobuffer.OfferInfo;
+      reader.readMessage(value,proto.io.haveno.protobuffer.OfferInfo.deserializeBinaryFromReader);
+      msg.setOffer(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.io.haveno.protobuffer.EditOfferReply.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.io.haveno.protobuffer.EditOfferReply.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.io.haveno.protobuffer.EditOfferReply} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.haveno.protobuffer.EditOfferReply.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getOffer();
+  if (f != null) {
+    writer.writeMessage(
+      1,
+      f,
+      proto.io.haveno.protobuffer.OfferInfo.serializeBinaryToWriter
+    );
+  }
+};
+
+
+/**
+ * optional OfferInfo offer = 1;
+ * @return {?proto.io.haveno.protobuffer.OfferInfo}
+ */
+proto.io.haveno.protobuffer.EditOfferReply.prototype.getOffer = function() {
+  return /** @type{?proto.io.haveno.protobuffer.OfferInfo} */ (
+    jspb.Message.getWrapperField(this, proto.io.haveno.protobuffer.OfferInfo, 1));
+};
+
+
+/**
+ * @param {?proto.io.haveno.protobuffer.OfferInfo|undefined} value
+ * @return {!proto.io.haveno.protobuffer.EditOfferReply} returns this
+*/
+proto.io.haveno.protobuffer.EditOfferReply.prototype.setOffer = function(value) {
+  return jspb.Message.setWrapperField(this, 1, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.io.haveno.protobuffer.EditOfferReply} returns this
+ */
+proto.io.haveno.protobuffer.EditOfferReply.prototype.clearOffer = function() {
+  return this.setOffer(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.io.haveno.protobuffer.EditOfferReply.prototype.hasOffer = function() {
+  return jspb.Message.getField(this, 1) != null;
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.io.haveno.protobuffer.DeactivateOfferRequest.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.haveno.protobuffer.DeactivateOfferRequest.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.io.haveno.protobuffer.DeactivateOfferRequest} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.haveno.protobuffer.DeactivateOfferRequest.toObject = function(includeInstance, msg) {
+  var f, obj = {
+offerId: jspb.Message.getFieldWithDefault(msg, 1, "")
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.io.haveno.protobuffer.DeactivateOfferRequest}
+ */
+proto.io.haveno.protobuffer.DeactivateOfferRequest.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.io.haveno.protobuffer.DeactivateOfferRequest;
+  return proto.io.haveno.protobuffer.DeactivateOfferRequest.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.io.haveno.protobuffer.DeactivateOfferRequest} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.io.haveno.protobuffer.DeactivateOfferRequest}
+ */
+proto.io.haveno.protobuffer.DeactivateOfferRequest.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setOfferId(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.io.haveno.protobuffer.DeactivateOfferRequest.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.io.haveno.protobuffer.DeactivateOfferRequest.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.io.haveno.protobuffer.DeactivateOfferRequest} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.haveno.protobuffer.DeactivateOfferRequest.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getOfferId();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string offer_id = 1;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.DeactivateOfferRequest.prototype.getOfferId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.DeactivateOfferRequest} returns this
+ */
+proto.io.haveno.protobuffer.DeactivateOfferRequest.prototype.setOfferId = function(value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.io.haveno.protobuffer.DeactivateOfferReply.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.haveno.protobuffer.DeactivateOfferReply.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.io.haveno.protobuffer.DeactivateOfferReply} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.haveno.protobuffer.DeactivateOfferReply.toObject = function(includeInstance, msg) {
+  var f, obj = {
+
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.io.haveno.protobuffer.DeactivateOfferReply}
+ */
+proto.io.haveno.protobuffer.DeactivateOfferReply.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.io.haveno.protobuffer.DeactivateOfferReply;
+  return proto.io.haveno.protobuffer.DeactivateOfferReply.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.io.haveno.protobuffer.DeactivateOfferReply} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.io.haveno.protobuffer.DeactivateOfferReply}
+ */
+proto.io.haveno.protobuffer.DeactivateOfferReply.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.io.haveno.protobuffer.DeactivateOfferReply.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.io.haveno.protobuffer.DeactivateOfferReply.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.io.haveno.protobuffer.DeactivateOfferReply} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.haveno.protobuffer.DeactivateOfferReply.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.io.haveno.protobuffer.ActivateOfferRequest.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.haveno.protobuffer.ActivateOfferRequest.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.io.haveno.protobuffer.ActivateOfferRequest} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.haveno.protobuffer.ActivateOfferRequest.toObject = function(includeInstance, msg) {
+  var f, obj = {
+offerId: jspb.Message.getFieldWithDefault(msg, 1, "")
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.io.haveno.protobuffer.ActivateOfferRequest}
+ */
+proto.io.haveno.protobuffer.ActivateOfferRequest.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.io.haveno.protobuffer.ActivateOfferRequest;
+  return proto.io.haveno.protobuffer.ActivateOfferRequest.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.io.haveno.protobuffer.ActivateOfferRequest} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.io.haveno.protobuffer.ActivateOfferRequest}
+ */
+proto.io.haveno.protobuffer.ActivateOfferRequest.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setOfferId(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.io.haveno.protobuffer.ActivateOfferRequest.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.io.haveno.protobuffer.ActivateOfferRequest.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.io.haveno.protobuffer.ActivateOfferRequest} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.haveno.protobuffer.ActivateOfferRequest.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getOfferId();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string offer_id = 1;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.ActivateOfferRequest.prototype.getOfferId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.ActivateOfferRequest} returns this
+ */
+proto.io.haveno.protobuffer.ActivateOfferRequest.prototype.setOfferId = function(value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.io.haveno.protobuffer.ActivateOfferReply.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.haveno.protobuffer.ActivateOfferReply.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.io.haveno.protobuffer.ActivateOfferReply} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.haveno.protobuffer.ActivateOfferReply.toObject = function(includeInstance, msg) {
+  var f, obj = {
+
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.io.haveno.protobuffer.ActivateOfferReply}
+ */
+proto.io.haveno.protobuffer.ActivateOfferReply.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.io.haveno.protobuffer.ActivateOfferReply;
+  return proto.io.haveno.protobuffer.ActivateOfferReply.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.io.haveno.protobuffer.ActivateOfferReply} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.io.haveno.protobuffer.ActivateOfferReply}
+ */
+proto.io.haveno.protobuffer.ActivateOfferReply.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.io.haveno.protobuffer.ActivateOfferReply.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.io.haveno.protobuffer.ActivateOfferReply.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.io.haveno.protobuffer.ActivateOfferReply} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.haveno.protobuffer.ActivateOfferReply.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
 proto.io.haveno.protobuffer.CancelOfferRequest.prototype.toObject = function(opt_includeInstance) {
   return proto.io.haveno.protobuffer.CancelOfferRequest.toObject(opt_includeInstance, this);
 };
@@ -15771,6 +16074,13 @@ proto.io.haveno.protobuffer.CancelOfferReply.serializeBinaryToWriter = function(
 
 
 
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.io.haveno.protobuffer.OfferInfo.repeatedFields_ = [35];
+
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -15835,7 +16145,10 @@ splitOutputTxHash: jspb.Message.getFieldWithDefault(msg, 30, ""),
 splitOutputTxFee: jspb.Message.getFieldWithDefault(msg, 31, "0"),
 isPrivateOffer: jspb.Message.getBooleanFieldWithDefault(msg, 32, false),
 challenge: jspb.Message.getFieldWithDefault(msg, 33, ""),
-extraInfo: jspb.Message.getFieldWithDefault(msg, 34, "")
+extraInfo: jspb.Message.getFieldWithDefault(msg, 34, ""),
+acceptedCountryCodesList: (f = jspb.Message.getRepeatedField(msg, 35)) == null ? undefined : f,
+acceptedCountriesString: jspb.Message.getFieldWithDefault(msg, 36, ""),
+city: jspb.Message.getFieldWithDefault(msg, 37, "")
   };
 
   if (includeInstance) {
@@ -16007,6 +16320,18 @@ proto.io.haveno.protobuffer.OfferInfo.deserializeBinaryFromReader = function(msg
     case 34:
       var value = /** @type {string} */ (reader.readString());
       msg.setExtraInfo(value);
+      break;
+    case 35:
+      var value = /** @type {string} */ (reader.readString());
+      msg.addAcceptedCountryCodes(value);
+      break;
+    case 36:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setAcceptedCountriesString(value);
+      break;
+    case 37:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setCity(value);
       break;
     default:
       reader.skipField();
@@ -16272,6 +16597,27 @@ proto.io.haveno.protobuffer.OfferInfo.serializeBinaryToWriter = function(message
   if (f.length > 0) {
     writer.writeString(
       34,
+      f
+    );
+  }
+  f = message.getAcceptedCountryCodesList();
+  if (f.length > 0) {
+    writer.writeRepeatedString(
+      35,
+      f
+    );
+  }
+  f = message.getAcceptedCountriesString();
+  if (f.length > 0) {
+    writer.writeString(
+      36,
+      f
+    );
+  }
+  f = message.getCity();
+  if (f.length > 0) {
+    writer.writeString(
+      37,
       f
     );
   }
@@ -16887,6 +17233,79 @@ proto.io.haveno.protobuffer.OfferInfo.prototype.getExtraInfo = function() {
  */
 proto.io.haveno.protobuffer.OfferInfo.prototype.setExtraInfo = function(value) {
   return jspb.Message.setProto3StringField(this, 34, value);
+};
+
+
+/**
+ * repeated string accepted_country_codes = 35;
+ * @return {!Array<string>}
+ */
+proto.io.haveno.protobuffer.OfferInfo.prototype.getAcceptedCountryCodesList = function() {
+  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 35));
+};
+
+
+/**
+ * @param {!Array<string>} value
+ * @return {!proto.io.haveno.protobuffer.OfferInfo} returns this
+ */
+proto.io.haveno.protobuffer.OfferInfo.prototype.setAcceptedCountryCodesList = function(value) {
+  return jspb.Message.setField(this, 35, value || []);
+};
+
+
+/**
+ * @param {string} value
+ * @param {number=} opt_index
+ * @return {!proto.io.haveno.protobuffer.OfferInfo} returns this
+ */
+proto.io.haveno.protobuffer.OfferInfo.prototype.addAcceptedCountryCodes = function(value, opt_index) {
+  return jspb.Message.addToRepeatedField(this, 35, value, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.io.haveno.protobuffer.OfferInfo} returns this
+ */
+proto.io.haveno.protobuffer.OfferInfo.prototype.clearAcceptedCountryCodesList = function() {
+  return this.setAcceptedCountryCodesList([]);
+};
+
+
+/**
+ * optional string accepted_countries_string = 36;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.OfferInfo.prototype.getAcceptedCountriesString = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 36, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.OfferInfo} returns this
+ */
+proto.io.haveno.protobuffer.OfferInfo.prototype.setAcceptedCountriesString = function(value) {
+  return jspb.Message.setProto3StringField(this, 36, value);
+};
+
+
+/**
+ * optional string city = 37;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.OfferInfo.prototype.getCity = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 37, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.OfferInfo} returns this
+ */
+proto.io.haveno.protobuffer.OfferInfo.prototype.setCity = function(value) {
+  return jspb.Message.setProto3StringField(this, 37, value);
 };
 
 
@@ -31764,6 +32183,267 @@ proto.io.haveno.protobuffer.AddressBalanceInfo.prototype.getIsAddressUnused = fu
  */
 proto.io.haveno.protobuffer.AddressBalanceInfo.prototype.setIsAddressUnused = function(value) {
   return jspb.Message.setProto3BooleanField(this, 4, value);
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.io.haveno.protobuffer.GetWalletHeightRequest.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.haveno.protobuffer.GetWalletHeightRequest.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.io.haveno.protobuffer.GetWalletHeightRequest} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.haveno.protobuffer.GetWalletHeightRequest.toObject = function(includeInstance, msg) {
+  var f, obj = {
+
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.io.haveno.protobuffer.GetWalletHeightRequest}
+ */
+proto.io.haveno.protobuffer.GetWalletHeightRequest.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.io.haveno.protobuffer.GetWalletHeightRequest;
+  return proto.io.haveno.protobuffer.GetWalletHeightRequest.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.io.haveno.protobuffer.GetWalletHeightRequest} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.io.haveno.protobuffer.GetWalletHeightRequest}
+ */
+proto.io.haveno.protobuffer.GetWalletHeightRequest.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.io.haveno.protobuffer.GetWalletHeightRequest.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.io.haveno.protobuffer.GetWalletHeightRequest.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.io.haveno.protobuffer.GetWalletHeightRequest} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.haveno.protobuffer.GetWalletHeightRequest.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.io.haveno.protobuffer.GetWalletHeightReply.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.haveno.protobuffer.GetWalletHeightReply.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.io.haveno.protobuffer.GetWalletHeightReply} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.haveno.protobuffer.GetWalletHeightReply.toObject = function(includeInstance, msg) {
+  var f, obj = {
+height: jspb.Message.getFieldWithDefault(msg, 1, 0),
+targetHeight: jspb.Message.getFieldWithDefault(msg, 2, 0)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.io.haveno.protobuffer.GetWalletHeightReply}
+ */
+proto.io.haveno.protobuffer.GetWalletHeightReply.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.io.haveno.protobuffer.GetWalletHeightReply;
+  return proto.io.haveno.protobuffer.GetWalletHeightReply.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.io.haveno.protobuffer.GetWalletHeightReply} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.io.haveno.protobuffer.GetWalletHeightReply}
+ */
+proto.io.haveno.protobuffer.GetWalletHeightReply.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setHeight(value);
+      break;
+    case 2:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setTargetHeight(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.io.haveno.protobuffer.GetWalletHeightReply.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.io.haveno.protobuffer.GetWalletHeightReply.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.io.haveno.protobuffer.GetWalletHeightReply} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.haveno.protobuffer.GetWalletHeightReply.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getHeight();
+  if (f !== 0) {
+    writer.writeInt64(
+      1,
+      f
+    );
+  }
+  f = message.getTargetHeight();
+  if (f !== 0) {
+    writer.writeInt64(
+      2,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional int64 height = 1;
+ * @return {number}
+ */
+proto.io.haveno.protobuffer.GetWalletHeightReply.prototype.getHeight = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.io.haveno.protobuffer.GetWalletHeightReply} returns this
+ */
+proto.io.haveno.protobuffer.GetWalletHeightReply.prototype.setHeight = function(value) {
+  return jspb.Message.setProto3IntField(this, 1, value);
+};
+
+
+/**
+ * optional int64 target_height = 2;
+ * @return {number}
+ */
+proto.io.haveno.protobuffer.GetWalletHeightReply.prototype.getTargetHeight = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.io.haveno.protobuffer.GetWalletHeightReply} returns this
+ */
+proto.io.haveno.protobuffer.GetWalletHeightReply.prototype.setTargetHeight = function(value) {
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 

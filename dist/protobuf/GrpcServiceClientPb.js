@@ -365,15 +365,6 @@ class XmrConnectionsClient {
         this.methodDescriptorCheckConnection = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.XmrConnections/CheckConnection', grpcWeb.MethodType.UNARY, grpc_pb.CheckConnectionRequest, grpc_pb.CheckConnectionReply, (request) => {
             return request.serializeBinary();
         }, grpc_pb.CheckConnectionReply.deserializeBinary);
-        this.methodDescriptorCheckConnections = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.XmrConnections/CheckConnections', grpcWeb.MethodType.UNARY, grpc_pb.CheckConnectionsRequest, grpc_pb.CheckConnectionsReply, (request) => {
-            return request.serializeBinary();
-        }, grpc_pb.CheckConnectionsReply.deserializeBinary);
-        this.methodDescriptorStartCheckingConnection = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.XmrConnections/StartCheckingConnection', grpcWeb.MethodType.UNARY, grpc_pb.StartCheckingConnectionRequest, grpc_pb.StartCheckingConnectionReply, (request) => {
-            return request.serializeBinary();
-        }, grpc_pb.StartCheckingConnectionReply.deserializeBinary);
-        this.methodDescriptorStopCheckingConnection = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.XmrConnections/StopCheckingConnection', grpcWeb.MethodType.UNARY, grpc_pb.StopCheckingConnectionRequest, grpc_pb.StopCheckingConnectionReply, (request) => {
-            return request.serializeBinary();
-        }, grpc_pb.StopCheckingConnectionReply.deserializeBinary);
         this.methodDescriptorGetBestConnection = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.XmrConnections/GetBestConnection', grpcWeb.MethodType.UNARY, grpc_pb.GetBestConnectionRequest, grpc_pb.GetBestConnectionReply, (request) => {
             return request.serializeBinary();
         }, grpc_pb.GetBestConnectionReply.deserializeBinary);
@@ -440,30 +431,6 @@ class XmrConnectionsClient {
         }
         return this.client_.unaryCall(this.hostname_ +
             '/io.haveno.protobuffer.XmrConnections/CheckConnection', request, metadata || {}, this.methodDescriptorCheckConnection);
-    }
-    checkConnections(request, metadata, callback) {
-        if (callback !== undefined) {
-            return this.client_.rpcCall(this.hostname_ +
-                '/io.haveno.protobuffer.XmrConnections/CheckConnections', request, metadata || {}, this.methodDescriptorCheckConnections, callback);
-        }
-        return this.client_.unaryCall(this.hostname_ +
-            '/io.haveno.protobuffer.XmrConnections/CheckConnections', request, metadata || {}, this.methodDescriptorCheckConnections);
-    }
-    startCheckingConnection(request, metadata, callback) {
-        if (callback !== undefined) {
-            return this.client_.rpcCall(this.hostname_ +
-                '/io.haveno.protobuffer.XmrConnections/StartCheckingConnection', request, metadata || {}, this.methodDescriptorStartCheckingConnection, callback);
-        }
-        return this.client_.unaryCall(this.hostname_ +
-            '/io.haveno.protobuffer.XmrConnections/StartCheckingConnection', request, metadata || {}, this.methodDescriptorStartCheckingConnection);
-    }
-    stopCheckingConnection(request, metadata, callback) {
-        if (callback !== undefined) {
-            return this.client_.rpcCall(this.hostname_ +
-                '/io.haveno.protobuffer.XmrConnections/StopCheckingConnection', request, metadata || {}, this.methodDescriptorStopCheckingConnection, callback);
-        }
-        return this.client_.unaryCall(this.hostname_ +
-            '/io.haveno.protobuffer.XmrConnections/StopCheckingConnection', request, metadata || {}, this.methodDescriptorStopCheckingConnection);
     }
     getBestConnection(request, metadata, callback) {
         if (callback !== undefined) {
@@ -566,6 +533,15 @@ class OffersClient {
         this.methodDescriptorPostOffer = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.Offers/PostOffer', grpcWeb.MethodType.UNARY, grpc_pb.PostOfferRequest, grpc_pb.PostOfferReply, (request) => {
             return request.serializeBinary();
         }, grpc_pb.PostOfferReply.deserializeBinary);
+        this.methodDescriptorEditOffer = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.Offers/EditOffer', grpcWeb.MethodType.UNARY, grpc_pb.EditOfferRequest, grpc_pb.EditOfferReply, (request) => {
+            return request.serializeBinary();
+        }, grpc_pb.EditOfferReply.deserializeBinary);
+        this.methodDescriptorDeactivateOffer = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.Offers/DeactivateOffer', grpcWeb.MethodType.UNARY, grpc_pb.DeactivateOfferRequest, grpc_pb.DeactivateOfferReply, (request) => {
+            return request.serializeBinary();
+        }, grpc_pb.DeactivateOfferReply.deserializeBinary);
+        this.methodDescriptorActivateOffer = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.Offers/ActivateOffer', grpcWeb.MethodType.UNARY, grpc_pb.ActivateOfferRequest, grpc_pb.ActivateOfferReply, (request) => {
+            return request.serializeBinary();
+        }, grpc_pb.ActivateOfferReply.deserializeBinary);
         this.methodDescriptorCancelOffer = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.Offers/CancelOffer', grpcWeb.MethodType.UNARY, grpc_pb.CancelOfferRequest, grpc_pb.CancelOfferReply, (request) => {
             return request.serializeBinary();
         }, grpc_pb.CancelOfferReply.deserializeBinary);
@@ -618,6 +594,30 @@ class OffersClient {
         }
         return this.client_.unaryCall(this.hostname_ +
             '/io.haveno.protobuffer.Offers/PostOffer', request, metadata || {}, this.methodDescriptorPostOffer);
+    }
+    editOffer(request, metadata, callback) {
+        if (callback !== undefined) {
+            return this.client_.rpcCall(this.hostname_ +
+                '/io.haveno.protobuffer.Offers/EditOffer', request, metadata || {}, this.methodDescriptorEditOffer, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/io.haveno.protobuffer.Offers/EditOffer', request, metadata || {}, this.methodDescriptorEditOffer);
+    }
+    deactivateOffer(request, metadata, callback) {
+        if (callback !== undefined) {
+            return this.client_.rpcCall(this.hostname_ +
+                '/io.haveno.protobuffer.Offers/DeactivateOffer', request, metadata || {}, this.methodDescriptorDeactivateOffer, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/io.haveno.protobuffer.Offers/DeactivateOffer', request, metadata || {}, this.methodDescriptorDeactivateOffer);
+    }
+    activateOffer(request, metadata, callback) {
+        if (callback !== undefined) {
+            return this.client_.rpcCall(this.hostname_ +
+                '/io.haveno.protobuffer.Offers/ActivateOffer', request, metadata || {}, this.methodDescriptorActivateOffer, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/io.haveno.protobuffer.Offers/ActivateOffer', request, metadata || {}, this.methodDescriptorActivateOffer);
     }
     cancelOffer(request, metadata, callback) {
         if (callback !== undefined) {
@@ -996,6 +996,9 @@ class WalletsClient {
         this.methodDescriptorUnlockWallet = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.Wallets/UnlockWallet', grpcWeb.MethodType.UNARY, grpc_pb.UnlockWalletRequest, grpc_pb.UnlockWalletReply, (request) => {
             return request.serializeBinary();
         }, grpc_pb.UnlockWalletReply.deserializeBinary);
+        this.methodDescriptorGetHeight = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.Wallets/GetHeight', grpcWeb.MethodType.UNARY, grpc_pb.GetWalletHeightRequest, grpc_pb.GetWalletHeightReply, (request) => {
+            return request.serializeBinary();
+        }, grpc_pb.GetWalletHeightReply.deserializeBinary);
         if (!options)
             options = {};
         if (!credentials)
@@ -1117,6 +1120,14 @@ class WalletsClient {
         }
         return this.client_.unaryCall(this.hostname_ +
             '/io.haveno.protobuffer.Wallets/UnlockWallet', request, metadata || {}, this.methodDescriptorUnlockWallet);
+    }
+    getHeight(request, metadata, callback) {
+        if (callback !== undefined) {
+            return this.client_.rpcCall(this.hostname_ +
+                '/io.haveno.protobuffer.Wallets/GetHeight', request, metadata || {}, this.methodDescriptorGetHeight, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/io.haveno.protobuffer.Wallets/GetHeight', request, metadata || {}, this.methodDescriptorGetHeight);
     }
 }
 exports.WalletsClient = WalletsClient;

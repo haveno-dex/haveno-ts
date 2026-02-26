@@ -1,11 +1,11 @@
 import type * as grpcWeb from "grpc-web";
 import { GetTradeStatisticsClient, GetVersionClient, AccountClient, XmrConnectionsClient, DisputesClient, DisputeAgentsClient, NotificationsClient, WalletsClient, PriceClient, OffersClient, PaymentAccountsClient, TradesClient, ShutdownServerClient, XmrNodeClient } from './protobuf/GrpcServiceClientPb';
-import { MarketPriceInfo, MarketDepthInfo, XmrBalanceInfo, OfferInfo, TradeInfo, XmrTx, XmrDestination, NotificationMessage, UrlConnection } from "./protobuf/grpc_pb";
+import { MarketPriceInfo, MarketDepthInfo, GetWalletHeightReply, XmrBalanceInfo, OfferInfo, TradeInfo, XmrTx, XmrDestination, NotificationMessage, UrlConnection } from "./protobuf/grpc_pb";
 import { TradeStatistics3, OfferDirection, PaymentMethod, PaymentAccountForm, PaymentAccountFormField, PaymentAccount, PaymentAccountPayload, Attachment, DisputeResult, Dispute, ChatMessage, XmrNodeSettings } from "./protobuf/pb_pb";
 /**
- * Configuration to post, clone, or edit an offer.
+ * Configuration to post or clone an offer.
  */
-export interface OfferConfig {
+export interface PostOfferConfig {
     direction?: OfferDirection;
     amount?: bigint;
     minAmount?: bigint;
@@ -20,6 +20,18 @@ export interface OfferConfig {
     buyerAsTakerWithoutDeposit?: boolean;
     extraInfo?: string;
     sourceOfferId?: string;
+}
+/**
+ * Configuration to edit an offer.
+ */
+export interface EditOfferConfig {
+    offerId: string;
+    assetCode?: string;
+    paymentAccountId?: string;
+    price?: number;
+    marketPriceMarginPct?: number;
+    triggerPrice?: number;
+    extraInfo?: string;
 }
 /**
  * Haveno daemon client.
@@ -104,6 +116,30 @@ export default class HavenoClient {
      * @return {string} the Haveno daemon version
      */
     getVersion(): Promise<string>;
+    /**
+     * Check whether the application is fully initialized with an account and a
+     * connection to the Haveno network.
+     *
+     * @return {Promise<boolean>} true if the application is initialized, false otherwise
+     */
+    isAppInitialized(): Promise<boolean>;
+    /**
+     * Wait for the application to be fully initialized with an account and a
+     * connection to the Haveno network.
+     *
+     * TODO:
+     *
+     * Currently when the application starts, the account is first initialized with createAccount()
+     * or openAccount() which return immediately. A notification is sent after all setup is complete and
+     * the application is connected to the Haveno network.
+     *
+     * Ideally when the application starts, the system checks the Haveno network connection, supporting
+     * havenod.isHavenoConnectionInitialized() and havenod.awaitHavenoConnectionInitialized().
+     * Independently, gRPC createAccount() and openAccount() return after all account setup and reading from disk.
+     *
+     * @private
+     */
+    awaitAppInitialized(): Promise<void>;
     /**
      * Indicates if connected and authenticated with the Haveno daemon.
      *
@@ -222,22 +258,6 @@ export default class HavenoClient {
      */
     checkMoneroConnection(): Promise<UrlConnection | undefined>;
     /**
-     * Check all Monero daemon connections.
-     *
-     * @return {UrlConnection[]} status of all managed connections.
-     */
-    checkMoneroConnections(): Promise<UrlConnection[]>;
-    /**
-     * Check the connection and start checking the connection periodically.
-     *
-     * @param {number} refreshPeriod - time between checks in milliseconds (default 15000 ms or 15 seconds)
-     */
-    startCheckingConnection(refreshPeriod: number): Promise<void>;
-    /**
-     * Stop checking the connection status periodically.
-     */
-    stopCheckingConnection(): Promise<void>;
-    /**
      * Get the best connection in order of priority then response time.
      *
      * @return {UrlConnection | undefined} the best connection in order of priority then response time, undefined if no connections
@@ -286,6 +306,12 @@ export default class HavenoClient {
      * @param {string} disputeAgentType - type of dispute agent to register, e.g. mediator, refundagent
      */
     unregisterDisputeAgent(disputeAgentType: string): Promise<void>;
+    /**
+     * Get heights of the Monero wallet.
+     *
+     * @return {GetWalletHeightReply} has the wallet heights
+     */
+    getWalletHeights(): Promise<GetWalletHeightReply>;
     /**
      * Get the user's balances.
      *
@@ -455,7 +481,7 @@ export default class HavenoClient {
     /**
      * Post or clone an offer.
      *
-     * @param {OfferConfig} config - configures the offer to post or clone
+     * @param {PostOfferConfig} config - configures the offer to post or clone
      * @param {OfferDirection} [config.direction] - specifies to buy or sell xmr (default buy)
      * @param {bigint} [config.amount] - amount of XMR to trade
      * @param {string} [config.assetCode] - asset code to trade for XMR
@@ -472,7 +498,33 @@ export default class HavenoClient {
      * @param {string} [config.sourceOfferId] - create a clone of a source offer which shares the same reserved funds. overrides other fields which are immutable or unspecified (optional)
      * @return {OfferInfo} the posted offer
      */
-    postOffer(config: OfferConfig): Promise<OfferInfo>;
+    postOffer(config: PostOfferConfig): Promise<OfferInfo>;
+    /**
+     * Edit an existing offer.
+     *
+     * @param {EditOfferConfig} config - configures the offer to edit
+     * @param {string} [config.offerId] - id of the offer to edit
+     * @param {string} [config.assetCode] - traded asset code (optional, default to existing)
+     * @param {number} [config.price] - trade price (optional, default to market price)
+     * @param {number} [config.marketPriceMarginPct] - if using market price, % from market price to accept (optional, default 0%)
+     * @param {number} [config.triggerPrice] - price to remove offer (optional)
+     * @param {string} [config.paymentAccountId] - payment account id (optional, default to existing)
+     * @param {string} [config.extraInfo] - set the offer's extra information (optional, default to none)
+     * @return {OfferInfo} the edited offer
+     */
+    editOffer(config: EditOfferConfig): Promise<OfferInfo>;
+    /**
+     * Deactivate an offer.
+     *
+     * @param {string} offerId - the offer id to deactivate
+     */
+    deactivateOffer(offerId: string): Promise<void>;
+    /**
+     * Activate an offer.
+     *
+     * @param {string} offerId - the offer id to reactivate
+     */
+    activateOffer(offerId: string): Promise<void>;
     /**
      * Remove a posted offer, releasing its reserved funds.
      *
@@ -582,25 +634,6 @@ export default class HavenoClient {
      * Shutdown the Haveno daemon server and stop the process if applicable.
      */
     shutdownServer(): Promise<void>;
-    /**
-     * Wait for the application to be fully initialized with an account and a
-     * connection to the Haveno network.
-     *
-     * TODO:
-     *
-     * Currently when the application starts, the account is first initialized with createAccount()
-     * or openAccount() which return immediately. A notification is sent after all setup is complete and
-     * the application is connected to the Haveno network.
-     *
-     * Ideally when the application starts, the system checks the Haveno network connection, supporting
-     * havenod.isHavenoConnectionInitialized() and havenod.awaitHavenoConnectionInitialized().
-     * Independently, gRPC createAccount() and openAccount() return after all account setup and reading from disk.
-     *
-     * @private
-     */
-    _awaitAppInitialized(): Promise<void>;
-    /** @private */
-    _isAppInitialized(): Promise<boolean>;
     /**
      * Callback for grpc notifications.
      *
