@@ -3293,9 +3293,13 @@ async function makeOffer(ctxP?: Partial<TradeContext>): Promise<OfferInfo> {
   if (!ctx.offerMinAmount) ctx.offerMinAmount = ctx.offerAmount;
   expect(Math.abs(HavenoUtils.percentageDiff(ctx.offerAmount!, BigInt(offer.getAmount())))).toBeLessThan(TestConfig.maxAdjustmentPct);
   expect(Math.abs(HavenoUtils.percentageDiff(ctx.offerMinAmount!, BigInt(offer.getMinAmount())))).toBeLessThan(TestConfig.maxAdjustmentPct);
-  if (ctx.tradeAmount === ctx.offerAmount) ctx.tradeAmount = BigInt(offer.getAmount()); // adjust trade amount
+  const tradeAmountWithinRange = ctx.tradeAmount && ctx.tradeAmount >= ctx.offerMinAmount! && ctx.tradeAmount <= ctx.offerAmount!;
   ctx.offerAmount = BigInt(offer.getAmount());
   ctx.offerMinAmount = BigInt(offer.getMinAmount());
+  if (tradeAmountWithinRange) { // adjust trade amount if within original offer range
+    if (ctx.tradeAmount! > ctx.offerAmount) ctx.tradeAmount = ctx.offerAmount;
+    if (ctx.tradeAmount! < ctx.offerMinAmount) ctx.tradeAmount = ctx.offerMinAmount;
+  }
 
   // unlocked balance has decreased
   let unlockedBalanceAfter = BigInt((await ctx.maker.havenod!.getBalances()).getAvailableBalance());
