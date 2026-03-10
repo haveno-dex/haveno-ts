@@ -13,7 +13,7 @@
     "test": "jest --forceExit --detectOpenHandles",
     "eslint": "eslint .",
     "eslintfix": "eslint src/* --fix",
-    "typedoc": "typedoc ./src/index.ts --entryPointStrategy expand src/ --exclude **/*.test.ts --excludePrivate"
+    "typedoc": "typedoc ./src/index.ts --entryPointStrategy expand src/ --exclude **/*.test.ts --excludePrivate --out docs/typedocs && touch docs/.nojekyll"
   },
   "repository": {
     "type": "git",
