@@ -31,7 +31,7 @@ See the [sample application](https://github.com/haveno-dex/haveno-sample-app) to
 
 ## TypeDocs
 
-See [TypeDocs](https://haveno-dex.github.io/haveno-ts/classes/HavenoClient.HavenoClient.html).
+See [TypeDocs](https://haveno-dex.github.io/haveno-ts/typedocs/classes/HavenoClient.HavenoClient.html).
 
 ## Run API Tests
 
