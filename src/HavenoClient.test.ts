@@ -1984,6 +1984,7 @@ test("Cannot make or take offer outside of limits (Test, CI, sanity check)", asy
     takeOffer: false
   });
   await user1.removeOffer(offerId);
+  await wait(TestConfig.trade.maxTimePeerNoticeMs); // wait for peers to see removal to avoid warning
 
   // test that sell limit is higher than buy limit
   offerId = await executeTrade({
@@ -1995,6 +1996,7 @@ test("Cannot make or take offer outside of limits (Test, CI, sanity check)", asy
     takeOffer: false
   });
   await user1.removeOffer(offerId);
+  await wait(TestConfig.trade.maxTimePeerNoticeMs);
 
   // cannot take offer outside of range
   try {
@@ -2006,6 +2008,7 @@ test("Cannot make or take offer outside of limits (Test, CI, sanity check)", asy
       assetCode: assetCode,
       makerPaymentAccountId: account.getId(),
     });
+    throw new Error("Should have rejected taking offer above offer amount");
   } catch (err: any) {
     if (err.message.indexOf("Trade amount exceeds offer amount") < 0) throw err;
   }
