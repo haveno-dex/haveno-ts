@@ -401,7 +401,7 @@ const TestConfig = {
         username: "",
         password: ""
     },
-    monerod2: {// corresponds to monerod2-local in Makefile
+    monerod2: { // corresponds to monerod2-local in Makefile
         url: monerod2Url,
         username: "",
         password: ""
@@ -465,7 +465,7 @@ const TestConfig = {
     idlePeriodTestMs: 30000,
     maxCpuPct: 0.25,
     paymentMethods: Object.keys(PaymentAccountForm.FormId), // all supported payment methods
-    assetCodes: ["USD", "GBP", "EUR", "ETH", "BTC", "BCH", "LTC", "DOGE", "XRP", "ADA", "TRX", "SOL", "USDT-ERC20", "USDT-TRC20", "USDC-ERC20"],
+    assetCodes: ["USD", "GBP", "EUR", "ETH", "BTC", "BCH", "LTC", "DOGE", "XRP", "ADA", "TRX", "SOL", "ZEC", "USDT-ERC20", "USDT-TRC20", "USDC-ERC20"],
     fixedPriceAssetCodes: ["XAG", "XAU", "XGB"],
     fixedPricePaymentMethods: [],
     cryptoAddresses: [{
@@ -495,6 +495,9 @@ const TestConfig = {
         }, {
             currencyCode: "SOL",
             address: "4Nd1mYZbtJbHkj9QwxAXWah8X9M8vZ9H1fsn6uhPW33k"
+        }, {
+            currencyCode: "ZEC",
+            address: "t1QvpnirY5E3zW2AzbfqF3JkbT9coTiaKkh"
         }, {
             currencyCode: "USDT-ERC20",
             address: "0x9Fc17f65060080491c09e879dE8C7cc6dC72Fed7"
