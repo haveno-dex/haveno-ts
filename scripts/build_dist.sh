@@ -1,12 +1,13 @@
 #!/bin/sh
 
 # generate imports for haveno services and types using grpc-web
+mkdir -p ./dist
 mkdir -p ./src/protobuf
 cd ./src/protobuf || exit 1
 protoc -I=../../../haveno/proto/src/main/proto/ ../../../haveno/proto/src/main/proto/*.proto --js_out=import_style=commonjs,binary:./ --grpc-web_out=import_style=typescript,mode=grpcwebtext:./ || exit 1
 
-# run typescript compiler
-tsc
+# run typescript compiler to generate dist
+tsc -p ../../tsconfig.build.json
 
 # copy protobuf models to dist
 cp ./grpc_pb.d.ts ../../dist/protobuf/grpc_pb.d.ts || exit 1
