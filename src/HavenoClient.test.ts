@@ -1222,9 +1222,14 @@ test("Can get market prices (Test, CI, sanity check)", async () => {
 
   // get market prices of primary assets
   for (const assetCode of TestConfig.assetCodes) {
-    const price = await user1.getPrice(assetCode);
-    expect(price).toBeDefined();
-    expect(price).toBeGreaterThan(0);
+    try {
+      const price = await user1.getPrice(assetCode);
+      expect(price).toBeDefined();
+      expect(price).toBeGreaterThan(0);
+    } catch (err: any) {
+      HavenoUtils.log(0, "Error getting price for asset code " + assetCode + ": " + err.message);
+      throw err;
+    }
   }
 
   // test that prices are reasonable
@@ -1710,6 +1715,14 @@ test("Can clone offers (Test, CI, sanity check)", async () => {
   assert.equal(clonedOffer1.getAmount(), offer.getAmount());
   assert.equal(clonedOffer1.getMinAmount(), offer.getMinAmount());
   assert.equal(clonedOffer1.getIsPrivateOffer(), offer.getIsPrivateOffer());
+
+  // test error activating cloned offer with same payment method and currency
+  try {
+    await user1.activateOffer(clonedOffer1.getId());
+    throw new Error("Should have thrown error activating cloned offer with same payment method and currency");
+  } catch (err: any) {
+    if (err.message.indexOf("cannot be activated") < 0) throw err;
+  }
 
   // clone offer with crypto account
   const cryptoAssetCode = "BCH";
