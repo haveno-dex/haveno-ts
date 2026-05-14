@@ -1578,7 +1578,10 @@ test("Can post, deactivate, activate, edit, and remove an offer (Test, CI, sanit
   // post crypto offer
   let assetCode = "BCH";
   let price = 1 / 17;
-  let ctx: Partial<TradeContext> = {maker: {havenod: user1}, assetCode: assetCode, price: price, extraInfo: "My extra info"};
+  let direction = OfferDirection.SELL;
+  let buyerAsTakerWithoutDeposit = true;
+  let reserveExactAmount = false;
+  let ctx: Partial<TradeContext> = {maker: {havenod: user1}, assetCode: assetCode, price: price, direction: direction, isPrivateOffer: buyerAsTakerWithoutDeposit, buyerAsTakerWithoutDeposit: buyerAsTakerWithoutDeposit, reserveExactAmount: reserveExactAmount, extraInfo: "My extra info"};
   let offer: OfferInfo = await makeOffer(ctx);
   assert.equal(offer.getState(), "AVAILABLE");
   assert.equal(offer.getCounterCurrencyCode(), assetCode);
@@ -1591,7 +1594,7 @@ test("Can post, deactivate, activate, edit, and remove an offer (Test, CI, sanit
 
   // peer sees offer
   await wait(TestConfig.trade.maxTimePeerNoticeMs);
-  let peerOffer = getOffer(await user2.getOffers(assetCode, TestConfig.trade.direction), offer.getId());
+  let peerOffer = getOffer(await user2.getOffers(assetCode, direction), offer.getId());
   if (!peerOffer) throw new Error("Offer " + offer.getId() + " was not found in peer's offers after posted");
   testOffer(peerOffer, ctx, false);
 
@@ -1599,11 +1602,11 @@ test("Can post, deactivate, activate, edit, and remove an offer (Test, CI, sanit
   await user1.removeOffer(offer.getId());
 
   // offer is removed from my offers
-  if (getOffer(await user1.getMyOffers(assetCode, OfferDirection.BUY), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in my offers after removal");
+  if (getOffer(await user1.getMyOffers(assetCode, direction), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in my offers after removal");
 
   // peer does not see offer
   await wait(TestConfig.trade.maxTimePeerNoticeMs);
-  if (getOffer(await user2.getOffers(assetCode, TestConfig.trade.direction), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in peer's offers after removed");
+  if (getOffer(await user2.getOffers(assetCode, direction), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in peer's offers after removed");
 
   // reserved balance released
   expect(BigInt((await user1.getBalances()).getAvailableBalance())).toEqual(availableBalanceBefore);
@@ -1611,7 +1614,7 @@ test("Can post, deactivate, activate, edit, and remove an offer (Test, CI, sanit
   // post fiat offer
   assetCode = "USD";
   price = 180.0;
-  ctx = {maker: {havenod: user1}, assetCode: assetCode, price: price, extraInfo: "My extra info 2"};
+  ctx = {maker: {havenod: user1}, assetCode: assetCode, price: price, direction: direction, isPrivateOffer: buyerAsTakerWithoutDeposit, buyerAsTakerWithoutDeposit: buyerAsTakerWithoutDeposit, reserveExactAmount: reserveExactAmount, extraInfo: "My extra info 2"};
   offer = await makeOffer(ctx);
   assert.equal(offer.getState(), "AVAILABLE");
   assert.equal(offer.getBaseCurrencyCode(), "XMR");
@@ -1624,7 +1627,7 @@ test("Can post, deactivate, activate, edit, and remove an offer (Test, CI, sanit
 
   // peer sees offer
   await wait(TestConfig.trade.maxTimePeerNoticeMs);
-  peerOffer = getOffer(await user2.getOffers(assetCode, TestConfig.trade.direction), offer.getId());
+  peerOffer = getOffer(await user2.getOffers(assetCode, direction), offer.getId());
   if (!peerOffer) throw new Error("Offer " + offer.getId() + " was not found in peer's offers after posted");
   testOffer(peerOffer, ctx, false);
 
@@ -1635,7 +1638,7 @@ test("Can post, deactivate, activate, edit, and remove an offer (Test, CI, sanit
 
   // peer does not see offer
   await wait(TestConfig.trade.maxTimePeerNoticeMs);
-  if (getOffer(await user2.getOffers(assetCode, TestConfig.trade.direction), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in peer's offers after removed");
+  if (getOffer(await user2.getOffers(assetCode, direction), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in peer's offers after removed");
 
   // activate offer
   await user1.activateOffer(offer.getId());
@@ -1644,7 +1647,7 @@ test("Can post, deactivate, activate, edit, and remove an offer (Test, CI, sanit
 
   // peer sees offer
   await wait(TestConfig.trade.maxTimePeerNoticeMs);
-  peerOffer = getOffer(await user2.getOffers(assetCode, TestConfig.trade.direction), offer.getId());
+  peerOffer = getOffer(await user2.getOffers(assetCode, direction), offer.getId());
   if (!peerOffer) throw new Error("Offer " + offer.getId() + " was not found in peer's offers after posted");
   testOffer(peerOffer, ctx, false);
 
@@ -1652,7 +1655,7 @@ test("Can post, deactivate, activate, edit, and remove an offer (Test, CI, sanit
   ctx.extraInfo = "My edited extra info";
   ctx.price = undefined;
   ctx.marketPriceMarginPct = 0.15;
-  const editedAssetCode = "BCH";
+  const editedAssetCode = "GBP"; // Note: must be same type (traditional or crypto) as original offer, else maker fee can change which is not allowed
   let paymentAccountId = (await createPaymentAccount(user1, editedAssetCode)).getId();
   offer = await user1.editOffer({
     offerId: offer.getId(),
@@ -1669,7 +1672,7 @@ test("Can post, deactivate, activate, edit, and remove an offer (Test, CI, sanit
 
   // peer sees edited offer
   await wait(TestConfig.trade.maxTimePeerNoticeMs);
-  peerOffer = getOffer(await user2.getOffers(editedAssetCode, TestConfig.trade.direction), offer.getId());
+  peerOffer = getOffer(await user2.getOffers(editedAssetCode, direction), offer.getId());
   if (!peerOffer) throw new Error("Offer " + offer.getId() + " was not found in peer's offers after edited");
   testOffer(peerOffer, ctx, false);
   expect(peerOffer.getExtraInfo()).toContain("My edited extra info");
@@ -1680,14 +1683,14 @@ test("Can post, deactivate, activate, edit, and remove an offer (Test, CI, sanit
   await user1.removeOffer(offer.getId());
 
   // offer is removed from my offers
-  if (getOffer(await user1.getMyOffers(assetCode, OfferDirection.BUY), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in my offers after removal");
+  if (getOffer(await user1.getMyOffers(assetCode, direction), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in my offers after removal");
 
   // reserved balance released
   expect(BigInt((await user1.getBalances()).getAvailableBalance())).toEqual(availableBalanceBefore);
 
   // peer does not see offer
   await wait(TestConfig.trade.maxTimePeerNoticeMs);
-  if (getOffer(await user2.getOffers(assetCode, TestConfig.trade.direction), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in peer's offers after removed");
+  if (getOffer(await user2.getOffers(assetCode, direction), offer.getId())) throw new Error("Offer " + offer.getId() + " was found in peer's offers after removed");
 });
 
 test("Can clone offers (Test, CI, sanity check)", async () => {
