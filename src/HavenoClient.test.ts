@@ -2070,6 +2070,36 @@ test("Can complete a trade within a range and without a buyer deposit (Test, CI)
   }
 });
 
+test("Can complete a passphrase-protected trade which requires a buyer deposit (Test, CI)", async () => {
+
+  // create payment accounts
+  let paymentMethodId = HavenoUtils.getPaymentMethodId(PaymentAccountForm.FormId.CASH_AT_ATM);
+  let assetCode = "aud";
+  let makerPaymentAccount = await createPaymentAccount(user1, assetCode, paymentMethodId);
+  let takerPaymentAccount = await createPaymentAccount(user2, assetCode, paymentMethodId);
+
+  // execute a passphrase-protected trade which requires a buyer security deposit
+  const offerAmount = getRandomBigIntWithinPercent(HavenoUtils.xmrToAtomicUnits(1), 0.15);
+  const offerMinAmount = getRandomBigIntWithinPercent(HavenoUtils.xmrToAtomicUnits(0.3), 0.15);
+  const ctx = TradeContext.init({
+    price: 142.23,
+    offerAmount: offerAmount,
+    offerMinAmount: offerMinAmount,
+    tradeAmount: getRandomBigIntWithinRange(offerMinAmount, offerAmount),
+    makerPaymentAccountId: makerPaymentAccount.getId(),
+    takerPaymentAccountId: takerPaymentAccount.getId(),
+    assetCode: assetCode,
+    direction: OfferDirection.SELL,
+    isPrivateOffer: true,
+    buyerAsTakerWithoutDeposit: false, // passphrase-protected offer, but the buyer still posts a security deposit
+    extraInfo: "My extra info"
+  });
+  await executeTrade(ctx);
+
+  // a passphrase (challenge) was generated for the offer and required to take it
+  expect(ctx.challenge!.length).toBeGreaterThan(0);
+});
+
 test("Can complete trades at the same time (Test, CI, sanity check)", async () => {
 
   // create trade contexts with customized payment methods and random amounts
@@ -2701,6 +2731,7 @@ test("Can bootstrap a network", async () => {
     if (ctxP.offerAmount === undefined) ctxP.offerAmount = getRandomBigIntWithinPercent(HavenoUtils.xmrToAtomicUnits(1), 0.15);
     if (isRangeOffer && ctxP.offerMinAmount === undefined) ctxP.offerMinAmount = getRandomBigIntWithinPercent(HavenoUtils.xmrToAtomicUnits(0.3), 0.15);
     if (ctxP.reserveExactAmount === undefined) ctxP.reserveExactAmount = getRandomOutcome(3/4);
+    if (ctxP.isPrivateOffer === undefined) ctxP.isPrivateOffer = getRandomOutcome(1/4);
     if (ctxP.buyerAsTakerWithoutDeposit === undefined) ctxP.buyerAsTakerWithoutDeposit = ctxP.direction === OfferDirection.SELL && getRandomOutcome(1/3);
     if (ctxP.buyerAsTakerWithoutDeposit) {
       ctxP.isPrivateOffer = true;
