@@ -12828,7 +12828,8 @@ currentDate: jspb.Message.getFieldWithDefault(msg, 3, 0),
 preparedMultisigHex: jspb.Message.getFieldWithDefault(msg, 4, ""),
 madeMultisigHex: jspb.Message.getFieldWithDefault(msg, 5, ""),
 exchangedMultisigHex: jspb.Message.getFieldWithDefault(msg, 6, ""),
-tradeFeeAddress: jspb.Message.getFieldWithDefault(msg, 7, "")
+tradeFeeAddress: jspb.Message.getFieldWithDefault(msg, 7, ""),
+tradePrice: jspb.Message.getFieldWithDefault(msg, 8, 0)
   };
 
   if (includeInstance) {
@@ -12892,6 +12893,10 @@ proto.io.haveno.protobuffer.InitMultisigRequest.deserializeBinaryFromReader = fu
     case 7:
       var value = /** @type {string} */ (reader.readString());
       msg.setTradeFeeAddress(value);
+      break;
+    case 8:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setTradePrice(value);
       break;
     default:
       reader.skipField();
@@ -12968,6 +12973,13 @@ proto.io.haveno.protobuffer.InitMultisigRequest.serializeBinaryToWriter = functi
   if (f.length > 0) {
     writer.writeString(
       7,
+      f
+    );
+  }
+  f = message.getTradePrice();
+  if (f !== 0) {
+    writer.writeInt64(
+      8,
       f
     );
   }
@@ -13097,6 +13109,24 @@ proto.io.haveno.protobuffer.InitMultisigRequest.prototype.getTradeFeeAddress = f
  */
 proto.io.haveno.protobuffer.InitMultisigRequest.prototype.setTradeFeeAddress = function(value) {
   return jspb.Message.setProto3StringField(this, 7, value);
+};
+
+
+/**
+ * optional int64 trade_price = 8;
+ * @return {number}
+ */
+proto.io.haveno.protobuffer.InitMultisigRequest.prototype.getTradePrice = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 8, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.io.haveno.protobuffer.InitMultisigRequest} returns this
+ */
+proto.io.haveno.protobuffer.InitMultisigRequest.prototype.setTradePrice = function(value) {
+  return jspb.Message.setProto3IntField(this, 8, value);
 };
 
 
@@ -56270,7 +56300,8 @@ useSoundForNotifications: jspb.Message.getBooleanFieldWithDefault(msg, 63, false
 useSoundForNotificationsInitialized: jspb.Message.getBooleanFieldWithDefault(msg, 64, false),
 buyScreenOtherCurrencyCode: jspb.Message.getFieldWithDefault(msg, 65, ""),
 sellScreenOtherCurrencyCode: jspb.Message.getFieldWithDefault(msg, 66, ""),
-showPrivateOffers: jspb.Message.getBooleanFieldWithDefault(msg, 67, false)
+showNoDepositOffers: jspb.Message.getBooleanFieldWithDefault(msg, 67, false),
+showPrivateOffers: jspb.Message.getBooleanFieldWithDefault(msg, 68, false)
   };
 
   if (includeInstance) {
@@ -56585,6 +56616,10 @@ proto.io.haveno.protobuffer.PreferencesPayload.deserializeBinaryFromReader = fun
       msg.setSellScreenOtherCurrencyCode(value);
       break;
     case 67:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setShowNoDepositOffers(value);
+      break;
+    case 68:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setShowPrivateOffers(value);
       break;
@@ -57082,10 +57117,17 @@ proto.io.haveno.protobuffer.PreferencesPayload.serializeBinaryToWriter = functio
       f
     );
   }
-  f = message.getShowPrivateOffers();
+  f = message.getShowNoDepositOffers();
   if (f) {
     writer.writeBool(
       67,
+      f
+    );
+  }
+  f = message.getShowPrivateOffers();
+  if (f) {
+    writer.writeBool(
+      68,
       f
     );
   }
@@ -58503,10 +58545,10 @@ proto.io.haveno.protobuffer.PreferencesPayload.prototype.setSellScreenOtherCurre
 
 
 /**
- * optional bool show_private_offers = 67;
+ * optional bool show_no_deposit_offers = 67;
  * @return {boolean}
  */
-proto.io.haveno.protobuffer.PreferencesPayload.prototype.getShowPrivateOffers = function() {
+proto.io.haveno.protobuffer.PreferencesPayload.prototype.getShowNoDepositOffers = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 67, false));
 };
 
@@ -58515,8 +58557,26 @@ proto.io.haveno.protobuffer.PreferencesPayload.prototype.getShowPrivateOffers = 
  * @param {boolean} value
  * @return {!proto.io.haveno.protobuffer.PreferencesPayload} returns this
  */
-proto.io.haveno.protobuffer.PreferencesPayload.prototype.setShowPrivateOffers = function(value) {
+proto.io.haveno.protobuffer.PreferencesPayload.prototype.setShowNoDepositOffers = function(value) {
   return jspb.Message.setProto3BooleanField(this, 67, value);
+};
+
+
+/**
+ * optional bool show_private_offers = 68;
+ * @return {boolean}
+ */
+proto.io.haveno.protobuffer.PreferencesPayload.prototype.getShowPrivateOffers = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 68, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.io.haveno.protobuffer.PreferencesPayload} returns this
+ */
+proto.io.haveno.protobuffer.PreferencesPayload.prototype.setShowPrivateOffers = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 68, value);
 };
 
 

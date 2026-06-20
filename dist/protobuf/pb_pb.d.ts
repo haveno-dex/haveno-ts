@@ -1144,6 +1144,9 @@ export class InitMultisigRequest extends jspb.Message {
   getTradeFeeAddress(): string;
   setTradeFeeAddress(value: string): InitMultisigRequest;
 
+  getTradePrice(): number;
+  setTradePrice(value: number): InitMultisigRequest;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): InitMultisigRequest.AsObject;
   static toObject(includeInstance: boolean, msg: InitMultisigRequest): InitMultisigRequest.AsObject;
@@ -1161,6 +1164,7 @@ export namespace InitMultisigRequest {
     madeMultisigHex: string,
     exchangedMultisigHex: string,
     tradeFeeAddress: string,
+    tradePrice: number,
   }
 }
 
@@ -7177,6 +7181,9 @@ export class PreferencesPayload extends jspb.Message {
   getSellScreenOtherCurrencyCode(): string;
   setSellScreenOtherCurrencyCode(value: string): PreferencesPayload;
 
+  getShowNoDepositOffers(): boolean;
+  setShowNoDepositOffers(value: boolean): PreferencesPayload;
+
   getShowPrivateOffers(): boolean;
   setShowPrivateOffers(value: boolean): PreferencesPayload;
 
@@ -7256,6 +7263,7 @@ export namespace PreferencesPayload {
     useSoundForNotificationsInitialized: boolean,
     buyScreenOtherCurrencyCode: string,
     sellScreenOtherCurrencyCode: string,
+    showNoDepositOffers: boolean,
     showPrivateOffers: boolean,
   }
 }
