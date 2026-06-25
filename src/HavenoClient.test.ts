@@ -5192,6 +5192,13 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
         expect(account.getTradeCurrenciesList().length).toEqual(1);
         expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("USD");
         break;
+    case PaymentAccountForm.FormId.WESTERN_UNION:
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getWesternUnionAccountPayload()!.getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getWesternUnionAccountPayload()!.getEmail()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.EMAIL).getValue());
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getWesternUnionAccountPayload()!.getCity()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.CITY).getValue());
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getWesternUnionAccountPayload()!.getState()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.STATE).getValue());
+        expect(account.getTradeCurrenciesList().map(currency => currency.getCode()).join(",")).toEqual(getFormField(form, PaymentAccountFormField.FieldId.TRADE_CURRENCIES).getValue());
+        break;
     case PaymentAccountForm.FormId.NATIONAL_BANK:
         expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getBankAccountPayload()?.getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
         expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getBankAccountPayload()?.getBankName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.BANK_NAME).getValue());
