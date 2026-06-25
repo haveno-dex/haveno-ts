@@ -4762,6 +4762,13 @@ function getFormField(form: PaymentAccountForm, fieldId: PaymentAccountFormField
     throw new Error("Form field not found: " + fieldId);
 }
 
+// Bank-based forms (NATIONAL_BANK, CASH_DEPOSIT, ...) share GeneralBankAccount's fields and country-gated
+// validation. Their test country (FR) is not a "use validation" country, so the optional bank fields
+// (bank name/id, branch id, account type) are not validated - exactly like the desktop form.
+function isGeneralBankForm(form: PaymentAccountForm): boolean {
+  return form.getId() === PaymentAccountForm.FormId.NATIONAL_BANK || form.getId() === PaymentAccountForm.FormId.CASH_DEPOSIT;
+}
+
 function getValidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFormField.FieldId, havenod: HavenoClient): string {
   return getValidFormInputAux(form, fieldId, havenod);
 }
@@ -4839,7 +4846,7 @@ function getValidFormInputAux(form: PaymentAccountForm, fieldId: PaymentAccountF
     case PaymentAccountFormField.FieldId.HOLDER_ADDRESS:
       return "123 Holder Street";
     case PaymentAccountFormField.FieldId.HOLDER_EMAIL:
-      throw new Error("Not implemented");
+      return havenod.getAppName() + "_jdoe@no.com";
     case PaymentAccountFormField.FieldId.HOLDER_NAME:
       return havenod.getAppName() + " Doe";
     case PaymentAccountFormField.FieldId.HOLDER_TAX_ID:
@@ -4871,7 +4878,7 @@ function getValidFormInputAux(form: PaymentAccountForm, fieldId: PaymentAccountF
     case PaymentAccountFormField.FieldId.QUESTION:
       return "What is your favorite color?";
     case PaymentAccountFormField.FieldId.REQUIREMENTS:
-      throw new Error("Not implemented");
+      return "Deposit cash at any branch";
     case PaymentAccountFormField.FieldId.SALT:
       return "";
     case PaymentAccountFormField.FieldId.SORT_CODE:
@@ -4917,8 +4924,8 @@ function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFo
     case PaymentAccountFormField.FieldId.ACCOUNT_OWNER:
       return "J";
     case PaymentAccountFormField.FieldId.ACCOUNT_TYPE:
-      // NATIONAL_BANK's test country (FR) does not require/validate the account type (parity with desktop); other forms validate it
-      return form.getId() === PaymentAccountForm.FormId.NATIONAL_BANK ? undefined : "A";
+      // general bank forms' test country (FR) does not require/validate the account type (parity with desktop); other forms validate it
+      return isGeneralBankForm(form) ? undefined : "A";
     case PaymentAccountFormField.FieldId.ANSWER:
       return "Two words";
     case PaymentAccountFormField.FieldId.BANK_ACCOUNT_NAME:
@@ -4942,8 +4949,8 @@ function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFo
     case PaymentAccountFormField.FieldId.BANK_ID:
       return undefined;
     case PaymentAccountFormField.FieldId.BANK_NAME:
-      // NATIONAL_BANK's test country (FR) does not validate the bank name (parity with desktop); other forms validate length
-      return form.getId() === PaymentAccountForm.FormId.NATIONAL_BANK ? undefined : "A";
+      // general bank forms' test country (FR) does not validate the bank name (parity with desktop); other forms validate length
+      return isGeneralBankForm(form) ? undefined : "A";
     case PaymentAccountFormField.FieldId.BANK_SWIFT_CODE:
       return "A";
     case PaymentAccountFormField.FieldId.BENEFICIARY_ACCOUNT_NR:
@@ -4959,8 +4966,8 @@ function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFo
     case PaymentAccountFormField.FieldId.BIC:
       return "123";
     case PaymentAccountFormField.FieldId.BRANCH_ID:
-      // NATIONAL_BANK's test country (FR) does not validate the branch id (parity with desktop); other forms validate it
-      return form.getId() === PaymentAccountForm.FormId.NATIONAL_BANK ? undefined : "1";
+      // general bank forms' test country (FR) does not validate the branch id (parity with desktop); other forms validate it
+      return isGeneralBankForm(form) ? undefined : "1";
     case PaymentAccountFormField.FieldId.CITY:
       return "A";
     case PaymentAccountFormField.FieldId.CONTACT:
@@ -4980,7 +4987,7 @@ function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFo
     case PaymentAccountFormField.FieldId.HOLDER_ADDRESS:
       return "aerkjgaef ajsdj asdfasdf dfjaksdjfe asd fasdf asf asdfjoiejasef asdf asdfjkajs dfaksdjf aksdjf aksjdf aks"; // >100 characters
     case PaymentAccountFormField.FieldId.HOLDER_EMAIL:
-      throw new Error("Not implemented");
+      return "@no.com";
     case PaymentAccountFormField.FieldId.HOLDER_NAME:
       return "A";
     case PaymentAccountFormField.FieldId.HOLDER_TAX_ID:
@@ -5014,7 +5021,7 @@ function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFo
     case PaymentAccountFormField.FieldId.QUESTION:
       return "";
     case PaymentAccountFormField.FieldId.REQUIREMENTS:
-      throw new Error("Not implemented");
+      return undefined;
     case PaymentAccountFormField.FieldId.SALT:
       return "abc";
     case PaymentAccountFormField.FieldId.SORT_CODE:
@@ -5191,6 +5198,17 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
         expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getBankAccountPayload()?.getAccountType()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.ACCOUNT_TYPE).getValue());
         expect(account.getTradeCurrenciesList().length).toEqual(1);
         expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("USD");
+        break;
+    case PaymentAccountForm.FormId.CASH_DEPOSIT:
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getCashDepositAccountPayload()!.getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getCashDepositAccountPayload()!.getHolderEmail()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_EMAIL).getValue());
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getCashDepositAccountPayload()!.getBankName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.BANK_NAME).getValue());
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getCashDepositAccountPayload()!.getBankId()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.BANK_ID).getValue());
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getCashDepositAccountPayload()!.getBranchId()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.BRANCH_ID).getValue());
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getCashDepositAccountPayload()!.getAccountNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.ACCOUNT_NR).getValue());
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getCashDepositAccountPayload()!.getAccountType()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.ACCOUNT_TYPE).getValue());
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getCashDepositAccountPayload()!.getRequirements()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.REQUIREMENTS).getValue());
+        expect(account.getTradeCurrenciesList().map(currency => currency.getCode()).join(",")).toEqual(getFormField(form, PaymentAccountFormField.FieldId.TRADE_CURRENCIES).getValue());
         break;
     case PaymentAccountForm.FormId.WESTERN_UNION:
         expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getWesternUnionAccountPayload()!.getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
