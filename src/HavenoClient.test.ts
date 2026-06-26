@@ -5009,7 +5009,7 @@ function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFo
     case PaymentAccountFormField.FieldId.INTERMEDIARY_SWIFT_CODE:
       return "A";
     case PaymentAccountFormField.FieldId.MOBILE_NR:
-      return "A";
+      return "";
     case PaymentAccountFormField.FieldId.NATIONAL_ACCOUNT_ID:
       return undefined; // only used by NATIONAL_BANK, whose test country (FR) does not validate the national account id (parity with desktop)
     case PaymentAccountFormField.FieldId.PAYID:
@@ -5212,6 +5212,11 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
         expect(account.getPaymentAccountPayload()!.getPromptPayAccountPayload()!.getPromptPayId()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.PROMPT_PAY_ID).getValue());
         expect(account.getTradeCurrenciesList().length).toEqual(1);
         expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("THB");
+        break;
+    case PaymentAccountForm.FormId.BIZUM:
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getBizumAccountPayload()!.getMobileNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.MOBILE_NR).getValue());
+        expect(account.getTradeCurrenciesList().length).toEqual(1);
+        expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("EUR");
         break;
     case PaymentAccountForm.FormId.NEFT:
     case PaymentAccountForm.FormId.IMPS:
