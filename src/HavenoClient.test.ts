@@ -4854,7 +4854,7 @@ function getValidFormInputAux(form: PaymentAccountForm, fieldId: PaymentAccountF
     case PaymentAccountFormField.FieldId.IBAN:
       return "FR1420041010050500013M02606";
     case PaymentAccountFormField.FieldId.IFSC:
-      throw new Error("Not implemented");
+      return "SBIN0125620"; // 4 letters + 0 + 6 digits
     case PaymentAccountFormField.FieldId.INTERMEDIARY_ADDRESS:
       return "123 intermediary example st";
     case PaymentAccountFormField.FieldId.INTERMEDIARY_BRANCH:
@@ -4997,7 +4997,7 @@ function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFo
     case PaymentAccountFormField.FieldId.IBAN:
       return "abc";
     case PaymentAccountFormField.FieldId.IFSC:
-      throw new Error("Not implemented");
+      return "abc";
     case PaymentAccountFormField.FieldId.INTERMEDIARY_ADDRESS:
       return "";
     case PaymentAccountFormField.FieldId.INTERMEDIARY_BRANCH:
@@ -5205,6 +5205,14 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
         break;
     case PaymentAccountForm.FormId.UPI:
         expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getUpiAccountPayload()!.getVirtualPaymentAddress()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.VIRTUAL_PAYMENT_ADDRESS).getValue());
+        expect(account.getTradeCurrenciesList().length).toEqual(1);
+        expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("INR");
+        break;
+    case PaymentAccountForm.FormId.NEFT:
+    case PaymentAccountForm.FormId.IMPS:
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getIfscBasedAccountPayload()!.getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getIfscBasedAccountPayload()!.getAccountNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.ACCOUNT_NR).getValue());
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getIfscBasedAccountPayload()!.getIfsc()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.IFSC).getValue());
         expect(account.getTradeCurrenciesList().length).toEqual(1);
         expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("INR");
         break;
