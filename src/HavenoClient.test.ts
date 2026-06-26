@@ -4874,7 +4874,7 @@ function getValidFormInputAux(form: PaymentAccountForm, fieldId: PaymentAccountF
     case PaymentAccountFormField.FieldId.POSTAL_ADDRESS:
       return "123 street";
     case PaymentAccountFormField.FieldId.PROMPT_PAY_ID:
-      throw new Error("Not implemented");
+      return "0812345678"; // citizen/tax id or phone no.
     case PaymentAccountFormField.FieldId.QUESTION:
       return "What is your favorite color?";
     case PaymentAccountFormField.FieldId.REQUIREMENTS:
@@ -5019,7 +5019,7 @@ function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFo
     case PaymentAccountFormField.FieldId.POSTAL_ADDRESS:
       return "";
     case PaymentAccountFormField.FieldId.PROMPT_PAY_ID:
-      throw new Error("Not implemented");
+      return "";
     case PaymentAccountFormField.FieldId.QUESTION:
       return "";
     case PaymentAccountFormField.FieldId.REQUIREMENTS:
@@ -5207,6 +5207,11 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
         expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getUpiAccountPayload()!.getVirtualPaymentAddress()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.VIRTUAL_PAYMENT_ADDRESS).getValue());
         expect(account.getTradeCurrenciesList().length).toEqual(1);
         expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("INR");
+        break;
+    case PaymentAccountForm.FormId.PROMPT_PAY:
+        expect(account.getPaymentAccountPayload()!.getPromptPayAccountPayload()!.getPromptPayId()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.PROMPT_PAY_ID).getValue());
+        expect(account.getTradeCurrenciesList().length).toEqual(1);
+        expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("THB");
         break;
     case PaymentAccountForm.FormId.NEFT:
     case PaymentAccountForm.FormId.IMPS:
