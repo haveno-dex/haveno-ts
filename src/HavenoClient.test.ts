@@ -4904,6 +4904,8 @@ function getValidFormInputAux(form: PaymentAccountForm, fieldId: PaymentAccountF
         if (cryptoAddress.currencyCode.toLowerCase() === currencyCode.toLowerCase()) return cryptoAddress.address;
       }
       throw new Error("Unsupported blockchain currency code: " + currencyCode);
+    case PaymentAccountFormField.FieldId.VIRTUAL_PAYMENT_ADDRESS:
+      return "john.doe@oksbi";
     default:
       throw new Error("Unhandled form field: " + fieldId);
   }
@@ -5038,6 +5040,8 @@ function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFo
       return "A";
     case PaymentAccountFormField.FieldId.ADDRESS:
       return "A123";
+    case PaymentAccountFormField.FieldId.VIRTUAL_PAYMENT_ADDRESS:
+      return "";
     default:
       throw new Error("Unhandled form field: " + fieldId);
   }
@@ -5198,6 +5202,11 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
         expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getBankAccountPayload()?.getAccountType()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.ACCOUNT_TYPE).getValue());
         expect(account.getTradeCurrenciesList().length).toEqual(1);
         expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("USD");
+        break;
+    case PaymentAccountForm.FormId.UPI:
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getUpiAccountPayload()!.getVirtualPaymentAddress()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.VIRTUAL_PAYMENT_ADDRESS).getValue());
+        expect(account.getTradeCurrenciesList().length).toEqual(1);
+        expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("INR");
         break;
     case PaymentAccountForm.FormId.CASH_DEPOSIT:
         expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getCashDepositAccountPayload()!.getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
