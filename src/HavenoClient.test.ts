@@ -4775,6 +4775,7 @@ function getValidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountForm
 
 function getValidFormInputAux(form: PaymentAccountForm, fieldId: PaymentAccountFormField.FieldId, havenod: HavenoClient): string {
   const field = getFormField(form, fieldId);
+  if (field.getSupportedValuesList().length > 0) return field.getSupportedValuesList()[0]!; // SELECT_ONE/MULTIPLE with plain string options
   switch (fieldId) {
     case PaymentAccountFormField.FieldId.ACCEPTED_COUNTRY_CODES:
       if (form.getId() === PaymentAccountForm.FormId.SEPA || form.getId() === PaymentAccountForm.FormId.SEPA_INSTANT) return "BE," + field.getSupportedSepaEuroCountriesList().map(country => country.getCode()).join(',');
@@ -4794,17 +4795,19 @@ function getValidFormInputAux(form: PaymentAccountForm, fieldId: PaymentAccountF
     case PaymentAccountFormField.FieldId.BANK_ACCOUNT_NAME:
       return "John Doe (" + havenod.getAppName() + ")";
     case PaymentAccountFormField.FieldId.BANK_ACCOUNT_NUMBER:
-      throw new Error("Not implemented");
+      return "1234567"; // 3-8 digit account number
     case PaymentAccountFormField.FieldId.BANK_ACCOUNT_TYPE:
-      throw new Error("Not implemented");
+      return "普通"; // futsu (ordinary account)
     case PaymentAccountFormField.FieldId.BANK_ADDRESS:
       return "456 example st";
     case PaymentAccountFormField.FieldId.BANK_BRANCH:
       return "Bank branch XYZ";
     case PaymentAccountFormField.FieldId.BANK_BRANCH_CODE:
-      throw new Error("Not implemented");
+      return "123"; // 3 digit branch code
     case PaymentAccountFormField.FieldId.BANK_BRANCH_NAME:
-      throw new Error("Not implemented");
+      return "東京"; // japanese characters required (Tokyo)
+    case PaymentAccountFormField.FieldId.BANK_CODE:
+      return "0001";
     case PaymentAccountFormField.FieldId.BANK_ID:
       return "123456";
     case PaymentAccountFormField.FieldId.BANK_NAME:
@@ -4914,6 +4917,7 @@ function getValidFormInputAux(form: PaymentAccountForm, fieldId: PaymentAccountF
 // TODO: improve invalid inputs
 function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFormField.FieldId): string | undefined{
   const field = getFormField(form, fieldId);
+  if (field.getSupportedValuesList().length > 0) return "invalid-option"; // not in the supported values list
   switch (fieldId) {
     case PaymentAccountFormField.FieldId.ACCEPTED_COUNTRY_CODES:
       return "US,XX";
@@ -4933,19 +4937,19 @@ function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFo
     case PaymentAccountFormField.FieldId.BANK_ACCOUNT_NAME:
       return "F";
     case PaymentAccountFormField.FieldId.BANK_ACCOUNT_NUMBER:
-      throw new Error("Not implemented");
+      return "12"; // must be 3-8 digits
     case PaymentAccountFormField.FieldId.BANK_ACCOUNT_TYPE:
-      throw new Error("Not implemented");
+      return "";
     case PaymentAccountFormField.FieldId.BANK_ADDRESS:
       return "";
     case PaymentAccountFormField.FieldId.BANK_BRANCH:
       return "A";
     case PaymentAccountFormField.FieldId.BANK_BRANCH_CODE:
-      throw new Error("Not implemented");
+      return "12"; // must be exactly 3 digits
     case PaymentAccountFormField.FieldId.BANK_BRANCH_NAME:
-      throw new Error("Not implemented");
+      return "abc"; // must be japanese characters
     case PaymentAccountFormField.FieldId.BANK_CODE:
-      throw new Error("Not implemented");
+      return "";
     case PaymentAccountFormField.FieldId.BANK_COUNTRY_CODE:
       return "A";
     case PaymentAccountFormField.FieldId.BANK_ID:
@@ -5223,6 +5227,19 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
         expect(account.getTradeCurrenciesList().length).toEqual(1);
         expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("COP");
         break;
+    case PaymentAccountForm.FormId.JAPAN_BANK: {
+        const bank = getFormField(form, PaymentAccountFormField.FieldId.BANK_NAME).getValue(); // "<code> <ja name> [<en name>]"
+        expect(account.getPaymentAccountPayload()!.getJapanBankAccountPayload()!.getBankCode()).toEqual(bank.substring(0, 4)); // code derived from selection
+        expect(account.getPaymentAccountPayload()!.getJapanBankAccountPayload()!.getBankName()).toEqual(bank.substring(5).split(" ")[0]); // clean japanese name
+        expect(account.getPaymentAccountPayload()!.getJapanBankAccountPayload()!.getBankBranchName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.BANK_BRANCH_NAME).getValue());
+        expect(account.getPaymentAccountPayload()!.getJapanBankAccountPayload()!.getBankBranchCode()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.BANK_BRANCH_CODE).getValue());
+        expect(account.getPaymentAccountPayload()!.getJapanBankAccountPayload()!.getBankAccountNumber()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.BANK_ACCOUNT_NUMBER).getValue());
+        expect(account.getPaymentAccountPayload()!.getJapanBankAccountPayload()!.getBankAccountName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.BANK_ACCOUNT_NAME).getValue());
+        expect(account.getPaymentAccountPayload()!.getJapanBankAccountPayload()!.getBankAccountType()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.BANK_ACCOUNT_TYPE).getValue());
+        expect(account.getTradeCurrenciesList().length).toEqual(1);
+        expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("JPY");
+        break;
+    }
     case PaymentAccountForm.FormId.NEFT:
     case PaymentAccountForm.FormId.IMPS:
         expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getIfscBasedAccountPayload()!.getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
