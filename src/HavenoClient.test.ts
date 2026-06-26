@@ -5218,6 +5218,11 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
         expect(account.getTradeCurrenciesList().length).toEqual(1);
         expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("EUR");
         break;
+    case PaymentAccountForm.FormId.NEQUI:
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getNequiAccountPayload()!.getMobileNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.MOBILE_NR).getValue());
+        expect(account.getTradeCurrenciesList().length).toEqual(1);
+        expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("COP");
+        break;
     case PaymentAccountForm.FormId.NEFT:
     case PaymentAccountForm.FormId.IMPS:
         expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getIfscBasedAccountPayload()!.getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
