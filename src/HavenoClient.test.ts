@@ -4855,6 +4855,7 @@ function getValidFormInputAux(form: PaymentAccountForm, fieldId: PaymentAccountF
     case PaymentAccountFormField.FieldId.HOLDER_TAX_ID:
       return "12345678901"; // only required for some countries (e.g. BR/CL/AR)
     case PaymentAccountFormField.FieldId.IBAN:
+      if (form.getId() === PaymentAccountForm.FormId.TIKKIE) return "NL91ABNA0417164300"; // Tikkie requires a Dutch IBAN
       return "FR1420041010050500013M02606";
     case PaymentAccountFormField.FieldId.IFSC:
       return "SBIN0125620"; // 4 letters + 0 + 6 digits
@@ -5247,6 +5248,11 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
     case PaymentAccountForm.FormId.SATISPAY:
         expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getSatispayAccountPayload()!.getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
         expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getSatispayAccountPayload()!.getMobileNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.MOBILE_NR).getValue());
+        expect(account.getTradeCurrenciesList().length).toEqual(1);
+        expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("EUR");
+        break;
+    case PaymentAccountForm.FormId.TIKKIE:
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getTikkieAccountPayload()!.getIban()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.IBAN).getValue());
         expect(account.getTradeCurrenciesList().length).toEqual(1);
         expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("EUR");
         break;
