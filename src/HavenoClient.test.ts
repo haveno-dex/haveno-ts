@@ -4873,6 +4873,8 @@ function getValidFormInputAux(form: PaymentAccountForm, fieldId: PaymentAccountF
       return "1234567890123456789012"; // only required for some countries (e.g. AR, which expects 22 digits)
     case PaymentAccountFormField.FieldId.PAYID:
       return havenod.getAppName() + "_john.doe@example.com";
+    case PaymentAccountFormField.FieldId.CLABE:
+      return "012345678901234567"; // 18-digit Mexican CLABE
     case PaymentAccountFormField.FieldId.PIX_KEY:
       return "123456789";
     case PaymentAccountFormField.FieldId.POSTAL_ADDRESS:
@@ -5019,6 +5021,8 @@ function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFo
       return undefined; // only used by NATIONAL_BANK, whose test country (FR) does not validate the national account id (parity with desktop)
     case PaymentAccountFormField.FieldId.PAYID:
       return "A";
+    case PaymentAccountFormField.FieldId.CLABE:
+      return "123"; // must be 18 digits
     case PaymentAccountFormField.FieldId.PIX_KEY:
       return "A";
     case PaymentAccountFormField.FieldId.POSTAL_ADDRESS:
@@ -5341,6 +5345,13 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
         expect(account.getPaymentAccountPayload()!.getUSPostalMoneyOrderAccountPayload()!.getPostalAddress()!).toEqual(getFormField(form, PaymentAccountFormField.FieldId.POSTAL_ADDRESS).getValue());
         expect(account.getTradeCurrenciesList().length).toEqual(1);
         expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("USD");
+        break;
+    case PaymentAccountForm.FormId.SPEI:
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getSpeiAccountPayload()!.getClabe()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.CLABE).getValue());
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getSpeiAccountPayload()!.getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getCountryCode()).toEqual("MX");
+        expect(account.getTradeCurrenciesList().length).toEqual(1);
+        expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("MXN");
         break;
     case PaymentAccountForm.FormId.PIX:
         expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getPixAccountPayload()!.getPixKey()!).toEqual(getFormField(form, PaymentAccountFormField.FieldId.PIX_KEY).getValue());
