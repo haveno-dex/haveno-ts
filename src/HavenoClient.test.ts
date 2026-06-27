@@ -5257,6 +5257,12 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
         expect(account.getTradeCurrenciesList().length).toEqual(1);
         expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("PHP");
         break;
+    case PaymentAccountForm.FormId.MOMO:
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getMomoAccountPayload()!.getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getMomoAccountPayload()!.getMobileNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.MOBILE_NR).getValue());
+        expect(account.getTradeCurrenciesList().length).toEqual(1);
+        expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("VND");
+        break;
     case PaymentAccountForm.FormId.TIKKIE:
         expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getTikkieAccountPayload()!.getIban()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.IBAN).getValue());
         expect(account.getTradeCurrenciesList().length).toEqual(1);
