@@ -5084,6 +5084,9 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
         expect(account.getPaymentAccountPayload()!.getTransferwiseAccountPayload()!.getEmail()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.EMAIL).getValue());
         expect(account.getPaymentAccountPayload()!.getTransferwiseAccountPayload()!.getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
         break;
+      case PaymentAccountForm.FormId.PAYSERA:
+        expect(account.getPaymentAccountPayload()!.getPayseraAccountPayload()!.getEmail()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.EMAIL).getValue());
+        break;
       case PaymentAccountForm.FormId.ZELLE:
         expect(account.getPaymentAccountPayload()!.getZelleAccountPayload()!.getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
         expect(account.getPaymentAccountPayload()!.getZelleAccountPayload()!.getEmailOrMobileNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.EMAIL_OR_MOBILE_NR).getValue());
