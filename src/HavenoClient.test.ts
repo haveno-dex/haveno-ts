@@ -5256,6 +5256,12 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
         expect(account.getTradeCurrenciesList().length).toEqual(1);
         expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("EUR");
         break;
+    case PaymentAccountForm.FormId.MPESA:
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getMpesaAccountPayload()!.getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getMpesaAccountPayload()!.getMobileNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.MOBILE_NR).getValue());
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getCountryCode()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.COUNTRY).getValue());
+        expect(account.getTradeCurrenciesList().map(currency => currency.getCode()).join(",")).toEqual(getFormField(form, PaymentAccountFormField.FieldId.TRADE_CURRENCIES).getValue());
+        break;
     case PaymentAccountForm.FormId.JAPAN_BANK: {
         const bank = getFormField(form, PaymentAccountFormField.FieldId.BANK_NAME).getValue(); // "<code> <ja name> [<en name>]"
         expect(account.getPaymentAccountPayload()!.getJapanBankAccountPayload()!.getBankCode()).toEqual(bank.substring(0, 4)); // code derived from selection
