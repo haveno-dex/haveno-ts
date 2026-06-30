@@ -4762,13 +4762,14 @@ function getFormField(form: PaymentAccountForm, fieldId: PaymentAccountFormField
     throw new Error("Form field not found: " + fieldId);
 }
 
-// Bank-based forms (NATIONAL_BANK, CASH_DEPOSIT, SAME_BANK, ...) share GeneralBankAccount's fields and country-gated
-// validation. Their test country (FR) is not a "use validation" country, so the optional bank fields
-// (bank name/id, branch id, account type) are not validated - exactly like the desktop form.
+// Bank-based forms (NATIONAL_BANK, CASH_DEPOSIT, SAME_BANK, SPECIFIC_BANKS, ...) share GeneralBankAccount's
+// fields and country-gated validation. Their test country (FR) is not a "use validation" country, so the
+// optional bank fields (bank name/id, branch id, account type) are not validated - exactly like the desktop form.
 function isGeneralBankForm(form: PaymentAccountForm): boolean {
   return form.getId() === PaymentAccountForm.FormId.NATIONAL_BANK ||
          form.getId() === PaymentAccountForm.FormId.CASH_DEPOSIT ||
-         form.getId() === PaymentAccountForm.FormId.SAME_BANK;
+         form.getId() === PaymentAccountForm.FormId.SAME_BANK ||
+         form.getId() === PaymentAccountForm.FormId.SPECIFIC_BANKS;
 }
 
 function getValidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFormField.FieldId, havenod: HavenoClient): string {
@@ -4782,6 +4783,8 @@ function getValidFormInputAux(form: PaymentAccountForm, fieldId: PaymentAccountF
     case PaymentAccountFormField.FieldId.ACCEPTED_COUNTRY_CODES:
       if (form.getId() === PaymentAccountForm.FormId.SEPA || form.getId() === PaymentAccountForm.FormId.SEPA_INSTANT) return "BE," + field.getSupportedSepaEuroCountriesList().map(country => country.getCode()).join(',');
       return field.getSupportedCountriesList().map(country => country.getCode()).join(',');
+    case PaymentAccountFormField.FieldId.ACCEPTED_BANKS:
+      return "Bank of America,Wells Fargo";
     case PaymentAccountFormField.FieldId.ACCOUNT_ID:
       return havenod.getAppName() + "_jdoe@no.com";
     case PaymentAccountFormField.FieldId.ACCOUNT_NAME:
@@ -4927,6 +4930,8 @@ function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFo
   switch (fieldId) {
     case PaymentAccountFormField.FieldId.ACCEPTED_COUNTRY_CODES:
       return "US,XX";
+    case PaymentAccountFormField.FieldId.ACCEPTED_BANKS:
+      return ""; // at least one accepted bank required
     case PaymentAccountFormField.FieldId.ACCOUNT_ID:
       return "";
     case PaymentAccountFormField.FieldId.ACCOUNT_NAME:
@@ -5367,6 +5372,12 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
         expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getBankAccountPayload()?.getAccountType()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.ACCOUNT_TYPE).getValue());
         expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getBankAccountPayload()?.getHolderTaxId()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_TAX_ID).getValue());
         expect(account.getTradeCurrenciesList().map(currency => currency.getCode()).join(",")).toEqual(getFormField(form, PaymentAccountFormField.FieldId.TRADE_CURRENCIES).getValue());
+        break;
+    case PaymentAccountForm.FormId.SPECIFIC_BANKS:
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getBankAccountPayload()?.getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getBankAccountPayload()?.getBankName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.BANK_NAME).getValue());
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getBankAccountPayload()?.getAccountNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.ACCOUNT_NR).getValue());
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getBankAccountPayload()?.getSpecificBanksAccountPayload()?.getAcceptedBanksList().join(",")).toEqual(getFormField(form, PaymentAccountFormField.FieldId.ACCEPTED_BANKS).getValue());
         break;
     case PaymentAccountForm.FormId.INTERAC_E_TRANSFER:
         expect(account.getPaymentAccountPayload()!.getInteracETransferAccountPayload()!.getHolderName()!).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
