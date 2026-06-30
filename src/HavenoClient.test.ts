@@ -5098,6 +5098,10 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
       case PaymentAccountForm.FormId.CELPAY:
         expect(account.getPaymentAccountPayload()!.getCelPayAccountPayload()!.getEmail()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.EMAIL).getValue());
         break;
+      case PaymentAccountForm.FormId.HAL_CASH:
+        expect(account.getPaymentAccountPayload()!.getHalCashAccountPayload()!.getMobileNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.MOBILE_NR).getValue());
+        expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("EUR");
+        break;
       case PaymentAccountForm.FormId.ZELLE:
         expect(account.getPaymentAccountPayload()!.getZelleAccountPayload()!.getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
         expect(account.getPaymentAccountPayload()!.getZelleAccountPayload()!.getEmailOrMobileNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.EMAIL_OR_MOBILE_NR).getValue());
