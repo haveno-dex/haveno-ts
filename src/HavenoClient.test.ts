@@ -5106,6 +5106,10 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
         expect(account.getPaymentAccountPayload()!.getMoneseAccountPayload()!.getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
         expect(account.getPaymentAccountPayload()!.getMoneseAccountPayload()!.getMobileNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.MOBILE_NR).getValue());
         break;
+      case PaymentAccountForm.FormId.MONEY_BEAM:
+        expect(account.getPaymentAccountPayload()!.getMoneyBeamAccountPayload()!.getAccountId()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.ACCOUNT_ID).getValue());
+        expect(account.getPaymentAccountPayload()!.getMoneyBeamAccountPayload()!.getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
+        break;
       case PaymentAccountForm.FormId.ZELLE:
         expect(account.getPaymentAccountPayload()!.getZelleAccountPayload()!.getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
         expect(account.getPaymentAccountPayload()!.getZelleAccountPayload()!.getEmailOrMobileNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.EMAIL_OR_MOBILE_NR).getValue());
