@@ -4762,11 +4762,13 @@ function getFormField(form: PaymentAccountForm, fieldId: PaymentAccountFormField
     throw new Error("Form field not found: " + fieldId);
 }
 
-// Bank-based forms (NATIONAL_BANK, CASH_DEPOSIT, ...) share GeneralBankAccount's fields and country-gated
+// Bank-based forms (NATIONAL_BANK, CASH_DEPOSIT, SAME_BANK, ...) share GeneralBankAccount's fields and country-gated
 // validation. Their test country (FR) is not a "use validation" country, so the optional bank fields
 // (bank name/id, branch id, account type) are not validated - exactly like the desktop form.
 function isGeneralBankForm(form: PaymentAccountForm): boolean {
-  return form.getId() === PaymentAccountForm.FormId.NATIONAL_BANK || form.getId() === PaymentAccountForm.FormId.CASH_DEPOSIT;
+  return form.getId() === PaymentAccountForm.FormId.NATIONAL_BANK ||
+         form.getId() === PaymentAccountForm.FormId.CASH_DEPOSIT ||
+         form.getId() === PaymentAccountForm.FormId.SAME_BANK;
 }
 
 function getValidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFormField.FieldId, havenod: HavenoClient): string {
@@ -5355,6 +5357,7 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
         expect(account.getTradeCurrenciesList().map(currency => currency.getCode()).join(",")).toEqual(getFormField(form, PaymentAccountFormField.FieldId.TRADE_CURRENCIES).getValue());
         break;
     case PaymentAccountForm.FormId.NATIONAL_BANK:
+    case PaymentAccountForm.FormId.SAME_BANK:
         expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getBankAccountPayload()?.getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
         expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getBankAccountPayload()?.getBankName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.BANK_NAME).getValue());
         expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getBankAccountPayload()?.getBankId()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.BANK_ID).getValue());
