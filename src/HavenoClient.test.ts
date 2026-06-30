@@ -4785,6 +4785,7 @@ function getValidFormInputAux(form: PaymentAccountForm, fieldId: PaymentAccountF
     case PaymentAccountFormField.FieldId.ACCOUNT_NAME:
       return "Form_" + form.getId() + " " + moneroTs.GenUtils.getUUID(); // TODO: rename to form.getPaymentMethodId()
     case PaymentAccountFormField.FieldId.ACCOUNT_NR:
+      if (form.getId() === PaymentAccountForm.FormId.ADVANCED_CASH) return "A123456789012"; // email or letter + 12 digits
       return "12345678";
     case PaymentAccountFormField.FieldId.ACCOUNT_OWNER:
       return "John Doe (" + havenod.getAppName() + ")";
@@ -5090,6 +5091,9 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
         break;
       case PaymentAccountForm.FormId.PAYSERA:
         expect(account.getPaymentAccountPayload()!.getPayseraAccountPayload()!.getEmail()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.EMAIL).getValue());
+        break;
+      case PaymentAccountForm.FormId.ADVANCED_CASH:
+        expect(account.getPaymentAccountPayload()!.getAdvancedCashAccountPayload()!.getAccountNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.ACCOUNT_NR).getValue());
         break;
       case PaymentAccountForm.FormId.ZELLE:
         expect(account.getPaymentAccountPayload()!.getZelleAccountPayload()!.getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
