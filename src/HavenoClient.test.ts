@@ -5326,6 +5326,7 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
     }
     case PaymentAccountForm.FormId.NEFT:
     case PaymentAccountForm.FormId.IMPS:
+    case PaymentAccountForm.FormId.RTGS:
         expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getIfscBasedAccountPayload()!.getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
         expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getIfscBasedAccountPayload()!.getAccountNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.ACCOUNT_NR).getValue());
         expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getIfscBasedAccountPayload()!.getIfsc()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.IFSC).getValue());
