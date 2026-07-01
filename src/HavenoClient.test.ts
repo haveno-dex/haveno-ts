@@ -467,7 +467,7 @@ const TestConfig = {
     paymentMethods: Object.keys(PaymentAccountForm.FormId), // all supported payment methods
     assetCodes: ["USD", "GBP", "EUR", "ETH", "BTC", "BCH", "LTC", "DOGE", "XRP", "ADA", "TRX", "SOL", "ZEC", "USDT-ERC20", "USDT-TRC20", "USDC-ERC20"],
     fixedPriceAssetCodes: ["XAG", "XAU", "XGB"],
-    fixedPricePaymentMethods: [],
+    fixedPricePaymentMethods: ["HAL_CASH"],
     cryptoAddresses: [{
             currencyCode: "ETH",
             address: "0xdBdAb835Acd6fC84cF5F9aDD3c0B5a1E25fbd99f"
@@ -4785,7 +4785,7 @@ function getValidFormInputAux(form: PaymentAccountForm, fieldId: PaymentAccountF
       if (form.getId() === PaymentAccountForm.FormId.SEPA || form.getId() === PaymentAccountForm.FormId.SEPA_INSTANT) return "BE," + field.getSupportedSepaEuroCountriesList().map(country => country.getCode()).join(',');
       return field.getSupportedCountriesList().map(country => country.getCode()).join(',');
     case PaymentAccountFormField.FieldId.ACCEPTED_BANKS:
-      return "Bank of America,Wells Fargo";
+      return "Bank XYZ,Bank of America,Wells Fargo";
     case PaymentAccountFormField.FieldId.ACCOUNT_ID:
       return havenod.getAppName() + "_jdoe@no.com";
     case PaymentAccountFormField.FieldId.ACCOUNT_NAME:
