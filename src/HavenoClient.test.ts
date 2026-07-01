@@ -2717,6 +2717,7 @@ test("Can bootstrap a network", async () => {
     // ctxP.buyerSendsPayment = false;
     // ctxP.buyerDisputeContext = DisputeContext.NONE;
     // ctxP.sellerDisputeContext = DisputeContext.NONE;
+    //ctxP.takeOffer = undefined;
     const completeAllTrades = false;
   
     // randomize basic offer config
