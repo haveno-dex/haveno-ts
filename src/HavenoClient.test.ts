@@ -4763,14 +4763,23 @@ function getFormField(form: PaymentAccountForm, fieldId: PaymentAccountFormField
     throw new Error("Form field not found: " + fieldId);
 }
 
-// Bank-based forms (NATIONAL_BANK, CASH_DEPOSIT, SAME_BANK, SPECIFIC_BANKS, ...) share GeneralBankAccount's
-// fields and country-gated validation. Their test country (FR) is not a "use validation" country, so the
-// optional bank fields (bank name/id, branch id, account type) are not validated - exactly like the desktop form.
+// Default country for general bank forms, whose COUNTRY field is unrestricted. FR is intentionally not a
+// BANK_VALIDATION_COUNTRY, so their optional bank fields' content is not validated (parity with desktop).
+const GENERAL_BANK_TEST_COUNTRY = "FR";
+
+// Countries whose general bank forms validate optional bank field content. Mirrors BankUtil.useValidation().
+const BANK_VALIDATION_COUNTRIES = ["GB", "US", "BR", "AU", "CA", "NZ", "MX", "HK", "SE", "NO", "AR"];
+
 function isGeneralBankForm(form: PaymentAccountForm): boolean {
   return form.getId() === PaymentAccountForm.FormId.NATIONAL_BANK ||
          form.getId() === PaymentAccountForm.FormId.CASH_DEPOSIT ||
          form.getId() === PaymentAccountForm.FormId.SAME_BANK ||
          form.getId() === PaymentAccountForm.FormId.SPECIFIC_BANKS;
+}
+
+// True when a general bank form's optional bank fields aren't content-validated, so they have no invalid input.
+function isUnvalidatedGeneralBankForm(form: PaymentAccountForm): boolean {
+  return isGeneralBankForm(form) && !BANK_VALIDATION_COUNTRIES.includes(GENERAL_BANK_TEST_COUNTRY);
 }
 
 function getValidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFormField.FieldId, havenod: HavenoClient): string {
@@ -4842,7 +4851,7 @@ function getValidFormInputAux(form: PaymentAccountForm, fieldId: PaymentAccountF
     case PaymentAccountFormField.FieldId.COUNTRY:
     case PaymentAccountFormField.FieldId.BANK_COUNTRY_CODE:
     case PaymentAccountFormField.FieldId.INTERMEDIARY_COUNTRY_CODE:
-      return field.getSupportedCountriesList().length ? field.getSupportedCountriesList()[0]!.getCode() : "FR";
+      return field.getSupportedCountriesList().length ? field.getSupportedCountriesList()[0]!.getCode() : GENERAL_BANK_TEST_COUNTRY;
     case PaymentAccountFormField.FieldId.EMAIL:
       return havenod.getAppName() + "_jdoe@no.com";
     case PaymentAccountFormField.FieldId.EMAIL_OR_MOBILE_NR:
@@ -4942,8 +4951,7 @@ function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFo
     case PaymentAccountFormField.FieldId.ACCOUNT_OWNER:
       return "J";
     case PaymentAccountFormField.FieldId.ACCOUNT_TYPE:
-      // general bank forms' test country (FR) does not require/validate the account type (parity with desktop); other forms validate it
-      return isGeneralBankForm(form) ? undefined : "A";
+      return isUnvalidatedGeneralBankForm(form) ? undefined : "A";
     case PaymentAccountFormField.FieldId.ANSWER:
       return "Two words";
     case PaymentAccountFormField.FieldId.BANK_ACCOUNT_NAME:
@@ -4967,8 +4975,7 @@ function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFo
     case PaymentAccountFormField.FieldId.BANK_ID:
       return undefined;
     case PaymentAccountFormField.FieldId.BANK_NAME:
-      // general bank forms' test country (FR) does not validate the bank name (parity with desktop); other forms validate length
-      return isGeneralBankForm(form) ? undefined : "A";
+      return isUnvalidatedGeneralBankForm(form) ? undefined : "A";
     case PaymentAccountFormField.FieldId.BANK_SWIFT_CODE:
       return "A";
     case PaymentAccountFormField.FieldId.BENEFICIARY_ACCOUNT_NR:
@@ -4984,8 +4991,7 @@ function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFo
     case PaymentAccountFormField.FieldId.BIC:
       return "123";
     case PaymentAccountFormField.FieldId.BRANCH_ID:
-      // general bank forms' test country (FR) does not validate the branch id (parity with desktop); other forms validate it
-      return isGeneralBankForm(form) ? undefined : "1";
+      return isUnvalidatedGeneralBankForm(form) ? undefined : "1";
     case PaymentAccountFormField.FieldId.CITY:
       return "A";
     case PaymentAccountFormField.FieldId.CONTACT:
@@ -5009,7 +5015,7 @@ function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFo
     case PaymentAccountFormField.FieldId.HOLDER_NAME:
       return "A";
     case PaymentAccountFormField.FieldId.HOLDER_TAX_ID:
-      return undefined; // only used by NATIONAL_BANK, whose test country (FR) does not validate the holder tax id (parity with desktop)
+      return isUnvalidatedGeneralBankForm(form) ? undefined : ""; // must be non-empty for BR/CL/AR
     case PaymentAccountFormField.FieldId.IBAN:
       return "abc";
     case PaymentAccountFormField.FieldId.IFSC:
@@ -5027,7 +5033,7 @@ function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFo
     case PaymentAccountFormField.FieldId.MOBILE_NR:
       return "";
     case PaymentAccountFormField.FieldId.NATIONAL_ACCOUNT_ID:
-      return undefined; // only used by NATIONAL_BANK, whose test country (FR) does not validate the national account id (parity with desktop)
+      return isUnvalidatedGeneralBankForm(form) ? undefined : "123"; // AR requires 22 digits
     case PaymentAccountFormField.FieldId.PAYID:
       return "A";
     case PaymentAccountFormField.FieldId.CLABE:
