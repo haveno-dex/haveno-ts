@@ -49,6 +49,13 @@ services:
       "--non-interactive"
     ]
     network_mode: "host"
+    # monerod testnet RPC is on 28081
+    healthcheck:
+      test: [ "CMD", "bash", "-c", "echo > /dev/tcp/127.0.0.1/28081" ]
+      interval: 5s
+      timeout: 4s
+      retries: 60
+      start_period: 10s
 
   node2:
     build: haveno/
@@ -80,7 +87,14 @@ services:
     ]
     network_mode: "host"
     depends_on:
-      - node1
+      node1:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "bash", "-c", "echo > /dev/tcp/127.0.0.1/48081" ]
+      interval: 5s
+      timeout: 4s
+      retries: 60
+      start_period: 10s
 
   seed1:
     build: haveno/
@@ -95,8 +109,19 @@ services:
       "--xmrNode=http://localhost:28081"
     ]
     network_mode: "host"
+    # wait for the monerod it connects to (node1) to be serving RPC before bootstrapping
     depends_on:
-      - node2
+      node1:
+        condition: service_healthy
+      node2:
+        condition: service_healthy
+    # seednode P2P port is 2002
+    healthcheck:
+      test: [ "CMD", "bash", "-c", "echo > /dev/tcp/127.0.0.1/2002" ]
+      interval: 5s
+      timeout: 4s
+      retries: 90
+      start_period: 20s
 
   seed2:
     build: haveno/
@@ -112,7 +137,17 @@ services:
     ]
     network_mode: "host"
     depends_on:
-      - node2
+      node1:
+        condition: service_healthy
+      node2:
+        condition: service_healthy
+    # seednode P2P port is 3002
+    healthcheck:
+      test: [ "CMD", "bash", "-c", "echo > /dev/tcp/127.0.0.1/3002" ]
+      interval: 5s
+      timeout: 4s
+      retries: 90
+      start_period: 20s
 
   arbitrator:
     build: haveno/
@@ -131,8 +166,14 @@ services:
       "--xmrNode=http://localhost:48081",
     ]
     network_mode: "host"
+    # only start once both seed nodes are accepting P2P connections, so the daemon bootstraps with data
     depends_on:
-      - seed1
+      node2:
+        condition: service_healthy
+      seed1:
+        condition: service_healthy
+      seed2:
+        condition: service_healthy
 
   user1:
     build: haveno/
@@ -151,7 +192,10 @@ services:
     ]
     network_mode: "host"
     depends_on:
-      - seed1
+      seed1:
+        condition: service_healthy
+      seed2:
+        condition: service_healthy
 
   user2:
     build: haveno/
@@ -170,7 +214,10 @@ services:
     ]
     network_mode: "host"
     depends_on:
-      - seed1
+      seed1:
+        condition: service_healthy
+      seed2:
+        condition: service_healthy
 
   pricenode:
     build: pricenode/
@@ -191,5 +238,7 @@ services:
       "--wallet-dir=./.localnet",
     ]
     network_mode: "host"
+    # funding wallet talks to node1 (28081); wait for it to be serving RPC
     depends_on:
-      - arbitrator
+      node1:
+        condition: service_healthy
