@@ -2342,7 +2342,7 @@ test("Can go offline while resolving a dispute (Test, CI)", async () => {
   if (err) throw err;
 });
 
-test("THIS Cannot make or take offer with insufficient funds (Test, CI, sanity check)", async () => {
+test("Cannot make or take offer with insufficient funds (Test, CI, sanity check)", async () => {
   let user3: HavenoClient|undefined;
   let err: any;
   try {
@@ -2414,7 +2414,7 @@ test("THIS Cannot make or take offer with insufficient funds (Test, CI, sanity c
   if (err) throw err;
 });
 
-test("THIS Invalidates offers when reserved funds are spent (Test, CI)", async () => {
+test("Invalidates offers when reserved funds are spent (Test, CI)", async () => {
   let err;
   let tx;
   try {
@@ -2474,7 +2474,7 @@ test("THIS Invalidates offers when reserved funds are spent (Test, CI)", async (
 
 // TODO (woodser): test arbitrator state too
 // TODO (woodser): test breaking protocol after depositing to multisig (e.g. don't send payment account payload by deleting it)
-test("THIS Can handle unexpected errors during trade initialization (Test)", async () => {
+test("Can handle unexpected errors during trade initialization (Test)", async () => {
   let traders: HavenoClient[] = [];
   let err: any;
   try {
