@@ -4801,6 +4801,7 @@ function getValidFormInputAux(form: PaymentAccountForm, fieldId: PaymentAccountF
       return "Form_" + form.getId() + " " + moneroTs.GenUtils.getUUID(); // TODO: rename to form.getPaymentMethodId()
     case PaymentAccountFormField.FieldId.ACCOUNT_NR:
       if (form.getId() === PaymentAccountForm.FormId.ADVANCED_CASH) return "A123456789012"; // email or letter + 12 digits
+      if (form.getId() === PaymentAccountForm.FormId.CAPITUAL) return "CAP-123ABC"; // CAP-<6 alphanumeric>
       return "12345678";
     case PaymentAccountFormField.FieldId.ACCOUNT_OWNER:
       return "John Doe (" + havenod.getAppName() + ")";
@@ -5111,6 +5112,10 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
         break;
       case PaymentAccountForm.FormId.CELPAY:
         expect(account.getPaymentAccountPayload()!.getCelPayAccountPayload()!.getEmail()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.EMAIL).getValue());
+        break;
+      case PaymentAccountForm.FormId.CAPITUAL:
+        expect(account.getPaymentAccountPayload()!.getCapitualAccountPayload()!.getAccountNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.ACCOUNT_NR).getValue());
+        expect(account.getTradeCurrenciesList().map(currency => currency.getCode()).join(",")).toEqual(getFormField(form, PaymentAccountFormField.FieldId.TRADE_CURRENCIES).getValue());
         break;
       case PaymentAccountForm.FormId.HAL_CASH:
         expect(account.getPaymentAccountPayload()!.getHalCashAccountPayload()!.getMobileNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.MOBILE_NR).getValue());
