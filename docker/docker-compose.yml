@@ -24,7 +24,12 @@ services:
   node1:
     build: haveno/
     container_name: node1
-    entrypoint: [ "./.localnet/monerod" ]
+    # restore-cache.sh restores a pre-mined blockchain (if present) so monerod
+    # boots already past height 0 instead of mining the local testnet each run,
+    # then exec's ./.localnet/monerod with the args in `command`.
+    entrypoint: [ "/bin/bash", "/blockchain-cache/restore-cache.sh" ]
+    volumes:
+      - ./blockchain-cache:/blockchain-cache:ro
     command: [
       "--testnet",
       "--no-igd",
@@ -48,7 +53,12 @@ services:
   node2:
     build: haveno/
     container_name: node2
-    entrypoint: [ "./.localnet/monerod" ]
+    # restore-cache.sh restores a pre-mined blockchain (if present) so monerod
+    # boots already past height 0 instead of mining the local testnet each run,
+    # then exec's ./.localnet/monerod with the args in `command`.
+    entrypoint: [ "/bin/bash", "/blockchain-cache/restore-cache.sh" ]
+    volumes:
+      - ./blockchain-cache:/blockchain-cache:ro
     command: [
       "--testnet",
       "--no-igd",
