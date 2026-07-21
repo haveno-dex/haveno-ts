@@ -1497,6 +1497,11 @@ export class PaymentReceivedMessage extends jspb.Message {
   getPayoutTxId(): string;
   setPayoutTxId(value: string): PaymentReceivedMessage;
 
+  getSignerChainList(): Array<SignedWitness>;
+  setSignerChainList(value: Array<SignedWitness>): PaymentReceivedMessage;
+  clearSignerChainList(): PaymentReceivedMessage;
+  addSignerChain(value?: SignedWitness, index?: number): SignedWitness;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PaymentReceivedMessage.AsObject;
   static toObject(includeInstance: boolean, msg: PaymentReceivedMessage): PaymentReceivedMessage.AsObject;
@@ -1519,6 +1524,7 @@ export namespace PaymentReceivedMessage {
     paymentSentMessage?: PaymentSentMessage.AsObject,
     sellerSignature: Uint8Array | string,
     payoutTxId: string,
+    signerChainList: Array<SignedWitness.AsObject>,
   }
 }
 
@@ -3944,6 +3950,36 @@ export class CountryBasedPaymentAccountPayload extends jspb.Message {
   hasSwiftAccountPayload(): boolean;
   clearSwiftAccountPayload(): CountryBasedPaymentAccountPayload;
 
+  getMpesaAccountPayload(): MpesaAccountPayload | undefined;
+  setMpesaAccountPayload(value?: MpesaAccountPayload): CountryBasedPaymentAccountPayload;
+  hasMpesaAccountPayload(): boolean;
+  clearMpesaAccountPayload(): CountryBasedPaymentAccountPayload;
+
+  getMercadoPagoAccountPayload(): MercadoPagoAccountPayload | undefined;
+  setMercadoPagoAccountPayload(value?: MercadoPagoAccountPayload): CountryBasedPaymentAccountPayload;
+  hasMercadoPagoAccountPayload(): boolean;
+  clearMercadoPagoAccountPayload(): CountryBasedPaymentAccountPayload;
+
+  getGcashAccountPayload(): GcashAccountPayload | undefined;
+  setGcashAccountPayload(value?: GcashAccountPayload): CountryBasedPaymentAccountPayload;
+  hasGcashAccountPayload(): boolean;
+  clearGcashAccountPayload(): CountryBasedPaymentAccountPayload;
+
+  getMomoAccountPayload(): MomoAccountPayload | undefined;
+  setMomoAccountPayload(value?: MomoAccountPayload): CountryBasedPaymentAccountPayload;
+  hasMomoAccountPayload(): boolean;
+  clearMomoAccountPayload(): CountryBasedPaymentAccountPayload;
+
+  getSpeiAccountPayload(): SpeiAccountPayload | undefined;
+  setSpeiAccountPayload(value?: SpeiAccountPayload): CountryBasedPaymentAccountPayload;
+  hasSpeiAccountPayload(): boolean;
+  clearSpeiAccountPayload(): CountryBasedPaymentAccountPayload;
+
+  getBlikAccountPayload(): BlikAccountPayload | undefined;
+  setBlikAccountPayload(value?: BlikAccountPayload): CountryBasedPaymentAccountPayload;
+  hasBlikAccountPayload(): boolean;
+  clearBlikAccountPayload(): CountryBasedPaymentAccountPayload;
+
   getMessageCase(): CountryBasedPaymentAccountPayload.MessageCase;
 
   serializeBinary(): Uint8Array;
@@ -3975,6 +4011,12 @@ export namespace CountryBasedPaymentAccountPayload {
     tikkieAccountPayload?: TikkieAccountPayload.AsObject,
     transferwiseUsdAccountPayload?: TransferwiseUsdAccountPayload.AsObject,
     swiftAccountPayload?: SwiftAccountPayload.AsObject,
+    mpesaAccountPayload?: MpesaAccountPayload.AsObject,
+    mercadoPagoAccountPayload?: MercadoPagoAccountPayload.AsObject,
+    gcashAccountPayload?: GcashAccountPayload.AsObject,
+    momoAccountPayload?: MomoAccountPayload.AsObject,
+    speiAccountPayload?: SpeiAccountPayload.AsObject,
+    blikAccountPayload?: BlikAccountPayload.AsObject,
   }
 
   export enum MessageCase { 
@@ -3996,6 +4038,12 @@ export namespace CountryBasedPaymentAccountPayload {
     TIKKIE_ACCOUNT_PAYLOAD = 17,
     TRANSFERWISE_USD_ACCOUNT_PAYLOAD = 18,
     SWIFT_ACCOUNT_PAYLOAD = 19,
+    MPESA_ACCOUNT_PAYLOAD = 20,
+    MERCADO_PAGO_ACCOUNT_PAYLOAD = 21,
+    GCASH_ACCOUNT_PAYLOAD = 22,
+    MOMO_ACCOUNT_PAYLOAD = 23,
+    SPEI_ACCOUNT_PAYLOAD = 24,
+    BLIK_ACCOUNT_PAYLOAD = 25,
   }
 }
 
@@ -5229,6 +5277,116 @@ export namespace SatispayAccountPayload {
   }
 }
 
+export class MpesaAccountPayload extends jspb.Message {
+  getHolderName(): string;
+  setHolderName(value: string): MpesaAccountPayload;
+
+  getMobileNr(): string;
+  setMobileNr(value: string): MpesaAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): MpesaAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: MpesaAccountPayload): MpesaAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: MpesaAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): MpesaAccountPayload;
+  static deserializeBinaryFromReader(message: MpesaAccountPayload, reader: jspb.BinaryReader): MpesaAccountPayload;
+}
+
+export namespace MpesaAccountPayload {
+  export type AsObject = {
+    holderName: string,
+    mobileNr: string,
+  }
+}
+
+export class MercadoPagoAccountPayload extends jspb.Message {
+  getHolderName(): string;
+  setHolderName(value: string): MercadoPagoAccountPayload;
+
+  getEmailOrMobileNr(): string;
+  setEmailOrMobileNr(value: string): MercadoPagoAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): MercadoPagoAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: MercadoPagoAccountPayload): MercadoPagoAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: MercadoPagoAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): MercadoPagoAccountPayload;
+  static deserializeBinaryFromReader(message: MercadoPagoAccountPayload, reader: jspb.BinaryReader): MercadoPagoAccountPayload;
+}
+
+export namespace MercadoPagoAccountPayload {
+  export type AsObject = {
+    holderName: string,
+    emailOrMobileNr: string,
+  }
+}
+
+export class GcashAccountPayload extends jspb.Message {
+  getHolderName(): string;
+  setHolderName(value: string): GcashAccountPayload;
+
+  getMobileNr(): string;
+  setMobileNr(value: string): GcashAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GcashAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: GcashAccountPayload): GcashAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: GcashAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GcashAccountPayload;
+  static deserializeBinaryFromReader(message: GcashAccountPayload, reader: jspb.BinaryReader): GcashAccountPayload;
+}
+
+export namespace GcashAccountPayload {
+  export type AsObject = {
+    holderName: string,
+    mobileNr: string,
+  }
+}
+
+export class MomoAccountPayload extends jspb.Message {
+  getHolderName(): string;
+  setHolderName(value: string): MomoAccountPayload;
+
+  getMobileNr(): string;
+  setMobileNr(value: string): MomoAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): MomoAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: MomoAccountPayload): MomoAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: MomoAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): MomoAccountPayload;
+  static deserializeBinaryFromReader(message: MomoAccountPayload, reader: jspb.BinaryReader): MomoAccountPayload;
+}
+
+export namespace MomoAccountPayload {
+  export type AsObject = {
+    holderName: string,
+    mobileNr: string,
+  }
+}
+
+export class SpeiAccountPayload extends jspb.Message {
+  getHolderName(): string;
+  setHolderName(value: string): SpeiAccountPayload;
+
+  getClabe(): string;
+  setClabe(value: string): SpeiAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): SpeiAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: SpeiAccountPayload): SpeiAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: SpeiAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): SpeiAccountPayload;
+  static deserializeBinaryFromReader(message: SpeiAccountPayload, reader: jspb.BinaryReader): SpeiAccountPayload;
+}
+
+export namespace SpeiAccountPayload {
+  export type AsObject = {
+    holderName: string,
+    clabe: string,
+  }
+}
+
 export class StrikeAccountPayload extends jspb.Message {
   getHolderName(): string;
   setHolderName(value: string): StrikeAccountPayload;
@@ -5376,6 +5534,24 @@ export class PaysafeAccountPayload extends jspb.Message {
 export namespace PaysafeAccountPayload {
   export type AsObject = {
     email: string,
+  }
+}
+
+export class BlikAccountPayload extends jspb.Message {
+  getExtraInfo(): string;
+  setExtraInfo(value: string): BlikAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): BlikAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: BlikAccountPayload): BlikAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: BlikAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): BlikAccountPayload;
+  static deserializeBinaryFromReader(message: BlikAccountPayload, reader: jspb.BinaryReader): BlikAccountPayload;
+}
+
+export namespace BlikAccountPayload {
+  export type AsObject = {
+    extraInfo: string,
   }
 }
 
@@ -5902,6 +6078,38 @@ export namespace TradableList {
   }
 }
 
+export class TradableLogEntry extends jspb.Message {
+  getUpsert(): Tradable | undefined;
+  setUpsert(value?: Tradable): TradableLogEntry;
+  hasUpsert(): boolean;
+  clearUpsert(): TradableLogEntry;
+
+  getDeleteId(): string;
+  setDeleteId(value: string): TradableLogEntry;
+
+  getEntryCase(): TradableLogEntry.EntryCase;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): TradableLogEntry.AsObject;
+  static toObject(includeInstance: boolean, msg: TradableLogEntry): TradableLogEntry.AsObject;
+  static serializeBinaryToWriter(message: TradableLogEntry, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): TradableLogEntry;
+  static deserializeBinaryFromReader(message: TradableLogEntry, reader: jspb.BinaryReader): TradableLogEntry;
+}
+
+export namespace TradableLogEntry {
+  export type AsObject = {
+    upsert?: Tradable.AsObject,
+    deleteId: string,
+  }
+
+  export enum EntryCase { 
+    ENTRY_NOT_SET = 0,
+    UPSERT = 1,
+    DELETE_ID = 2,
+  }
+}
+
 export class Offer extends jspb.Message {
   getOfferPayload(): OfferPayload | undefined;
   setOfferPayload(value?: OfferPayload): Offer;
@@ -6268,6 +6476,9 @@ export class Trade extends jspb.Message {
   getChallenge(): string;
   setChallenge(value: string): Trade;
 
+  getPayoutHeight(): number;
+  setPayoutHeight(value: number): Trade;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Trade.AsObject;
   static toObject(includeInstance: boolean, msg: Trade): Trade.AsObject;
@@ -6307,6 +6518,7 @@ export namespace Trade {
     uid: string,
     isCompleted: boolean,
     challenge: string,
+    payoutHeight: number,
   }
 
   export enum State { 
@@ -7027,11 +7239,11 @@ export class PreferencesPayload extends jspb.Message {
   getTradeChartsScreenCurrencyCode(): string;
   setTradeChartsScreenCurrencyCode(value: string): PreferencesPayload;
 
-  getBuyScreenCurrencyCode(): string;
-  setBuyScreenCurrencyCode(value: string): PreferencesPayload;
+  getBuyScreenFiatCurrencyCode(): string;
+  setBuyScreenFiatCurrencyCode(value: string): PreferencesPayload;
 
-  getSellScreenCurrencyCode(): string;
-  setSellScreenCurrencyCode(value: string): PreferencesPayload;
+  getSellScreenFiatCurrencyCode(): string;
+  setSellScreenFiatCurrencyCode(value: string): PreferencesPayload;
 
   getTradeStatisticsTickUnitIndex(): number;
   setTradeStatisticsTickUnitIndex(value: number): PreferencesPayload;
@@ -7187,6 +7399,36 @@ export class PreferencesPayload extends jspb.Message {
   getShowPrivateOffers(): boolean;
   setShowPrivateOffers(value: boolean): PreferencesPayload;
 
+  getBuyScreenFiatPaymentMethodId(): string;
+  setBuyScreenFiatPaymentMethodId(value: string): PreferencesPayload;
+
+  getSellScreenFiatPaymentMethodId(): string;
+  setSellScreenFiatPaymentMethodId(value: string): PreferencesPayload;
+
+  getBuyScreenOfferBookSubTabIndex(): number;
+  setBuyScreenOfferBookSubTabIndex(value: number): PreferencesPayload;
+
+  getSellScreenOfferBookSubTabIndex(): number;
+  setSellScreenOfferBookSubTabIndex(value: number): PreferencesPayload;
+
+  getMarketSelectedTabIndex(): number;
+  setMarketSelectedTabIndex(value: number): PreferencesPayload;
+
+  getBuyScreenCryptoPaymentMethodId(): string;
+  setBuyScreenCryptoPaymentMethodId(value: string): PreferencesPayload;
+
+  getSellScreenCryptoPaymentMethodId(): string;
+  setSellScreenCryptoPaymentMethodId(value: string): PreferencesPayload;
+
+  getBuyScreenOtherPaymentMethodId(): string;
+  setBuyScreenOtherPaymentMethodId(value: string): PreferencesPayload;
+
+  getSellScreenOtherPaymentMethodId(): string;
+  setSellScreenOtherPaymentMethodId(value: string): PreferencesPayload;
+
+  getDepositAddressesExpanded(): boolean;
+  setDepositAddressesExpanded(value: boolean): PreferencesPayload;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PreferencesPayload.AsObject;
   static toObject(includeInstance: boolean, msg: PreferencesPayload): PreferencesPayload.AsObject;
@@ -7215,8 +7457,8 @@ export namespace PreferencesPayload {
     maxPriceDistanceInPercent: number,
     offerBookChartScreenCurrencyCode: string,
     tradeChartsScreenCurrencyCode: string,
-    buyScreenCurrencyCode: string,
-    sellScreenCurrencyCode: string,
+    buyScreenFiatCurrencyCode: string,
+    sellScreenFiatCurrencyCode: string,
     tradeStatisticsTickUnitIndex: number,
     resyncSpvRequested: boolean,
     sortMarketCurrenciesNumerically: boolean,
@@ -7265,6 +7507,16 @@ export namespace PreferencesPayload {
     sellScreenOtherCurrencyCode: string,
     showNoDepositOffers: boolean,
     showPrivateOffers: boolean,
+    buyScreenFiatPaymentMethodId: string,
+    sellScreenFiatPaymentMethodId: string,
+    buyScreenOfferBookSubTabIndex: number,
+    sellScreenOfferBookSubTabIndex: number,
+    marketSelectedTabIndex: number,
+    buyScreenCryptoPaymentMethodId: string,
+    sellScreenCryptoPaymentMethodId: string,
+    buyScreenOtherPaymentMethodId: string,
+    sellScreenOtherPaymentMethodId: string,
+    depositAddressesExpanded: boolean,
   }
 }
 
@@ -7855,6 +8107,39 @@ export namespace PaymentAccountForm {
     INTERAC_E_TRANSFER = 26,
     US_POSTAL_MONEY_ORDER = 27,
     PIX = 28,
+    NATIONAL_BANK = 29,
+    WESTERN_UNION = 30,
+    CASH_DEPOSIT = 31,
+    UPI = 32,
+    NEFT = 33,
+    IMPS = 34,
+    PROMPT_PAY = 35,
+    BIZUM = 36,
+    NEQUI = 37,
+    JAPAN_BANK = 38,
+    PAYTM = 39,
+    DOMESTIC_WIRE_TRANSFER = 40,
+    SATISPAY = 41,
+    PAYSERA = 42,
+    TIKKIE = 43,
+    MPESA = 44,
+    MERCADO_PAGO = 45,
+    GCASH = 46,
+    MOMO = 47,
+    SPEI = 48,
+    ADVANCED_CASH = 50,
+    CELPAY = 51,
+    HAL_CASH = 52,
+    MONESE = 53,
+    MONEY_BEAM = 54,
+    PERFECT_MONEY = 55,
+    POPMONEY = 56,
+    RTGS = 57,
+    VERSE = 58,
+    SAME_BANK = 59,
+    SPECIFIC_BANKS = 60,
+    CAPITUAL = 61,
+    BLIK = 62,
   }
 }
 
@@ -7905,6 +8190,11 @@ export class PaymentAccountFormField extends jspb.Message {
   clearRequiredForCountriesList(): PaymentAccountFormField;
   addRequiredForCountries(value: string, index?: number): PaymentAccountFormField;
 
+  getSupportedValuesList(): Array<string>;
+  setSupportedValuesList(value: Array<string>): PaymentAccountFormField;
+  clearSupportedValuesList(): PaymentAccountFormField;
+  addSupportedValues(value: string, index?: number): PaymentAccountFormField;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PaymentAccountFormField.AsObject;
   static toObject(includeInstance: boolean, msg: PaymentAccountFormField): PaymentAccountFormField.AsObject;
@@ -7927,6 +8217,7 @@ export namespace PaymentAccountFormField {
     supportedSepaEuroCountriesList: Array<Country.AsObject>,
     supportedSepaNonEuroCountriesList: Array<Country.AsObject>,
     requiredForCountriesList: Array<string>,
+    supportedValuesList: Array<string>,
   }
 
   export enum FieldId { 
@@ -7990,6 +8281,9 @@ export namespace PaymentAccountFormField {
     USERNAME = 57,
     EMAIL_OR_MOBILE_NR_OR_USERNAME = 58,
     EMAIL_OR_MOBILE_NR_OR_CASHTAG = 59,
+    VIRTUAL_PAYMENT_ADDRESS = 60,
+    CLABE = 61,
+    ACCEPTED_BANKS = 62,
   }
 
   export enum Component { 

@@ -44,6 +44,7 @@ goog.exportSymbol('proto.io.haveno.protobuffer.AvailabilityResult', null, global
 goog.exportSymbol('proto.io.haveno.protobuffer.BankAccountPayload', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.BankAccountPayload.MessageCase', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.BizumAccountPayload', null, global);
+goog.exportSymbol('proto.io.haveno.protobuffer.BlikAccountPayload', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.BlockChainExplorer', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.BundleOfEnvelopes', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.BuyerAsMakerTrade', null, global);
@@ -84,6 +85,7 @@ goog.exportSymbol('proto.io.haveno.protobuffer.F2FAccountPayload', null, global)
 goog.exportSymbol('proto.io.haveno.protobuffer.FasterPaymentsAccountPayload', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.FileTransferPart', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.Filter', null, global);
+goog.exportSymbol('proto.io.haveno.protobuffer.GcashAccountPayload', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.GetDataResponse', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.GetInventoryRequest', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.GetInventoryResponse', null, global);
@@ -110,11 +112,14 @@ goog.exportSymbol('proto.io.haveno.protobuffer.MediatedPayoutTxSignatureMessage'
 goog.exportSymbol('proto.io.haveno.protobuffer.MediationDisputeList', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.MediationResultState', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.Mediator', null, global);
+goog.exportSymbol('proto.io.haveno.protobuffer.MercadoPagoAccountPayload', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.MockMailboxPayload', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.MockPayload', null, global);
+goog.exportSymbol('proto.io.haveno.protobuffer.MomoAccountPayload', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.MoneseAccountPayload', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.MoneyBeamAccountPayload', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.MoneyGramAccountPayload', null, global);
+goog.exportSymbol('proto.io.haveno.protobuffer.MpesaAccountPayload', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.NationalBankAccountPayload', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.NavigationPath', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.NeftAccountPayload', null, global);
@@ -202,6 +207,7 @@ goog.exportSymbol('proto.io.haveno.protobuffer.SignedWitness', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.SignedWitness.VerificationMethod', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.SignedWitnessStore', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.SpecificBanksAccountPayload', null, global);
+goog.exportSymbol('proto.io.haveno.protobuffer.SpeiAccountPayload', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.StorageEntryWrapper', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.StorageEntryWrapper.MessageCase', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.StoragePayload', null, global);
@@ -214,6 +220,8 @@ goog.exportSymbol('proto.io.haveno.protobuffer.TikkieAccountPayload', null, glob
 goog.exportSymbol('proto.io.haveno.protobuffer.Tradable', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.Tradable.MessageCase', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.TradableList', null, global);
+goog.exportSymbol('proto.io.haveno.protobuffer.TradableLogEntry', null, global);
+goog.exportSymbol('proto.io.haveno.protobuffer.TradableLogEntry.EntryCase', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.Trade', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.Trade.DisputeState', null, global);
 goog.exportSymbol('proto.io.haveno.protobuffer.Trade.PayoutState', null, global);
@@ -925,7 +933,7 @@ if (goog.DEBUG && !COMPILED) {
  * @constructor
  */
 proto.io.haveno.protobuffer.PaymentReceivedMessage = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.io.haveno.protobuffer.PaymentReceivedMessage.repeatedFields_, null);
 };
 goog.inherits(proto.io.haveno.protobuffer.PaymentReceivedMessage, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -2961,6 +2969,111 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
+proto.io.haveno.protobuffer.MpesaAccountPayload = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.io.haveno.protobuffer.MpesaAccountPayload, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.io.haveno.protobuffer.MpesaAccountPayload.displayName = 'proto.io.haveno.protobuffer.MpesaAccountPayload';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.io.haveno.protobuffer.MercadoPagoAccountPayload = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.io.haveno.protobuffer.MercadoPagoAccountPayload, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.io.haveno.protobuffer.MercadoPagoAccountPayload.displayName = 'proto.io.haveno.protobuffer.MercadoPagoAccountPayload';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.io.haveno.protobuffer.GcashAccountPayload = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.io.haveno.protobuffer.GcashAccountPayload, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.io.haveno.protobuffer.GcashAccountPayload.displayName = 'proto.io.haveno.protobuffer.GcashAccountPayload';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.io.haveno.protobuffer.MomoAccountPayload = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.io.haveno.protobuffer.MomoAccountPayload, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.io.haveno.protobuffer.MomoAccountPayload.displayName = 'proto.io.haveno.protobuffer.MomoAccountPayload';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.io.haveno.protobuffer.SpeiAccountPayload = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.io.haveno.protobuffer.SpeiAccountPayload, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.io.haveno.protobuffer.SpeiAccountPayload.displayName = 'proto.io.haveno.protobuffer.SpeiAccountPayload';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
 proto.io.haveno.protobuffer.StrikeAccountPayload = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
@@ -3055,6 +3168,27 @@ if (goog.DEBUG && !COMPILED) {
    * @override
    */
   proto.io.haveno.protobuffer.PaysafeAccountPayload.displayName = 'proto.io.haveno.protobuffer.PaysafeAccountPayload';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.io.haveno.protobuffer.BlikAccountPayload = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.io.haveno.protobuffer.BlikAccountPayload, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.io.haveno.protobuffer.BlikAccountPayload.displayName = 'proto.io.haveno.protobuffer.BlikAccountPayload';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -3391,6 +3525,27 @@ if (goog.DEBUG && !COMPILED) {
    * @override
    */
   proto.io.haveno.protobuffer.TradableList.displayName = 'proto.io.haveno.protobuffer.TradableList';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.io.haveno.protobuffer.TradableLogEntry = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, proto.io.haveno.protobuffer.TradableLogEntry.oneofGroups_);
+};
+goog.inherits(proto.io.haveno.protobuffer.TradableLogEntry, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.io.haveno.protobuffer.TradableLogEntry.displayName = 'proto.io.haveno.protobuffer.TradableLogEntry';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -15321,6 +15476,13 @@ proto.io.haveno.protobuffer.PaymentSentMessage.prototype.setBuyerSignature = fun
 
 
 
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.io.haveno.protobuffer.PaymentReceivedMessage.repeatedFields_ = [13];
+
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -15363,7 +15525,9 @@ buyerAccountAgeWitness: (f = msg.getBuyerAccountAgeWitness()) && proto.io.haveno
 buyerSignedWitness: (f = msg.getBuyerSignedWitness()) && proto.io.haveno.protobuffer.SignedWitness.toObject(includeInstance, f),
 paymentSentMessage: (f = msg.getPaymentSentMessage()) && proto.io.haveno.protobuffer.PaymentSentMessage.toObject(includeInstance, f),
 sellerSignature: msg.getSellerSignature_asB64(),
-payoutTxId: jspb.Message.getFieldWithDefault(msg, 12, "")
+payoutTxId: jspb.Message.getFieldWithDefault(msg, 12, ""),
+signerChainList: jspb.Message.toObjectList(msg.getSignerChainList(),
+    proto.io.haveno.protobuffer.SignedWitness.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -15451,6 +15615,11 @@ proto.io.haveno.protobuffer.PaymentReceivedMessage.deserializeBinaryFromReader =
     case 12:
       var value = /** @type {string} */ (reader.readString());
       msg.setPayoutTxId(value);
+      break;
+    case 13:
+      var value = new proto.io.haveno.protobuffer.SignedWitness;
+      reader.readMessage(value,proto.io.haveno.protobuffer.SignedWitness.deserializeBinaryFromReader);
+      msg.addSignerChain(value);
       break;
     default:
       reader.skipField();
@@ -15567,6 +15736,14 @@ proto.io.haveno.protobuffer.PaymentReceivedMessage.serializeBinaryToWriter = fun
     writer.writeString(
       12,
       f
+    );
+  }
+  f = message.getSignerChainList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      13,
+      f,
+      proto.io.haveno.protobuffer.SignedWitness.serializeBinaryToWriter
     );
   }
 };
@@ -15885,6 +16062,44 @@ proto.io.haveno.protobuffer.PaymentReceivedMessage.prototype.getPayoutTxId = fun
  */
 proto.io.haveno.protobuffer.PaymentReceivedMessage.prototype.setPayoutTxId = function(value) {
   return jspb.Message.setProto3StringField(this, 12, value);
+};
+
+
+/**
+ * repeated SignedWitness signer_chain = 13;
+ * @return {!Array<!proto.io.haveno.protobuffer.SignedWitness>}
+ */
+proto.io.haveno.protobuffer.PaymentReceivedMessage.prototype.getSignerChainList = function() {
+  return /** @type{!Array<!proto.io.haveno.protobuffer.SignedWitness>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.io.haveno.protobuffer.SignedWitness, 13));
+};
+
+
+/**
+ * @param {!Array<!proto.io.haveno.protobuffer.SignedWitness>} value
+ * @return {!proto.io.haveno.protobuffer.PaymentReceivedMessage} returns this
+*/
+proto.io.haveno.protobuffer.PaymentReceivedMessage.prototype.setSignerChainList = function(value) {
+  return jspb.Message.setRepeatedWrapperField(this, 13, value);
+};
+
+
+/**
+ * @param {!proto.io.haveno.protobuffer.SignedWitness=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.io.haveno.protobuffer.SignedWitness}
+ */
+proto.io.haveno.protobuffer.PaymentReceivedMessage.prototype.addSignerChain = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 13, opt_value, proto.io.haveno.protobuffer.SignedWitness, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.io.haveno.protobuffer.PaymentReceivedMessage} returns this
+ */
+proto.io.haveno.protobuffer.PaymentReceivedMessage.prototype.clearSignerChainList = function() {
+  return this.setSignerChainList([]);
 };
 
 
@@ -33588,7 +33803,7 @@ proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload.repeatedFields_ = 
  * @private {!Array<!Array<number>>}
  * @const
  */
-proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload.oneofGroups_ = [[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]];
+proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload.oneofGroups_ = [[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25]];
 
 /**
  * @enum {number}
@@ -33611,7 +33826,13 @@ proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload.MessageCase = {
   STRIKE_ACCOUNT_PAYLOAD: 16,
   TIKKIE_ACCOUNT_PAYLOAD: 17,
   TRANSFERWISE_USD_ACCOUNT_PAYLOAD: 18,
-  SWIFT_ACCOUNT_PAYLOAD: 19
+  SWIFT_ACCOUNT_PAYLOAD: 19,
+  MPESA_ACCOUNT_PAYLOAD: 20,
+  MERCADO_PAGO_ACCOUNT_PAYLOAD: 21,
+  GCASH_ACCOUNT_PAYLOAD: 22,
+  MOMO_ACCOUNT_PAYLOAD: 23,
+  SPEI_ACCOUNT_PAYLOAD: 24,
+  BLIK_ACCOUNT_PAYLOAD: 25
 };
 
 /**
@@ -33670,7 +33891,13 @@ satispayAccountPayload: (f = msg.getSatispayAccountPayload()) && proto.io.haveno
 strikeAccountPayload: (f = msg.getStrikeAccountPayload()) && proto.io.haveno.protobuffer.StrikeAccountPayload.toObject(includeInstance, f),
 tikkieAccountPayload: (f = msg.getTikkieAccountPayload()) && proto.io.haveno.protobuffer.TikkieAccountPayload.toObject(includeInstance, f),
 transferwiseUsdAccountPayload: (f = msg.getTransferwiseUsdAccountPayload()) && proto.io.haveno.protobuffer.TransferwiseUsdAccountPayload.toObject(includeInstance, f),
-swiftAccountPayload: (f = msg.getSwiftAccountPayload()) && proto.io.haveno.protobuffer.SwiftAccountPayload.toObject(includeInstance, f)
+swiftAccountPayload: (f = msg.getSwiftAccountPayload()) && proto.io.haveno.protobuffer.SwiftAccountPayload.toObject(includeInstance, f),
+mpesaAccountPayload: (f = msg.getMpesaAccountPayload()) && proto.io.haveno.protobuffer.MpesaAccountPayload.toObject(includeInstance, f),
+mercadoPagoAccountPayload: (f = msg.getMercadoPagoAccountPayload()) && proto.io.haveno.protobuffer.MercadoPagoAccountPayload.toObject(includeInstance, f),
+gcashAccountPayload: (f = msg.getGcashAccountPayload()) && proto.io.haveno.protobuffer.GcashAccountPayload.toObject(includeInstance, f),
+momoAccountPayload: (f = msg.getMomoAccountPayload()) && proto.io.haveno.protobuffer.MomoAccountPayload.toObject(includeInstance, f),
+speiAccountPayload: (f = msg.getSpeiAccountPayload()) && proto.io.haveno.protobuffer.SpeiAccountPayload.toObject(includeInstance, f),
+blikAccountPayload: (f = msg.getBlikAccountPayload()) && proto.io.haveno.protobuffer.BlikAccountPayload.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -33799,6 +34026,36 @@ proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload.deserializeBinaryF
       var value = new proto.io.haveno.protobuffer.SwiftAccountPayload;
       reader.readMessage(value,proto.io.haveno.protobuffer.SwiftAccountPayload.deserializeBinaryFromReader);
       msg.setSwiftAccountPayload(value);
+      break;
+    case 20:
+      var value = new proto.io.haveno.protobuffer.MpesaAccountPayload;
+      reader.readMessage(value,proto.io.haveno.protobuffer.MpesaAccountPayload.deserializeBinaryFromReader);
+      msg.setMpesaAccountPayload(value);
+      break;
+    case 21:
+      var value = new proto.io.haveno.protobuffer.MercadoPagoAccountPayload;
+      reader.readMessage(value,proto.io.haveno.protobuffer.MercadoPagoAccountPayload.deserializeBinaryFromReader);
+      msg.setMercadoPagoAccountPayload(value);
+      break;
+    case 22:
+      var value = new proto.io.haveno.protobuffer.GcashAccountPayload;
+      reader.readMessage(value,proto.io.haveno.protobuffer.GcashAccountPayload.deserializeBinaryFromReader);
+      msg.setGcashAccountPayload(value);
+      break;
+    case 23:
+      var value = new proto.io.haveno.protobuffer.MomoAccountPayload;
+      reader.readMessage(value,proto.io.haveno.protobuffer.MomoAccountPayload.deserializeBinaryFromReader);
+      msg.setMomoAccountPayload(value);
+      break;
+    case 24:
+      var value = new proto.io.haveno.protobuffer.SpeiAccountPayload;
+      reader.readMessage(value,proto.io.haveno.protobuffer.SpeiAccountPayload.deserializeBinaryFromReader);
+      msg.setSpeiAccountPayload(value);
+      break;
+    case 25:
+      var value = new proto.io.haveno.protobuffer.BlikAccountPayload;
+      reader.readMessage(value,proto.io.haveno.protobuffer.BlikAccountPayload.deserializeBinaryFromReader);
+      msg.setBlikAccountPayload(value);
       break;
     default:
       reader.skipField();
@@ -33977,6 +34234,54 @@ proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload.serializeBinaryToW
       19,
       f,
       proto.io.haveno.protobuffer.SwiftAccountPayload.serializeBinaryToWriter
+    );
+  }
+  f = message.getMpesaAccountPayload();
+  if (f != null) {
+    writer.writeMessage(
+      20,
+      f,
+      proto.io.haveno.protobuffer.MpesaAccountPayload.serializeBinaryToWriter
+    );
+  }
+  f = message.getMercadoPagoAccountPayload();
+  if (f != null) {
+    writer.writeMessage(
+      21,
+      f,
+      proto.io.haveno.protobuffer.MercadoPagoAccountPayload.serializeBinaryToWriter
+    );
+  }
+  f = message.getGcashAccountPayload();
+  if (f != null) {
+    writer.writeMessage(
+      22,
+      f,
+      proto.io.haveno.protobuffer.GcashAccountPayload.serializeBinaryToWriter
+    );
+  }
+  f = message.getMomoAccountPayload();
+  if (f != null) {
+    writer.writeMessage(
+      23,
+      f,
+      proto.io.haveno.protobuffer.MomoAccountPayload.serializeBinaryToWriter
+    );
+  }
+  f = message.getSpeiAccountPayload();
+  if (f != null) {
+    writer.writeMessage(
+      24,
+      f,
+      proto.io.haveno.protobuffer.SpeiAccountPayload.serializeBinaryToWriter
+    );
+  }
+  f = message.getBlikAccountPayload();
+  if (f != null) {
+    writer.writeMessage(
+      25,
+      f,
+      proto.io.haveno.protobuffer.BlikAccountPayload.serializeBinaryToWriter
     );
   }
 };
@@ -34663,6 +34968,228 @@ proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload.prototype.clearSwi
  */
 proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload.prototype.hasSwiftAccountPayload = function() {
   return jspb.Message.getField(this, 19) != null;
+};
+
+
+/**
+ * optional MpesaAccountPayload mpesa_account_payload = 20;
+ * @return {?proto.io.haveno.protobuffer.MpesaAccountPayload}
+ */
+proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload.prototype.getMpesaAccountPayload = function() {
+  return /** @type{?proto.io.haveno.protobuffer.MpesaAccountPayload} */ (
+    jspb.Message.getWrapperField(this, proto.io.haveno.protobuffer.MpesaAccountPayload, 20));
+};
+
+
+/**
+ * @param {?proto.io.haveno.protobuffer.MpesaAccountPayload|undefined} value
+ * @return {!proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload} returns this
+*/
+proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload.prototype.setMpesaAccountPayload = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 20, proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload} returns this
+ */
+proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload.prototype.clearMpesaAccountPayload = function() {
+  return this.setMpesaAccountPayload(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload.prototype.hasMpesaAccountPayload = function() {
+  return jspb.Message.getField(this, 20) != null;
+};
+
+
+/**
+ * optional MercadoPagoAccountPayload mercado_pago_account_payload = 21;
+ * @return {?proto.io.haveno.protobuffer.MercadoPagoAccountPayload}
+ */
+proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload.prototype.getMercadoPagoAccountPayload = function() {
+  return /** @type{?proto.io.haveno.protobuffer.MercadoPagoAccountPayload} */ (
+    jspb.Message.getWrapperField(this, proto.io.haveno.protobuffer.MercadoPagoAccountPayload, 21));
+};
+
+
+/**
+ * @param {?proto.io.haveno.protobuffer.MercadoPagoAccountPayload|undefined} value
+ * @return {!proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload} returns this
+*/
+proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload.prototype.setMercadoPagoAccountPayload = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 21, proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload} returns this
+ */
+proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload.prototype.clearMercadoPagoAccountPayload = function() {
+  return this.setMercadoPagoAccountPayload(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload.prototype.hasMercadoPagoAccountPayload = function() {
+  return jspb.Message.getField(this, 21) != null;
+};
+
+
+/**
+ * optional GcashAccountPayload gcash_account_payload = 22;
+ * @return {?proto.io.haveno.protobuffer.GcashAccountPayload}
+ */
+proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload.prototype.getGcashAccountPayload = function() {
+  return /** @type{?proto.io.haveno.protobuffer.GcashAccountPayload} */ (
+    jspb.Message.getWrapperField(this, proto.io.haveno.protobuffer.GcashAccountPayload, 22));
+};
+
+
+/**
+ * @param {?proto.io.haveno.protobuffer.GcashAccountPayload|undefined} value
+ * @return {!proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload} returns this
+*/
+proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload.prototype.setGcashAccountPayload = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 22, proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload} returns this
+ */
+proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload.prototype.clearGcashAccountPayload = function() {
+  return this.setGcashAccountPayload(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload.prototype.hasGcashAccountPayload = function() {
+  return jspb.Message.getField(this, 22) != null;
+};
+
+
+/**
+ * optional MomoAccountPayload momo_account_payload = 23;
+ * @return {?proto.io.haveno.protobuffer.MomoAccountPayload}
+ */
+proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload.prototype.getMomoAccountPayload = function() {
+  return /** @type{?proto.io.haveno.protobuffer.MomoAccountPayload} */ (
+    jspb.Message.getWrapperField(this, proto.io.haveno.protobuffer.MomoAccountPayload, 23));
+};
+
+
+/**
+ * @param {?proto.io.haveno.protobuffer.MomoAccountPayload|undefined} value
+ * @return {!proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload} returns this
+*/
+proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload.prototype.setMomoAccountPayload = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 23, proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload} returns this
+ */
+proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload.prototype.clearMomoAccountPayload = function() {
+  return this.setMomoAccountPayload(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload.prototype.hasMomoAccountPayload = function() {
+  return jspb.Message.getField(this, 23) != null;
+};
+
+
+/**
+ * optional SpeiAccountPayload spei_account_payload = 24;
+ * @return {?proto.io.haveno.protobuffer.SpeiAccountPayload}
+ */
+proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload.prototype.getSpeiAccountPayload = function() {
+  return /** @type{?proto.io.haveno.protobuffer.SpeiAccountPayload} */ (
+    jspb.Message.getWrapperField(this, proto.io.haveno.protobuffer.SpeiAccountPayload, 24));
+};
+
+
+/**
+ * @param {?proto.io.haveno.protobuffer.SpeiAccountPayload|undefined} value
+ * @return {!proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload} returns this
+*/
+proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload.prototype.setSpeiAccountPayload = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 24, proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload} returns this
+ */
+proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload.prototype.clearSpeiAccountPayload = function() {
+  return this.setSpeiAccountPayload(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload.prototype.hasSpeiAccountPayload = function() {
+  return jspb.Message.getField(this, 24) != null;
+};
+
+
+/**
+ * optional BlikAccountPayload blik_account_payload = 25;
+ * @return {?proto.io.haveno.protobuffer.BlikAccountPayload}
+ */
+proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload.prototype.getBlikAccountPayload = function() {
+  return /** @type{?proto.io.haveno.protobuffer.BlikAccountPayload} */ (
+    jspb.Message.getWrapperField(this, proto.io.haveno.protobuffer.BlikAccountPayload, 25));
+};
+
+
+/**
+ * @param {?proto.io.haveno.protobuffer.BlikAccountPayload|undefined} value
+ * @return {!proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload} returns this
+*/
+proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload.prototype.setBlikAccountPayload = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 25, proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload} returns this
+ */
+proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload.prototype.clearBlikAccountPayload = function() {
+  return this.setBlikAccountPayload(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.io.haveno.protobuffer.CountryBasedPaymentAccountPayload.prototype.hasBlikAccountPayload = function() {
+  return jspb.Message.getField(this, 25) != null;
 };
 
 
@@ -43617,6 +44144,806 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
+proto.io.haveno.protobuffer.MpesaAccountPayload.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.haveno.protobuffer.MpesaAccountPayload.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.io.haveno.protobuffer.MpesaAccountPayload} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.haveno.protobuffer.MpesaAccountPayload.toObject = function(includeInstance, msg) {
+  var f, obj = {
+holderName: jspb.Message.getFieldWithDefault(msg, 1, ""),
+mobileNr: jspb.Message.getFieldWithDefault(msg, 2, "")
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.io.haveno.protobuffer.MpesaAccountPayload}
+ */
+proto.io.haveno.protobuffer.MpesaAccountPayload.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.io.haveno.protobuffer.MpesaAccountPayload;
+  return proto.io.haveno.protobuffer.MpesaAccountPayload.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.io.haveno.protobuffer.MpesaAccountPayload} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.io.haveno.protobuffer.MpesaAccountPayload}
+ */
+proto.io.haveno.protobuffer.MpesaAccountPayload.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setHolderName(value);
+      break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setMobileNr(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.io.haveno.protobuffer.MpesaAccountPayload.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.io.haveno.protobuffer.MpesaAccountPayload.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.io.haveno.protobuffer.MpesaAccountPayload} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.haveno.protobuffer.MpesaAccountPayload.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getHolderName();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+  f = message.getMobileNr();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string holder_name = 1;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.MpesaAccountPayload.prototype.getHolderName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.MpesaAccountPayload} returns this
+ */
+proto.io.haveno.protobuffer.MpesaAccountPayload.prototype.setHolderName = function(value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional string mobile_nr = 2;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.MpesaAccountPayload.prototype.getMobileNr = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.MpesaAccountPayload} returns this
+ */
+proto.io.haveno.protobuffer.MpesaAccountPayload.prototype.setMobileNr = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.io.haveno.protobuffer.MercadoPagoAccountPayload.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.haveno.protobuffer.MercadoPagoAccountPayload.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.io.haveno.protobuffer.MercadoPagoAccountPayload} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.haveno.protobuffer.MercadoPagoAccountPayload.toObject = function(includeInstance, msg) {
+  var f, obj = {
+holderName: jspb.Message.getFieldWithDefault(msg, 1, ""),
+emailOrMobileNr: jspb.Message.getFieldWithDefault(msg, 2, "")
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.io.haveno.protobuffer.MercadoPagoAccountPayload}
+ */
+proto.io.haveno.protobuffer.MercadoPagoAccountPayload.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.io.haveno.protobuffer.MercadoPagoAccountPayload;
+  return proto.io.haveno.protobuffer.MercadoPagoAccountPayload.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.io.haveno.protobuffer.MercadoPagoAccountPayload} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.io.haveno.protobuffer.MercadoPagoAccountPayload}
+ */
+proto.io.haveno.protobuffer.MercadoPagoAccountPayload.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setHolderName(value);
+      break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setEmailOrMobileNr(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.io.haveno.protobuffer.MercadoPagoAccountPayload.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.io.haveno.protobuffer.MercadoPagoAccountPayload.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.io.haveno.protobuffer.MercadoPagoAccountPayload} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.haveno.protobuffer.MercadoPagoAccountPayload.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getHolderName();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+  f = message.getEmailOrMobileNr();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string holder_name = 1;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.MercadoPagoAccountPayload.prototype.getHolderName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.MercadoPagoAccountPayload} returns this
+ */
+proto.io.haveno.protobuffer.MercadoPagoAccountPayload.prototype.setHolderName = function(value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional string email_or_mobile_nr = 2;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.MercadoPagoAccountPayload.prototype.getEmailOrMobileNr = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.MercadoPagoAccountPayload} returns this
+ */
+proto.io.haveno.protobuffer.MercadoPagoAccountPayload.prototype.setEmailOrMobileNr = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.io.haveno.protobuffer.GcashAccountPayload.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.haveno.protobuffer.GcashAccountPayload.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.io.haveno.protobuffer.GcashAccountPayload} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.haveno.protobuffer.GcashAccountPayload.toObject = function(includeInstance, msg) {
+  var f, obj = {
+holderName: jspb.Message.getFieldWithDefault(msg, 1, ""),
+mobileNr: jspb.Message.getFieldWithDefault(msg, 2, "")
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.io.haveno.protobuffer.GcashAccountPayload}
+ */
+proto.io.haveno.protobuffer.GcashAccountPayload.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.io.haveno.protobuffer.GcashAccountPayload;
+  return proto.io.haveno.protobuffer.GcashAccountPayload.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.io.haveno.protobuffer.GcashAccountPayload} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.io.haveno.protobuffer.GcashAccountPayload}
+ */
+proto.io.haveno.protobuffer.GcashAccountPayload.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setHolderName(value);
+      break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setMobileNr(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.io.haveno.protobuffer.GcashAccountPayload.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.io.haveno.protobuffer.GcashAccountPayload.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.io.haveno.protobuffer.GcashAccountPayload} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.haveno.protobuffer.GcashAccountPayload.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getHolderName();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+  f = message.getMobileNr();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string holder_name = 1;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.GcashAccountPayload.prototype.getHolderName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.GcashAccountPayload} returns this
+ */
+proto.io.haveno.protobuffer.GcashAccountPayload.prototype.setHolderName = function(value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional string mobile_nr = 2;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.GcashAccountPayload.prototype.getMobileNr = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.GcashAccountPayload} returns this
+ */
+proto.io.haveno.protobuffer.GcashAccountPayload.prototype.setMobileNr = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.io.haveno.protobuffer.MomoAccountPayload.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.haveno.protobuffer.MomoAccountPayload.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.io.haveno.protobuffer.MomoAccountPayload} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.haveno.protobuffer.MomoAccountPayload.toObject = function(includeInstance, msg) {
+  var f, obj = {
+holderName: jspb.Message.getFieldWithDefault(msg, 1, ""),
+mobileNr: jspb.Message.getFieldWithDefault(msg, 2, "")
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.io.haveno.protobuffer.MomoAccountPayload}
+ */
+proto.io.haveno.protobuffer.MomoAccountPayload.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.io.haveno.protobuffer.MomoAccountPayload;
+  return proto.io.haveno.protobuffer.MomoAccountPayload.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.io.haveno.protobuffer.MomoAccountPayload} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.io.haveno.protobuffer.MomoAccountPayload}
+ */
+proto.io.haveno.protobuffer.MomoAccountPayload.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setHolderName(value);
+      break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setMobileNr(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.io.haveno.protobuffer.MomoAccountPayload.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.io.haveno.protobuffer.MomoAccountPayload.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.io.haveno.protobuffer.MomoAccountPayload} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.haveno.protobuffer.MomoAccountPayload.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getHolderName();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+  f = message.getMobileNr();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string holder_name = 1;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.MomoAccountPayload.prototype.getHolderName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.MomoAccountPayload} returns this
+ */
+proto.io.haveno.protobuffer.MomoAccountPayload.prototype.setHolderName = function(value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional string mobile_nr = 2;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.MomoAccountPayload.prototype.getMobileNr = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.MomoAccountPayload} returns this
+ */
+proto.io.haveno.protobuffer.MomoAccountPayload.prototype.setMobileNr = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.io.haveno.protobuffer.SpeiAccountPayload.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.haveno.protobuffer.SpeiAccountPayload.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.io.haveno.protobuffer.SpeiAccountPayload} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.haveno.protobuffer.SpeiAccountPayload.toObject = function(includeInstance, msg) {
+  var f, obj = {
+holderName: jspb.Message.getFieldWithDefault(msg, 1, ""),
+clabe: jspb.Message.getFieldWithDefault(msg, 2, "")
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.io.haveno.protobuffer.SpeiAccountPayload}
+ */
+proto.io.haveno.protobuffer.SpeiAccountPayload.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.io.haveno.protobuffer.SpeiAccountPayload;
+  return proto.io.haveno.protobuffer.SpeiAccountPayload.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.io.haveno.protobuffer.SpeiAccountPayload} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.io.haveno.protobuffer.SpeiAccountPayload}
+ */
+proto.io.haveno.protobuffer.SpeiAccountPayload.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setHolderName(value);
+      break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setClabe(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.io.haveno.protobuffer.SpeiAccountPayload.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.io.haveno.protobuffer.SpeiAccountPayload.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.io.haveno.protobuffer.SpeiAccountPayload} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.haveno.protobuffer.SpeiAccountPayload.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getHolderName();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+  f = message.getClabe();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string holder_name = 1;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.SpeiAccountPayload.prototype.getHolderName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.SpeiAccountPayload} returns this
+ */
+proto.io.haveno.protobuffer.SpeiAccountPayload.prototype.setHolderName = function(value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional string clabe = 2;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.SpeiAccountPayload.prototype.getClabe = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.SpeiAccountPayload} returns this
+ */
+proto.io.haveno.protobuffer.SpeiAccountPayload.prototype.setClabe = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
 proto.io.haveno.protobuffer.StrikeAccountPayload.prototype.toObject = function(opt_includeInstance) {
   return proto.io.haveno.protobuffer.StrikeAccountPayload.toObject(opt_includeInstance, this);
 };
@@ -44697,6 +46024,136 @@ proto.io.haveno.protobuffer.PaysafeAccountPayload.prototype.getEmail = function(
  * @return {!proto.io.haveno.protobuffer.PaysafeAccountPayload} returns this
  */
 proto.io.haveno.protobuffer.PaysafeAccountPayload.prototype.setEmail = function(value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.io.haveno.protobuffer.BlikAccountPayload.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.haveno.protobuffer.BlikAccountPayload.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.io.haveno.protobuffer.BlikAccountPayload} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.haveno.protobuffer.BlikAccountPayload.toObject = function(includeInstance, msg) {
+  var f, obj = {
+extraInfo: jspb.Message.getFieldWithDefault(msg, 1, "")
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.io.haveno.protobuffer.BlikAccountPayload}
+ */
+proto.io.haveno.protobuffer.BlikAccountPayload.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.io.haveno.protobuffer.BlikAccountPayload;
+  return proto.io.haveno.protobuffer.BlikAccountPayload.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.io.haveno.protobuffer.BlikAccountPayload} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.io.haveno.protobuffer.BlikAccountPayload}
+ */
+proto.io.haveno.protobuffer.BlikAccountPayload.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setExtraInfo(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.io.haveno.protobuffer.BlikAccountPayload.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.io.haveno.protobuffer.BlikAccountPayload.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.io.haveno.protobuffer.BlikAccountPayload} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.haveno.protobuffer.BlikAccountPayload.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getExtraInfo();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string extra_info = 1;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.BlikAccountPayload.prototype.getExtraInfo = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.BlikAccountPayload} returns this
+ */
+proto.io.haveno.protobuffer.BlikAccountPayload.prototype.setExtraInfo = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
@@ -48581,6 +50038,231 @@ proto.io.haveno.protobuffer.TradableList.prototype.clearTradableList = function(
 
 
 
+/**
+ * Oneof group definitions for this message. Each group defines the field
+ * numbers belonging to that group. When of these fields' value is set, all
+ * other fields in the group are cleared. During deserialization, if multiple
+ * fields are encountered for a group, only the last value seen will be kept.
+ * @private {!Array<!Array<number>>}
+ * @const
+ */
+proto.io.haveno.protobuffer.TradableLogEntry.oneofGroups_ = [[1,2]];
+
+/**
+ * @enum {number}
+ */
+proto.io.haveno.protobuffer.TradableLogEntry.EntryCase = {
+  ENTRY_NOT_SET: 0,
+  UPSERT: 1,
+  DELETE_ID: 2
+};
+
+/**
+ * @return {proto.io.haveno.protobuffer.TradableLogEntry.EntryCase}
+ */
+proto.io.haveno.protobuffer.TradableLogEntry.prototype.getEntryCase = function() {
+  return /** @type {proto.io.haveno.protobuffer.TradableLogEntry.EntryCase} */(jspb.Message.computeOneofCase(this, proto.io.haveno.protobuffer.TradableLogEntry.oneofGroups_[0]));
+};
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.io.haveno.protobuffer.TradableLogEntry.prototype.toObject = function(opt_includeInstance) {
+  return proto.io.haveno.protobuffer.TradableLogEntry.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.io.haveno.protobuffer.TradableLogEntry} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.haveno.protobuffer.TradableLogEntry.toObject = function(includeInstance, msg) {
+  var f, obj = {
+upsert: (f = msg.getUpsert()) && proto.io.haveno.protobuffer.Tradable.toObject(includeInstance, f),
+deleteId: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.io.haveno.protobuffer.TradableLogEntry}
+ */
+proto.io.haveno.protobuffer.TradableLogEntry.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.io.haveno.protobuffer.TradableLogEntry;
+  return proto.io.haveno.protobuffer.TradableLogEntry.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.io.haveno.protobuffer.TradableLogEntry} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.io.haveno.protobuffer.TradableLogEntry}
+ */
+proto.io.haveno.protobuffer.TradableLogEntry.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = new proto.io.haveno.protobuffer.Tradable;
+      reader.readMessage(value,proto.io.haveno.protobuffer.Tradable.deserializeBinaryFromReader);
+      msg.setUpsert(value);
+      break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setDeleteId(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.io.haveno.protobuffer.TradableLogEntry.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.io.haveno.protobuffer.TradableLogEntry.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.io.haveno.protobuffer.TradableLogEntry} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.io.haveno.protobuffer.TradableLogEntry.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getUpsert();
+  if (f != null) {
+    writer.writeMessage(
+      1,
+      f,
+      proto.io.haveno.protobuffer.Tradable.serializeBinaryToWriter
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 2));
+  if (f != null) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional Tradable upsert = 1;
+ * @return {?proto.io.haveno.protobuffer.Tradable}
+ */
+proto.io.haveno.protobuffer.TradableLogEntry.prototype.getUpsert = function() {
+  return /** @type{?proto.io.haveno.protobuffer.Tradable} */ (
+    jspb.Message.getWrapperField(this, proto.io.haveno.protobuffer.Tradable, 1));
+};
+
+
+/**
+ * @param {?proto.io.haveno.protobuffer.Tradable|undefined} value
+ * @return {!proto.io.haveno.protobuffer.TradableLogEntry} returns this
+*/
+proto.io.haveno.protobuffer.TradableLogEntry.prototype.setUpsert = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 1, proto.io.haveno.protobuffer.TradableLogEntry.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.io.haveno.protobuffer.TradableLogEntry} returns this
+ */
+proto.io.haveno.protobuffer.TradableLogEntry.prototype.clearUpsert = function() {
+  return this.setUpsert(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.io.haveno.protobuffer.TradableLogEntry.prototype.hasUpsert = function() {
+  return jspb.Message.getField(this, 1) != null;
+};
+
+
+/**
+ * optional string delete_id = 2;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.TradableLogEntry.prototype.getDeleteId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.TradableLogEntry} returns this
+ */
+proto.io.haveno.protobuffer.TradableLogEntry.prototype.setDeleteId = function(value) {
+  return jspb.Message.setOneofField(this, 2, proto.io.haveno.protobuffer.TradableLogEntry.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.io.haveno.protobuffer.TradableLogEntry} returns this
+ */
+proto.io.haveno.protobuffer.TradableLogEntry.prototype.clearDeleteId = function() {
+  return jspb.Message.setOneofField(this, 2, proto.io.haveno.protobuffer.TradableLogEntry.oneofGroups_[0], undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.io.haveno.protobuffer.TradableLogEntry.prototype.hasDeleteId = function() {
+  return jspb.Message.getField(this, 2) != null;
+};
+
+
+
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -50491,7 +52173,8 @@ refundResultState: jspb.Message.getFieldWithDefault(msg, 25, 0),
 counterCurrencyExtraData: jspb.Message.getFieldWithDefault(msg, 26, ""),
 uid: jspb.Message.getFieldWithDefault(msg, 27, ""),
 isCompleted: jspb.Message.getBooleanFieldWithDefault(msg, 28, false),
-challenge: jspb.Message.getFieldWithDefault(msg, 29, "")
+challenge: jspb.Message.getFieldWithDefault(msg, 29, ""),
+payoutHeight: jspb.Message.getFieldWithDefault(msg, 30, 0)
   };
 
   if (includeInstance) {
@@ -50650,6 +52333,10 @@ proto.io.haveno.protobuffer.Trade.deserializeBinaryFromReader = function(msg, re
     case 29:
       var value = /** @type {string} */ (reader.readString());
       msg.setChallenge(value);
+      break;
+    case 30:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setPayoutHeight(value);
       break;
     default:
       reader.skipField();
@@ -50887,6 +52574,13 @@ proto.io.haveno.protobuffer.Trade.serializeBinaryToWriter = function(message, wr
   if (f.length > 0) {
     writer.writeString(
       29,
+      f
+    );
+  }
+  f = message.getPayoutHeight();
+  if (f !== 0) {
+    writer.writeInt64(
+      30,
       f
     );
   }
@@ -51663,6 +53357,24 @@ proto.io.haveno.protobuffer.Trade.prototype.getChallenge = function() {
  */
 proto.io.haveno.protobuffer.Trade.prototype.setChallenge = function(value) {
   return jspb.Message.setProto3StringField(this, 29, value);
+};
+
+
+/**
+ * optional int64 payout_height = 30;
+ * @return {number}
+ */
+proto.io.haveno.protobuffer.Trade.prototype.getPayoutHeight = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 30, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.io.haveno.protobuffer.Trade} returns this
+ */
+proto.io.haveno.protobuffer.Trade.prototype.setPayoutHeight = function(value) {
+  return jspb.Message.setProto3IntField(this, 30, value);
 };
 
 
@@ -56251,8 +57963,8 @@ useCustomWithdrawalTxFee: jspb.Message.getBooleanFieldWithDefault(msg, 15, false
 maxPriceDistanceInPercent: jspb.Message.getFloatingPointFieldWithDefault(msg, 16, 0.0),
 offerBookChartScreenCurrencyCode: jspb.Message.getFieldWithDefault(msg, 17, ""),
 tradeChartsScreenCurrencyCode: jspb.Message.getFieldWithDefault(msg, 18, ""),
-buyScreenCurrencyCode: jspb.Message.getFieldWithDefault(msg, 19, ""),
-sellScreenCurrencyCode: jspb.Message.getFieldWithDefault(msg, 20, ""),
+buyScreenFiatCurrencyCode: jspb.Message.getFieldWithDefault(msg, 19, ""),
+sellScreenFiatCurrencyCode: jspb.Message.getFieldWithDefault(msg, 20, ""),
 tradeStatisticsTickUnitIndex: jspb.Message.getFieldWithDefault(msg, 21, 0),
 resyncSpvRequested: jspb.Message.getBooleanFieldWithDefault(msg, 22, false),
 sortMarketCurrenciesNumerically: jspb.Message.getBooleanFieldWithDefault(msg, 23, false),
@@ -56301,7 +58013,17 @@ useSoundForNotificationsInitialized: jspb.Message.getBooleanFieldWithDefault(msg
 buyScreenOtherCurrencyCode: jspb.Message.getFieldWithDefault(msg, 65, ""),
 sellScreenOtherCurrencyCode: jspb.Message.getFieldWithDefault(msg, 66, ""),
 showNoDepositOffers: jspb.Message.getBooleanFieldWithDefault(msg, 67, false),
-showPrivateOffers: jspb.Message.getBooleanFieldWithDefault(msg, 68, false)
+showPrivateOffers: jspb.Message.getBooleanFieldWithDefault(msg, 68, false),
+buyScreenFiatPaymentMethodId: jspb.Message.getFieldWithDefault(msg, 69, ""),
+sellScreenFiatPaymentMethodId: jspb.Message.getFieldWithDefault(msg, 70, ""),
+buyScreenOfferBookSubTabIndex: jspb.Message.getFieldWithDefault(msg, 71, 0),
+sellScreenOfferBookSubTabIndex: jspb.Message.getFieldWithDefault(msg, 72, 0),
+marketSelectedTabIndex: jspb.Message.getFieldWithDefault(msg, 73, 0),
+buyScreenCryptoPaymentMethodId: jspb.Message.getFieldWithDefault(msg, 74, ""),
+sellScreenCryptoPaymentMethodId: jspb.Message.getFieldWithDefault(msg, 75, ""),
+buyScreenOtherPaymentMethodId: jspb.Message.getFieldWithDefault(msg, 76, ""),
+sellScreenOtherPaymentMethodId: jspb.Message.getFieldWithDefault(msg, 77, ""),
+depositAddressesExpanded: jspb.Message.getBooleanFieldWithDefault(msg, 78, false)
   };
 
   if (includeInstance) {
@@ -56420,11 +58142,11 @@ proto.io.haveno.protobuffer.PreferencesPayload.deserializeBinaryFromReader = fun
       break;
     case 19:
       var value = /** @type {string} */ (reader.readString());
-      msg.setBuyScreenCurrencyCode(value);
+      msg.setBuyScreenFiatCurrencyCode(value);
       break;
     case 20:
       var value = /** @type {string} */ (reader.readString());
-      msg.setSellScreenCurrencyCode(value);
+      msg.setSellScreenFiatCurrencyCode(value);
       break;
     case 21:
       var value = /** @type {number} */ (reader.readInt32());
@@ -56623,6 +58345,46 @@ proto.io.haveno.protobuffer.PreferencesPayload.deserializeBinaryFromReader = fun
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setShowPrivateOffers(value);
       break;
+    case 69:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setBuyScreenFiatPaymentMethodId(value);
+      break;
+    case 70:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setSellScreenFiatPaymentMethodId(value);
+      break;
+    case 71:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setBuyScreenOfferBookSubTabIndex(value);
+      break;
+    case 72:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setSellScreenOfferBookSubTabIndex(value);
+      break;
+    case 73:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setMarketSelectedTabIndex(value);
+      break;
+    case 74:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setBuyScreenCryptoPaymentMethodId(value);
+      break;
+    case 75:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setSellScreenCryptoPaymentMethodId(value);
+      break;
+    case 76:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setBuyScreenOtherPaymentMethodId(value);
+      break;
+    case 77:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setSellScreenOtherPaymentMethodId(value);
+      break;
+    case 78:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setDepositAddressesExpanded(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -56781,14 +58543,14 @@ proto.io.haveno.protobuffer.PreferencesPayload.serializeBinaryToWriter = functio
       f
     );
   }
-  f = message.getBuyScreenCurrencyCode();
+  f = message.getBuyScreenFiatCurrencyCode();
   if (f.length > 0) {
     writer.writeString(
       19,
       f
     );
   }
-  f = message.getSellScreenCurrencyCode();
+  f = message.getSellScreenFiatCurrencyCode();
   if (f.length > 0) {
     writer.writeString(
       20,
@@ -57128,6 +58890,76 @@ proto.io.haveno.protobuffer.PreferencesPayload.serializeBinaryToWriter = functio
   if (f) {
     writer.writeBool(
       68,
+      f
+    );
+  }
+  f = message.getBuyScreenFiatPaymentMethodId();
+  if (f.length > 0) {
+    writer.writeString(
+      69,
+      f
+    );
+  }
+  f = message.getSellScreenFiatPaymentMethodId();
+  if (f.length > 0) {
+    writer.writeString(
+      70,
+      f
+    );
+  }
+  f = message.getBuyScreenOfferBookSubTabIndex();
+  if (f !== 0) {
+    writer.writeInt32(
+      71,
+      f
+    );
+  }
+  f = message.getSellScreenOfferBookSubTabIndex();
+  if (f !== 0) {
+    writer.writeInt32(
+      72,
+      f
+    );
+  }
+  f = message.getMarketSelectedTabIndex();
+  if (f !== 0) {
+    writer.writeInt32(
+      73,
+      f
+    );
+  }
+  f = message.getBuyScreenCryptoPaymentMethodId();
+  if (f.length > 0) {
+    writer.writeString(
+      74,
+      f
+    );
+  }
+  f = message.getSellScreenCryptoPaymentMethodId();
+  if (f.length > 0) {
+    writer.writeString(
+      75,
+      f
+    );
+  }
+  f = message.getBuyScreenOtherPaymentMethodId();
+  if (f.length > 0) {
+    writer.writeString(
+      76,
+      f
+    );
+  }
+  f = message.getSellScreenOtherPaymentMethodId();
+  if (f.length > 0) {
+    writer.writeString(
+      77,
+      f
+    );
+  }
+  f = message.getDepositAddressesExpanded();
+  if (f) {
+    writer.writeBool(
+      78,
       f
     );
   }
@@ -57580,10 +59412,10 @@ proto.io.haveno.protobuffer.PreferencesPayload.prototype.setTradeChartsScreenCur
 
 
 /**
- * optional string buy_screen_currency_code = 19;
+ * optional string buy_screen_fiat_currency_code = 19;
  * @return {string}
  */
-proto.io.haveno.protobuffer.PreferencesPayload.prototype.getBuyScreenCurrencyCode = function() {
+proto.io.haveno.protobuffer.PreferencesPayload.prototype.getBuyScreenFiatCurrencyCode = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 19, ""));
 };
 
@@ -57592,16 +59424,16 @@ proto.io.haveno.protobuffer.PreferencesPayload.prototype.getBuyScreenCurrencyCod
  * @param {string} value
  * @return {!proto.io.haveno.protobuffer.PreferencesPayload} returns this
  */
-proto.io.haveno.protobuffer.PreferencesPayload.prototype.setBuyScreenCurrencyCode = function(value) {
+proto.io.haveno.protobuffer.PreferencesPayload.prototype.setBuyScreenFiatCurrencyCode = function(value) {
   return jspb.Message.setProto3StringField(this, 19, value);
 };
 
 
 /**
- * optional string sell_screen_currency_code = 20;
+ * optional string sell_screen_fiat_currency_code = 20;
  * @return {string}
  */
-proto.io.haveno.protobuffer.PreferencesPayload.prototype.getSellScreenCurrencyCode = function() {
+proto.io.haveno.protobuffer.PreferencesPayload.prototype.getSellScreenFiatCurrencyCode = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 20, ""));
 };
 
@@ -57610,7 +59442,7 @@ proto.io.haveno.protobuffer.PreferencesPayload.prototype.getSellScreenCurrencyCo
  * @param {string} value
  * @return {!proto.io.haveno.protobuffer.PreferencesPayload} returns this
  */
-proto.io.haveno.protobuffer.PreferencesPayload.prototype.setSellScreenCurrencyCode = function(value) {
+proto.io.haveno.protobuffer.PreferencesPayload.prototype.setSellScreenFiatCurrencyCode = function(value) {
   return jspb.Message.setProto3StringField(this, 20, value);
 };
 
@@ -58577,6 +60409,186 @@ proto.io.haveno.protobuffer.PreferencesPayload.prototype.getShowPrivateOffers = 
  */
 proto.io.haveno.protobuffer.PreferencesPayload.prototype.setShowPrivateOffers = function(value) {
   return jspb.Message.setProto3BooleanField(this, 68, value);
+};
+
+
+/**
+ * optional string buy_screen_fiat_payment_method_id = 69;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.PreferencesPayload.prototype.getBuyScreenFiatPaymentMethodId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 69, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.PreferencesPayload} returns this
+ */
+proto.io.haveno.protobuffer.PreferencesPayload.prototype.setBuyScreenFiatPaymentMethodId = function(value) {
+  return jspb.Message.setProto3StringField(this, 69, value);
+};
+
+
+/**
+ * optional string sell_screen_fiat_payment_method_id = 70;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.PreferencesPayload.prototype.getSellScreenFiatPaymentMethodId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 70, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.PreferencesPayload} returns this
+ */
+proto.io.haveno.protobuffer.PreferencesPayload.prototype.setSellScreenFiatPaymentMethodId = function(value) {
+  return jspb.Message.setProto3StringField(this, 70, value);
+};
+
+
+/**
+ * optional int32 buy_screen_offer_book_sub_tab_index = 71;
+ * @return {number}
+ */
+proto.io.haveno.protobuffer.PreferencesPayload.prototype.getBuyScreenOfferBookSubTabIndex = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 71, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.io.haveno.protobuffer.PreferencesPayload} returns this
+ */
+proto.io.haveno.protobuffer.PreferencesPayload.prototype.setBuyScreenOfferBookSubTabIndex = function(value) {
+  return jspb.Message.setProto3IntField(this, 71, value);
+};
+
+
+/**
+ * optional int32 sell_screen_offer_book_sub_tab_index = 72;
+ * @return {number}
+ */
+proto.io.haveno.protobuffer.PreferencesPayload.prototype.getSellScreenOfferBookSubTabIndex = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 72, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.io.haveno.protobuffer.PreferencesPayload} returns this
+ */
+proto.io.haveno.protobuffer.PreferencesPayload.prototype.setSellScreenOfferBookSubTabIndex = function(value) {
+  return jspb.Message.setProto3IntField(this, 72, value);
+};
+
+
+/**
+ * optional int32 market_selected_tab_index = 73;
+ * @return {number}
+ */
+proto.io.haveno.protobuffer.PreferencesPayload.prototype.getMarketSelectedTabIndex = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 73, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.io.haveno.protobuffer.PreferencesPayload} returns this
+ */
+proto.io.haveno.protobuffer.PreferencesPayload.prototype.setMarketSelectedTabIndex = function(value) {
+  return jspb.Message.setProto3IntField(this, 73, value);
+};
+
+
+/**
+ * optional string buy_screen_crypto_payment_method_id = 74;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.PreferencesPayload.prototype.getBuyScreenCryptoPaymentMethodId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 74, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.PreferencesPayload} returns this
+ */
+proto.io.haveno.protobuffer.PreferencesPayload.prototype.setBuyScreenCryptoPaymentMethodId = function(value) {
+  return jspb.Message.setProto3StringField(this, 74, value);
+};
+
+
+/**
+ * optional string sell_screen_crypto_payment_method_id = 75;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.PreferencesPayload.prototype.getSellScreenCryptoPaymentMethodId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 75, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.PreferencesPayload} returns this
+ */
+proto.io.haveno.protobuffer.PreferencesPayload.prototype.setSellScreenCryptoPaymentMethodId = function(value) {
+  return jspb.Message.setProto3StringField(this, 75, value);
+};
+
+
+/**
+ * optional string buy_screen_other_payment_method_id = 76;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.PreferencesPayload.prototype.getBuyScreenOtherPaymentMethodId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 76, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.PreferencesPayload} returns this
+ */
+proto.io.haveno.protobuffer.PreferencesPayload.prototype.setBuyScreenOtherPaymentMethodId = function(value) {
+  return jspb.Message.setProto3StringField(this, 76, value);
+};
+
+
+/**
+ * optional string sell_screen_other_payment_method_id = 77;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.PreferencesPayload.prototype.getSellScreenOtherPaymentMethodId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 77, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.PreferencesPayload} returns this
+ */
+proto.io.haveno.protobuffer.PreferencesPayload.prototype.setSellScreenOtherPaymentMethodId = function(value) {
+  return jspb.Message.setProto3StringField(this, 77, value);
+};
+
+
+/**
+ * optional bool deposit_addresses_expanded = 78;
+ * @return {boolean}
+ */
+proto.io.haveno.protobuffer.PreferencesPayload.prototype.getDepositAddressesExpanded = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 78, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.io.haveno.protobuffer.PreferencesPayload} returns this
+ */
+proto.io.haveno.protobuffer.PreferencesPayload.prototype.setDepositAddressesExpanded = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 78, value);
 };
 
 
@@ -62848,7 +64860,40 @@ proto.io.haveno.protobuffer.PaymentAccountForm.FormId = {
   ACH_TRANSFER: 25,
   INTERAC_E_TRANSFER: 26,
   US_POSTAL_MONEY_ORDER: 27,
-  PIX: 28
+  PIX: 28,
+  NATIONAL_BANK: 29,
+  WESTERN_UNION: 30,
+  CASH_DEPOSIT: 31,
+  UPI: 32,
+  NEFT: 33,
+  IMPS: 34,
+  PROMPT_PAY: 35,
+  BIZUM: 36,
+  NEQUI: 37,
+  JAPAN_BANK: 38,
+  PAYTM: 39,
+  DOMESTIC_WIRE_TRANSFER: 40,
+  SATISPAY: 41,
+  PAYSERA: 42,
+  TIKKIE: 43,
+  MPESA: 44,
+  MERCADO_PAGO: 45,
+  GCASH: 46,
+  MOMO: 47,
+  SPEI: 48,
+  ADVANCED_CASH: 50,
+  CELPAY: 51,
+  HAL_CASH: 52,
+  MONESE: 53,
+  MONEY_BEAM: 54,
+  PERFECT_MONEY: 55,
+  POPMONEY: 56,
+  RTGS: 57,
+  VERSE: 58,
+  SAME_BANK: 59,
+  SPECIFIC_BANKS: 60,
+  CAPITUAL: 61,
+  BLIK: 62
 };
 
 /**
@@ -62913,7 +64958,7 @@ proto.io.haveno.protobuffer.PaymentAccountForm.prototype.clearFieldsList = funct
  * @private {!Array<number>}
  * @const
  */
-proto.io.haveno.protobuffer.PaymentAccountFormField.repeatedFields_ = [8,9,10,11,12];
+proto.io.haveno.protobuffer.PaymentAccountFormField.repeatedFields_ = [8,9,10,11,12,13];
 
 
 
@@ -62961,7 +65006,8 @@ supportedSepaEuroCountriesList: jspb.Message.toObjectList(msg.getSupportedSepaEu
     proto.io.haveno.protobuffer.Country.toObject, includeInstance),
 supportedSepaNonEuroCountriesList: jspb.Message.toObjectList(msg.getSupportedSepaNonEuroCountriesList(),
     proto.io.haveno.protobuffer.Country.toObject, includeInstance),
-requiredForCountriesList: (f = jspb.Message.getRepeatedField(msg, 12)) == null ? undefined : f
+requiredForCountriesList: (f = jspb.Message.getRepeatedField(msg, 12)) == null ? undefined : f,
+supportedValuesList: (f = jspb.Message.getRepeatedField(msg, 13)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -63049,6 +65095,10 @@ proto.io.haveno.protobuffer.PaymentAccountFormField.deserializeBinaryFromReader 
     case 12:
       var value = /** @type {string} */ (reader.readString());
       msg.addRequiredForCountries(value);
+      break;
+    case 13:
+      var value = /** @type {string} */ (reader.readString());
+      msg.addSupportedValues(value);
       break;
     default:
       reader.skipField();
@@ -63167,6 +65217,13 @@ proto.io.haveno.protobuffer.PaymentAccountFormField.serializeBinaryToWriter = fu
       f
     );
   }
+  f = message.getSupportedValuesList();
+  if (f.length > 0) {
+    writer.writeRepeatedString(
+      13,
+      f
+    );
+  }
 };
 
 
@@ -63233,7 +65290,10 @@ proto.io.haveno.protobuffer.PaymentAccountFormField.FieldId = {
   TRADE_CURRENCIES: 56,
   USERNAME: 57,
   EMAIL_OR_MOBILE_NR_OR_USERNAME: 58,
-  EMAIL_OR_MOBILE_NR_OR_CASHTAG: 59
+  EMAIL_OR_MOBILE_NR_OR_CASHTAG: 59,
+  VIRTUAL_PAYMENT_ADDRESS: 60,
+  CLABE: 61,
+  ACCEPTED_BANKS: 62
 };
 
 /**
@@ -63558,6 +65618,43 @@ proto.io.haveno.protobuffer.PaymentAccountFormField.prototype.addRequiredForCoun
  */
 proto.io.haveno.protobuffer.PaymentAccountFormField.prototype.clearRequiredForCountriesList = function() {
   return this.setRequiredForCountriesList([]);
+};
+
+
+/**
+ * repeated string supported_values = 13;
+ * @return {!Array<string>}
+ */
+proto.io.haveno.protobuffer.PaymentAccountFormField.prototype.getSupportedValuesList = function() {
+  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 13));
+};
+
+
+/**
+ * @param {!Array<string>} value
+ * @return {!proto.io.haveno.protobuffer.PaymentAccountFormField} returns this
+ */
+proto.io.haveno.protobuffer.PaymentAccountFormField.prototype.setSupportedValuesList = function(value) {
+  return jspb.Message.setField(this, 13, value || []);
+};
+
+
+/**
+ * @param {string} value
+ * @param {number=} opt_index
+ * @return {!proto.io.haveno.protobuffer.PaymentAccountFormField} returns this
+ */
+proto.io.haveno.protobuffer.PaymentAccountFormField.prototype.addSupportedValues = function(value, opt_index) {
+  return jspb.Message.addToRepeatedField(this, 13, value, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.io.haveno.protobuffer.PaymentAccountFormField} returns this
+ */
+proto.io.haveno.protobuffer.PaymentAccountFormField.prototype.clearSupportedValuesList = function() {
+  return this.setSupportedValuesList([]);
 };
 
 
