@@ -3980,6 +3980,11 @@ export class CountryBasedPaymentAccountPayload extends jspb.Message {
   hasBlikAccountPayload(): boolean;
   clearBlikAccountPayload(): CountryBasedPaymentAccountPayload;
 
+  getVippsMobilePayAccountPayload(): VippsMobilePayAccountPayload | undefined;
+  setVippsMobilePayAccountPayload(value?: VippsMobilePayAccountPayload): CountryBasedPaymentAccountPayload;
+  hasVippsMobilePayAccountPayload(): boolean;
+  clearVippsMobilePayAccountPayload(): CountryBasedPaymentAccountPayload;
+
   getMessageCase(): CountryBasedPaymentAccountPayload.MessageCase;
 
   serializeBinary(): Uint8Array;
@@ -4017,6 +4022,7 @@ export namespace CountryBasedPaymentAccountPayload {
     momoAccountPayload?: MomoAccountPayload.AsObject,
     speiAccountPayload?: SpeiAccountPayload.AsObject,
     blikAccountPayload?: BlikAccountPayload.AsObject,
+    vippsMobilePayAccountPayload?: VippsMobilePayAccountPayload.AsObject,
   }
 
   export enum MessageCase { 
@@ -4044,6 +4050,7 @@ export namespace CountryBasedPaymentAccountPayload {
     MOMO_ACCOUNT_PAYLOAD = 23,
     SPEI_ACCOUNT_PAYLOAD = 24,
     BLIK_ACCOUNT_PAYLOAD = 25,
+    VIPPS_MOBILE_PAY_ACCOUNT_PAYLOAD = 26,
   }
 }
 
@@ -5552,6 +5559,28 @@ export class BlikAccountPayload extends jspb.Message {
 export namespace BlikAccountPayload {
   export type AsObject = {
     extraInfo: string,
+  }
+}
+
+export class VippsMobilePayAccountPayload extends jspb.Message {
+  getMobileNr(): string;
+  setMobileNr(value: string): VippsMobilePayAccountPayload;
+
+  getHolderName(): string;
+  setHolderName(value: string): VippsMobilePayAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): VippsMobilePayAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: VippsMobilePayAccountPayload): VippsMobilePayAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: VippsMobilePayAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): VippsMobilePayAccountPayload;
+  static deserializeBinaryFromReader(message: VippsMobilePayAccountPayload, reader: jspb.BinaryReader): VippsMobilePayAccountPayload;
+}
+
+export namespace VippsMobilePayAccountPayload {
+  export type AsObject = {
+    mobileNr: string,
+    holderName: string,
   }
 }
 
@@ -8140,6 +8169,7 @@ export namespace PaymentAccountForm {
     SPECIFIC_BANKS = 60,
     CAPITUAL = 61,
     BLIK = 62,
+    VIPPS_MOBILEPAY = 63,
   }
 }
 
