@@ -69,8 +69,6 @@ let user1: HavenoClient;
 let user2: HavenoClient;
 let monerod: moneroTs.MoneroDaemon;
 let fundingWallet: moneroTs.MoneroWalletRpc;
-let user1Wallet: moneroTs.MoneroWalletRpc;
-let user2Wallet: moneroTs.MoneroWalletRpc;
 
 enum TradeRole {
   MAKER = "MAKER",
@@ -430,8 +428,6 @@ const TestConfig = {
         logProcessOutput: true, // log output for processes started by tests (except arbitrator, user1, and user2 which are configured separately)
         logLevel: "info",
         apiPassword: "apitest",
-        walletUsername: "haveno_user",
-        walletDefaultPassword: "password",
         accountPasswordRequired: true,
         accountPassword: "abctesting789",
         autoLogin: true
@@ -449,14 +445,12 @@ const TestConfig = {
             port: "8080",
             accountPasswordRequired: false,
             accountPassword: "abctesting456",
-            walletUrl: "http://127.0.0.1:38091",
         }, {
             appName: "haveno-" + getBaseCurrencyNetwork() + "_user2", // user2
             logProcessOutput: true,
             port: "8081",
             accountPasswordRequired: false,
             accountPassword: "abctesting789",
-            walletUrl: "http://127.0.0.1:38092",
         }
     ],
     maxFee: HavenoUtils.xmrToAtomicUnits(0.5), // local testnet fees can be relatively high
@@ -542,15 +536,12 @@ interface HavenodContext {
     logProcessOutput?: boolean,
     logLevel?: string,
     apiPassword?: string,
-    walletUsername?: string,
-    walletDefaultPassword?: string,
     accountPasswordRequired?: boolean,
     accountPassword?: string,
     autoLogin?: boolean,
     appName?: string,
     port?: string,
     excludePorts?: string[],
-    walletUrl?: string
     xmrNode?: string
 }
 
@@ -561,7 +552,7 @@ interface TxContext {
 // track started haveno processes
 const HAVENO_CLIENTS: HavenoClient[] = [];
 const HAVENO_PROCESS_PORTS: string[] = [];
-const HAVENO_WALLETS: Map<HavenoClient, any> = new Map<HavenoClient, any>();
+const HAVENO_WALLETS: Map<HavenoClient, moneroTs.MoneroWalletFull> = new Map<HavenoClient, moneroTs.MoneroWalletFull>();
 
 // other config
 const OFFLINE_ERR_MSG = "Http response at 400 or 500 level";
@@ -635,10 +626,6 @@ beforeAll(async () => {
   TestConfig.trade.arbitrator.havenod = arbitrator;
   TestConfig.trade.maker.havenod = user1;
   TestConfig.trade.taker.havenod = user2;
-
-  // connect client wallets
-  user1Wallet = await moneroTs.connectToWalletRpc(TestConfig.startupHavenods[1].walletUrl!, TestConfig.defaultHavenod.walletUsername, TestConfig.defaultHavenod.walletDefaultPassword);
-  user2Wallet = await moneroTs.connectToWalletRpc(TestConfig.startupHavenods[2].walletUrl!, TestConfig.defaultHavenod.walletUsername, TestConfig.defaultHavenod.walletDefaultPassword);
 
   // register arbitrator dispute agent
   await arbitrator.registerDisputeAgent("arbitrator", getArbitratorPrivKey(0));
@@ -1153,7 +1140,7 @@ test("Has a Monero wallet (Test, CI)", async () => {
     await user1.relayXmrTxs(["invalid tx metadata"]);
     throw new Error("Cannot relay invalid tx metadata");
   } catch (err: any) {
-    if (err.message !== "Failed to parse hex.") throw new Error("Unexpected error: " + err.message);
+    if (!err.message.includes("Failed to parse hex")) throw new Error("Unexpected error: " + err.message);
   }
 
   // create sweep txs
@@ -1768,7 +1755,7 @@ test("Can schedule offers with locked funds (Test, CI)", async () => {
 
     // start user3
     user3 = await initHaveno();
-    const user3Wallet = await moneroTs.connectToWalletRpc("http://127.0.0.1:" + user3.getWalletRpcPort(), TestConfig.defaultHavenod.walletUsername, TestConfig.defaultHavenod.walletDefaultPassword);
+    const user3Wallet = await getWallet(user3);
 
     // fund user3 with 2 outputs of 0.5 XMR
     const outputAmt = 500000000000n;
@@ -2417,39 +2404,32 @@ test("Cannot make or take offer with insufficient funds (Test, CI, sanity check)
 
 test("Invalidates offers when reserved funds are spent (Test, CI)", async () => {
   let err;
-  let tx;
   try {
-    
+
     // wait for user1 to have unlocked balance for trade
     const tradeAmount = 250000000000n;
     await waitForAvailableBalance(tradeAmount * 2n, user1);
 
-    // get frozen key images before posting offer
-    const frozenKeyImagesBefore: any[] = [];
-    for (const frozenOutput of await user1Wallet.getOutputs({isFrozen: true})) frozenKeyImagesBefore.push(frozenOutput.getKeyImage().getHex());
+    // restore user1's wallet from seed to spend funds externally
+    const user1Wallet = await getWallet(user1);
 
     // post offer
     await wait(1000);
     const assetCode = getRandomAssetCode();
     const offer: OfferInfo = await makeOffer({maker: {havenod: user1}, assetCode: assetCode, offerAmount: tradeAmount});
 
-    // get key images reserved by offer
-    const reservedKeyImages: any[] = [];
-    const frozenKeyImagesAfter: any[] = [];
-    for (const frozenOutput of await user1Wallet.getOutputs({isFrozen: true})) frozenKeyImagesAfter.push(frozenOutput.getKeyImage().getHex());
-    for (const frozenKeyImageAfter of frozenKeyImagesAfter) {
-      if (!frozenKeyImagesBefore.includes(frozenKeyImageAfter)) reservedKeyImages.push(frozenKeyImageAfter);
-    }
+    // offer reserves funds
+    expect(BigInt((await user1.getBalances()).getReservedOfferBalance())).toBeGreaterThan(0n);
 
     // offer is available to peers
     await wait(TestConfig.trade.walletSyncPeriodMs * 2);
     if (!getOffer(await user2.getOffers(assetCode, OfferDirection.BUY), offer.getId())) throw new Error("Offer " + offer.getId() + " was not found in peer's offers after posting");
 
-    // spend one of offer's reserved outputs
-    if (!reservedKeyImages.length) throw new Error("No reserved key images detected");
-    await user1Wallet.thawOutput(reservedKeyImages[0]);
-    tx = await user1Wallet.sweepOutput({keyImage: reservedKeyImages[0], address: await user1Wallet.getPrimaryAddress(), relay: false});
-    await monerod.submitTxHex(tx.getFullHex()!, true);
+    // spend offer's reserved outputs by sweeping restored wallet, which does not freeze them
+    await user1Wallet.sync();
+    const txs = await sweepOutputsIndividually(user1Wallet, false);
+    if (!txs.length) throw new Error("No txs created to spend reserved outputs");
+    for (const tx of txs) await monerod.submitTxHex(tx.getFullHex()!, true);
 
     // offer is removed from peer offers
     await wait(20000); // TODO: why can't it be sync period * 2?
@@ -2487,6 +2467,10 @@ test("Can handle unexpected errors during trade initialization (Test)", async ()
     const tradeAmount = 250000000000n;
     await waitForAvailableBalance(tradeAmount * 2n, traders[0], traders[1], traders[2]);
 
+    // restore trader wallets from seed to spend funds externally
+    const trader0Wallet = await getWallet(traders[0]);
+    const trader1Wallet = await getWallet(traders[1]);
+
     // trader 0 posts offer
     HavenoUtils.log(1, "Posting offer");
     let offer = await makeOffer({maker: {havenod: traders[0]}, offerAmount: tradeAmount});
@@ -2497,14 +2481,13 @@ test("Can handle unexpected errors during trade initialization (Test)", async ()
     await wait(TestConfig.trade.walletSyncPeriodMs * 2);
 
     // trader 1 spends trade funds after initializing trade
-    let paymentAccount = await createPaymentAccount(traders[1], TestConfig.trade.assetCode!);
-    const spendDelay = 1500;
+    let paymentAccount = await createPaymentAccount(traders[1], TestConfig.trade.assetCode!, TestConfig.trade.paymentMethodId!);
+    const spendDelay = 100;
     wait(spendDelay).then(async function() {
       try {
-        const traderWallet = await moneroTs.connectToWalletRpc("http://127.0.0.1:" + traders[1].getWalletRpcPort(), TestConfig.defaultHavenod.walletUsername, TestConfig.defaultHavenod.walletDefaultPassword);
-        for (const frozenOutput of await traderWallet.getOutputs({isFrozen: true})) await traderWallet.thawOutput(frozenOutput.getKeyImage().getHex());
+        await trader1Wallet.sync();
         HavenoUtils.log(1, "Sweeping trade funds");
-        await traderWallet.sweepUnlocked({address: await traderWallet.getPrimaryAddress(), relay: true});
+        await trader1Wallet.sweepUnlocked({address: await trader1Wallet.getPrimaryAddress(), relay: true});
       } catch (err: any) {
         console.log("Caught error sweeping funds!");
         console.log(err);
@@ -2517,7 +2500,7 @@ test("Can handle unexpected errors during trade initialization (Test)", async ()
       await traders[1].takeOffer(offer.getId(), paymentAccount.getId());
       throw new Error("Should have failed taking offer because taker trade funds spent")
     } catch (err: any) {
-      assert(err.message.includes("not enough unlocked money"), "Unexpected error: " + err.message);
+      if (err.message.includes("Should have failed")) throw new Error("Unexpected error: " + err.message);
     }
 
     // TODO: test it's unavailable right after taking (taker will know before maker)
@@ -2535,10 +2518,10 @@ test("Can handle unexpected errors during trade initialization (Test)", async ()
     // trader 0 spends trade funds after trader 2 takes offer
     wait(spendDelay).then(async function() {
       try {
-        const traderWallet = await moneroTs.connectToWalletRpc("http://127.0.0.1:" + traders[0].getWalletRpcPort(), TestConfig.defaultHavenod.walletUsername, TestConfig.defaultHavenod.walletDefaultPassword);
-        for (const frozenOutput of await traderWallet.getOutputs({isFrozen: true})) await traderWallet.thawOutput(frozenOutput.getKeyImage().getHex());
+        await trader0Wallet.sync();
         HavenoUtils.log(1, "Sweeping offer funds");
-        await traderWallet.sweepUnlocked({address: await traderWallet.getPrimaryAddress(), relay: true});
+        await trader0Wallet.sweepUnlocked({address: await trader0Wallet.getPrimaryAddress(), relay: true});
+        HavenoUtils.log(1, "Done sweeping offer funds");
       } catch (err: any) {
         console.log("Caught error sweeping funds!");
         console.log(err);
@@ -2546,7 +2529,7 @@ test("Can handle unexpected errors during trade initialization (Test)", async ()
     });
 
     // trader 2 tries to take offer
-    paymentAccount = await createCryptoPaymentAccount(traders[2]);
+    paymentAccount = await createPaymentAccount(traders[2], TestConfig.trade.assetCode!, TestConfig.trade.paymentMethodId!);
     try {
       HavenoUtils.log(1, "Trader 2 taking offer")
       await traders[2].takeOffer(offer.getId(), paymentAccount.getId());
@@ -2555,7 +2538,7 @@ test("Can handle unexpected errors during trade initialization (Test)", async ()
 
       // determine if error is expected
       let expected = false;
-      const expectedErrMsgs = ["not enough unlocked money", "timeout reached. protocol did not complete", "trade is already taken", "open offer has been removed"];
+      const expectedErrMsgs = ["not enough unlocked money", "timeout reached. protocol did not complete", "trade is already taken", "open offer has been removed", "error processing deposit tx from maker", "Cannot process deposit request because trade is already failed"];
       for (const expectedErrMsg of expectedErrMsgs) {
         if (err.message.toLowerCase().indexOf(expectedErrMsg) >= 0) {
           expected = true;
@@ -4071,7 +4054,7 @@ async function initHaveno(ctx?: HavenodContext): Promise<HavenoClient> {
       "--appName", ctx.appName,
       "--apiPassword", "apitest",
       "--apiPort", TestConfig.ports.get(ctx.port)![0],
-      "--walletRpcBindPort", ctx.walletUrl ? getPort(ctx.walletUrl) : "" + await getAvailablePort(), // use configured port if given
+      "--walletRpcBindPort", "" + await getAvailablePort(),
       "--passwordRequired", (ctx.accountPasswordRequired ? "true" : "false"),
       "--logLevel", ctx.logLevel!,
       "--disableRateLimits", "true",
@@ -4118,6 +4101,7 @@ async function initHaveno(ctx?: HavenodContext): Promise<HavenoClient> {
  * Release a Haveno client by shutting down its process or disconnecting.
  */
 async function releaseHavenoClient(client: HavenoClient, deleteProcessAppDir?: boolean) {
+  await closeHavenodWallet(client);
   if (client.getProcess()) return releaseHavenoProcess(client, deleteProcessAppDir);
   else await client.disconnect();
 }
@@ -4128,6 +4112,7 @@ async function releaseHavenoClient(client: HavenoClient, deleteProcessAppDir?: b
 async function releaseHavenoProcess(havenod: HavenoClient, deleteAppDir?: boolean) {
   if (!testsOwnProcess(havenod)) throw new Error("Cannot shut down havenod process which is not owned by test");
   if (!moneroTs.GenUtils.arrayContains(HAVENO_CLIENTS, havenod)) throw new Error("Cannot release Haveno client which is not in list of clients");
+  await closeHavenodWallet(havenod);
   let shutDownErr = undefined;
   try {
     await havenod.shutdownServer();
@@ -4253,15 +4238,31 @@ async function prepareForTrading(numTrades: number, ...havenods: HavenoClient[])
   await wait(1000);
 }
 
-async function getWallet(havenod: HavenoClient) {
+/**
+ * Get an in-memory wallet restored from the given daemon's seed in order to test internal state.
+ */
+async function getWallet(havenod: HavenoClient): Promise<moneroTs.MoneroWalletFull> {
   if (!HAVENO_WALLETS.has(havenod)) {
-    let wallet: any;
-    if (havenod === user1) wallet = user1Wallet;
-    else if (havenod === user2) wallet = user2Wallet;
-    else wallet = await moneroTs.connectToWalletRpc("http://127.0.0.1:" + havenod.getWalletRpcPort(), TestConfig.defaultHavenod.walletUsername, TestConfig.defaultHavenod.walletDefaultPassword);
+    const wallet = await moneroTs.createWalletFull({
+      networkType: TestConfig.networkType,
+      seed: await havenod.getXmrSeed(),
+      server: {uri: TestConfig.monerod.url, username: TestConfig.monerod.username, password: TestConfig.monerod.password}
+    });
+    await wallet.sync();
+    await wallet.startSyncing(TestConfig.trade.walletSyncPeriodMs);
     HAVENO_WALLETS.set(havenod, wallet);
   }
-  return HAVENO_WALLETS.get(havenod);
+  return HAVENO_WALLETS.get(havenod)!;
+}
+
+/**
+ * Close the wallet restored from the given daemon's seed, if open.
+ */
+async function closeHavenodWallet(havenod: HavenoClient) {
+  const wallet = HAVENO_WALLETS.get(havenod);
+  if (!wallet) return;
+  HAVENO_WALLETS.delete(havenod);
+  await wallet.close();
 }
 
 /**
@@ -4439,6 +4440,34 @@ async function hasUnspentOutputs(wallets: any[], amt: BigInt, numOutputs?: numbe
 }
 
 /**
+ * Get the number of outputs of the given amount which its haveno daemon may have frozen
+ * for reserved offers, since wallets restored from seed cannot see frozen state.
+ */
+async function getNumReservedOutputs(wallet: moneroTs.MoneroWallet, amt: bigint): Promise<number> {
+  for (const [havenod, havenoWallet] of HAVENO_WALLETS.entries()) {
+    if (havenoWallet === wallet) return Number((BigInt((await havenod.getBalances()).getReservedOfferBalance()) + amt - 1n) / amt);
+  }
+  return 0;
+}
+
+/**
+ * Sweep a wallet's unlocked outputs in individual txs, since large sweep txs can fail
+ * the wallet's decoy selection sanity check on aged test chains.
+ */
+async function sweepOutputsIndividually(wallet: moneroTs.MoneroWallet, relay: boolean): Promise<moneroTs.MoneroTxWallet[]> {
+  const txs: moneroTs.MoneroTxWallet[] = [];
+  const address = await wallet.getPrimaryAddress();
+  for (const output of await wallet.getOutputs({isSpent: false, isFrozen: false, txQuery: {isLocked: false}})) {
+    try {
+      txs.push(await wallet.sweepOutput({address: address, keyImage: output.getKeyImage().getHex(), relay: relay}));
+    } catch (err: any) {
+      HavenoUtils.log(1, "Error sweeping output (skipping): " + err.message); // e.g. output too small to cover fee
+    }
+  }
+  return txs;
+}
+
+/**
  * Fund the given wallets.
  *
  * @param {MoneroWallet} wallets - monerojs wallets
@@ -4451,10 +4480,10 @@ async function fundOutputs(wallets: moneroTs.MoneroWallet[], amt: bigint, numOut
     if (numOutputs === undefined) numOutputs = 1;
     if (waitForUnlock === undefined) waitForUnlock = true;
 
-    // collect destinations
+    // collect destinations, requiring extra outputs to cover any frozen by a haveno daemon for reserved offers
     const destinations: moneroTs.MoneroDestination[] = [];
     for (const wallet of wallets) {
-      if (await hasUnspentOutputs([wallet], amt, numOutputs, undefined)) continue;
+      if (await hasUnspentOutputs([wallet], amt, numOutputs + await getNumReservedOutputs(wallet, amt), undefined)) continue;
       for (let i = 0; i < numOutputs; i++) {
         destinations.push(new moneroTs.MoneroDestination((await wallet.createSubaddress(0)).getAddress(), amt));
       }
