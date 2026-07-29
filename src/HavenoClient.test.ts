@@ -392,6 +392,7 @@ const TestConfig = {
     moneroBinsDir: "../haveno/.localnet",
     testDataDir: "./testdata",
     deferralMs: 25000,
+    useNativeXmrWallet: false, // start havenods with native wallet libraries instead of monero-wallet-rpc
     haveno: {
         path: "../haveno",
         version: "1.8.0"
@@ -4073,7 +4074,8 @@ async function initHaveno(ctx?: HavenodContext): Promise<HavenoClient> {
       "--walletRpcBindPort", ctx.walletUrl ? getPort(ctx.walletUrl) : "" + await getAvailablePort(), // use configured port if given
       "--passwordRequired", (ctx.accountPasswordRequired ? "true" : "false"),
       "--logLevel", ctx.logLevel!,
-      "--disableRateLimits", "true"
+      "--disableRateLimits", "true",
+      "--useNativeXmrWallet", TestConfig.useNativeXmrWallet ? "true" : "false"
     ];
     if (ctx.xmrNode !== undefined) {
       cmd.push("--xmrNode");
