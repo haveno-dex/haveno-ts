@@ -3682,6 +3682,11 @@ export class PaymentAccountPayload extends jspb.Message {
   hasTwintAccountPayload(): boolean;
   clearTwintAccountPayload(): PaymentAccountPayload;
 
+  getNipAccountPayload(): NipAccountPayload | undefined;
+  setNipAccountPayload(value?: NipAccountPayload): PaymentAccountPayload;
+  hasNipAccountPayload(): boolean;
+  clearNipAccountPayload(): PaymentAccountPayload;
+
   getMessageCase(): PaymentAccountPayload.MessageCase;
 
   serializeBinary(): Uint8Array;
@@ -3737,6 +3742,7 @@ export namespace PaymentAccountPayload {
     paypalAccountPayload?: PayPalAccountPayload.AsObject,
     paysafeAccountPayload?: PaysafeAccountPayload.AsObject,
     twintAccountPayload?: TwintAccountPayload.AsObject,
+    nipAccountPayload?: NipAccountPayload.AsObject,
   }
 
   export enum MessageCase { 
@@ -3780,6 +3786,7 @@ export namespace PaymentAccountPayload {
     PAYPAL_ACCOUNT_PAYLOAD = 41,
     PAYSAFE_ACCOUNT_PAYLOAD = 42,
     TWINT_ACCOUNT_PAYLOAD = 43,
+    NIP_ACCOUNT_PAYLOAD = 44,
   }
 }
 
@@ -5610,6 +5617,32 @@ export namespace TwintAccountPayload {
   export type AsObject = {
     mobileNr: string,
     holderName: string,
+  }
+}
+
+export class NipAccountPayload extends jspb.Message {
+  getHolderName(): string;
+  setHolderName(value: string): NipAccountPayload;
+
+  getAccountNr(): string;
+  setAccountNr(value: string): NipAccountPayload;
+
+  getBankName(): string;
+  setBankName(value: string): NipAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): NipAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: NipAccountPayload): NipAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: NipAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): NipAccountPayload;
+  static deserializeBinaryFromReader(message: NipAccountPayload, reader: jspb.BinaryReader): NipAccountPayload;
+}
+
+export namespace NipAccountPayload {
+  export type AsObject = {
+    holderName: string,
+    accountNr: string,
+    bankName: string,
   }
 }
 
@@ -8200,6 +8233,7 @@ export namespace PaymentAccountForm {
     BLIK = 62,
     VIPPS_MOBILEPAY = 63,
     TWINT = 64,
+    NIP = 65,
   }
 }
 
