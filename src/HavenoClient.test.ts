@@ -4833,6 +4833,7 @@ function getValidFormInputAux(form: PaymentAccountForm, fieldId: PaymentAccountF
     case PaymentAccountFormField.FieldId.ACCOUNT_NR:
       if (form.getId() === PaymentAccountForm.FormId.ADVANCED_CASH) return "A123456789012"; // email or letter + 12 digits
       if (form.getId() === PaymentAccountForm.FormId.CAPITUAL) return "CAP-123ABC"; // CAP-<6 alphanumeric>
+      if (form.getId() === PaymentAccountForm.FormId.NIP) return "0123456789"; // 10-digit NUBAN
       return "12345678";
     case PaymentAccountFormField.FieldId.ACCOUNT_OWNER:
       return "John Doe (" + havenod.getAppName() + ")";
@@ -5336,6 +5337,13 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
         expect(account.getPaymentAccountPayload()!.getTwintAccountPayload()!.getMobileNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.MOBILE_NR).getValue());
         expect(account.getTradeCurrenciesList().length).toEqual(1);
         expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("CHF");
+        break;
+    case PaymentAccountForm.FormId.NIP:
+        expect(account.getPaymentAccountPayload()!.getNipAccountPayload()!.getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
+        expect(account.getPaymentAccountPayload()!.getNipAccountPayload()!.getAccountNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.ACCOUNT_NR).getValue());
+        expect(account.getPaymentAccountPayload()!.getNipAccountPayload()!.getBankName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.BANK_NAME).getValue());
+        expect(account.getTradeCurrenciesList().length).toEqual(1);
+        expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("NGN");
         break;
     case PaymentAccountForm.FormId.NEQUI:
         expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getNequiAccountPayload()!.getMobileNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.MOBILE_NR).getValue());
