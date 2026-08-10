@@ -5331,6 +5331,12 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
         expect(account.getTradeCurrenciesList().length).toEqual(1);
         expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("NOK"); // form defaults to first supported country
         break;
+    case PaymentAccountForm.FormId.TWINT:
+        expect(account.getPaymentAccountPayload()!.getTwintAccountPayload()!.getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
+        expect(account.getPaymentAccountPayload()!.getTwintAccountPayload()!.getMobileNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.MOBILE_NR).getValue());
+        expect(account.getTradeCurrenciesList().length).toEqual(1);
+        expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("CHF");
+        break;
     case PaymentAccountForm.FormId.NEQUI:
         expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getNequiAccountPayload()!.getMobileNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.MOBILE_NR).getValue());
         expect(account.getTradeCurrenciesList().length).toEqual(1);

@@ -3677,6 +3677,11 @@ export class PaymentAccountPayload extends jspb.Message {
   hasPaysafeAccountPayload(): boolean;
   clearPaysafeAccountPayload(): PaymentAccountPayload;
 
+  getTwintAccountPayload(): TwintAccountPayload | undefined;
+  setTwintAccountPayload(value?: TwintAccountPayload): PaymentAccountPayload;
+  hasTwintAccountPayload(): boolean;
+  clearTwintAccountPayload(): PaymentAccountPayload;
+
   getMessageCase(): PaymentAccountPayload.MessageCase;
 
   serializeBinary(): Uint8Array;
@@ -3731,6 +3736,7 @@ export namespace PaymentAccountPayload {
     cashAtAtmAccountPayload?: CashAtAtmAccountPayload.AsObject,
     paypalAccountPayload?: PayPalAccountPayload.AsObject,
     paysafeAccountPayload?: PaysafeAccountPayload.AsObject,
+    twintAccountPayload?: TwintAccountPayload.AsObject,
   }
 
   export enum MessageCase { 
@@ -3773,6 +3779,7 @@ export namespace PaymentAccountPayload {
     CASH_AT_ATM_ACCOUNT_PAYLOAD = 40,
     PAYPAL_ACCOUNT_PAYLOAD = 41,
     PAYSAFE_ACCOUNT_PAYLOAD = 42,
+    TWINT_ACCOUNT_PAYLOAD = 43,
   }
 }
 
@@ -5578,6 +5585,28 @@ export class VippsMobilePayAccountPayload extends jspb.Message {
 }
 
 export namespace VippsMobilePayAccountPayload {
+  export type AsObject = {
+    mobileNr: string,
+    holderName: string,
+  }
+}
+
+export class TwintAccountPayload extends jspb.Message {
+  getMobileNr(): string;
+  setMobileNr(value: string): TwintAccountPayload;
+
+  getHolderName(): string;
+  setHolderName(value: string): TwintAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): TwintAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: TwintAccountPayload): TwintAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: TwintAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): TwintAccountPayload;
+  static deserializeBinaryFromReader(message: TwintAccountPayload, reader: jspb.BinaryReader): TwintAccountPayload;
+}
+
+export namespace TwintAccountPayload {
   export type AsObject = {
     mobileNr: string,
     holderName: string,
@@ -8170,6 +8199,7 @@ export namespace PaymentAccountForm {
     CAPITUAL = 61,
     BLIK = 62,
     VIPPS_MOBILEPAY = 63,
+    TWINT = 64,
   }
 }
 
