@@ -3687,6 +3687,11 @@ export class PaymentAccountPayload extends jspb.Message {
   hasNipAccountPayload(): boolean;
   clearNipAccountPayload(): PaymentAccountPayload;
 
+  getPagoMovilAccountPayload(): PagoMovilAccountPayload | undefined;
+  setPagoMovilAccountPayload(value?: PagoMovilAccountPayload): PaymentAccountPayload;
+  hasPagoMovilAccountPayload(): boolean;
+  clearPagoMovilAccountPayload(): PaymentAccountPayload;
+
   getMessageCase(): PaymentAccountPayload.MessageCase;
 
   serializeBinary(): Uint8Array;
@@ -3743,6 +3748,7 @@ export namespace PaymentAccountPayload {
     paysafeAccountPayload?: PaysafeAccountPayload.AsObject,
     twintAccountPayload?: TwintAccountPayload.AsObject,
     nipAccountPayload?: NipAccountPayload.AsObject,
+    pagoMovilAccountPayload?: PagoMovilAccountPayload.AsObject,
   }
 
   export enum MessageCase { 
@@ -3787,6 +3793,7 @@ export namespace PaymentAccountPayload {
     PAYSAFE_ACCOUNT_PAYLOAD = 42,
     TWINT_ACCOUNT_PAYLOAD = 43,
     NIP_ACCOUNT_PAYLOAD = 44,
+    PAGO_MOVIL_ACCOUNT_PAYLOAD = 45,
   }
 }
 
@@ -5642,6 +5649,36 @@ export namespace NipAccountPayload {
   export type AsObject = {
     holderName: string,
     accountNr: string,
+    bankName: string,
+  }
+}
+
+export class PagoMovilAccountPayload extends jspb.Message {
+  getHolderName(): string;
+  setHolderName(value: string): PagoMovilAccountPayload;
+
+  getMobileNr(): string;
+  setMobileNr(value: string): PagoMovilAccountPayload;
+
+  getHolderTaxId(): string;
+  setHolderTaxId(value: string): PagoMovilAccountPayload;
+
+  getBankName(): string;
+  setBankName(value: string): PagoMovilAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PagoMovilAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: PagoMovilAccountPayload): PagoMovilAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: PagoMovilAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PagoMovilAccountPayload;
+  static deserializeBinaryFromReader(message: PagoMovilAccountPayload, reader: jspb.BinaryReader): PagoMovilAccountPayload;
+}
+
+export namespace PagoMovilAccountPayload {
+  export type AsObject = {
+    holderName: string,
+    mobileNr: string,
+    holderTaxId: string,
     bankName: string,
   }
 }
@@ -8234,6 +8271,7 @@ export namespace PaymentAccountForm {
     VIPPS_MOBILEPAY = 63,
     TWINT = 64,
     NIP = 65,
+    PAGO_MOVIL = 66,
   }
 }
 

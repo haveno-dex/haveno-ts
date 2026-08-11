@@ -5345,6 +5345,14 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
         expect(account.getTradeCurrenciesList().length).toEqual(1);
         expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("NGN");
         break;
+    case PaymentAccountForm.FormId.PAGO_MOVIL:
+        expect(account.getPaymentAccountPayload()!.getPagoMovilAccountPayload()!.getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
+        expect(account.getPaymentAccountPayload()!.getPagoMovilAccountPayload()!.getMobileNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.MOBILE_NR).getValue());
+        expect(account.getPaymentAccountPayload()!.getPagoMovilAccountPayload()!.getHolderTaxId()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_TAX_ID).getValue());
+        expect(account.getPaymentAccountPayload()!.getPagoMovilAccountPayload()!.getBankName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.BANK_NAME).getValue());
+        expect(account.getTradeCurrenciesList().length).toEqual(1);
+        expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("VES");
+        break;
     case PaymentAccountForm.FormId.NEQUI:
         expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getNequiAccountPayload()!.getMobileNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.MOBILE_NR).getValue());
         expect(account.getTradeCurrenciesList().length).toEqual(1);
