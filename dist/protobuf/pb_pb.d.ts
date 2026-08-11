@@ -3692,6 +3692,11 @@ export class PaymentAccountPayload extends jspb.Message {
   hasPagoMovilAccountPayload(): boolean;
   clearPagoMovilAccountPayload(): PaymentAccountPayload;
 
+  getQrisAccountPayload(): QrisAccountPayload | undefined;
+  setQrisAccountPayload(value?: QrisAccountPayload): PaymentAccountPayload;
+  hasQrisAccountPayload(): boolean;
+  clearQrisAccountPayload(): PaymentAccountPayload;
+
   getMessageCase(): PaymentAccountPayload.MessageCase;
 
   serializeBinary(): Uint8Array;
@@ -3749,6 +3754,7 @@ export namespace PaymentAccountPayload {
     twintAccountPayload?: TwintAccountPayload.AsObject,
     nipAccountPayload?: NipAccountPayload.AsObject,
     pagoMovilAccountPayload?: PagoMovilAccountPayload.AsObject,
+    qrisAccountPayload?: QrisAccountPayload.AsObject,
   }
 
   export enum MessageCase { 
@@ -3794,6 +3800,7 @@ export namespace PaymentAccountPayload {
     TWINT_ACCOUNT_PAYLOAD = 43,
     NIP_ACCOUNT_PAYLOAD = 44,
     PAGO_MOVIL_ACCOUNT_PAYLOAD = 45,
+    QRIS_ACCOUNT_PAYLOAD = 46,
   }
 }
 
@@ -5679,6 +5686,32 @@ export namespace PagoMovilAccountPayload {
     holderName: string,
     mobileNr: string,
     holderTaxId: string,
+    bankName: string,
+  }
+}
+
+export class QrisAccountPayload extends jspb.Message {
+  getHolderName(): string;
+  setHolderName(value: string): QrisAccountPayload;
+
+  getAccountNr(): string;
+  setAccountNr(value: string): QrisAccountPayload;
+
+  getBankName(): string;
+  setBankName(value: string): QrisAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): QrisAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: QrisAccountPayload): QrisAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: QrisAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): QrisAccountPayload;
+  static deserializeBinaryFromReader(message: QrisAccountPayload, reader: jspb.BinaryReader): QrisAccountPayload;
+}
+
+export namespace QrisAccountPayload {
+  export type AsObject = {
+    holderName: string,
+    accountNr: string,
     bankName: string,
   }
 }
@@ -8272,6 +8305,7 @@ export namespace PaymentAccountForm {
     TWINT = 64,
     NIP = 65,
     PAGO_MOVIL = 66,
+    QRIS = 67,
   }
 }
 
