@@ -4837,6 +4837,7 @@ function getValidFormInputAux(form: PaymentAccountForm, fieldId: PaymentAccountF
       if (form.getId() === PaymentAccountForm.FormId.PAPARA) return "1234567890"; // 10-digit Papara number
       if (form.getId() === PaymentAccountForm.FormId.RAAST) return "03001234567"; // 11-digit mobile number
       if (form.getId() === PaymentAccountForm.FormId.PAYNOW) return "91234567"; // 8-digit PayNow mobile number
+      if (form.getId() === PaymentAccountForm.FormId.FPS) return "98765432"; // 8-digit FPS mobile number
       return "12345678";
     case PaymentAccountFormField.FieldId.ACCOUNT_OWNER:
       return "John Doe (" + havenod.getAppName() + ")";
@@ -5390,6 +5391,13 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
         expect(account.getPaymentAccountPayload()!.getWeroAccountPayload()!.getMobileNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.MOBILE_NR).getValue());
         expect(account.getTradeCurrenciesList().length).toEqual(1);
         expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("EUR");
+        break;
+    case PaymentAccountForm.FormId.FPS:
+        expect(account.getPaymentAccountPayload()!.getFpsAccountPayload()!.getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
+        expect(account.getPaymentAccountPayload()!.getFpsAccountPayload()!.getAccountNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.ACCOUNT_NR).getValue());
+        expect(account.getPaymentAccountPayload()!.getFpsAccountPayload()!.getBankName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.BANK_NAME).getValue());
+        expect(account.getTradeCurrenciesList().length).toEqual(1);
+        expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("HKD");
         break;
     case PaymentAccountForm.FormId.NEQUI:
         expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getNequiAccountPayload()!.getMobileNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.MOBILE_NR).getValue());
