@@ -3697,6 +3697,11 @@ export class PaymentAccountPayload extends jspb.Message {
   hasQrisAccountPayload(): boolean;
   clearQrisAccountPayload(): PaymentAccountPayload;
 
+  getPaparaAccountPayload(): PaparaAccountPayload | undefined;
+  setPaparaAccountPayload(value?: PaparaAccountPayload): PaymentAccountPayload;
+  hasPaparaAccountPayload(): boolean;
+  clearPaparaAccountPayload(): PaymentAccountPayload;
+
   getMessageCase(): PaymentAccountPayload.MessageCase;
 
   serializeBinary(): Uint8Array;
@@ -3755,6 +3760,7 @@ export namespace PaymentAccountPayload {
     nipAccountPayload?: NipAccountPayload.AsObject,
     pagoMovilAccountPayload?: PagoMovilAccountPayload.AsObject,
     qrisAccountPayload?: QrisAccountPayload.AsObject,
+    paparaAccountPayload?: PaparaAccountPayload.AsObject,
   }
 
   export enum MessageCase { 
@@ -3801,6 +3807,7 @@ export namespace PaymentAccountPayload {
     NIP_ACCOUNT_PAYLOAD = 44,
     PAGO_MOVIL_ACCOUNT_PAYLOAD = 45,
     QRIS_ACCOUNT_PAYLOAD = 46,
+    PAPARA_ACCOUNT_PAYLOAD = 47,
   }
 }
 
@@ -5709,6 +5716,32 @@ export class QrisAccountPayload extends jspb.Message {
 }
 
 export namespace QrisAccountPayload {
+  export type AsObject = {
+    holderName: string,
+    accountNr: string,
+    bankName: string,
+  }
+}
+
+export class PaparaAccountPayload extends jspb.Message {
+  getHolderName(): string;
+  setHolderName(value: string): PaparaAccountPayload;
+
+  getAccountNr(): string;
+  setAccountNr(value: string): PaparaAccountPayload;
+
+  getBankName(): string;
+  setBankName(value: string): PaparaAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PaparaAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: PaparaAccountPayload): PaparaAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: PaparaAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PaparaAccountPayload;
+  static deserializeBinaryFromReader(message: PaparaAccountPayload, reader: jspb.BinaryReader): PaparaAccountPayload;
+}
+
+export namespace PaparaAccountPayload {
   export type AsObject = {
     holderName: string,
     accountNr: string,
@@ -8306,6 +8339,7 @@ export namespace PaymentAccountForm {
     NIP = 65,
     PAGO_MOVIL = 66,
     QRIS = 67,
+    PAPARA = 68,
   }
 }
 
