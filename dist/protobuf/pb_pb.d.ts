@@ -3712,6 +3712,11 @@ export class PaymentAccountPayload extends jspb.Message {
   hasPaynowAccountPayload(): boolean;
   clearPaynowAccountPayload(): PaymentAccountPayload;
 
+  getWeroAccountPayload(): WeroAccountPayload | undefined;
+  setWeroAccountPayload(value?: WeroAccountPayload): PaymentAccountPayload;
+  hasWeroAccountPayload(): boolean;
+  clearWeroAccountPayload(): PaymentAccountPayload;
+
   getMessageCase(): PaymentAccountPayload.MessageCase;
 
   serializeBinary(): Uint8Array;
@@ -3773,6 +3778,7 @@ export namespace PaymentAccountPayload {
     paparaAccountPayload?: PaparaAccountPayload.AsObject,
     raastAccountPayload?: RaastAccountPayload.AsObject,
     paynowAccountPayload?: PayNowAccountPayload.AsObject,
+    weroAccountPayload?: WeroAccountPayload.AsObject,
   }
 
   export enum MessageCase { 
@@ -3822,6 +3828,7 @@ export namespace PaymentAccountPayload {
     PAPARA_ACCOUNT_PAYLOAD = 47,
     RAAST_ACCOUNT_PAYLOAD = 48,
     PAYNOW_ACCOUNT_PAYLOAD = 49,
+    WERO_ACCOUNT_PAYLOAD = 50,
   }
 }
 
@@ -5812,6 +5819,28 @@ export namespace PayNowAccountPayload {
     holderName: string,
     accountNr: string,
     bankName: string,
+  }
+}
+
+export class WeroAccountPayload extends jspb.Message {
+  getMobileNr(): string;
+  setMobileNr(value: string): WeroAccountPayload;
+
+  getHolderName(): string;
+  setHolderName(value: string): WeroAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): WeroAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: WeroAccountPayload): WeroAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: WeroAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): WeroAccountPayload;
+  static deserializeBinaryFromReader(message: WeroAccountPayload, reader: jspb.BinaryReader): WeroAccountPayload;
+}
+
+export namespace WeroAccountPayload {
+  export type AsObject = {
+    mobileNr: string,
+    holderName: string,
   }
 }
 
@@ -8408,6 +8437,7 @@ export namespace PaymentAccountForm {
     PAPARA = 68,
     RAAST = 69,
     PAYNOW = 70,
+    WERO = 71,
   }
 }
 
