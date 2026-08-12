@@ -3717,6 +3717,11 @@ export class PaymentAccountPayload extends jspb.Message {
   hasWeroAccountPayload(): boolean;
   clearWeroAccountPayload(): PaymentAccountPayload;
 
+  getFpsAccountPayload(): FpsAccountPayload | undefined;
+  setFpsAccountPayload(value?: FpsAccountPayload): PaymentAccountPayload;
+  hasFpsAccountPayload(): boolean;
+  clearFpsAccountPayload(): PaymentAccountPayload;
+
   getMessageCase(): PaymentAccountPayload.MessageCase;
 
   serializeBinary(): Uint8Array;
@@ -3779,6 +3784,7 @@ export namespace PaymentAccountPayload {
     raastAccountPayload?: RaastAccountPayload.AsObject,
     paynowAccountPayload?: PayNowAccountPayload.AsObject,
     weroAccountPayload?: WeroAccountPayload.AsObject,
+    fpsAccountPayload?: FpsAccountPayload.AsObject,
   }
 
   export enum MessageCase { 
@@ -3829,6 +3835,7 @@ export namespace PaymentAccountPayload {
     RAAST_ACCOUNT_PAYLOAD = 48,
     PAYNOW_ACCOUNT_PAYLOAD = 49,
     WERO_ACCOUNT_PAYLOAD = 50,
+    FPS_ACCOUNT_PAYLOAD = 51,
   }
 }
 
@@ -5841,6 +5848,32 @@ export namespace WeroAccountPayload {
   export type AsObject = {
     mobileNr: string,
     holderName: string,
+  }
+}
+
+export class FpsAccountPayload extends jspb.Message {
+  getHolderName(): string;
+  setHolderName(value: string): FpsAccountPayload;
+
+  getAccountNr(): string;
+  setAccountNr(value: string): FpsAccountPayload;
+
+  getBankName(): string;
+  setBankName(value: string): FpsAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): FpsAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: FpsAccountPayload): FpsAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: FpsAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): FpsAccountPayload;
+  static deserializeBinaryFromReader(message: FpsAccountPayload, reader: jspb.BinaryReader): FpsAccountPayload;
+}
+
+export namespace FpsAccountPayload {
+  export type AsObject = {
+    holderName: string,
+    accountNr: string,
+    bankName: string,
   }
 }
 
@@ -8438,6 +8471,7 @@ export namespace PaymentAccountForm {
     RAAST = 69,
     PAYNOW = 70,
     WERO = 71,
+    FPS = 72,
   }
 }
 
