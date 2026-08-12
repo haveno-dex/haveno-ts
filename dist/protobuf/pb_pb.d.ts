@@ -3707,6 +3707,11 @@ export class PaymentAccountPayload extends jspb.Message {
   hasRaastAccountPayload(): boolean;
   clearRaastAccountPayload(): PaymentAccountPayload;
 
+  getPaynowAccountPayload(): PayNowAccountPayload | undefined;
+  setPaynowAccountPayload(value?: PayNowAccountPayload): PaymentAccountPayload;
+  hasPaynowAccountPayload(): boolean;
+  clearPaynowAccountPayload(): PaymentAccountPayload;
+
   getMessageCase(): PaymentAccountPayload.MessageCase;
 
   serializeBinary(): Uint8Array;
@@ -3767,6 +3772,7 @@ export namespace PaymentAccountPayload {
     qrisAccountPayload?: QrisAccountPayload.AsObject,
     paparaAccountPayload?: PaparaAccountPayload.AsObject,
     raastAccountPayload?: RaastAccountPayload.AsObject,
+    paynowAccountPayload?: PayNowAccountPayload.AsObject,
   }
 
   export enum MessageCase { 
@@ -3815,6 +3821,7 @@ export namespace PaymentAccountPayload {
     QRIS_ACCOUNT_PAYLOAD = 46,
     PAPARA_ACCOUNT_PAYLOAD = 47,
     RAAST_ACCOUNT_PAYLOAD = 48,
+    PAYNOW_ACCOUNT_PAYLOAD = 49,
   }
 }
 
@@ -5775,6 +5782,32 @@ export class RaastAccountPayload extends jspb.Message {
 }
 
 export namespace RaastAccountPayload {
+  export type AsObject = {
+    holderName: string,
+    accountNr: string,
+    bankName: string,
+  }
+}
+
+export class PayNowAccountPayload extends jspb.Message {
+  getHolderName(): string;
+  setHolderName(value: string): PayNowAccountPayload;
+
+  getAccountNr(): string;
+  setAccountNr(value: string): PayNowAccountPayload;
+
+  getBankName(): string;
+  setBankName(value: string): PayNowAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PayNowAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: PayNowAccountPayload): PayNowAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: PayNowAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PayNowAccountPayload;
+  static deserializeBinaryFromReader(message: PayNowAccountPayload, reader: jspb.BinaryReader): PayNowAccountPayload;
+}
+
+export namespace PayNowAccountPayload {
   export type AsObject = {
     holderName: string,
     accountNr: string,
@@ -8374,6 +8407,7 @@ export namespace PaymentAccountForm {
     QRIS = 67,
     PAPARA = 68,
     RAAST = 69,
+    PAYNOW = 70,
   }
 }
 
