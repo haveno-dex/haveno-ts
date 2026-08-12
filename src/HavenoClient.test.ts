@@ -4920,6 +4920,7 @@ function getValidFormInputAux(form: PaymentAccountForm, fieldId: PaymentAccountF
     case PaymentAccountFormField.FieldId.INTERMEDIARY_SWIFT_CODE:
       return "10987654321"; // TODO: use real swift code
     case PaymentAccountFormField.FieldId.MOBILE_NR:
+      if (form.getId() === PaymentAccountForm.FormId.WERO) return "+4915112345678"; // DE mobile number in international format
       return "876-512-7813";
     case PaymentAccountFormField.FieldId.NATIONAL_ACCOUNT_ID:
       return "1234567890123456789012"; // only required for some countries (e.g. AR, which expects 22 digits)
@@ -5383,6 +5384,12 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
         expect(account.getPaymentAccountPayload()!.getPaynowAccountPayload()!.getBankName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.BANK_NAME).getValue());
         expect(account.getTradeCurrenciesList().length).toEqual(1);
         expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("SGD");
+        break;
+    case PaymentAccountForm.FormId.WERO:
+        expect(account.getPaymentAccountPayload()!.getWeroAccountPayload()!.getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
+        expect(account.getPaymentAccountPayload()!.getWeroAccountPayload()!.getMobileNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.MOBILE_NR).getValue());
+        expect(account.getTradeCurrenciesList().length).toEqual(1);
+        expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("EUR");
         break;
     case PaymentAccountForm.FormId.NEQUI:
         expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getNequiAccountPayload()!.getMobileNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.MOBILE_NR).getValue());
