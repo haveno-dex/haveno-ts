@@ -3702,6 +3702,11 @@ export class PaymentAccountPayload extends jspb.Message {
   hasPaparaAccountPayload(): boolean;
   clearPaparaAccountPayload(): PaymentAccountPayload;
 
+  getRaastAccountPayload(): RaastAccountPayload | undefined;
+  setRaastAccountPayload(value?: RaastAccountPayload): PaymentAccountPayload;
+  hasRaastAccountPayload(): boolean;
+  clearRaastAccountPayload(): PaymentAccountPayload;
+
   getMessageCase(): PaymentAccountPayload.MessageCase;
 
   serializeBinary(): Uint8Array;
@@ -3761,6 +3766,7 @@ export namespace PaymentAccountPayload {
     pagoMovilAccountPayload?: PagoMovilAccountPayload.AsObject,
     qrisAccountPayload?: QrisAccountPayload.AsObject,
     paparaAccountPayload?: PaparaAccountPayload.AsObject,
+    raastAccountPayload?: RaastAccountPayload.AsObject,
   }
 
   export enum MessageCase { 
@@ -3808,6 +3814,7 @@ export namespace PaymentAccountPayload {
     PAGO_MOVIL_ACCOUNT_PAYLOAD = 45,
     QRIS_ACCOUNT_PAYLOAD = 46,
     PAPARA_ACCOUNT_PAYLOAD = 47,
+    RAAST_ACCOUNT_PAYLOAD = 48,
   }
 }
 
@@ -5742,6 +5749,32 @@ export class PaparaAccountPayload extends jspb.Message {
 }
 
 export namespace PaparaAccountPayload {
+  export type AsObject = {
+    holderName: string,
+    accountNr: string,
+    bankName: string,
+  }
+}
+
+export class RaastAccountPayload extends jspb.Message {
+  getHolderName(): string;
+  setHolderName(value: string): RaastAccountPayload;
+
+  getAccountNr(): string;
+  setAccountNr(value: string): RaastAccountPayload;
+
+  getBankName(): string;
+  setBankName(value: string): RaastAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): RaastAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: RaastAccountPayload): RaastAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: RaastAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): RaastAccountPayload;
+  static deserializeBinaryFromReader(message: RaastAccountPayload, reader: jspb.BinaryReader): RaastAccountPayload;
+}
+
+export namespace RaastAccountPayload {
   export type AsObject = {
     holderName: string,
     accountNr: string,
@@ -8340,6 +8373,7 @@ export namespace PaymentAccountForm {
     PAGO_MOVIL = 66,
     QRIS = 67,
     PAPARA = 68,
+    RAAST = 69,
   }
 }
 
