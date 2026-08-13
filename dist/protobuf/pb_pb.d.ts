@@ -4074,6 +4074,11 @@ export class CountryBasedPaymentAccountPayload extends jspb.Message {
   hasSbpAccountPayload(): boolean;
   clearSbpAccountPayload(): CountryBasedPaymentAccountPayload;
 
+  getMirAccountPayload(): MirAccountPayload | undefined;
+  setMirAccountPayload(value?: MirAccountPayload): CountryBasedPaymentAccountPayload;
+  hasMirAccountPayload(): boolean;
+  clearMirAccountPayload(): CountryBasedPaymentAccountPayload;
+
   getMessageCase(): CountryBasedPaymentAccountPayload.MessageCase;
 
   serializeBinary(): Uint8Array;
@@ -4113,6 +4118,7 @@ export namespace CountryBasedPaymentAccountPayload {
     blikAccountPayload?: BlikAccountPayload.AsObject,
     vippsMobilePayAccountPayload?: VippsMobilePayAccountPayload.AsObject,
     sbpAccountPayload?: SbpAccountPayload.AsObject,
+    mirAccountPayload?: MirAccountPayload.AsObject,
   }
 
   export enum MessageCase { 
@@ -4142,6 +4148,7 @@ export namespace CountryBasedPaymentAccountPayload {
     BLIK_ACCOUNT_PAYLOAD = 25,
     VIPPS_MOBILE_PAY_ACCOUNT_PAYLOAD = 26,
     SBP_ACCOUNT_PAYLOAD = 27,
+    MIR_ACCOUNT_PAYLOAD = 28,
   }
 }
 
@@ -5994,6 +6001,28 @@ export namespace SbpAccountPayload {
   export type AsObject = {
     holderName: string,
     mobileNr: string,
+  }
+}
+
+export class MirAccountPayload extends jspb.Message {
+  getHolderName(): string;
+  setHolderName(value: string): MirAccountPayload;
+
+  getAccountNr(): string;
+  setAccountNr(value: string): MirAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): MirAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: MirAccountPayload): MirAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: MirAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): MirAccountPayload;
+  static deserializeBinaryFromReader(message: MirAccountPayload, reader: jspb.BinaryReader): MirAccountPayload;
+}
+
+export namespace MirAccountPayload {
+  export type AsObject = {
+    holderName: string,
+    accountNr: string,
   }
 }
 
@@ -8596,6 +8625,7 @@ export namespace PaymentAccountForm {
     MB_WAY = 74,
     PAYPAY = 75,
     SBP = 76,
+    MIR = 77,
   }
 }
 
