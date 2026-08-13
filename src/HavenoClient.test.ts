@@ -5407,6 +5407,12 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
         expect(account.getTradeCurrenciesList().length).toEqual(1);
         expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("MYR");
         break;
+    case PaymentAccountForm.FormId.MB_WAY:
+        expect(account.getPaymentAccountPayload()!.getMbWayAccountPayload()!.getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
+        expect(account.getPaymentAccountPayload()!.getMbWayAccountPayload()!.getMobileNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.MOBILE_NR).getValue());
+        expect(account.getTradeCurrenciesList().length).toEqual(1);
+        expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("EUR");
+        break;
     case PaymentAccountForm.FormId.NEQUI:
         expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getNequiAccountPayload()!.getMobileNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.MOBILE_NR).getValue());
         expect(account.getTradeCurrenciesList().length).toEqual(1);
