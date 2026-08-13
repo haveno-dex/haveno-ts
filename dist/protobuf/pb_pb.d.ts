@@ -3722,6 +3722,11 @@ export class PaymentAccountPayload extends jspb.Message {
   hasFpsAccountPayload(): boolean;
   clearFpsAccountPayload(): PaymentAccountPayload;
 
+  getDuitnowAccountPayload(): DuitNowAccountPayload | undefined;
+  setDuitnowAccountPayload(value?: DuitNowAccountPayload): PaymentAccountPayload;
+  hasDuitnowAccountPayload(): boolean;
+  clearDuitnowAccountPayload(): PaymentAccountPayload;
+
   getMessageCase(): PaymentAccountPayload.MessageCase;
 
   serializeBinary(): Uint8Array;
@@ -3785,6 +3790,7 @@ export namespace PaymentAccountPayload {
     paynowAccountPayload?: PayNowAccountPayload.AsObject,
     weroAccountPayload?: WeroAccountPayload.AsObject,
     fpsAccountPayload?: FpsAccountPayload.AsObject,
+    duitnowAccountPayload?: DuitNowAccountPayload.AsObject,
   }
 
   export enum MessageCase { 
@@ -3836,6 +3842,7 @@ export namespace PaymentAccountPayload {
     PAYNOW_ACCOUNT_PAYLOAD = 49,
     WERO_ACCOUNT_PAYLOAD = 50,
     FPS_ACCOUNT_PAYLOAD = 51,
+    DUITNOW_ACCOUNT_PAYLOAD = 52,
   }
 }
 
@@ -5870,6 +5877,32 @@ export class FpsAccountPayload extends jspb.Message {
 }
 
 export namespace FpsAccountPayload {
+  export type AsObject = {
+    holderName: string,
+    accountNr: string,
+    bankName: string,
+  }
+}
+
+export class DuitNowAccountPayload extends jspb.Message {
+  getHolderName(): string;
+  setHolderName(value: string): DuitNowAccountPayload;
+
+  getAccountNr(): string;
+  setAccountNr(value: string): DuitNowAccountPayload;
+
+  getBankName(): string;
+  setBankName(value: string): DuitNowAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): DuitNowAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: DuitNowAccountPayload): DuitNowAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: DuitNowAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): DuitNowAccountPayload;
+  static deserializeBinaryFromReader(message: DuitNowAccountPayload, reader: jspb.BinaryReader): DuitNowAccountPayload;
+}
+
+export namespace DuitNowAccountPayload {
   export type AsObject = {
     holderName: string,
     accountNr: string,
@@ -8472,6 +8505,7 @@ export namespace PaymentAccountForm {
     PAYNOW = 70,
     WERO = 71,
     FPS = 72,
+    DUITNOW = 73,
   }
 }
 
