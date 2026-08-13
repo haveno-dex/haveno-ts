@@ -4079,6 +4079,11 @@ export class CountryBasedPaymentAccountPayload extends jspb.Message {
   hasMirAccountPayload(): boolean;
   clearMirAccountPayload(): CountryBasedPaymentAccountPayload;
 
+  getYoomoneyAccountPayload(): YooMoneyAccountPayload | undefined;
+  setYoomoneyAccountPayload(value?: YooMoneyAccountPayload): CountryBasedPaymentAccountPayload;
+  hasYoomoneyAccountPayload(): boolean;
+  clearYoomoneyAccountPayload(): CountryBasedPaymentAccountPayload;
+
   getMessageCase(): CountryBasedPaymentAccountPayload.MessageCase;
 
   serializeBinary(): Uint8Array;
@@ -4119,6 +4124,7 @@ export namespace CountryBasedPaymentAccountPayload {
     vippsMobilePayAccountPayload?: VippsMobilePayAccountPayload.AsObject,
     sbpAccountPayload?: SbpAccountPayload.AsObject,
     mirAccountPayload?: MirAccountPayload.AsObject,
+    yoomoneyAccountPayload?: YooMoneyAccountPayload.AsObject,
   }
 
   export enum MessageCase { 
@@ -4149,6 +4155,7 @@ export namespace CountryBasedPaymentAccountPayload {
     VIPPS_MOBILE_PAY_ACCOUNT_PAYLOAD = 26,
     SBP_ACCOUNT_PAYLOAD = 27,
     MIR_ACCOUNT_PAYLOAD = 28,
+    YOOMONEY_ACCOUNT_PAYLOAD = 29,
   }
 }
 
@@ -6020,6 +6027,28 @@ export class MirAccountPayload extends jspb.Message {
 }
 
 export namespace MirAccountPayload {
+  export type AsObject = {
+    holderName: string,
+    accountNr: string,
+  }
+}
+
+export class YooMoneyAccountPayload extends jspb.Message {
+  getHolderName(): string;
+  setHolderName(value: string): YooMoneyAccountPayload;
+
+  getAccountNr(): string;
+  setAccountNr(value: string): YooMoneyAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): YooMoneyAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: YooMoneyAccountPayload): YooMoneyAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: YooMoneyAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): YooMoneyAccountPayload;
+  static deserializeBinaryFromReader(message: YooMoneyAccountPayload, reader: jspb.BinaryReader): YooMoneyAccountPayload;
+}
+
+export namespace YooMoneyAccountPayload {
   export type AsObject = {
     holderName: string,
     accountNr: string,
@@ -8626,6 +8655,7 @@ export namespace PaymentAccountForm {
     PAYPAY = 75,
     SBP = 76,
     MIR = 77,
+    YOOMONEY = 78,
   }
 }
 
