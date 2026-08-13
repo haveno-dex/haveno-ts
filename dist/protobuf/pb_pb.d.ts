@@ -4084,6 +4084,11 @@ export class CountryBasedPaymentAccountPayload extends jspb.Message {
   hasYoomoneyAccountPayload(): boolean;
   clearYoomoneyAccountPayload(): CountryBasedPaymentAccountPayload;
 
+  getUkraineCardAccountPayload(): UkraineCardAccountPayload | undefined;
+  setUkraineCardAccountPayload(value?: UkraineCardAccountPayload): CountryBasedPaymentAccountPayload;
+  hasUkraineCardAccountPayload(): boolean;
+  clearUkraineCardAccountPayload(): CountryBasedPaymentAccountPayload;
+
   getMessageCase(): CountryBasedPaymentAccountPayload.MessageCase;
 
   serializeBinary(): Uint8Array;
@@ -4125,6 +4130,7 @@ export namespace CountryBasedPaymentAccountPayload {
     sbpAccountPayload?: SbpAccountPayload.AsObject,
     mirAccountPayload?: MirAccountPayload.AsObject,
     yoomoneyAccountPayload?: YooMoneyAccountPayload.AsObject,
+    ukraineCardAccountPayload?: UkraineCardAccountPayload.AsObject,
   }
 
   export enum MessageCase { 
@@ -4156,6 +4162,7 @@ export namespace CountryBasedPaymentAccountPayload {
     SBP_ACCOUNT_PAYLOAD = 27,
     MIR_ACCOUNT_PAYLOAD = 28,
     YOOMONEY_ACCOUNT_PAYLOAD = 29,
+    UKRAINE_CARD_ACCOUNT_PAYLOAD = 30,
   }
 }
 
@@ -6049,6 +6056,28 @@ export class YooMoneyAccountPayload extends jspb.Message {
 }
 
 export namespace YooMoneyAccountPayload {
+  export type AsObject = {
+    holderName: string,
+    accountNr: string,
+  }
+}
+
+export class UkraineCardAccountPayload extends jspb.Message {
+  getHolderName(): string;
+  setHolderName(value: string): UkraineCardAccountPayload;
+
+  getAccountNr(): string;
+  setAccountNr(value: string): UkraineCardAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UkraineCardAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: UkraineCardAccountPayload): UkraineCardAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: UkraineCardAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UkraineCardAccountPayload;
+  static deserializeBinaryFromReader(message: UkraineCardAccountPayload, reader: jspb.BinaryReader): UkraineCardAccountPayload;
+}
+
+export namespace UkraineCardAccountPayload {
   export type AsObject = {
     holderName: string,
     accountNr: string,
@@ -8656,6 +8685,7 @@ export namespace PaymentAccountForm {
     SBP = 76,
     MIR = 77,
     YOOMONEY = 78,
+    UKRAINE_CARD = 79,
   }
 }
 
