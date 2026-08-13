@@ -4069,6 +4069,11 @@ export class CountryBasedPaymentAccountPayload extends jspb.Message {
   hasVippsMobilePayAccountPayload(): boolean;
   clearVippsMobilePayAccountPayload(): CountryBasedPaymentAccountPayload;
 
+  getSbpAccountPayload(): SbpAccountPayload | undefined;
+  setSbpAccountPayload(value?: SbpAccountPayload): CountryBasedPaymentAccountPayload;
+  hasSbpAccountPayload(): boolean;
+  clearSbpAccountPayload(): CountryBasedPaymentAccountPayload;
+
   getMessageCase(): CountryBasedPaymentAccountPayload.MessageCase;
 
   serializeBinary(): Uint8Array;
@@ -4107,6 +4112,7 @@ export namespace CountryBasedPaymentAccountPayload {
     speiAccountPayload?: SpeiAccountPayload.AsObject,
     blikAccountPayload?: BlikAccountPayload.AsObject,
     vippsMobilePayAccountPayload?: VippsMobilePayAccountPayload.AsObject,
+    sbpAccountPayload?: SbpAccountPayload.AsObject,
   }
 
   export enum MessageCase { 
@@ -4135,6 +4141,7 @@ export namespace CountryBasedPaymentAccountPayload {
     SPEI_ACCOUNT_PAYLOAD = 24,
     BLIK_ACCOUNT_PAYLOAD = 25,
     VIPPS_MOBILE_PAY_ACCOUNT_PAYLOAD = 26,
+    SBP_ACCOUNT_PAYLOAD = 27,
   }
 }
 
@@ -5965,6 +5972,28 @@ export namespace PayPayAccountPayload {
   export type AsObject = {
     holderName: string,
     accountNr: string,
+  }
+}
+
+export class SbpAccountPayload extends jspb.Message {
+  getHolderName(): string;
+  setHolderName(value: string): SbpAccountPayload;
+
+  getMobileNr(): string;
+  setMobileNr(value: string): SbpAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): SbpAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: SbpAccountPayload): SbpAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: SbpAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): SbpAccountPayload;
+  static deserializeBinaryFromReader(message: SbpAccountPayload, reader: jspb.BinaryReader): SbpAccountPayload;
+}
+
+export namespace SbpAccountPayload {
+  export type AsObject = {
+    holderName: string,
+    mobileNr: string,
   }
 }
 
@@ -8566,6 +8595,7 @@ export namespace PaymentAccountForm {
     DUITNOW = 73,
     MB_WAY = 74,
     PAYPAY = 75,
+    SBP = 76,
   }
 }
 
