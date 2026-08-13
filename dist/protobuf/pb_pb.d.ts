@@ -4089,6 +4089,11 @@ export class CountryBasedPaymentAccountPayload extends jspb.Message {
   hasUkraineCardAccountPayload(): boolean;
   clearUkraineCardAccountPayload(): CountryBasedPaymentAccountPayload;
 
+  getKaspiAccountPayload(): KaspiAccountPayload | undefined;
+  setKaspiAccountPayload(value?: KaspiAccountPayload): CountryBasedPaymentAccountPayload;
+  hasKaspiAccountPayload(): boolean;
+  clearKaspiAccountPayload(): CountryBasedPaymentAccountPayload;
+
   getMessageCase(): CountryBasedPaymentAccountPayload.MessageCase;
 
   serializeBinary(): Uint8Array;
@@ -4131,6 +4136,7 @@ export namespace CountryBasedPaymentAccountPayload {
     mirAccountPayload?: MirAccountPayload.AsObject,
     yoomoneyAccountPayload?: YooMoneyAccountPayload.AsObject,
     ukraineCardAccountPayload?: UkraineCardAccountPayload.AsObject,
+    kaspiAccountPayload?: KaspiAccountPayload.AsObject,
   }
 
   export enum MessageCase { 
@@ -4163,6 +4169,7 @@ export namespace CountryBasedPaymentAccountPayload {
     MIR_ACCOUNT_PAYLOAD = 28,
     YOOMONEY_ACCOUNT_PAYLOAD = 29,
     UKRAINE_CARD_ACCOUNT_PAYLOAD = 30,
+    KASPI_ACCOUNT_PAYLOAD = 31,
   }
 }
 
@@ -6078,6 +6085,28 @@ export class UkraineCardAccountPayload extends jspb.Message {
 }
 
 export namespace UkraineCardAccountPayload {
+  export type AsObject = {
+    holderName: string,
+    accountNr: string,
+  }
+}
+
+export class KaspiAccountPayload extends jspb.Message {
+  getHolderName(): string;
+  setHolderName(value: string): KaspiAccountPayload;
+
+  getAccountNr(): string;
+  setAccountNr(value: string): KaspiAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): KaspiAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: KaspiAccountPayload): KaspiAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: KaspiAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): KaspiAccountPayload;
+  static deserializeBinaryFromReader(message: KaspiAccountPayload, reader: jspb.BinaryReader): KaspiAccountPayload;
+}
+
+export namespace KaspiAccountPayload {
   export type AsObject = {
     holderName: string,
     accountNr: string,
@@ -8686,6 +8715,7 @@ export namespace PaymentAccountForm {
     MIR = 77,
     YOOMONEY = 78,
     UKRAINE_CARD = 79,
+    KASPI = 80,
   }
 }
 
