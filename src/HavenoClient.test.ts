@@ -4840,6 +4840,7 @@ function getValidFormInputAux(form: PaymentAccountForm, fieldId: PaymentAccountF
       if (form.getId() === PaymentAccountForm.FormId.FPS) return "98765432"; // 8-digit FPS mobile number
       if (form.getId() === PaymentAccountForm.FormId.DUITNOW) return "0123456789"; // 10-digit mobile number
       if (form.getId() === PaymentAccountForm.FormId.PAYPAY) return "09012345678"; // 11-digit mobile number
+      if (form.getId() === PaymentAccountForm.FormId.MIR) return "2200123456789012"; // 16-digit card number
       return "12345678";
     case PaymentAccountFormField.FieldId.ACCOUNT_OWNER:
       return "John Doe (" + havenod.getAppName() + ")";
@@ -5423,6 +5424,12 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
     case PaymentAccountForm.FormId.SBP:
         expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getSbpAccountPayload()!.getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
         expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getSbpAccountPayload()!.getMobileNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.MOBILE_NR).getValue());
+        expect(account.getTradeCurrenciesList().length).toEqual(1);
+        expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("RUB");
+        break;
+    case PaymentAccountForm.FormId.MIR:
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getMirAccountPayload()!.getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
+        expect(account.getPaymentAccountPayload()!.getCountryBasedPaymentAccountPayload()!.getMirAccountPayload()!.getAccountNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.ACCOUNT_NR).getValue());
         expect(account.getTradeCurrenciesList().length).toEqual(1);
         expect(account.getTradeCurrenciesList()[0].getCode()).toEqual("RUB");
         break;
