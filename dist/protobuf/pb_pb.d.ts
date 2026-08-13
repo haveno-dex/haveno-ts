@@ -3727,6 +3727,11 @@ export class PaymentAccountPayload extends jspb.Message {
   hasDuitnowAccountPayload(): boolean;
   clearDuitnowAccountPayload(): PaymentAccountPayload;
 
+  getMbWayAccountPayload(): MbWayAccountPayload | undefined;
+  setMbWayAccountPayload(value?: MbWayAccountPayload): PaymentAccountPayload;
+  hasMbWayAccountPayload(): boolean;
+  clearMbWayAccountPayload(): PaymentAccountPayload;
+
   getMessageCase(): PaymentAccountPayload.MessageCase;
 
   serializeBinary(): Uint8Array;
@@ -3791,6 +3796,7 @@ export namespace PaymentAccountPayload {
     weroAccountPayload?: WeroAccountPayload.AsObject,
     fpsAccountPayload?: FpsAccountPayload.AsObject,
     duitnowAccountPayload?: DuitNowAccountPayload.AsObject,
+    mbWayAccountPayload?: MbWayAccountPayload.AsObject,
   }
 
   export enum MessageCase { 
@@ -3843,6 +3849,7 @@ export namespace PaymentAccountPayload {
     WERO_ACCOUNT_PAYLOAD = 50,
     FPS_ACCOUNT_PAYLOAD = 51,
     DUITNOW_ACCOUNT_PAYLOAD = 52,
+    MB_WAY_ACCOUNT_PAYLOAD = 53,
   }
 }
 
@@ -5907,6 +5914,28 @@ export namespace DuitNowAccountPayload {
     holderName: string,
     accountNr: string,
     bankName: string,
+  }
+}
+
+export class MbWayAccountPayload extends jspb.Message {
+  getMobileNr(): string;
+  setMobileNr(value: string): MbWayAccountPayload;
+
+  getHolderName(): string;
+  setHolderName(value: string): MbWayAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): MbWayAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: MbWayAccountPayload): MbWayAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: MbWayAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): MbWayAccountPayload;
+  static deserializeBinaryFromReader(message: MbWayAccountPayload, reader: jspb.BinaryReader): MbWayAccountPayload;
+}
+
+export namespace MbWayAccountPayload {
+  export type AsObject = {
+    mobileNr: string,
+    holderName: string,
   }
 }
 
@@ -8506,6 +8535,7 @@ export namespace PaymentAccountForm {
     WERO = 71,
     FPS = 72,
     DUITNOW = 73,
+    MB_WAY = 74,
   }
 }
 
