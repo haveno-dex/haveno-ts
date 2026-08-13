@@ -3732,6 +3732,11 @@ export class PaymentAccountPayload extends jspb.Message {
   hasMbWayAccountPayload(): boolean;
   clearMbWayAccountPayload(): PaymentAccountPayload;
 
+  getPaypayAccountPayload(): PayPayAccountPayload | undefined;
+  setPaypayAccountPayload(value?: PayPayAccountPayload): PaymentAccountPayload;
+  hasPaypayAccountPayload(): boolean;
+  clearPaypayAccountPayload(): PaymentAccountPayload;
+
   getMessageCase(): PaymentAccountPayload.MessageCase;
 
   serializeBinary(): Uint8Array;
@@ -3797,6 +3802,7 @@ export namespace PaymentAccountPayload {
     fpsAccountPayload?: FpsAccountPayload.AsObject,
     duitnowAccountPayload?: DuitNowAccountPayload.AsObject,
     mbWayAccountPayload?: MbWayAccountPayload.AsObject,
+    paypayAccountPayload?: PayPayAccountPayload.AsObject,
   }
 
   export enum MessageCase { 
@@ -3850,6 +3856,7 @@ export namespace PaymentAccountPayload {
     FPS_ACCOUNT_PAYLOAD = 51,
     DUITNOW_ACCOUNT_PAYLOAD = 52,
     MB_WAY_ACCOUNT_PAYLOAD = 53,
+    PAYPAY_ACCOUNT_PAYLOAD = 54,
   }
 }
 
@@ -5936,6 +5943,28 @@ export namespace MbWayAccountPayload {
   export type AsObject = {
     mobileNr: string,
     holderName: string,
+  }
+}
+
+export class PayPayAccountPayload extends jspb.Message {
+  getHolderName(): string;
+  setHolderName(value: string): PayPayAccountPayload;
+
+  getAccountNr(): string;
+  setAccountNr(value: string): PayPayAccountPayload;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PayPayAccountPayload.AsObject;
+  static toObject(includeInstance: boolean, msg: PayPayAccountPayload): PayPayAccountPayload.AsObject;
+  static serializeBinaryToWriter(message: PayPayAccountPayload, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PayPayAccountPayload;
+  static deserializeBinaryFromReader(message: PayPayAccountPayload, reader: jspb.BinaryReader): PayPayAccountPayload;
+}
+
+export namespace PayPayAccountPayload {
+  export type AsObject = {
+    holderName: string,
+    accountNr: string,
   }
 }
 
@@ -8536,6 +8565,7 @@ export namespace PaymentAccountForm {
     FPS = 72,
     DUITNOW = 73,
     MB_WAY = 74,
+    PAYPAY = 75,
   }
 }
 
