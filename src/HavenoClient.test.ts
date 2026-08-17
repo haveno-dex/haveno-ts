@@ -2885,7 +2885,8 @@ async function executeTrade(ctxP: Partial<TradeContext>): Promise<string> {
     if (ctx.isStopped) return ctx.offerId!;
     if (makingOffer) {
       ctx.offer = await makeOffer(ctx);
-      expect(ctx.offer.getState()).toEqual(ctx.reserveExactAmount ? "PENDING" : "AVAILABLE");
+      const expectedStates = ctx.reserveExactAmount ? ["PENDING"] : ctx.concurrentTrades ? ["AVAILABLE", "PENDING"] : ["AVAILABLE"]; // offer can be transiently scheduled when posting concurrently
+      expect(expectedStates).toContain(ctx.offer.getState());
       ctx.offerId = ctx.offer.getId();
     } else {
       ctx.offer = getOffer(await ctx.maker.havenod!.getMyOffers(ctx.assetCode!, ctx.direction), ctx.offerId!);
@@ -3342,7 +3343,7 @@ async function makeOffer(ctxP?: Partial<TradeContext>): Promise<OfferInfo> {
   // unlocked balance has decreased
   let unlockedBalanceAfter = BigInt((await ctx.maker.havenod!.getBalances()).getAvailableBalance());
   if (offer.getState() === "PENDING") {
-    if (!ctx.reserveExactAmount && unlockedBalanceAfter !== unlockedBalanceBefore) throw new Error("Unlocked balance should not change for scheduled offer " + offer.getId());
+    if (!ctx.concurrentTrades && !ctx.reserveExactAmount && unlockedBalanceAfter !== unlockedBalanceBefore) throw new Error("Unlocked balance should not change for scheduled offer " + offer.getId()); // balance can change from concurrent trades
   } else if (offer.getState() === "AVAILABLE") {
     if (!ctx.sourceOfferId && unlockedBalanceAfter === unlockedBalanceBefore) {
       console.warn("Unlocked balance did not change after posting offer, waiting a sync period");
