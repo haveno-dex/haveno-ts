@@ -4295,6 +4295,20 @@ async function stopMining() {
   HavenoUtils.log(2, "Mining stopped");
 }
 
+const unlockTimeoutMs = 600000; // max time to wait for mining to unlock funds
+
+// await the given promise, throwing if the unlock timeout elapses first
+async function awaitWithUnlockTimeout(promise: Promise<any>, message: string) {
+  let timeout: any;
+  try {
+    await Promise.race([promise, new Promise((_, reject) => {
+      timeout = setTimeout(() => reject(new Error(message + " after " + unlockTimeoutMs + " ms")), unlockTimeoutMs);
+    })]);
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 async function mineBlocks(numBlocks: number) {
   await mineToHeight(await monerod.getHeight() + numBlocks);
 }
@@ -4302,21 +4316,31 @@ async function mineBlocks(numBlocks: number) {
 async function mineToHeight(height: number) {
   if (await monerod.getHeight() >= height) return;
   const miningStarted = await startMining();
-  while (await monerod.getHeight() < height) {
-    await moneroTs.GenUtils.waitFor(TestConfig.trade.walletSyncPeriodMs);
+  const startTime = Date.now();
+  try {
+    while (await monerod.getHeight() < height) {
+      if (Date.now() - startTime > unlockTimeoutMs) throw new Error("Timed out mining to height " + height + " after " + unlockTimeoutMs + " ms");
+      await moneroTs.GenUtils.waitFor(TestConfig.trade.walletSyncPeriodMs);
+    }
+  } finally {
+    if (miningStarted) await stopMining().catch(() => undefined); // stop own mining even on error
   }
-  if (miningStarted) await stopMining();
 }
 
 async function mineToUnlock(txHash: string) {
   let tx = await monerod.getTx(txHash);
   if (tx && tx.getNumConfirmations() >= 10) return; // TODO: tx.getIsLocked()
   const miningStarted = await startMining();
-  while (!tx || tx.getNumConfirmations() < 10) {
-    await moneroTs.GenUtils.waitFor(TestConfig.trade.walletSyncPeriodMs);
-    tx = await monerod.getTx(txHash);
+  const startTime = Date.now();
+  try {
+    while (!tx || tx.getNumConfirmations() < 10) {
+      if (Date.now() - startTime > unlockTimeoutMs) throw new Error("Timed out mining to unlock tx " + txHash + " after " + unlockTimeoutMs + " ms");
+      await moneroTs.GenUtils.waitFor(TestConfig.trade.walletSyncPeriodMs);
+      tx = await monerod.getTx(txHash);
+    }
+  } finally {
+    if (miningStarted) await stopMining().catch(() => undefined); // stop own mining even on error
   }
-  if (miningStarted) await stopMining();
 }
 
 /**
@@ -4378,24 +4402,29 @@ async function waitForAvailableBalance(amount: bigint, ...wallets: any[]) {
   const miningStarted = await startMining();
   HavenoUtils.log(1, "Mining for unlocked balance of " + amount);
   const promises: Promise<void>[] = [];
+  const loopers: any[] = [];
   for (const wallet of wallets) {
     if (wallet._wallet === fundingWallet) {
       const subaddress = await fundingWallet.createSubaddress(0);
       HavenoUtils.log(0, "Mining to funding wallet. Alternatively, deposit to: " + subaddress.getAddress());
     }
-    // eslint-disable-next-line no-async-promise-executor
-    promises.push(new Promise(async (resolve) => {
+    promises.push(new Promise((resolve) => {
       const taskLooper: any = new moneroTs.TaskLooper(async function() {
         if (await wallet.getAvailableBalance() >= amount) {
           taskLooper.stop();
           resolve();
         }
       });
+      loopers.push(taskLooper);
       taskLooper.start(5000);
     }));
   }
-  await Promise.all(promises);
-  if (miningStarted) await stopMining();
+  try {
+    await awaitWithUnlockTimeout(Promise.all(promises), "Timed out waiting for available balance of " + amount);
+  } finally {
+    for (const looper of loopers) looper.stop();
+    if (miningStarted) await stopMining().catch(() => undefined); // stop own mining even on error
+  }
   HavenoUtils.log(0, "Funds unlocked, done mining");
 }
 
@@ -4404,9 +4433,9 @@ async function waitForUnlockedTxs(...txHashes: string[]) {
   HavenoUtils.log(1, "Mining to unlock txs");
   const miningStarted = await startMining();
   const promises: Promise<void>[] = [];
+  const loopers: any[] = [];
   for (const txHash of txHashes) {
-    // eslint-disable-next-line no-async-promise-executor
-    promises.push(new Promise(async (resolve) => {
+    promises.push(new Promise((resolve) => {
       const taskLooper = new moneroTs.TaskLooper(async function() {
         const tx = await monerod.getTx(txHash);
         if (!tx) HavenoUtils.log(1, "WARNING: tx hash " + txHash + " not found");
@@ -4415,12 +4444,17 @@ async function waitForUnlockedTxs(...txHashes: string[]) {
           resolve();
         }
       });
+      loopers.push(taskLooper);
       taskLooper.start(5000);
     }));
   }
-  await Promise.all(promises);
+  try {
+    await awaitWithUnlockTimeout(Promise.all(promises), "Timed out waiting for unlocked txs");
+  } finally {
+    for (const looper of loopers) looper.stop();
+    if (miningStarted) await stopMining().catch(() => undefined); // stop own mining even on error
+  }
   HavenoUtils.log(1, "Done waiting for txs to unlock");
-  if (miningStarted) await stopMining();
 }
 
 /**
@@ -4540,15 +4574,20 @@ async function fundOutputs(wallets: moneroTs.MoneroWallet[], amt: bigint, numOut
       }
       return true;
     };
-    while (!await hasUnlockedOutputs()) {
-      if (!miningAttempted) {
-        HavenoUtils.log(1, "Mining to fund outputs");
-        miningStarted = await startMining();
-        miningAttempted = true;
+    const startTime = Date.now();
+    try {
+      while (!await hasUnlockedOutputs()) {
+        if (Date.now() - startTime > unlockTimeoutMs) throw new Error("Timed out waiting for unlocked outputs after " + unlockTimeoutMs + " ms");
+        if (!miningAttempted) {
+          HavenoUtils.log(1, "Mining to fund outputs");
+          miningStarted = await startMining();
+          miningAttempted = true;
+        }
+        await wait(TestConfig.trade.walletSyncPeriodMs);
       }
-      await wait(TestConfig.trade.walletSyncPeriodMs);
+    } finally {
+      if (miningStarted) await stopMining().catch(() => undefined); // stop own mining even on error
     }
-    if (miningStarted) await stopMining();
   } catch (err: any) {
     const wrapped = new Error(`Error funding outputs: ${err.message}`);
     wrapped.stack += "\nCaused by: " + err.stack;
