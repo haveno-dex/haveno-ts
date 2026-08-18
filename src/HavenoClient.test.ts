@@ -4430,11 +4430,12 @@ async function waitForUnlockedTxs(...txHashes: string[]) {
  * @param {BigInt} amt - amount to check
  * @param {number?} numOutputs - number of outputs of the given amount (default 1)
  * @param {boolean?} isLocked - specifies if the outputs must be locked or unlocked (default either)
+ * @param {string[]?} txHashes - if given, the outputs must belong to these txs
  */
-async function hasUnspentOutputs(wallets: any[], amt: BigInt, numOutputs?: number, isLocked?: boolean): Promise<boolean> {
+async function hasUnspentOutputs(wallets: any[], amt: BigInt, numOutputs?: number, isLocked?: boolean, txHashes?: string[]): Promise<boolean> {
   if (numOutputs === undefined) numOutputs = 1;
   for (const wallet of wallets) {
-    const unspentOutputs = await wallet.getOutputs({isSpent: false, isFrozen: false, minAmount: amt, txQuery: {isLocked: isLocked}});
+    const unspentOutputs = await wallet.getOutputs({isSpent: false, isFrozen: false, minAmount: amt, txQuery: {isLocked: isLocked, hashes: txHashes}});
     if (unspentOutputs.length < numOutputs) return false;
   }
   return true;
@@ -4483,13 +4484,16 @@ async function fundOutputs(wallets: moneroTs.MoneroWallet[], amt: bigint, numOut
 
     // collect destinations, requiring extra outputs to cover any frozen by a haveno daemon for reserved offers
     const destinations: moneroTs.MoneroDestination[] = [];
+    const requiredOutputs = new Map<moneroTs.MoneroWallet, number>();
+    const fundedWallets = new Set<moneroTs.MoneroWallet>();
     for (const wallet of wallets) {
-      if (await hasUnspentOutputs([wallet], amt, numOutputs + await getNumReservedOutputs(wallet, amt), undefined)) continue;
+      requiredOutputs.set(wallet, numOutputs + await getNumReservedOutputs(wallet, amt));
+      if (await hasUnspentOutputs([wallet], amt, requiredOutputs.get(wallet), undefined)) continue;
+      fundedWallets.add(wallet);
       for (let i = 0; i < numOutputs; i++) {
         destinations.push(new moneroTs.MoneroDestination((await wallet.createSubaddress(0)).getAddress(), amt));
       }
     }
-    if (!destinations.length) return;
 
     // fund destinations
     let txConfig = new moneroTs.MoneroTxConfig().setAccountIndex(0).setRelay(true);
@@ -4519,17 +4523,25 @@ async function fundOutputs(wallets: moneroTs.MoneroWallet[], amt: bigint, numOut
       }
     }
 
-    // if not waiting to unlock, wait to observe txs and return
-    if (txHashes.length && !waitForUnlock) {
-      await wait(TestConfig.trade.walletSyncPeriodMs);
+    // if not waiting to unlock, wait to observe any txs and return
+    if (!waitForUnlock) {
+      if (txHashes.length) await wait(TestConfig.trade.walletSyncPeriodMs);
       return;
     }
 
-    // mine until outputs unlocked
+    // mine until outputs unlocked, since enough outputs can exist but be locked;
+    // funded wallets await their funding txs' outputs, since the reserved output count is an estimate which can exceed what exists
     let miningStarted = false;
     let miningAttempted = false;
-    while (!await hasUnspentOutputs(wallets, amt, numOutputs, false)) {
-      if (waitForUnlock && !miningAttempted) {
+    const hasUnlockedOutputs = async () => {
+      for (const wallet of wallets) {
+        const funded = fundedWallets.has(wallet);
+        if (!await hasUnspentOutputs([wallet], amt, funded ? numOutputs : requiredOutputs.get(wallet), false, funded ? txHashes : undefined)) return false;
+      }
+      return true;
+    };
+    while (!await hasUnlockedOutputs()) {
+      if (!miningAttempted) {
         HavenoUtils.log(1, "Mining to fund outputs");
         miningStarted = await startMining();
         miningAttempted = true;
