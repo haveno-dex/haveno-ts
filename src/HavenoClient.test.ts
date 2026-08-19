@@ -4958,6 +4958,7 @@ function getValidFormInputAux(form: PaymentAccountForm, fieldId: PaymentAccountF
       if (field.getComponent() === PaymentAccountFormField.Component.SELECT_ONE) {
         if (form.getId() === PaymentAccountForm.FormId.F2F) return "XAU";
         if (form.getId() === PaymentAccountForm.FormId.PAY_BY_MAIL) return "XGB";
+        if (form.getId() === PaymentAccountForm.FormId.AMAZON_GIFT_CARD) return "AUD"; // must match the selected country (AU)
         let currencyIdx = getRandomOutcome(2/3) ? 0 : moneroTs.GenUtils.getRandomInt(0, field.getSupportedCurrenciesList().length - 1); // prefer index 0 to simulate common currency
         return field.getSupportedCurrenciesList()[currencyIdx]!.getCode();
       }
