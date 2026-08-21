@@ -27,6 +27,9 @@ jobs:
             sudo killall mono;
           fi
 
+      - name: Reserve localnet ports from ephemeral range
+        run: sudo sysctl -w net.ipv4.ip_local_reserved_ports=48080-48082,58080-58082
+
       - name: Start containers
         run: docker compose -f "./docker/docker-compose.yml" up -d --build
 
