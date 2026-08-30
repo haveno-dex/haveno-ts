@@ -390,7 +390,7 @@ const TestConfig = {
     moneroBinsDir: "../haveno/.localnet",
     testDataDir: "./testdata",
     deferralMs: 25000,
-    useNativeXmrWallet: false, // start havenods with native wallet libraries instead of monero-wallet-rpc
+    useNativeXmrWallet: true, // start havenods with native wallet libraries instead of monero-wallet-rpc
     haveno: {
         path: "../haveno",
         version: "1.8.0"
