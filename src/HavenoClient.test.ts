@@ -2540,7 +2540,7 @@ test("Can handle unexpected errors during trade initialization (Test)", async ()
       let expected = false;
       const expectedErrMsgs = ["not enough unlocked money", "timeout reached. protocol did not complete", "trade is already taken", "open offer has been removed", "error processing deposit tx from maker", "Cannot process deposit request because trade is already failed"];
       for (const expectedErrMsg of expectedErrMsgs) {
-        if (err.message.toLowerCase().indexOf(expectedErrMsg) >= 0) {
+        if (err.message.toLowerCase().indexOf(expectedErrMsg.toLowerCase()) >= 0) {
           expected = true;
           break;
         }
