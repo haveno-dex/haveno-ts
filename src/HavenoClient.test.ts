@@ -1881,7 +1881,8 @@ test("Can reserve exact amount needed for offer (Test, CI)", async () => {
 
 test("Cannot make or take offer outside of limits (Test, CI, sanity check)", async () => {
   let assetCode = "USD";
-  const account = await createPaymentAccount(user1, assetCode, "zelle");
+  const paymentMethodId = "zelle";
+  const account = await createPaymentAccount(user1, assetCode, paymentMethodId);
   const diff = 10000000000n;
 
   // test posting buy offer above limit
@@ -2014,6 +2015,7 @@ test("Cannot make or take offer outside of limits (Test, CI, sanity check)", asy
       direction: OfferDirection.SELL,
       assetCode: assetCode,
       makerPaymentAccountId: account.getId(),
+      takerPaymentAccountId: (await createPaymentAccount(user2, assetCode, paymentMethodId)).getId(),
     });
     throw new Error("Should have rejected taking offer above offer amount");
   } catch (err: any) {
@@ -2727,8 +2729,8 @@ test("Can bootstrap a network", async () => {
     if (ctxP.assetCode && !ctxP.paymentMethodId && (!ctxP.makerPaymentAccountId || !ctxP.takerPaymentAccountId)) throw new Error("Cannot specify asset code without payment method or accounts");
     if (!ctxP.paymentMethodId) ctxP.paymentMethodId = getRandomPaymentMethodId();
     if (!ctxP.makerPaymentAccountId) ctxP.makerPaymentAccountId = (await createPaymentAccount2(ctxP.maker.havenod!, ctxP.paymentMethodId, ctxP.assetCode)).getId();
-    if (!ctxP.takerPaymentAccountId) ctxP.takerPaymentAccountId = (await createPaymentAccount2(ctxP.taker.havenod!, ctxP.paymentMethodId, ctxP.assetCode)).getId();
     if (!ctxP.assetCode) ctxP.assetCode = getRandomAssetCodeForPaymentAccount(await ctxP.maker.havenod.getPaymentAccount(ctxP.makerPaymentAccountId));
+    if (!ctxP.takerPaymentAccountId) ctxP.takerPaymentAccountId = (await createPaymentAccount2(ctxP.taker.havenod!, ctxP.paymentMethodId, ctxP.assetCode)).getId();
 
     // randomize offer price
     if (await isFixedPrice(ctxP)) ctxP.price = ctxP.direction === OfferDirection.BUY ? getRandomFloat(125, 155) : getRandomFloat(160, 190);
@@ -2767,7 +2769,7 @@ test("Can bootstrap a network", async () => {
     if (assetCode && !paymentMethodId) throw new Error("Cannot create payment account with asset code and no payment method ID");
     if (!paymentMethodId) paymentMethodId = getRandomPaymentMethodId();
     const accountForm = await trader.getPaymentAccountForm(paymentMethodId);
-    if (assetCode) HavenoUtils.setFormValue(accountForm, PaymentAccountFormField.FieldId.TRADE_CURRENCIES, assetCode);
+    if (assetCode && HavenoUtils.hasFormField(accountForm, PaymentAccountFormField.FieldId.TRADE_CURRENCIES)) HavenoUtils.setFormValue(accountForm, PaymentAccountFormField.FieldId.TRADE_CURRENCIES, assetCode);
     for (const field of accountForm.getFieldsList()) {
       if (field.getValue() !== "") continue; // skip if already set
       field.setValue(getValidFormInput(accountForm, field.getId(), trader));
@@ -4877,7 +4879,7 @@ function getValidFormInputAux(form: PaymentAccountForm, fieldId: PaymentAccountF
       if (form.getId() === PaymentAccountForm.FormId.SEPA || form.getId() === PaymentAccountForm.FormId.SEPA_INSTANT) return "BE," + field.getSupportedSepaEuroCountriesList().map(country => country.getCode()).join(',');
       return field.getSupportedCountriesList().map(country => country.getCode()).join(',');
     case PaymentAccountFormField.FieldId.ACCEPTED_BANKS:
-      return "Bank XYZ,Bank of America,Wells Fargo";
+      return "123456,Bank XYZ,Bank of America,Wells Fargo";
     case PaymentAccountFormField.FieldId.ACCOUNT_ID:
       return havenod.getAppName() + "_jdoe@no.com";
     case PaymentAccountFormField.FieldId.ACCOUNT_NAME:
