@@ -27,6 +27,7 @@ import {
   NotificationMessage,
   OfferInfo,
   TradeInfo,
+  GetTradesRequest,
   UrlConnection,
   XmrBalanceInfo,
   Attachment,
@@ -2051,7 +2052,13 @@ test("Can complete a trade within a range and without a buyer deposit (Test, CI)
     buyerAsTakerWithoutDeposit: true,
     extraInfo: "My extra info"
   }
-  await executeTrade(ctx);
+  const tradeId = await executeTrade(ctx);
+
+  // test trade categories after completion
+  expect((await user1.getTrades()).map(trade => trade.getTradeId())).toContain(tradeId);
+  expect((await user1.getTrades(GetTradesRequest.Category.CLOSED)).map(trade => trade.getTradeId())).toContain(tradeId);
+  expect((await user1.getTrades(GetTradesRequest.Category.OPEN)).map(trade => trade.getTradeId())).not.toContain(tradeId);
+  expect((await user1.getTrades(GetTradesRequest.Category.FAILED)).map(trade => trade.getTradeId())).not.toContain(tradeId);
 
   // test trade statistics after
   if (ctx.buyerSendsPayment && ctx.sellerReceivesPayment) {

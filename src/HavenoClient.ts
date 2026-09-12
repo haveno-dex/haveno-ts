@@ -1282,13 +1282,16 @@ export default class HavenoClient {
   }
 
   /**
-   * Get all trades.
+   * Get trades, optionally filtered by category.
    * 
-   * @return {TradeInfo[]} all user trades
+   * @param {GetTradesRequest.Category} category - the category of trades (default includes open and closed trades)
+   * @return {TradeInfo[]} the matching user trades
    */
-  async getTrades(): Promise<TradeInfo[]> {
+  async getTrades(category?: GetTradesRequest.Category): Promise<TradeInfo[]> {
     try {
-      return (await this._tradesClient.getTrades(new GetTradesRequest(), {password: this._password})).getTradesList();
+      const request = new GetTradesRequest();
+      if (category !== undefined) request.setCategory(category);
+      return (await this._tradesClient.getTrades(request, {password: this._password})).getTradesList();
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);
     }
