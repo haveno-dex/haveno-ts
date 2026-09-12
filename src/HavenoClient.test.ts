@@ -4988,6 +4988,9 @@ function getValidFormInputAux(form: PaymentAccountForm, fieldId: PaymentAccountF
     case PaymentAccountFormField.FieldId.INTERMEDIARY_SWIFT_CODE:
       return "10987654321"; // TODO: use real swift code
     case PaymentAccountFormField.FieldId.MOBILE_NR:
+      if (form.getId() === PaymentAccountForm.FormId.MB_WAY) return "+351912345678"; // PT mobile number in international format
+      if (form.getId() === PaymentAccountForm.FormId.TWINT) return "+41791234567"; // CH mobile number in international format
+      if (form.getId() === PaymentAccountForm.FormId.PAGO_MOVIL) return "+584121234567"; // VE mobile number in international format
       if (form.getId() === PaymentAccountForm.FormId.WERO) return "+4915112345678"; // DE mobile number in international format
       return "876-512-7813";
     case PaymentAccountFormField.FieldId.NATIONAL_ACCOUNT_ID:
