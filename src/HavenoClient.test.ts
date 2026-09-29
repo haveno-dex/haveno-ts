@@ -3518,6 +3518,8 @@ async function testTrade(trade: TradeInfo, ctx: TradeContext, havenod?: HavenoCl
   const role = trade.getRole();
   assert(role.length > 0); // TODO: test role string based on context
 
+  // test offer ownership
+  if (havenod) expect(trade.getOffer()!.getIsMyOffer()).toBe(havenod === ctx.maker.havenod);
 
   // TODO: test more fields
 }
@@ -3525,7 +3527,7 @@ async function testTrade(trade: TradeInfo, ctx: TradeContext, havenod?: HavenoCl
 async function testGetTrade(ctx: TradeContext, havenod?: HavenoClient): Promise<void> {
   if (havenod) {
     const trade = await havenod.getTrade(ctx.offerId!);
-    await testTrade(trade, ctx);
+    await testTrade(trade, ctx, havenod);
     const trades = await havenod.getTrades();
     const foundTrade = trades.find((trade) => trade.getTradeId() === ctx.offerId);
     assert(foundTrade);
