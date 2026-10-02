@@ -5247,10 +5247,6 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
         expect(account.getPaymentAccountPayload()!.getPerfectMoneyAccountPayload()!.getAccountNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.ACCOUNT_NR).getValue());
         expect(account.getTradeCurrenciesList().map(currency => currency.getCode()).join(",")).toEqual(getFormField(form, PaymentAccountFormField.FieldId.TRADE_CURRENCIES).getValue()); // USD or EUR
         break;
-      case PaymentAccountForm.FormId.POPMONEY:
-        expect(account.getPaymentAccountPayload()!.getPopmoneyAccountPayload()!.getAccountId()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.ACCOUNT_ID).getValue());
-        expect(account.getPaymentAccountPayload()!.getPopmoneyAccountPayload()!.getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
-        break;
       case PaymentAccountForm.FormId.VERSE:
         expect(account.getPaymentAccountPayload()!.getVerseAccountPayload()!.getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
         break;
