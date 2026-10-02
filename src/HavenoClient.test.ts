@@ -391,7 +391,7 @@ const TestConfig = {
     moneroBinsDir: "../haveno/.localnet",
     testDataDir: "./testdata",
     deferralMs: 25000,
-    useNativeXmrWallet: false, // start havenods with native wallet libraries instead of monero-wallet-rpc
+    useNativeXmrWallet: true, // start havenods with native wallet libraries instead of monero-wallet-rpc
     haveno: {
         path: "../haveno",
         version: "1.8.0"
@@ -1434,6 +1434,9 @@ test("Can validate payment account forms (Test, CI, sanity check)", async () => 
     // convert to payment account payload form
     const accountPayloadForm = await user1.getPaymentAccountPayloadForm(paymentAccount.getPaymentAccountPayload()!);
     expect(accountPayloadForm.toObject()).toBeDefined();
+    for (const field of accountPayloadForm.getFieldsList()) {
+      if (field.getId() === PaymentAccountFormField.FieldId.ACCOUNT_ID) expect(field.getValue()).toEqual(HavenoUtils.getFormValue(accountForm, PaymentAccountFormField.FieldId.ACCOUNT_ID));
+    }
 
     // delete payment account
     // await user1.deletePaymentAccount(paymentAccount.getId()); // TODO: support deleting payment accounts over grpc
@@ -5243,10 +5246,6 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
       case PaymentAccountForm.FormId.PERFECT_MONEY:
         expect(account.getPaymentAccountPayload()!.getPerfectMoneyAccountPayload()!.getAccountNr()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.ACCOUNT_NR).getValue());
         expect(account.getTradeCurrenciesList().map(currency => currency.getCode()).join(",")).toEqual(getFormField(form, PaymentAccountFormField.FieldId.TRADE_CURRENCIES).getValue()); // USD or EUR
-        break;
-      case PaymentAccountForm.FormId.POPMONEY:
-        expect(account.getPaymentAccountPayload()!.getPopmoneyAccountPayload()!.getAccountId()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.ACCOUNT_ID).getValue());
-        expect(account.getPaymentAccountPayload()!.getPopmoneyAccountPayload()!.getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
         break;
       case PaymentAccountForm.FormId.VERSE:
         expect(account.getPaymentAccountPayload()!.getVerseAccountPayload()!.getHolderName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.HOLDER_NAME).getValue());
