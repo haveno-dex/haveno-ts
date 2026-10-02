@@ -1434,6 +1434,9 @@ test("Can validate payment account forms (Test, CI, sanity check)", async () => 
     // convert to payment account payload form
     const accountPayloadForm = await user1.getPaymentAccountPayloadForm(paymentAccount.getPaymentAccountPayload()!);
     expect(accountPayloadForm.toObject()).toBeDefined();
+    for (const field of accountPayloadForm.getFieldsList()) {
+      if (field.getId() === PaymentAccountFormField.FieldId.ACCOUNT_ID) expect(field.getValue()).toEqual(HavenoUtils.getFormValue(accountForm, PaymentAccountFormField.FieldId.ACCOUNT_ID));
+    }
 
     // delete payment account
     // await user1.deletePaymentAccount(paymentAccount.getId()); // TODO: support deleting payment accounts over grpc
