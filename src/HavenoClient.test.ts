@@ -1375,6 +1375,17 @@ test("Can get payment accounts (Test, CI)", async () => {
 // TODO: FieldId represented as number
 test("Can validate payment account forms (Test, CI, sanity check)", async () => {
 
+  // preserve requirement metadata and distinguish unset from false
+  for (const required of [undefined, false, true]) {
+    const field = new PaymentAccountFormField();
+    if (required !== undefined) field.setRequired(required);
+    field.setRequiredIfAnyFieldHasValueList([PaymentAccountFormField.FieldId.INTERMEDIARY_SWIFT_CODE]);
+    const restored = PaymentAccountFormField.deserializeBinary(field.serializeBinary());
+    expect(restored.hasRequired()).toEqual(required !== undefined);
+    expect(restored.getRequired()).toEqual(required || false);
+    expect(restored.getRequiredIfAnyFieldHasValueList()).toEqual(field.getRequiredIfAnyFieldHasValueList());
+  }
+
   // get payment methods
   const paymentMethods = await user1.getPaymentMethods();
   expect(paymentMethods.length).toEqual(TestConfig.paymentMethods.length);
@@ -1408,10 +1419,40 @@ test("Can validate payment account forms (Test, CI, sanity check)", async () => 
 
       // validate valid form field
       const validInput = getValidFormInput(accountForm, field.getId(), user1);
-      HavenoUtils.log(1, "Validating invalid form field");
+      HavenoUtils.log(1, "Validating valid form field");
       await user1.validateFormField(accountForm, field.getId(), validInput);
       field.setValue(validInput);
     }
+
+    await testKnownFormRequirements(accountForm, user1);
+
+    // required metadata must agree with validation of empty values
+    for (const field of accountForm.getFieldsList()) await testFormFieldRequired(accountForm, field, user1);
+
+    // check requirements that depend on the country without changing the completed form
+    const countryField = accountForm.getFieldsList().find(field => field.getId() === PaymentAccountFormField.FieldId.COUNTRY);
+    const conditionalFields = accountForm.getFieldsList().filter(field => field.getRequiredForCountriesList().length > 0);
+    if (countryField && conditionalFields.length > 0) {
+      const originalCountry = countryField.getValue();
+      const supportedCountries = countryField.getSupportedCountriesList().map(country => country.getCode());
+      const countries = supportedCountries.length ? supportedCountries
+        : [originalCountry, ...conditionalFields.flatMap(field => field.getRequiredForCountriesList())];
+      const testedRequirements = new Set<string>();
+      try {
+        for (const country of countries) {
+          // exercise each distinct set of requirements advertised by the server
+          const requirements = conditionalFields.map(field => field.getRequiredForCountriesList().includes(country)).join(",");
+          if (testedRequirements.has(requirements)) continue;
+          testedRequirements.add(requirements);
+          countryField.setValue(country);
+          for (const field of conditionalFields) await testFormFieldRequired(accountForm, field, user1);
+        }
+      } finally {
+        countryField.setValue(originalCountry);
+      }
+    }
+
+    await testFormFieldDependencies(accountForm, user1);
 
     // create payment account
     HavenoUtils.log(1, "Creating payment account for payment method: " + paymentMethod.getId());
@@ -1435,7 +1476,13 @@ test("Can validate payment account forms (Test, CI, sanity check)", async () => 
     const accountPayloadForm = await user1.getPaymentAccountPayloadForm(paymentAccount.getPaymentAccountPayload()!);
     expect(accountPayloadForm.toObject()).toBeDefined();
     for (const field of accountPayloadForm.getFieldsList()) {
+      expect(field.hasRequired()).toBe(true);
+      const originalField = getFormField(accountForm, field.getId());
+      expect(field.getRequired()).toEqual(originalField.getRequired());
+      expect(field.getRequiredForCountriesList()).toEqual(originalField.getRequiredForCountriesList());
+      expect(field.getRequiredIfAnyFieldHasValueList()).toEqual(originalField.getRequiredIfAnyFieldHasValueList());
       if (field.getId() === PaymentAccountFormField.FieldId.ACCOUNT_ID) expect(field.getValue()).toEqual(HavenoUtils.getFormValue(accountForm, PaymentAccountFormField.FieldId.ACCOUNT_ID));
+      if (field.getId() === PaymentAccountFormField.FieldId.STATE) expect(field.getValue()).toEqual(originalField.getValue());
     }
 
     // delete payment account
@@ -4860,6 +4907,129 @@ function getFormField(form: PaymentAccountForm, fieldId: PaymentAccountFormField
     throw new Error("Form field not found: " + fieldId);
 }
 
+function isFormFieldRequired(form: PaymentAccountForm, field: PaymentAccountFormField): boolean {
+  const country = form.getFieldsList().find(field => field.getId() === PaymentAccountFormField.FieldId.COUNTRY)?.getValue() || "";
+  return field.getRequired() || field.getRequiredForCountriesList().includes(country)
+    || form.getFieldsList().some(other => field.getRequiredIfAnyFieldHasValueList().includes(other.getId()) && other.getValue() !== "");
+}
+
+async function testFormFieldRequired(form: PaymentAccountForm, field: PaymentAccountFormField, havenod: HavenoClient) {
+  expect(field.hasRequired()).toBe(true);
+  const required = isFormFieldRequired(form, field);
+  const validation = havenod.validateFormField(form, field.getId(), "");
+  if (required) await expect(validation).rejects.toMatchObject({code: 3}); // INVALID_ARGUMENT, not a transport or server error
+  else await expect(validation).resolves.toBeUndefined();
+}
+
+async function testKnownFormRequirements(form: PaymentAccountForm, havenod: HavenoClient) {
+  // keep a small independent baseline so metadata and validation cannot agree on incorrect requirements
+  const cases: [PaymentAccountForm.FormId, PaymentAccountFormField.FieldId, boolean][] = [
+    [PaymentAccountForm.FormId.REVOLUT, PaymentAccountFormField.FieldId.ACCOUNT_NAME, true],
+    [PaymentAccountForm.FormId.ACH_TRANSFER, PaymentAccountFormField.FieldId.HOLDER_ADDRESS, true],
+    [PaymentAccountForm.FormId.UPHOLD, PaymentAccountFormField.FieldId.ACCOUNT_OWNER, false],
+    [PaymentAccountForm.FormId.TRANSFERWISE_USD, PaymentAccountFormField.FieldId.HOLDER_ADDRESS, false]
+  ];
+  for (const [formId, fieldId, required] of cases) {
+    if (form.getId() !== formId) continue;
+    expect(getFormField(form, fieldId).getRequired()).toBe(required);
+    await checkRequirement(form, fieldId, required);
+
+    // account creation is rate limited, so only these cases check that it enforces omitted fields
+    if (required) {
+      const missing = PaymentAccountForm.deserializeBinary(form.serializeBinary());
+      missing.setFieldsList(missing.getFieldsList().filter(field => field.getId() !== fieldId));
+      await expect(havenod.createPaymentAccount(missing)).rejects.toMatchObject({code: 3});
+    } else await testOptionalFormFields(form, havenod);
+  }
+
+  if (form.getId() === PaymentAccountForm.FormId.NATIONAL_BANK) {
+    const bankForm = PaymentAccountForm.deserializeBinary(form.serializeBinary());
+    expect(getFormField(bankForm, PaymentAccountFormField.FieldId.HOLDER_TAX_ID).getRequired()).toBe(false);
+    for (const [country, required] of [["BR", true], ["US", false]] as [string, boolean][]) {
+      HavenoUtils.setFormValue(bankForm, PaymentAccountFormField.FieldId.COUNTRY, country);
+      await checkRequirement(bankForm, PaymentAccountFormField.FieldId.HOLDER_TAX_ID, required);
+    }
+  }
+
+  if ([PaymentAccountForm.FormId.MONEY_GRAM, PaymentAccountForm.FormId.WESTERN_UNION].includes(form.getId())) {
+    const stateForm = PaymentAccountForm.deserializeBinary(form.serializeBinary());
+    expect(getFormField(stateForm, PaymentAccountFormField.FieldId.STATE).getRequired()).toBe(false);
+    expect(getFormField(stateForm, PaymentAccountFormField.FieldId.STATE).getRequiredForCountriesList()).toEqual([]);
+    for (const country of ["US", "FR"]) {
+      HavenoUtils.setFormValue(stateForm, PaymentAccountFormField.FieldId.COUNTRY, country);
+      await checkRequirement(stateForm, PaymentAccountFormField.FieldId.STATE, false);
+      await testOptionalFormFields(stateForm, havenod);
+    }
+  }
+
+  if (form.getId() === PaymentAccountForm.FormId.SWIFT) {
+    const intermediaryForm = PaymentAccountForm.deserializeBinary(form.serializeBinary());
+    const fieldIds = [PaymentAccountFormField.FieldId.INTERMEDIARY_SWIFT_CODE, PaymentAccountFormField.FieldId.INTERMEDIARY_COUNTRY_CODE,
+      PaymentAccountFormField.FieldId.INTERMEDIARY_NAME, PaymentAccountFormField.FieldId.INTERMEDIARY_BRANCH,
+      PaymentAccountFormField.FieldId.INTERMEDIARY_ADDRESS];
+    for (const fieldId of fieldIds) HavenoUtils.setFormValue(intermediaryForm, fieldId, "");
+    for (const fieldId of fieldIds) await checkRequirement(intermediaryForm, fieldId, false);
+    HavenoUtils.setFormValue(intermediaryForm, PaymentAccountFormField.FieldId.INTERMEDIARY_SWIFT_CODE, "ABCDEFGH123");
+    for (const fieldId of fieldIds) {
+      if (fieldId !== PaymentAccountFormField.FieldId.INTERMEDIARY_SWIFT_CODE) await checkRequirement(intermediaryForm, fieldId, true);
+    }
+  }
+
+  async function checkRequirement(context: PaymentAccountForm, fieldId: PaymentAccountFormField.FieldId, required: boolean) {
+    expect(isFormFieldRequired(context, getFormField(context, fieldId))).toBe(required);
+    const validation = havenod.validateFormField(context, fieldId, "");
+    if (required) await expect(validation).rejects.toMatchObject({code: 3});
+    else await expect(validation).resolves.toBeUndefined();
+  }
+}
+
+async function testOptionalFormFields(form: PaymentAccountForm, havenod: HavenoClient) {
+  const optionalIds = form.getFieldsList().filter(field => !isFormFieldRequired(form, field)).map(field => field.getId());
+  if (!optionalIds.length) return;
+  for (const omit of [false, true]) {
+    const optional = PaymentAccountForm.deserializeBinary(form.serializeBinary());
+    if (omit) optional.setFieldsList(optional.getFieldsList().filter(field => !optionalIds.includes(field.getId())));
+    else for (const field of optional.getFieldsList()) if (optionalIds.includes(field.getId())) field.setValue("");
+    const account = await havenod.createPaymentAccount(optional);
+    await havenod.deletePaymentAccount(account.getId());
+  }
+}
+
+async function testFormFieldDependencies(form: PaymentAccountForm, havenod: HavenoClient) {
+  const dependentFields = form.getFieldsList().filter(field => field.getRequiredIfAnyFieldHasValueList().length > 0);
+  if (!dependentFields.length) return;
+  const fieldIds = new Set(dependentFields.flatMap(field => [field.getId(), ...field.getRequiredIfAnyFieldHasValueList()]));
+  const blank = PaymentAccountForm.deserializeBinary(form.serializeBinary());
+  for (const fieldId of fieldIds) HavenoUtils.setFormValue(blank, fieldId, "");
+
+  // test the empty group and each populated field, including fields that do not trigger requirements
+  for (const activeField of [undefined, ...fieldIds]) {
+    const partial = PaymentAccountForm.deserializeBinary(blank.serializeBinary());
+    if (activeField !== undefined) {
+      const value = HavenoUtils.getFormValue(form, activeField);
+      expect(value).not.toBe("");
+      HavenoUtils.setFormValue(partial, activeField, value);
+    }
+    for (const field of partial.getFieldsList()) {
+      if (fieldIds.has(field.getId())) await testFormFieldRequired(partial, field, havenod);
+    }
+    if (partial.getFieldsList().some(field => isFormFieldRequired(partial, field) && field.getValue() === "")) {
+      await expect(havenod.createPaymentAccount(partial)).rejects.toMatchObject({code: 3});
+    } else {
+      const account = await havenod.createPaymentAccount(partial);
+      try {
+        const restored = await havenod.getPaymentAccountPayloadForm(account.getPaymentAccountPayload()!);
+        for (const fieldId of fieldIds) {
+          expect(HavenoUtils.getFormValue(restored, fieldId)).toEqual(HavenoUtils.getFormValue(partial, fieldId));
+        }
+      } finally {
+        await havenod.deletePaymentAccount(account.getId());
+      }
+      await testOptionalFormFields(partial, havenod);
+    }
+  }
+}
+
 // Default country for general bank forms, whose COUNTRY field is unrestricted. FR is intentionally not a
 // BANK_VALIDATION_COUNTRY, so their optional bank fields' content is not validated (parity with desktop).
 const GENERAL_BANK_TEST_COUNTRY = "FR";
@@ -5022,8 +5192,7 @@ function getValidFormInputAux(form: PaymentAccountForm, fieldId: PaymentAccountF
     case PaymentAccountFormField.FieldId.SPECIAL_INSTRUCTIONS:
       return "asap plz";
     case PaymentAccountFormField.FieldId.STATE:
-      const country = HavenoUtils.getFormValue(form, PaymentAccountFormField.FieldId.COUNTRY);
-      return moneroTs.GenUtils.arrayContains(field.getRequiredForCountriesList(), country) ? "My state" : "";
+      return "My state";
     case PaymentAccountFormField.FieldId.TRADE_CURRENCIES:
       if (field.getComponent() === PaymentAccountFormField.Component.SELECT_ONE) {
         if (form.getId() === PaymentAccountForm.FormId.F2F) return "XAU";
@@ -5169,10 +5338,8 @@ function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFo
       return "12345A";
     case PaymentAccountFormField.FieldId.SPECIAL_INSTRUCTIONS:
       return undefined;
-    case PaymentAccountFormField.FieldId.STATE: {
-      const country = HavenoUtils.getFormValue(form, PaymentAccountFormField.FieldId.COUNTRY);
-      return moneroTs.GenUtils.arrayContains(field.getRequiredForCountriesList(), country) ? "" : "My state";
-    }
+    case PaymentAccountFormField.FieldId.STATE:
+      return isFormFieldRequired(form, getFormField(form, fieldId)) ? "" : undefined;
     case PaymentAccountFormField.FieldId.TRADE_CURRENCIES:
       return "abc,def";
     case PaymentAccountFormField.FieldId.USERNAME:
