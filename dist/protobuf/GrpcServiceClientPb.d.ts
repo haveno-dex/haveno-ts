@@ -155,6 +155,9 @@ export declare class NotificationsClient {
     methodDescriptorSendNotification: grpcWeb.MethodDescriptor<grpc_pb.SendNotificationRequest, grpc_pb.SendNotificationReply>;
     sendNotification(request: grpc_pb.SendNotificationRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.SendNotificationReply>;
     sendNotification(request: grpc_pb.SendNotificationRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.SendNotificationReply) => void): grpcWeb.ClientReadableStream<grpc_pb.SendNotificationReply>;
+    methodDescriptorGetAlert: grpcWeb.MethodDescriptor<grpc_pb.GetAlertRequest, grpc_pb.GetAlertReply>;
+    getAlert(request: grpc_pb.GetAlertRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.GetAlertReply>;
+    getAlert(request: grpc_pb.GetAlertRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.GetAlertReply) => void): grpcWeb.ClientReadableStream<grpc_pb.GetAlertReply>;
 }
 export declare class XmrConnectionsClient {
     client_: grpcWeb.AbstractClientBase;

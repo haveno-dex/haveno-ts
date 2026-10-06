@@ -54528,7 +54528,7 @@ proto.io.haveno.protobuffer.TradableList.prototype.clearTradableList = function(
  * @private {!Array<!Array<number>>}
  * @const
  */
-proto.io.haveno.protobuffer.TradableLogEntry.oneofGroups_ = [[1,2]];
+proto.io.haveno.protobuffer.TradableLogEntry.oneofGroups_ = [[1,2,4]];
 
 /**
  * @enum {number}
@@ -54536,7 +54536,8 @@ proto.io.haveno.protobuffer.TradableLogEntry.oneofGroups_ = [[1,2]];
 proto.io.haveno.protobuffer.TradableLogEntry.EntryCase = {
   ENTRY_NOT_SET: 0,
   UPSERT: 1,
-  DELETE_ID: 2
+  DELETE_ID: 2,
+  DELETE_KEY: 4
 };
 
 /**
@@ -54578,7 +54579,9 @@ proto.io.haveno.protobuffer.TradableLogEntry.prototype.toObject = function(opt_i
 proto.io.haveno.protobuffer.TradableLogEntry.toObject = function(includeInstance, msg) {
   var f, obj = {
 upsert: (f = msg.getUpsert()) && proto.io.haveno.protobuffer.Tradable.toObject(includeInstance, f),
-deleteId: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f
+deleteId: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
+deleteKey: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f,
+mutationId: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
   if (includeInstance) {
@@ -54624,6 +54627,14 @@ proto.io.haveno.protobuffer.TradableLogEntry.deserializeBinaryFromReader = funct
       var value = /** @type {string} */ (reader.readString());
       msg.setDeleteId(value);
       break;
+    case 4:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setDeleteKey(value);
+      break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setMutationId(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -54665,6 +54676,20 @@ proto.io.haveno.protobuffer.TradableLogEntry.serializeBinaryToWriter = function(
   if (f != null) {
     writer.writeString(
       2,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 4));
+  if (f != null) {
+    writer.writeString(
+      4,
+      f
+    );
+  }
+  f = message.getMutationId();
+  if (f.length > 0) {
+    writer.writeString(
+      3,
       f
     );
   }
@@ -54741,6 +54766,60 @@ proto.io.haveno.protobuffer.TradableLogEntry.prototype.clearDeleteId = function(
  */
 proto.io.haveno.protobuffer.TradableLogEntry.prototype.hasDeleteId = function() {
   return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * optional string delete_key = 4;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.TradableLogEntry.prototype.getDeleteKey = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.TradableLogEntry} returns this
+ */
+proto.io.haveno.protobuffer.TradableLogEntry.prototype.setDeleteKey = function(value) {
+  return jspb.Message.setOneofField(this, 4, proto.io.haveno.protobuffer.TradableLogEntry.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.io.haveno.protobuffer.TradableLogEntry} returns this
+ */
+proto.io.haveno.protobuffer.TradableLogEntry.prototype.clearDeleteKey = function() {
+  return jspb.Message.setOneofField(this, 4, proto.io.haveno.protobuffer.TradableLogEntry.oneofGroups_[0], undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.io.haveno.protobuffer.TradableLogEntry.prototype.hasDeleteKey = function() {
+  return jspb.Message.getField(this, 4) != null;
+};
+
+
+/**
+ * optional string mutation_id = 3;
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.TradableLogEntry.prototype.getMutationId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.io.haveno.protobuffer.TradableLogEntry} returns this
+ */
+proto.io.haveno.protobuffer.TradableLogEntry.prototype.setMutationId = function(value) {
+  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
@@ -56656,7 +56735,8 @@ counterCurrencyExtraData: jspb.Message.getFieldWithDefault(msg, 26, ""),
 uid: jspb.Message.getFieldWithDefault(msg, 27, ""),
 isCompleted: jspb.Message.getBooleanFieldWithDefault(msg, 28, false),
 challenge: jspb.Message.getFieldWithDefault(msg, 29, ""),
-payoutHeight: jspb.Message.getFieldWithDefault(msg, 30, 0)
+payoutHeight: jspb.Message.getFieldWithDefault(msg, 30, 0),
+completedRevision: jspb.Message.getFieldWithDefault(msg, 31, 0)
   };
 
   if (includeInstance) {
@@ -56819,6 +56899,10 @@ proto.io.haveno.protobuffer.Trade.deserializeBinaryFromReader = function(msg, re
     case 30:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setPayoutHeight(value);
+      break;
+    case 31:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setCompletedRevision(value);
       break;
     default:
       reader.skipField();
@@ -57063,6 +57147,13 @@ proto.io.haveno.protobuffer.Trade.serializeBinaryToWriter = function(message, wr
   if (f !== 0) {
     writer.writeInt64(
       30,
+      f
+    );
+  }
+  f = message.getCompletedRevision();
+  if (f !== 0) {
+    writer.writeInt64(
+      31,
       f
     );
   }
@@ -57857,6 +57948,24 @@ proto.io.haveno.protobuffer.Trade.prototype.getPayoutHeight = function() {
  */
 proto.io.haveno.protobuffer.Trade.prototype.setPayoutHeight = function(value) {
   return jspb.Message.setProto3IntField(this, 30, value);
+};
+
+
+/**
+ * optional int64 completed_revision = 31;
+ * @return {number}
+ */
+proto.io.haveno.protobuffer.Trade.prototype.getCompletedRevision = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 31, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.io.haveno.protobuffer.Trade} returns this
+ */
+proto.io.haveno.protobuffer.Trade.prototype.setCompletedRevision = function(value) {
+  return jspb.Message.setProto3IntField(this, 31, value);
 };
 
 
@@ -62505,7 +62614,9 @@ buyScreenCryptoPaymentMethodId: jspb.Message.getFieldWithDefault(msg, 74, ""),
 sellScreenCryptoPaymentMethodId: jspb.Message.getFieldWithDefault(msg, 75, ""),
 buyScreenOtherPaymentMethodId: jspb.Message.getFieldWithDefault(msg, 76, ""),
 sellScreenOtherPaymentMethodId: jspb.Message.getFieldWithDefault(msg, 77, ""),
-depositAddressesExpanded: jspb.Message.getBooleanFieldWithDefault(msg, 78, false)
+depositAddressesExpanded: jspb.Message.getBooleanFieldWithDefault(msg, 78, false),
+tacAcceptedVersion: jspb.Message.getFieldWithDefault(msg, 79, 0),
+useNativeXmrWallet: jspb.Message.getBooleanFieldWithDefault(msg, 80, false)
   };
 
   if (includeInstance) {
@@ -62866,6 +62977,14 @@ proto.io.haveno.protobuffer.PreferencesPayload.deserializeBinaryFromReader = fun
     case 78:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setDepositAddressesExpanded(value);
+      break;
+    case 79:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setTacAcceptedVersion(value);
+      break;
+    case 80:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setUseNativeXmrWallet(value);
       break;
     default:
       reader.skipField();
@@ -63442,6 +63561,20 @@ proto.io.haveno.protobuffer.PreferencesPayload.serializeBinaryToWriter = functio
   if (f) {
     writer.writeBool(
       78,
+      f
+    );
+  }
+  f = message.getTacAcceptedVersion();
+  if (f !== 0) {
+    writer.writeInt32(
+      79,
+      f
+    );
+  }
+  f = message.getUseNativeXmrWallet();
+  if (f) {
+    writer.writeBool(
+      80,
       f
     );
   }
@@ -65071,6 +65204,42 @@ proto.io.haveno.protobuffer.PreferencesPayload.prototype.getDepositAddressesExpa
  */
 proto.io.haveno.protobuffer.PreferencesPayload.prototype.setDepositAddressesExpanded = function(value) {
   return jspb.Message.setProto3BooleanField(this, 78, value);
+};
+
+
+/**
+ * optional int32 tac_accepted_version = 79;
+ * @return {number}
+ */
+proto.io.haveno.protobuffer.PreferencesPayload.prototype.getTacAcceptedVersion = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 79, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.io.haveno.protobuffer.PreferencesPayload} returns this
+ */
+proto.io.haveno.protobuffer.PreferencesPayload.prototype.setTacAcceptedVersion = function(value) {
+  return jspb.Message.setProto3IntField(this, 79, value);
+};
+
+
+/**
+ * optional bool use_native_xmr_wallet = 80;
+ * @return {boolean}
+ */
+proto.io.haveno.protobuffer.PreferencesPayload.prototype.getUseNativeXmrWallet = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 80, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.io.haveno.protobuffer.PreferencesPayload} returns this
+ */
+proto.io.haveno.protobuffer.PreferencesPayload.prototype.setUseNativeXmrWallet = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 80, value);
 };
 
 
@@ -69369,7 +69538,6 @@ proto.io.haveno.protobuffer.PaymentAccountForm.FormId = {
   MONESE: 53,
   MONEY_BEAM: 54,
   PERFECT_MONEY: 55,
-  POPMONEY: 56,
   RTGS: 57,
   VERSE: 58,
   SAME_BANK: 59,
@@ -69458,7 +69626,7 @@ proto.io.haveno.protobuffer.PaymentAccountForm.prototype.clearFieldsList = funct
  * @private {!Array<number>}
  * @const
  */
-proto.io.haveno.protobuffer.PaymentAccountFormField.repeatedFields_ = [8,9,10,11,12,13];
+proto.io.haveno.protobuffer.PaymentAccountFormField.repeatedFields_ = [8,9,10,11,12,13,15];
 
 
 
@@ -69507,7 +69675,9 @@ supportedSepaEuroCountriesList: jspb.Message.toObjectList(msg.getSupportedSepaEu
 supportedSepaNonEuroCountriesList: jspb.Message.toObjectList(msg.getSupportedSepaNonEuroCountriesList(),
     proto.io.haveno.protobuffer.Country.toObject, includeInstance),
 requiredForCountriesList: (f = jspb.Message.getRepeatedField(msg, 12)) == null ? undefined : f,
-supportedValuesList: (f = jspb.Message.getRepeatedField(msg, 13)) == null ? undefined : f
+supportedValuesList: (f = jspb.Message.getRepeatedField(msg, 13)) == null ? undefined : f,
+required: (f = jspb.Message.getBooleanField(msg, 14)) == null ? undefined : f,
+requiredIfAnyFieldHasValueList: (f = jspb.Message.getRepeatedField(msg, 15)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -69599,6 +69769,16 @@ proto.io.haveno.protobuffer.PaymentAccountFormField.deserializeBinaryFromReader 
     case 13:
       var value = /** @type {string} */ (reader.readString());
       msg.addSupportedValues(value);
+      break;
+    case 14:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setRequired(value);
+      break;
+    case 15:
+      var values = /** @type {!Array<!proto.io.haveno.protobuffer.PaymentAccountFormField.FieldId>} */ (reader.isDelimited() ? reader.readPackedEnum() : [reader.readEnum()]);
+      for (var i = 0; i < values.length; i++) {
+        msg.addRequiredIfAnyFieldHasValue(values[i]);
+      }
       break;
     default:
       reader.skipField();
@@ -69721,6 +69901,20 @@ proto.io.haveno.protobuffer.PaymentAccountFormField.serializeBinaryToWriter = fu
   if (f.length > 0) {
     writer.writeRepeatedString(
       13,
+      f
+    );
+  }
+  f = /** @type {boolean} */ (jspb.Message.getField(message, 14));
+  if (f != null) {
+    writer.writeBool(
+      14,
+      f
+    );
+  }
+  f = message.getRequiredIfAnyFieldHasValueList();
+  if (f.length > 0) {
+    writer.writePackedEnum(
+      15,
       f
     );
   }
@@ -70155,6 +70349,79 @@ proto.io.haveno.protobuffer.PaymentAccountFormField.prototype.addSupportedValues
  */
 proto.io.haveno.protobuffer.PaymentAccountFormField.prototype.clearSupportedValuesList = function() {
   return this.setSupportedValuesList([]);
+};
+
+
+/**
+ * optional bool required = 14;
+ * @return {boolean}
+ */
+proto.io.haveno.protobuffer.PaymentAccountFormField.prototype.getRequired = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 14, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.io.haveno.protobuffer.PaymentAccountFormField} returns this
+ */
+proto.io.haveno.protobuffer.PaymentAccountFormField.prototype.setRequired = function(value) {
+  return jspb.Message.setField(this, 14, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.io.haveno.protobuffer.PaymentAccountFormField} returns this
+ */
+proto.io.haveno.protobuffer.PaymentAccountFormField.prototype.clearRequired = function() {
+  return jspb.Message.setField(this, 14, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.io.haveno.protobuffer.PaymentAccountFormField.prototype.hasRequired = function() {
+  return jspb.Message.getField(this, 14) != null;
+};
+
+
+/**
+ * repeated FieldId required_if_any_field_has_value = 15;
+ * @return {!Array<!proto.io.haveno.protobuffer.PaymentAccountFormField.FieldId>}
+ */
+proto.io.haveno.protobuffer.PaymentAccountFormField.prototype.getRequiredIfAnyFieldHasValueList = function() {
+  return /** @type {!Array<!proto.io.haveno.protobuffer.PaymentAccountFormField.FieldId>} */ (jspb.Message.getRepeatedField(this, 15));
+};
+
+
+/**
+ * @param {!Array<!proto.io.haveno.protobuffer.PaymentAccountFormField.FieldId>} value
+ * @return {!proto.io.haveno.protobuffer.PaymentAccountFormField} returns this
+ */
+proto.io.haveno.protobuffer.PaymentAccountFormField.prototype.setRequiredIfAnyFieldHasValueList = function(value) {
+  return jspb.Message.setField(this, 15, value || []);
+};
+
+
+/**
+ * @param {!proto.io.haveno.protobuffer.PaymentAccountFormField.FieldId} value
+ * @param {number=} opt_index
+ * @return {!proto.io.haveno.protobuffer.PaymentAccountFormField} returns this
+ */
+proto.io.haveno.protobuffer.PaymentAccountFormField.prototype.addRequiredIfAnyFieldHasValue = function(value, opt_index) {
+  return jspb.Message.addToRepeatedField(this, 15, value, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.io.haveno.protobuffer.PaymentAccountFormField} returns this
+ */
+proto.io.haveno.protobuffer.PaymentAccountFormField.prototype.clearRequiredIfAnyFieldHasValueList = function() {
+  return this.setRequiredIfAnyFieldHasValueList([]);
 };
 
 

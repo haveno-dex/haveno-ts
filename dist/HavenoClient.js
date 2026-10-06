@@ -1251,13 +1251,17 @@ class HavenoClient {
         }
     }
     /**
-     * Get all trades.
+     * Get trades, optionally filtered by category.
      *
-     * @return {TradeInfo[]} all user trades
+     * @param {GetTradesRequest.Category} category - the category of trades (default includes open and closed trades)
+     * @return {TradeInfo[]} the matching user trades
      */
-    async getTrades() {
+    async getTrades(category) {
         try {
-            return (await this._tradesClient.getTrades(new grpc_pb_1.GetTradesRequest(), { password: this._password })).getTradesList();
+            const request = new grpc_pb_1.GetTradesRequest();
+            if (category !== undefined)
+                request.setCategory(category);
+            return (await this._tradesClient.getTrades(request, { password: this._password })).getTradesList();
         }
         catch (e) {
             throw new HavenoError_1.default(e.message, e.code);

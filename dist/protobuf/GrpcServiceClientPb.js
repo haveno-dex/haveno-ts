@@ -321,6 +321,9 @@ class NotificationsClient {
         this.methodDescriptorSendNotification = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.Notifications/SendNotification', grpcWeb.MethodType.UNARY, grpc_pb.SendNotificationRequest, grpc_pb.SendNotificationReply, (request) => {
             return request.serializeBinary();
         }, grpc_pb.SendNotificationReply.deserializeBinary);
+        this.methodDescriptorGetAlert = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.Notifications/GetAlert', grpcWeb.MethodType.UNARY, grpc_pb.GetAlertRequest, grpc_pb.GetAlertReply, (request) => {
+            return request.serializeBinary();
+        }, grpc_pb.GetAlertReply.deserializeBinary);
         if (!options)
             options = {};
         if (!credentials)
@@ -342,6 +345,14 @@ class NotificationsClient {
         }
         return this.client_.unaryCall(this.hostname_ +
             '/io.haveno.protobuffer.Notifications/SendNotification', request, metadata || {}, this.methodDescriptorSendNotification);
+    }
+    getAlert(request, metadata, callback) {
+        if (callback !== undefined) {
+            return this.client_.rpcCall(this.hostname_ +
+                '/io.haveno.protobuffer.Notifications/GetAlert', request, metadata || {}, this.methodDescriptorGetAlert, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/io.haveno.protobuffer.Notifications/GetAlert', request, metadata || {}, this.methodDescriptorGetAlert);
     }
 }
 exports.NotificationsClient = NotificationsClient;

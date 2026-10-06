@@ -1,6 +1,6 @@
 import type * as grpcWeb from "grpc-web";
 import { GetTradeStatisticsClient, GetVersionClient, AccountClient, XmrConnectionsClient, DisputesClient, DisputeAgentsClient, NotificationsClient, WalletsClient, PriceClient, OffersClient, PaymentAccountsClient, TradesClient, ShutdownServerClient, XmrNodeClient } from './protobuf/GrpcServiceClientPb';
-import { MarketPriceInfo, MarketDepthInfo, GetWalletHeightReply, XmrBalanceInfo, OfferInfo, TradeInfo, XmrTx, XmrDestination, NotificationMessage, UrlConnection } from "./protobuf/grpc_pb";
+import { MarketPriceInfo, MarketDepthInfo, GetWalletHeightReply, XmrBalanceInfo, OfferInfo, TradeInfo, GetTradesRequest, XmrTx, XmrDestination, NotificationMessage, UrlConnection } from "./protobuf/grpc_pb";
 import { TradeStatistics3, OfferDirection, PaymentMethod, PaymentAccountForm, PaymentAccountFormField, PaymentAccount, PaymentAccountPayload, Attachment, DisputeResult, Dispute, ChatMessage, XmrNodeSettings } from "./protobuf/pb_pb";
 /**
  * Configuration to post or clone an offer.
@@ -555,11 +555,12 @@ export default class HavenoClient {
      */
     getTradeStatistics(): Promise<TradeStatistics3[]>;
     /**
-     * Get all trades.
+     * Get trades, optionally filtered by category.
      *
-     * @return {TradeInfo[]} all user trades
+     * @param {GetTradesRequest.Category} category - the category of trades (default includes open and closed trades)
+     * @return {TradeInfo[]} the matching user trades
      */
-    getTrades(): Promise<TradeInfo[]>;
+    getTrades(category?: GetTradesRequest.Category): Promise<TradeInfo[]>;
     /**
      * Confirm a payment is sent.
      *

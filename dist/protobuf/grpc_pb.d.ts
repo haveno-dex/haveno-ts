@@ -254,6 +254,11 @@ export namespace ChangePasswordRequest {
 }
 
 export class ChangePasswordReply extends jspb.Message {
+  getRetainedWalletBackupsList(): Array<string>;
+  setRetainedWalletBackupsList(value: Array<string>): ChangePasswordReply;
+  clearRetainedWalletBackupsList(): ChangePasswordReply;
+  addRetainedWalletBackups(value: string, index?: number): ChangePasswordReply;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ChangePasswordReply.AsObject;
   static toObject(includeInstance: boolean, msg: ChangePasswordReply): ChangePasswordReply.AsObject;
@@ -264,6 +269,7 @@ export class ChangePasswordReply extends jspb.Message {
 
 export namespace ChangePasswordReply {
   export type AsObject = {
+    retainedWalletBackupsList: Array<string>,
   }
 }
 
@@ -705,6 +711,11 @@ export class NotificationMessage extends jspb.Message {
   hasChatMessage(): boolean;
   clearChatMessage(): NotificationMessage;
 
+  getAlert(): pb_pb.Alert | undefined;
+  setAlert(value?: pb_pb.Alert): NotificationMessage;
+  hasAlert(): boolean;
+  clearAlert(): NotificationMessage;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): NotificationMessage.AsObject;
   static toObject(includeInstance: boolean, msg: NotificationMessage): NotificationMessage.AsObject;
@@ -722,6 +733,7 @@ export namespace NotificationMessage {
     message: string,
     trade?: TradeInfo.AsObject,
     chatMessage?: pb_pb.ChatMessage.AsObject,
+    alert?: pb_pb.Alert.AsObject,
   }
 
   export enum NotificationType { 
@@ -730,6 +742,7 @@ export namespace NotificationMessage {
     KEEP_ALIVE = 2,
     TRADE_UPDATE = 3,
     CHAT_MESSAGE = 4,
+    ALERT = 5,
   }
 }
 
@@ -764,6 +777,40 @@ export class SendNotificationReply extends jspb.Message {
 
 export namespace SendNotificationReply {
   export type AsObject = {
+  }
+}
+
+export class GetAlertRequest extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GetAlertRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: GetAlertRequest): GetAlertRequest.AsObject;
+  static serializeBinaryToWriter(message: GetAlertRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GetAlertRequest;
+  static deserializeBinaryFromReader(message: GetAlertRequest, reader: jspb.BinaryReader): GetAlertRequest;
+}
+
+export namespace GetAlertRequest {
+  export type AsObject = {
+  }
+}
+
+export class GetAlertReply extends jspb.Message {
+  getAlert(): pb_pb.Alert | undefined;
+  setAlert(value?: pb_pb.Alert): GetAlertReply;
+  hasAlert(): boolean;
+  clearAlert(): GetAlertReply;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GetAlertReply.AsObject;
+  static toObject(includeInstance: boolean, msg: GetAlertReply): GetAlertReply.AsObject;
+  static serializeBinaryToWriter(message: GetAlertReply, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GetAlertReply;
+  static deserializeBinaryFromReader(message: GetAlertReply, reader: jspb.BinaryReader): GetAlertReply;
+}
+
+export namespace GetAlertReply {
+  export type AsObject = {
+    alert?: pb_pb.Alert.AsObject,
   }
 }
 
@@ -2596,6 +2643,8 @@ export namespace GetTradeReply {
 export class GetTradesRequest extends jspb.Message {
   getCategory(): GetTradesRequest.Category;
   setCategory(value: GetTradesRequest.Category): GetTradesRequest;
+  hasCategory(): boolean;
+  clearCategory(): GetTradesRequest;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GetTradesRequest.AsObject;
@@ -2607,13 +2656,18 @@ export class GetTradesRequest extends jspb.Message {
 
 export namespace GetTradesRequest {
   export type AsObject = {
-    category: GetTradesRequest.Category,
+    category?: GetTradesRequest.Category,
   }
 
   export enum Category { 
     OPEN = 0,
     CLOSED = 1,
     FAILED = 2,
+  }
+
+  export enum CategoryCase { 
+    _CATEGORY_NOT_SET = 0,
+    CATEGORY = 1,
   }
 }
 

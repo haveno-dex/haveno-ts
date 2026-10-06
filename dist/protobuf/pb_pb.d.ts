@@ -6645,6 +6645,12 @@ export class TradableLogEntry extends jspb.Message {
   getDeleteId(): string;
   setDeleteId(value: string): TradableLogEntry;
 
+  getDeleteKey(): string;
+  setDeleteKey(value: string): TradableLogEntry;
+
+  getMutationId(): string;
+  setMutationId(value: string): TradableLogEntry;
+
   getEntryCase(): TradableLogEntry.EntryCase;
 
   serializeBinary(): Uint8Array;
@@ -6659,12 +6665,15 @@ export namespace TradableLogEntry {
   export type AsObject = {
     upsert?: Tradable.AsObject,
     deleteId: string,
+    deleteKey: string,
+    mutationId: string,
   }
 
   export enum EntryCase { 
     ENTRY_NOT_SET = 0,
     UPSERT = 1,
     DELETE_ID = 2,
+    DELETE_KEY = 4,
   }
 }
 
@@ -7037,6 +7046,9 @@ export class Trade extends jspb.Message {
   getPayoutHeight(): number;
   setPayoutHeight(value: number): Trade;
 
+  getCompletedRevision(): number;
+  setCompletedRevision(value: number): Trade;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Trade.AsObject;
   static toObject(includeInstance: boolean, msg: Trade): Trade.AsObject;
@@ -7077,6 +7089,7 @@ export namespace Trade {
     isCompleted: boolean,
     challenge: string,
     payoutHeight: number,
+    completedRevision: number,
   }
 
   export enum State { 
@@ -7987,6 +8000,12 @@ export class PreferencesPayload extends jspb.Message {
   getDepositAddressesExpanded(): boolean;
   setDepositAddressesExpanded(value: boolean): PreferencesPayload;
 
+  getTacAcceptedVersion(): number;
+  setTacAcceptedVersion(value: number): PreferencesPayload;
+
+  getUseNativeXmrWallet(): boolean;
+  setUseNativeXmrWallet(value: boolean): PreferencesPayload;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PreferencesPayload.AsObject;
   static toObject(includeInstance: boolean, msg: PreferencesPayload): PreferencesPayload.AsObject;
@@ -8075,6 +8094,8 @@ export namespace PreferencesPayload {
     buyScreenOtherPaymentMethodId: string,
     sellScreenOtherPaymentMethodId: string,
     depositAddressesExpanded: boolean,
+    tacAcceptedVersion: number,
+    useNativeXmrWallet: boolean,
   }
 }
 
@@ -8691,7 +8712,6 @@ export namespace PaymentAccountForm {
     MONESE = 53,
     MONEY_BEAM = 54,
     PERFECT_MONEY = 55,
-    POPMONEY = 56,
     RTGS = 57,
     VERSE = 58,
     SAME_BANK = 59,
@@ -8771,6 +8791,16 @@ export class PaymentAccountFormField extends jspb.Message {
   clearSupportedValuesList(): PaymentAccountFormField;
   addSupportedValues(value: string, index?: number): PaymentAccountFormField;
 
+  getRequired(): boolean;
+  setRequired(value: boolean): PaymentAccountFormField;
+  hasRequired(): boolean;
+  clearRequired(): PaymentAccountFormField;
+
+  getRequiredIfAnyFieldHasValueList(): Array<PaymentAccountFormField.FieldId>;
+  setRequiredIfAnyFieldHasValueList(value: Array<PaymentAccountFormField.FieldId>): PaymentAccountFormField;
+  clearRequiredIfAnyFieldHasValueList(): PaymentAccountFormField;
+  addRequiredIfAnyFieldHasValue(value: PaymentAccountFormField.FieldId, index?: number): PaymentAccountFormField;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PaymentAccountFormField.AsObject;
   static toObject(includeInstance: boolean, msg: PaymentAccountFormField): PaymentAccountFormField.AsObject;
@@ -8794,6 +8824,8 @@ export namespace PaymentAccountFormField {
     supportedSepaNonEuroCountriesList: Array<Country.AsObject>,
     requiredForCountriesList: Array<string>,
     supportedValuesList: Array<string>,
+    required?: boolean,
+    requiredIfAnyFieldHasValueList: Array<PaymentAccountFormField.FieldId>,
   }
 
   export enum FieldId { 
@@ -8867,6 +8899,11 @@ export namespace PaymentAccountFormField {
     TEXTAREA = 1,
     SELECT_ONE = 2,
     SELECT_MULTIPLE = 3,
+  }
+
+  export enum RequiredCase { 
+    _REQUIRED_NOT_SET = 0,
+    REQUIRED = 14,
   }
 }
 
