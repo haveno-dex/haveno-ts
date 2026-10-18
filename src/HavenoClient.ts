@@ -21,8 +21,8 @@ import HavenoUtils from "./utils/HavenoUtils";
 import TaskLooper from "./utils/TaskLooper";
 import type * as grpcWeb from "grpc-web";
 import { GetTradeStatisticsClient, GetVersionClient, AccountClient, XmrConnectionsClient, DisputesClient, DisputeAgentsClient, NotificationsClient, WalletsClient, PriceClient, OffersClient, PaymentAccountsClient, TradesClient, ShutdownServerClient, XmrNodeClient } from './protobuf/GrpcServiceClientPb';
-import { GetTradeStatisticsRequest, GetVersionRequest, IsAppInitializedRequest, RegisterDisputeAgentRequest, UnregisterDisputeAgentRequest, MarketPriceRequest, MarketPricesRequest, MarketPriceInfo, MarketDepthRequest, MarketDepthInfo, GetWalletHeightRequest, GetWalletHeightReply, GetBalancesRequest, XmrBalanceInfo, GetMyOfferRequest, GetOffersRequest, OfferInfo, GetPaymentMethodsRequest, GetPaymentAccountFormRequest, CreatePaymentAccountRequest, ValidateFormFieldRequest, GetPaymentAccountsRequest, CreateCryptoCurrencyPaymentAccountRequest, DeletePaymentAccountRequest, PostOfferRequest, EditOfferRequest, DeactivateOfferRequest, ActivateOfferRequest, CancelOfferRequest, TakeOfferRequest, TradeInfo, GetTradeRequest, GetTradesRequest, GetXmrSeedRequest, GetXmrPrimaryAddressRequest, GetXmrNewSubaddressRequest, ConfirmPaymentSentRequest, ConfirmPaymentReceivedRequest, CompleteTradeRequest, XmrTx, GetXmrTxsRequest, XmrDestination, CreateXmrTxRequest, CreateXmrSweepTxsRequest, RelayXmrTxsRequest, CreateAccountRequest, AccountExistsRequest, DeleteAccountRequest, OpenAccountRequest, IsAccountOpenRequest, CloseAccountRequest, ChangePasswordRequest, BackupAccountRequest, BackupAccountReply, RestoreAccountRequest, StopRequest, NotificationMessage, RegisterNotificationListenerRequest, SendNotificationRequest, UrlConnection, AddConnectionRequest, RemoveConnectionRequest, GetConnectionRequest, GetConnectionsRequest, SetConnectionRequest, CheckConnectionRequest, GetBestConnectionRequest, SetAutoSwitchRequest, GetAutoSwitchRequest, GetDisputeRequest, GetDisputesRequest, OpenDisputeRequest, ResolveDisputeRequest, SendDisputeChatMessageRequest, SendChatMessageRequest, GetChatMessagesRequest, StartXmrNodeRequest, StopXmrNodeRequest, IsXmrNodeOnlineRequest, GetXmrNodeSettingsRequest } from "./protobuf/grpc_pb";
-import { TradeStatistics3, OfferDirection, PaymentMethod, PaymentAccountForm, PaymentAccountFormField, PaymentAccount, PaymentAccountPayload, AvailabilityResult, Attachment, DisputeResult, Dispute, ChatMessage, XmrNodeSettings } from "./protobuf/pb_pb";
+import { GetTradeStatisticsRequest, GetVersionRequest, IsAppInitializedRequest, RegisterDisputeAgentRequest, UnregisterDisputeAgentRequest, MarketPriceRequest, MarketPricesRequest, MarketPriceInfo, MarketDepthRequest, MarketDepthInfo, GetWalletHeightRequest, GetWalletHeightReply, GetBalancesRequest, XmrBalanceInfo, GetMyOfferRequest, GetOffersRequest, OfferInfo, GetPaymentMethodsRequest, GetPaymentAccountFormRequest, CreatePaymentAccountRequest, ValidateFormFieldRequest, GetPaymentAccountsRequest, CreateCryptoCurrencyPaymentAccountRequest, DeletePaymentAccountRequest, PostOfferRequest, EditOfferRequest, DeactivateOfferRequest, ActivateOfferRequest, CancelOfferRequest, TakeOfferRequest, TradeInfo, GetTradeRequest, GetTradesRequest, GetXmrSeedRequest, GetXmrPrimaryAddressRequest, GetXmrNewSubaddressRequest, ConfirmPaymentSentRequest, ConfirmPaymentReceivedRequest, CompleteTradeRequest, XmrTx, GetXmrTxsRequest, XmrDestination, CreateXmrTxRequest, CreateXmrSweepTxsRequest, RelayXmrTxsRequest, CreateAccountRequest, CreateAccountFromSeedRequest, AccountExistsRequest, DeleteAccountRequest, OpenAccountRequest, IsAccountOpenRequest, CloseAccountRequest, ChangePasswordRequest, BackupAccountRequest, BackupAccountReply, RestoreAccountRequest, RestoreXmrWalletFromSeedRequest, StopRequest, NotificationMessage, RegisterNotificationListenerRequest, SendNotificationRequest, UrlConnection, AddConnectionRequest, RemoveConnectionRequest, GetConnectionRequest, GetConnectionsRequest, SetConnectionRequest, CheckConnectionRequest, GetBestConnectionRequest, SetAutoSwitchRequest, GetAutoSwitchRequest, GetDisputeRequest, GetDisputesRequest, OpenDisputeRequest, ResolveDisputeRequest, SendDisputeChatMessageRequest, SendChatMessageRequest, GetChatMessagesRequest, StartXmrNodeRequest, StopXmrNodeRequest, IsXmrNodeOnlineRequest, GetXmrNodeSettingsRequest } from "./protobuf/grpc_pb";
+import { TradeStatistics3, OfferDirection, PaymentMethod, PaymentAccountForm, PaymentAccountFormField, PaymentAccount, PaymentAccountPayload, Attachment, DisputeResult, Dispute, ChatMessage, XmrNodeSettings } from "./protobuf/pb_pb";
 
 
 /**
@@ -374,13 +374,29 @@ export default class HavenoClient {
   }
   
   /**
-   * Create and open a new Haveno account.
-   * 
+   * Create and open a new Haveno account, optionally restoring the main wallet from a seed.
+   *
+   * A rejected seed or failed wallet creation leaves no account. Omit the restore height
+   * and date to scan from genesis. Restoring from a seed requires a daemon started with
+   * --passwordRequired=true, since otherwise the daemon creates its account on startup.
+   *
    * @param {string} password - the password to encrypt the account
+   * @param {string} [seed] - the wallet seed phrase to restore from
+   * @param {number} [restoreHeight] - the height to start scanning from
+   * @param {string} [restoreDate] - YYYY-MM-DD to start scanning from, estimated as a mainnet height
    */
-  async createAccount(password: string): Promise<void> {
+  async createAccount(password: string, seed?: string, restoreHeight?: number, restoreDate?: string): Promise<void> {
     try {
-      await this._accountClient.createAccount(new CreateAccountRequest().setPassword(password), {password: this._password});
+      if (seed !== undefined || restoreHeight !== undefined || restoreDate !== undefined) {
+        if (!seed || !seed.trim()) throw new HavenoError("Wallet seed is required");
+        restoreDate = HavenoClient.validateRestorePoint(restoreHeight, restoreDate);
+        const request = new CreateAccountFromSeedRequest().setPassword(password).setSeed(seed);
+        if (restoreHeight !== undefined) request.setRestoreHeight(restoreHeight);
+        if (restoreDate) request.setRestoreDate(restoreDate);
+        await this._accountClient.createAccountFromSeed(request, {password: this._password});
+      } else {
+        await this._accountClient.createAccount(new CreateAccountRequest().setPassword(password), {password: this._password});
+      }
       await this.awaitAppInitialized(); // TODO: grpc should not return before setup is complete?
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);
@@ -481,6 +497,29 @@ export default class HavenoClient {
     }
   }
   
+  /**
+   * Restore the main wallet from a seed, removing open offers and restarting the daemon.
+   *
+   * Reopen the account after reconnecting. The previous wallet is retained since existing
+   * trades pay out to it. Omit the restore height and date to scan from genesis.
+   *
+   * @param {string} seed - the wallet seed phrase
+   * @param {number} [restoreHeight] - the height to start scanning from
+   * @param {string} [restoreDate] - YYYY-MM-DD to start scanning from, estimated as a mainnet height
+   */
+  async restoreXmrWalletFromSeed(seed: string, restoreHeight?: number, restoreDate?: string): Promise<void> {
+    if (!seed || !seed.trim()) throw new HavenoError("Wallet seed is required");
+    restoreDate = HavenoClient.validateRestorePoint(restoreHeight, restoreDate);
+    try {
+      const request = new RestoreXmrWalletFromSeedRequest().setSeed(seed);
+      if (restoreHeight !== undefined) request.setRestoreHeight(restoreHeight);
+      if (restoreDate) request.setRestoreDate(restoreDate);
+      await this._accountClient.restoreXmrWalletFromSeed(request, {password: this._password});
+    } catch (e: any) {
+      throw new HavenoError(e.message, e.code);
+    }
+  }
+
   /**
    * Add a listener to receive notifications from the Haveno daemon.
    *
@@ -1467,6 +1506,18 @@ export default class HavenoClient {
   }
   
   // ------------------------------- HELPERS ----------------------------------
+
+  // validate a restore height or date before sending it, returning the trimmed date
+  private static validateRestorePoint(restoreHeight?: number, restoreDate?: string): string | undefined {
+    if (restoreHeight !== undefined && (!Number.isSafeInteger(restoreHeight) || restoreHeight < 0)) throw new HavenoError("Restore height must be a nonnegative safe integer");
+    restoreDate = restoreDate?.trim();
+    if (!restoreDate) return undefined;
+    if (restoreHeight !== undefined) throw new HavenoError("Specify either a restore height or a restore date");
+    const date = new Date(restoreDate);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(restoreDate) || Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== restoreDate) throw new HavenoError("Restore date must be a valid YYYY-MM-DD date");
+    if (restoreDate > new Date().toISOString().slice(0, 10)) throw new HavenoError("Restore date cannot be in the future (UTC)");
+    return restoreDate;
+  }
   
   
   /**
