@@ -474,19 +474,10 @@ export default class HavenoClient {
   async restoreAccount(zipBytes: Uint8Array): Promise<void> {
     if (zipBytes.length === 0) throw new HavenoError("Zip bytes must not be empty")
     const totalLength = zipBytes.byteLength;
-    let offset = 0;
-    let chunkSize = 4000000; // the max frame size is 4194304 but leave room for http headers
-    let hasMore = true;
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
-      if (zipBytes.byteLength <= offset + 1) return;
-      if (zipBytes.byteLength <= offset + chunkSize) {
-        chunkSize = zipBytes.byteLength - offset - 1;
-        hasMore = false;
-      }
-      const subArray = zipBytes.subarray(offset, offset + chunkSize);
-      await this._restoreAccountChunk(subArray, offset, totalLength, hasMore);
-      offset += chunkSize;
+    const chunkSize = 4000000; // the max frame size is 4194304 but leave room for http headers
+    for (let offset = 0; offset < totalLength; offset += chunkSize) {
+      const end = Math.min(offset + chunkSize, totalLength);
+      await this._restoreAccountChunk(zipBytes.subarray(offset, end), offset, totalLength, end < totalLength);
     }
   }
   
