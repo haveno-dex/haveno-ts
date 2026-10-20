@@ -391,7 +391,7 @@ const TestConfig = {
     moneroBinsDir: "../haveno/.localnet",
     testDataDir: "./testdata",
     deferralMs: 25000,
-    useNativeXmrWallet: false, // start havenods with native wallet libraries instead of monero-wallet-rpc
+    useNativeXmrWallet: true, // start havenods with native wallet libraries instead of monero-wallet-rpc
     haveno: {
         path: "../haveno",
         version: "1.11.0"
@@ -700,13 +700,27 @@ test("Can manage an account (Test, CI)", async () => {
     // test errors when account not open
     await testAccountNotOpen(user3);
 
-    // create account
+    // create account importing the main wallet from a seed, which is validated before the account exists
     let password = "testPassword";
-    await user3.createAccount(password);
+    const importedWallet = await moneroTs.createWalletFull({networkType: TestConfig.networkType});
+    let importedSeed: string;
+    let importedAddress: string;
+    try {
+      importedSeed = await importedWallet.getSeed();
+      importedAddress = await importedWallet.getPrimaryAddress();
+    } finally {
+      await importedWallet.close();
+    }
+    await expect(user3.createAccount(password, "invalid seed")).rejects.toThrow("Invalid wallet seed");
+    await expect(user3.createAccount(password, importedSeed, 0, "2020-01-01")).rejects.toThrow("either a restore height or a restore date");
+    assert(!await user3.accountExists());
+    await user3.createAccount(password, importedSeed);
     if (await user3.isConnectedToMonero()) await user3.getBalances(); // only connected if local node running
     assert(await user3.accountExists());
     assert(await user3.isAccountOpen());
     assert(await user3.isAppInitialized());
+    assert.equal(await user3.getXmrSeed(), importedSeed);
+    assert.equal(await user3.getXmrPrimaryAddress(), importedAddress);
 
     // create payment account
     const paymentAccount = await user3.createCryptoPaymentAccount("My ETH account", TestConfig.cryptoAddresses[0].currencyCode, TestConfig.cryptoAddresses[0].address);
@@ -811,6 +825,33 @@ test("Can manage an account (Test, CI)", async () => {
     // check the persisted payment account
     const paymentAccount2 = await user3.getPaymentAccount(paymentAccount.getId());
     testCryptoPaymentAccountsEqual(paymentAccount, paymentAccount2);
+
+    // invalid seeds must preserve the current wallet
+    const oldAddress = await user3.getXmrPrimaryAddress();
+    await expect(user3.restoreXmrWalletFromSeed("invalid seed")).rejects.toThrow("Invalid wallet seed");
+    assert.equal(await user3.getXmrPrimaryAddress(), oldAddress);
+
+    // replace the main wallet with an independent seed and reopen after the restart
+    const restoredWallet = await moneroTs.createWalletFull({networkType: TestConfig.networkType});
+    let seed: string;
+    let address: string;
+    try {
+      seed = await restoredWallet.getSeed();
+      address = await restoredWallet.getPrimaryAddress();
+    } finally {
+      await restoredWallet.close();
+    }
+    await user3.restoreXmrWalletFromSeed(seed);
+    const reconnectDeadline = Date.now() + 60000;
+    while (!await user3.isConnectedToDaemon()) {
+      if (Date.now() >= reconnectDeadline) throw new Error("Timed out reconnecting to havenod after restoring wallet from seed");
+      await wait(1000);
+    }
+    assert(!await user3.isAccountOpen());
+    await user3.openAccount(password);
+    assert.equal(await user3.getXmrSeed(), seed);
+    assert.equal(await user3.getXmrPrimaryAddress(), address);
+    testCryptoPaymentAccountsEqual(paymentAccount, await user3.getPaymentAccount(paymentAccount.getId()));
   } catch (err2) {
     err = err2;
   }
