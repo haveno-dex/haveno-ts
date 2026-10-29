@@ -167,6 +167,57 @@ export namespace CreateAccountReply {
   }
 }
 
+export class CreateAccountFromSeedRequest extends jspb.Message {
+  getPassword(): string;
+  setPassword(value: string): CreateAccountFromSeedRequest;
+
+  getSeed(): string;
+  setSeed(value: string): CreateAccountFromSeedRequest;
+
+  getRestoreHeight(): number;
+  setRestoreHeight(value: number): CreateAccountFromSeedRequest;
+  hasRestoreHeight(): boolean;
+  clearRestoreHeight(): CreateAccountFromSeedRequest;
+
+  getRestoreDate(): string;
+  setRestoreDate(value: string): CreateAccountFromSeedRequest;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): CreateAccountFromSeedRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: CreateAccountFromSeedRequest): CreateAccountFromSeedRequest.AsObject;
+  static serializeBinaryToWriter(message: CreateAccountFromSeedRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): CreateAccountFromSeedRequest;
+  static deserializeBinaryFromReader(message: CreateAccountFromSeedRequest, reader: jspb.BinaryReader): CreateAccountFromSeedRequest;
+}
+
+export namespace CreateAccountFromSeedRequest {
+  export type AsObject = {
+    password: string,
+    seed: string,
+    restoreHeight?: number,
+    restoreDate: string,
+  }
+
+  export enum RestoreHeightCase { 
+    _RESTORE_HEIGHT_NOT_SET = 0,
+    RESTORE_HEIGHT = 3,
+  }
+}
+
+export class CreateAccountFromSeedReply extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): CreateAccountFromSeedReply.AsObject;
+  static toObject(includeInstance: boolean, msg: CreateAccountFromSeedReply): CreateAccountFromSeedReply.AsObject;
+  static serializeBinaryToWriter(message: CreateAccountFromSeedReply, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): CreateAccountFromSeedReply;
+  static deserializeBinaryFromReader(message: CreateAccountFromSeedReply, reader: jspb.BinaryReader): CreateAccountFromSeedReply;
+}
+
+export namespace CreateAccountFromSeedReply {
+  export type AsObject = {
+  }
+}
+
 export class OpenAccountRequest extends jspb.Message {
   getPassword(): string;
   setPassword(value: string): OpenAccountRequest;
@@ -405,6 +456,53 @@ export class RestoreAccountReply extends jspb.Message {
 }
 
 export namespace RestoreAccountReply {
+  export type AsObject = {
+  }
+}
+
+export class RestoreXmrWalletFromSeedRequest extends jspb.Message {
+  getSeed(): string;
+  setSeed(value: string): RestoreXmrWalletFromSeedRequest;
+
+  getRestoreHeight(): number;
+  setRestoreHeight(value: number): RestoreXmrWalletFromSeedRequest;
+  hasRestoreHeight(): boolean;
+  clearRestoreHeight(): RestoreXmrWalletFromSeedRequest;
+
+  getRestoreDate(): string;
+  setRestoreDate(value: string): RestoreXmrWalletFromSeedRequest;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): RestoreXmrWalletFromSeedRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: RestoreXmrWalletFromSeedRequest): RestoreXmrWalletFromSeedRequest.AsObject;
+  static serializeBinaryToWriter(message: RestoreXmrWalletFromSeedRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): RestoreXmrWalletFromSeedRequest;
+  static deserializeBinaryFromReader(message: RestoreXmrWalletFromSeedRequest, reader: jspb.BinaryReader): RestoreXmrWalletFromSeedRequest;
+}
+
+export namespace RestoreXmrWalletFromSeedRequest {
+  export type AsObject = {
+    seed: string,
+    restoreHeight?: number,
+    restoreDate: string,
+  }
+
+  export enum RestoreHeightCase { 
+    _RESTORE_HEIGHT_NOT_SET = 0,
+    RESTORE_HEIGHT = 2,
+  }
+}
+
+export class RestoreXmrWalletFromSeedReply extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): RestoreXmrWalletFromSeedReply.AsObject;
+  static toObject(includeInstance: boolean, msg: RestoreXmrWalletFromSeedReply): RestoreXmrWalletFromSeedReply.AsObject;
+  static serializeBinaryToWriter(message: RestoreXmrWalletFromSeedReply, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): RestoreXmrWalletFromSeedReply;
+  static deserializeBinaryFromReader(message: RestoreXmrWalletFromSeedReply, reader: jspb.BinaryReader): RestoreXmrWalletFromSeedReply;
+}
+
+export namespace RestoreXmrWalletFromSeedReply {
   export type AsObject = {
   }
 }

@@ -99,6 +99,9 @@ class AccountClient {
         this.methodDescriptorCreateAccount = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.Account/CreateAccount', grpcWeb.MethodType.UNARY, grpc_pb.CreateAccountRequest, grpc_pb.CreateAccountReply, (request) => {
             return request.serializeBinary();
         }, grpc_pb.CreateAccountReply.deserializeBinary);
+        this.methodDescriptorCreateAccountFromSeed = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.Account/CreateAccountFromSeed', grpcWeb.MethodType.UNARY, grpc_pb.CreateAccountFromSeedRequest, grpc_pb.CreateAccountFromSeedReply, (request) => {
+            return request.serializeBinary();
+        }, grpc_pb.CreateAccountFromSeedReply.deserializeBinary);
         this.methodDescriptorOpenAccount = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.Account/OpenAccount', grpcWeb.MethodType.UNARY, grpc_pb.OpenAccountRequest, grpc_pb.OpenAccountReply, (request) => {
             return request.serializeBinary();
         }, grpc_pb.OpenAccountReply.deserializeBinary);
@@ -120,6 +123,9 @@ class AccountClient {
         this.methodDescriptorRestoreAccount = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.Account/RestoreAccount', grpcWeb.MethodType.UNARY, grpc_pb.RestoreAccountRequest, grpc_pb.RestoreAccountReply, (request) => {
             return request.serializeBinary();
         }, grpc_pb.RestoreAccountReply.deserializeBinary);
+        this.methodDescriptorRestoreXmrWalletFromSeed = new grpcWeb.MethodDescriptor('/io.haveno.protobuffer.Account/RestoreXmrWalletFromSeed', grpcWeb.MethodType.UNARY, grpc_pb.RestoreXmrWalletFromSeedRequest, grpc_pb.RestoreXmrWalletFromSeedReply, (request) => {
+            return request.serializeBinary();
+        }, grpc_pb.RestoreXmrWalletFromSeedReply.deserializeBinary);
         if (!options)
             options = {};
         if (!credentials)
@@ -153,6 +159,14 @@ class AccountClient {
         }
         return this.client_.unaryCall(this.hostname_ +
             '/io.haveno.protobuffer.Account/CreateAccount', request, metadata || {}, this.methodDescriptorCreateAccount);
+    }
+    createAccountFromSeed(request, metadata, callback) {
+        if (callback !== undefined) {
+            return this.client_.rpcCall(this.hostname_ +
+                '/io.haveno.protobuffer.Account/CreateAccountFromSeed', request, metadata || {}, this.methodDescriptorCreateAccountFromSeed, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/io.haveno.protobuffer.Account/CreateAccountFromSeed', request, metadata || {}, this.methodDescriptorCreateAccountFromSeed);
     }
     openAccount(request, metadata, callback) {
         if (callback !== undefined) {
@@ -205,6 +219,14 @@ class AccountClient {
         }
         return this.client_.unaryCall(this.hostname_ +
             '/io.haveno.protobuffer.Account/RestoreAccount', request, metadata || {}, this.methodDescriptorRestoreAccount);
+    }
+    restoreXmrWalletFromSeed(request, metadata, callback) {
+        if (callback !== undefined) {
+            return this.client_.rpcCall(this.hostname_ +
+                '/io.haveno.protobuffer.Account/RestoreXmrWalletFromSeed', request, metadata || {}, this.methodDescriptorRestoreXmrWalletFromSeed, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/io.haveno.protobuffer.Account/RestoreXmrWalletFromSeed', request, metadata || {}, this.methodDescriptorRestoreXmrWalletFromSeed);
     }
 }
 exports.AccountClient = AccountClient;

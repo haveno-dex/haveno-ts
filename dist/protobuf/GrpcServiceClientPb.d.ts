@@ -64,6 +64,9 @@ export declare class AccountClient {
     methodDescriptorCreateAccount: grpcWeb.MethodDescriptor<grpc_pb.CreateAccountRequest, grpc_pb.CreateAccountReply>;
     createAccount(request: grpc_pb.CreateAccountRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.CreateAccountReply>;
     createAccount(request: grpc_pb.CreateAccountRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.CreateAccountReply) => void): grpcWeb.ClientReadableStream<grpc_pb.CreateAccountReply>;
+    methodDescriptorCreateAccountFromSeed: grpcWeb.MethodDescriptor<grpc_pb.CreateAccountFromSeedRequest, grpc_pb.CreateAccountFromSeedReply>;
+    createAccountFromSeed(request: grpc_pb.CreateAccountFromSeedRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.CreateAccountFromSeedReply>;
+    createAccountFromSeed(request: grpc_pb.CreateAccountFromSeedRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.CreateAccountFromSeedReply) => void): grpcWeb.ClientReadableStream<grpc_pb.CreateAccountFromSeedReply>;
     methodDescriptorOpenAccount: grpcWeb.MethodDescriptor<grpc_pb.OpenAccountRequest, grpc_pb.OpenAccountReply>;
     openAccount(request: grpc_pb.OpenAccountRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.OpenAccountReply>;
     openAccount(request: grpc_pb.OpenAccountRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.OpenAccountReply) => void): grpcWeb.ClientReadableStream<grpc_pb.OpenAccountReply>;
@@ -84,6 +87,9 @@ export declare class AccountClient {
     methodDescriptorRestoreAccount: grpcWeb.MethodDescriptor<grpc_pb.RestoreAccountRequest, grpc_pb.RestoreAccountReply>;
     restoreAccount(request: grpc_pb.RestoreAccountRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.RestoreAccountReply>;
     restoreAccount(request: grpc_pb.RestoreAccountRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.RestoreAccountReply) => void): grpcWeb.ClientReadableStream<grpc_pb.RestoreAccountReply>;
+    methodDescriptorRestoreXmrWalletFromSeed: grpcWeb.MethodDescriptor<grpc_pb.RestoreXmrWalletFromSeedRequest, grpc_pb.RestoreXmrWalletFromSeedReply>;
+    restoreXmrWalletFromSeed(request: grpc_pb.RestoreXmrWalletFromSeedRequest, metadata?: grpcWeb.Metadata | null): Promise<grpc_pb.RestoreXmrWalletFromSeedReply>;
+    restoreXmrWalletFromSeed(request: grpc_pb.RestoreXmrWalletFromSeedRequest, metadata: grpcWeb.Metadata | null, callback: (err: grpcWeb.RpcError, response: grpc_pb.RestoreXmrWalletFromSeedReply) => void): grpcWeb.ClientReadableStream<grpc_pb.RestoreXmrWalletFromSeedReply>;
 }
 export declare class DisputesClient {
     client_: grpcWeb.AbstractClientBase;

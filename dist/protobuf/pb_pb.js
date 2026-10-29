@@ -56736,7 +56736,11 @@ uid: jspb.Message.getFieldWithDefault(msg, 27, ""),
 isCompleted: jspb.Message.getBooleanFieldWithDefault(msg, 28, false),
 challenge: jspb.Message.getFieldWithDefault(msg, 29, ""),
 payoutHeight: jspb.Message.getFieldWithDefault(msg, 30, 0),
-completedRevision: jspb.Message.getFieldWithDefault(msg, 31, 0)
+completedRevision: jspb.Message.getFieldWithDefault(msg, 31, 0),
+tradeStatisticsPublishTime: jspb.Message.getFieldWithDefault(msg, 32, 0),
+tradeStatisticsPublished: jspb.Message.getBooleanFieldWithDefault(msg, 33, false),
+paymentSentDate: jspb.Message.getFieldWithDefault(msg, 34, 0),
+paymentReceivedDate: jspb.Message.getFieldWithDefault(msg, 35, 0)
   };
 
   if (includeInstance) {
@@ -56903,6 +56907,22 @@ proto.io.haveno.protobuffer.Trade.deserializeBinaryFromReader = function(msg, re
     case 31:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setCompletedRevision(value);
+      break;
+    case 32:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setTradeStatisticsPublishTime(value);
+      break;
+    case 33:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setTradeStatisticsPublished(value);
+      break;
+    case 34:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setPaymentSentDate(value);
+      break;
+    case 35:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setPaymentReceivedDate(value);
       break;
     default:
       reader.skipField();
@@ -57154,6 +57174,34 @@ proto.io.haveno.protobuffer.Trade.serializeBinaryToWriter = function(message, wr
   if (f !== 0) {
     writer.writeInt64(
       31,
+      f
+    );
+  }
+  f = message.getTradeStatisticsPublishTime();
+  if (f !== 0) {
+    writer.writeInt64(
+      32,
+      f
+    );
+  }
+  f = message.getTradeStatisticsPublished();
+  if (f) {
+    writer.writeBool(
+      33,
+      f
+    );
+  }
+  f = message.getPaymentSentDate();
+  if (f !== 0) {
+    writer.writeInt64(
+      34,
+      f
+    );
+  }
+  f = message.getPaymentReceivedDate();
+  if (f !== 0) {
+    writer.writeInt64(
+      35,
       f
     );
   }
@@ -57966,6 +58014,78 @@ proto.io.haveno.protobuffer.Trade.prototype.getCompletedRevision = function() {
  */
 proto.io.haveno.protobuffer.Trade.prototype.setCompletedRevision = function(value) {
   return jspb.Message.setProto3IntField(this, 31, value);
+};
+
+
+/**
+ * optional int64 trade_statistics_publish_time = 32;
+ * @return {number}
+ */
+proto.io.haveno.protobuffer.Trade.prototype.getTradeStatisticsPublishTime = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 32, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.io.haveno.protobuffer.Trade} returns this
+ */
+proto.io.haveno.protobuffer.Trade.prototype.setTradeStatisticsPublishTime = function(value) {
+  return jspb.Message.setProto3IntField(this, 32, value);
+};
+
+
+/**
+ * optional bool trade_statistics_published = 33;
+ * @return {boolean}
+ */
+proto.io.haveno.protobuffer.Trade.prototype.getTradeStatisticsPublished = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 33, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.io.haveno.protobuffer.Trade} returns this
+ */
+proto.io.haveno.protobuffer.Trade.prototype.setTradeStatisticsPublished = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 33, value);
+};
+
+
+/**
+ * optional int64 payment_sent_date = 34;
+ * @return {number}
+ */
+proto.io.haveno.protobuffer.Trade.prototype.getPaymentSentDate = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 34, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.io.haveno.protobuffer.Trade} returns this
+ */
+proto.io.haveno.protobuffer.Trade.prototype.setPaymentSentDate = function(value) {
+  return jspb.Message.setProto3IntField(this, 34, value);
+};
+
+
+/**
+ * optional int64 payment_received_date = 35;
+ * @return {number}
+ */
+proto.io.haveno.protobuffer.Trade.prototype.getPaymentReceivedDate = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 35, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.io.haveno.protobuffer.Trade} returns this
+ */
+proto.io.haveno.protobuffer.Trade.prototype.setPaymentReceivedDate = function(value) {
+  return jspb.Message.setProto3IntField(this, 35, value);
 };
 
 
