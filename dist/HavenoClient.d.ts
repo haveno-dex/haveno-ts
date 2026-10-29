@@ -159,11 +159,18 @@ export default class HavenoClient {
      */
     isAccountOpen(): Promise<boolean>;
     /**
-     * Create and open a new Haveno account.
+     * Create and open a new Haveno account, optionally restoring the main wallet from a seed.
+     *
+     * A rejected seed or failed wallet creation leaves no account. Omit the restore height
+     * and date to scan from genesis. Restoring from a seed requires a daemon started with
+     * --passwordRequired=true, since otherwise the daemon creates its account on startup.
      *
      * @param {string} password - the password to encrypt the account
+     * @param {string} [seed] - the wallet seed phrase to restore from
+     * @param {number} [restoreHeight] - the height to start scanning from
+     * @param {string} [restoreDate] - YYYY-MM-DD to start scanning from, estimated as a mainnet height
      */
-    createAccount(password: string): Promise<void>;
+    createAccount(password: string, seed?: string, restoreHeight?: number, restoreDate?: string): Promise<void>;
     /**
      * Open existing Haveno account.
      *
@@ -196,6 +203,17 @@ export default class HavenoClient {
      * @param {Uint8Array} zipBytes - the bytes of the zipped account to restore
      */
     restoreAccount(zipBytes: Uint8Array): Promise<void>;
+    /**
+     * Restore the main wallet from a seed, removing open offers and restarting the daemon.
+     *
+     * Reopen the account after reconnecting. The previous wallet is retained since existing
+     * trades pay out to it. Omit the restore height and date to scan from genesis.
+     *
+     * @param {string} seed - the wallet seed phrase
+     * @param {number} [restoreHeight] - the height to start scanning from
+     * @param {string} [restoreDate] - YYYY-MM-DD to start scanning from, estimated as a mainnet height
+     */
+    restoreXmrWalletFromSeed(seed: string, restoreHeight?: number, restoreDate?: string): Promise<void>;
     /**
      * Add a listener to receive notifications from the Haveno daemon.
      *
@@ -635,6 +653,7 @@ export default class HavenoClient {
      * Shutdown the Haveno daemon server and stop the process if applicable.
      */
     shutdownServer(): Promise<void>;
+    private static validateRestorePoint;
     /**
      * Callback for grpc notifications.
      *

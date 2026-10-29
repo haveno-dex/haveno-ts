@@ -7049,6 +7049,18 @@ export class Trade extends jspb.Message {
   getCompletedRevision(): number;
   setCompletedRevision(value: number): Trade;
 
+  getTradeStatisticsPublishTime(): number;
+  setTradeStatisticsPublishTime(value: number): Trade;
+
+  getTradeStatisticsPublished(): boolean;
+  setTradeStatisticsPublished(value: boolean): Trade;
+
+  getPaymentSentDate(): number;
+  setPaymentSentDate(value: number): Trade;
+
+  getPaymentReceivedDate(): number;
+  setPaymentReceivedDate(value: number): Trade;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Trade.AsObject;
   static toObject(includeInstance: boolean, msg: Trade): Trade.AsObject;
@@ -7090,6 +7102,10 @@ export namespace Trade {
     challenge: string,
     payoutHeight: number,
     completedRevision: number,
+    tradeStatisticsPublishTime: number,
+    tradeStatisticsPublished: boolean,
+    paymentSentDate: number,
+    paymentReceivedDate: number,
   }
 
   export enum State { 

@@ -40,7 +40,6 @@ class HavenoClient {
         /** @private */ this._notificationListeners = [];
         /** @private */ this._registerNotificationListenerCalled = false;
         /** @private */ this._keepAlivePeriodMs = 60000;
-        // ------------------------------- HELPERS ----------------------------------
         /**
          * Callback for grpc notifications.
          *
@@ -314,13 +313,33 @@ class HavenoClient {
         }
     }
     /**
-     * Create and open a new Haveno account.
+     * Create and open a new Haveno account, optionally restoring the main wallet from a seed.
+     *
+     * A rejected seed or failed wallet creation leaves no account. Omit the restore height
+     * and date to scan from genesis. Restoring from a seed requires a daemon started with
+     * --passwordRequired=true, since otherwise the daemon creates its account on startup.
      *
      * @param {string} password - the password to encrypt the account
+     * @param {string} [seed] - the wallet seed phrase to restore from
+     * @param {number} [restoreHeight] - the height to start scanning from
+     * @param {string} [restoreDate] - YYYY-MM-DD to start scanning from, estimated as a mainnet height
      */
-    async createAccount(password) {
+    async createAccount(password, seed, restoreHeight, restoreDate) {
         try {
-            await this._accountClient.createAccount(new grpc_pb_1.CreateAccountRequest().setPassword(password), { password: this._password });
+            if (seed !== undefined || restoreHeight !== undefined || restoreDate !== undefined) {
+                if (!seed || !seed.trim())
+                    throw new HavenoError_1.default("Wallet seed is required");
+                restoreDate = HavenoClient.validateRestorePoint(restoreHeight, restoreDate);
+                const request = new grpc_pb_1.CreateAccountFromSeedRequest().setPassword(password).setSeed(seed);
+                if (restoreHeight !== undefined)
+                    request.setRestoreHeight(restoreHeight);
+                if (restoreDate)
+                    request.setRestoreDate(restoreDate);
+                await this._accountClient.createAccountFromSeed(request, { password: this._password });
+            }
+            else {
+                await this._accountClient.createAccount(new grpc_pb_1.CreateAccountRequest().setPassword(password), { password: this._password });
+            }
             await this.awaitAppInitialized(); // TODO: grpc should not return before setup is complete?
         }
         catch (e) {
@@ -416,20 +435,36 @@ class HavenoClient {
         if (zipBytes.length === 0)
             throw new HavenoError_1.default("Zip bytes must not be empty");
         const totalLength = zipBytes.byteLength;
-        let offset = 0;
-        let chunkSize = 4000000; // the max frame size is 4194304 but leave room for http headers
-        let hasMore = true;
-        // eslint-disable-next-line no-constant-condition
-        while (true) {
-            if (zipBytes.byteLength <= offset + 1)
-                return;
-            if (zipBytes.byteLength <= offset + chunkSize) {
-                chunkSize = zipBytes.byteLength - offset - 1;
-                hasMore = false;
-            }
-            const subArray = zipBytes.subarray(offset, offset + chunkSize);
-            await this._restoreAccountChunk(subArray, offset, totalLength, hasMore);
-            offset += chunkSize;
+        const chunkSize = 4000000; // the max frame size is 4194304 but leave room for http headers
+        for (let offset = 0; offset < totalLength; offset += chunkSize) {
+            const end = Math.min(offset + chunkSize, totalLength);
+            await this._restoreAccountChunk(zipBytes.subarray(offset, end), offset, totalLength, end < totalLength);
+        }
+    }
+    /**
+     * Restore the main wallet from a seed, removing open offers and restarting the daemon.
+     *
+     * Reopen the account after reconnecting. The previous wallet is retained since existing
+     * trades pay out to it. Omit the restore height and date to scan from genesis.
+     *
+     * @param {string} seed - the wallet seed phrase
+     * @param {number} [restoreHeight] - the height to start scanning from
+     * @param {string} [restoreDate] - YYYY-MM-DD to start scanning from, estimated as a mainnet height
+     */
+    async restoreXmrWalletFromSeed(seed, restoreHeight, restoreDate) {
+        if (!seed || !seed.trim())
+            throw new HavenoError_1.default("Wallet seed is required");
+        restoreDate = HavenoClient.validateRestorePoint(restoreHeight, restoreDate);
+        try {
+            const request = new grpc_pb_1.RestoreXmrWalletFromSeedRequest().setSeed(seed);
+            if (restoreHeight !== undefined)
+                request.setRestoreHeight(restoreHeight);
+            if (restoreDate)
+                request.setRestoreDate(restoreDate);
+            await this._accountClient.restoreXmrWalletFromSeed(request, { password: this._password });
+        }
+        catch (e) {
+            throw new HavenoError_1.default(e.message, e.code);
         }
     }
     /**
@@ -1446,6 +1481,23 @@ class HavenoClient {
                 }
             }
         }
+    }
+    // ------------------------------- HELPERS ----------------------------------
+    // validate a restore height or date before sending it, returning the trimmed date
+    static validateRestorePoint(restoreHeight, restoreDate) {
+        if (restoreHeight !== undefined && (!Number.isSafeInteger(restoreHeight) || restoreHeight < 0))
+            throw new HavenoError_1.default("Restore height must be a nonnegative safe integer");
+        restoreDate = restoreDate?.trim();
+        if (!restoreDate)
+            return undefined;
+        if (restoreHeight !== undefined)
+            throw new HavenoError_1.default("Specify either a restore height or a restore date");
+        const date = new Date(restoreDate);
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(restoreDate) || Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== restoreDate)
+            throw new HavenoError_1.default("Restore date must be a valid YYYY-MM-DD date");
+        if (restoreDate > new Date().toISOString().slice(0, 10))
+            throw new HavenoError_1.default("Restore date cannot be in the future (UTC)");
+        return restoreDate;
     }
     /**
      * Update notification listener registration.
