@@ -4,15 +4,18 @@ Running the [API tests](./src/HavenoClient.test.ts) is the best way to develop a
 
 You first need to start a local Haveno network which can be done manually or using docker.
 
+`XMR_LOCAL` uses standard Monero regtest.
+
 ### Start local Haveno network manually
 
 This workflow is useful for local development of `haveno` and `haveno-ts`
 
-1. [Run a local Haveno test network](https://github.com/haveno-dex/haveno/blob/master/docs/installing.md) and then shut down the arbitrator, user1, and user2 or run them as daemons, e.g. `make user1-daemon-local`. You may omit the arbitrator registration steps since it's done automatically in the tests.
+1. [Build Haveno](https://github.com/haveno-dex/haveno/blob/master/docs/installing.md) and start a seed node: `cd ~/git/haveno && make seednode-local`.
 2. Clone this project to the same parent directory as the haveno project: `git clone https://github.com/haveno-dex/haveno-ts`
 3. Install `envoy` proxy, for example `brew install envoy`.
 4. In a new terminal, start envoy with the config in haveno-ts/config/envoy.local.yaml: `envoy -c config/envoy.local.yaml`
-5. In a new terminal, start the funding wallet. This wallet will be funded automatically in order to fund the tests.<br>For example: `cd ~/git/haveno && make funding-wallet-local`.
+
+The tests start monerod1, monerod2, the funding wallet and the arbitrator, user1 and user2 daemons unless they are already running, e.g. from `make monerod1-local` or `make user1-daemon-local`, and stop what they started when done. The chain and the funding wallet are shared with the local network under `haveno/.localnet`.
 
 ### Start local Haveno network with docker
 
@@ -42,5 +45,5 @@ Start a local Haveno network with docker:
 - Download and install [Node.js](https://nodejs.org/en/download). Ensure that PATH uses your Node.js install location first (e.g. "C:\Program Files\nodejs" is before "C:\msys64\mingw64\bin").
 - From Git Bash, `npm install --global protoc-gen-js` (use this instead of normal installation).
 - Run envoy in Git Bash: `envoy -c config/envoy.local.yaml`.
-- Run monerod1-local, monerod2-local, funding-wallet-local, and seednode-local in MINGW64 (recommended).
+- Run seednode-local in MINGW64 (recommended).
 - Run tests from Git Bash, e.g.: `npm run test -- --baseCurrencyNetwork=XMR_LOCAL -t "version"`
