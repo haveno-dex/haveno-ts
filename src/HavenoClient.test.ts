@@ -68,8 +68,10 @@ const startupHavenodUrls: string[] = [];
 let arbitrator: HavenoClient;
 let user1: HavenoClient;
 let user2: HavenoClient;
-let monerod: moneroTs.MoneroDaemon;
+let monerod: moneroTs.MoneroDaemonRpc;
+let monerod2: moneroTs.MoneroDaemonRpc;
 let fundingWallet: moneroTs.MoneroWalletRpc;
+let miner: {stopped: boolean, done: Promise<void>, wake: () => void} | undefined; // mines blocks on the local network
 
 enum TradeRole {
   MAKER = "MAKER",
@@ -387,8 +389,8 @@ const monerod2Url = "http://127.0.0.1:48081";
 const TestConfig = {
     logLevel: 2,
     baseCurrencyNetwork: getBaseCurrencyNetwork(),
-    networkType: getBaseCurrencyNetwork() == BaseCurrencyNetwork.XMR_MAINNET ? moneroTs.MoneroNetworkType.MAINNET : getBaseCurrencyNetwork() == BaseCurrencyNetwork.XMR_LOCAL ? moneroTs.MoneroNetworkType.TESTNET : moneroTs.MoneroNetworkType.STAGENET,
-    fixedDifficulty: isGitHubActions() ? 150 : 500, // must match fixed difficulty of monerods
+    networkType: getBaseCurrencyNetwork() == BaseCurrencyNetwork.XMR_STAGENET ? moneroTs.MoneroNetworkType.STAGENET : moneroTs.MoneroNetworkType.MAINNET,
+    blockPeriodMs: 1000, // average time between blocks mined on the local network
     moneroBinsDir: "../haveno/.localnet",
     testDataDir: "./testdata",
     deferralMs: 25000,
@@ -397,15 +399,21 @@ const TestConfig = {
         path: "../haveno",
         version: "1.12.0"
     },
-    monerod: {
-        url: "http://127.0.0.1:" + getNetworkStartPort() + "8081", // 18081, 28081, 38081 for mainnet, testnet, and stagenet, respectively
+    monerod: { // corresponds to monerod1-local in Makefile
+        url: "http://127.0.0.1:" + getNetworkStartPort() + "8081", // 18081, 28081, 38081 for mainnet, local regtest, and stagenet, respectively
         username: "",
-        password: ""
+        password: "",
+        p2pBindPort: getNetworkStartPort() + "8080",
+        rpcBindPort: getNetworkStartPort() + "8081",
+        zmqRpcBindPort: getNetworkStartPort() + "8082"
     },
     monerod2: { // corresponds to monerod2-local in Makefile
         url: monerod2Url,
         username: "",
-        password: ""
+        password: "",
+        p2pBindPort: "48080",
+        rpcBindPort: "48081",
+        zmqRpcBindPort: "48082"
     },
     monerod3: { // corresponds to monerod3-local in Makefile
         url: "http://127.0.0.1:58081",
@@ -415,16 +423,17 @@ const TestConfig = {
         rpcBindPort: "58081",
         zmqRpcBindPort: "58082"
     },
-    fundingWallet: {
-        url: "http://127.0.0.1:" + getNetworkStartPort() + "8084", // 18084, 28084, 38084 for mainnet, testnet, stagenet respectively
+    fundingWallet: { // corresponds to funding-wallet-local in Makefile
+        url: "http://127.0.0.1:" + getNetworkStartPort() + "8084", // 18084, 28084, 38084 for mainnet, local regtest, stagenet respectively
+        rpcBindPort: getNetworkStartPort() + "8084",
         username: "rpc_user",
         password: "abc123",
         walletPassword: "abc123",
         defaultPath: "funding_wallet-" + getBaseCurrencyNetwork(),
         minimumFunding: 5000000000000n,
         seed: "origin hickory pavements tudor sizes hornet tether segments sack technical elbow unsafe legion nitrogen adapt yearbook idols fuzzy pitched goes tusks elbow erase fossil erase",
-        primaryAddress: "9xSyMy1r9h3BVjMrF3CTqQCQy36yCfkpn7uVfMyTUbez3hhumqBUqGUNNALjcd7f1HJBRdeH82bCC3veFHW7z3xm28gug4d",
-        restoreHeight: 150
+        primaryAddress: "46uRsiMasKwBVjMrF3CTqQCQy36yCfkpn7uVfMyTUbez3hhumqBUqGUNNALjcd7f1HJBRdeH82bCC3veFHW7z3xm2BZhuLm",
+        restoreHeight: 0
     },
     defaultHavenod: {
         logProcessOutput: true, // log output for processes started by tests (except arbitrator, user1, and user2 which are configured separately)
@@ -455,7 +464,7 @@ const TestConfig = {
             accountPassword: "abctesting789",
         }
     ],
-    maxFee: HavenoUtils.xmrToAtomicUnits(0.5), // local testnet fees can be relatively high
+    maxFee: HavenoUtils.xmrToAtomicUnits(0.5), // local regtest fees can be relatively high
     maxAdjustmentPct: 0.2,
     daemonPollPeriodMs: 5000,
     daemonPollAttemptsLocal: 3,
@@ -587,6 +596,10 @@ beforeAll(async () => {
   // set log level for tests
   HavenoUtils.setLogLevel(TestConfig.logLevel);
 
+  // initialize monerods
+  monerod = await initMonerod(TestConfig.monerod);
+  if (getBaseCurrencyNetwork() === BaseCurrencyNetwork.XMR_LOCAL) monerod2 = await initMonerod(TestConfig.monerod2);
+
   // initialize funding wallet
   HavenoUtils.log(0, "Initializing funding wallet");
   await initFundingWallet();
@@ -597,14 +610,7 @@ beforeAll(async () => {
   HavenoUtils.log(0, "Funding wallet seed: " + await fundingWallet.getSeed());
   HavenoUtils.log(0, "Funding wallet primary address: " + await fundingWallet.getPrimaryAddress());
   HavenoUtils.log(0, "Funding wallet new subaddress: " + subaddress.getAddress());
-
-  // initialize monerod
-  try {
-    monerod = await moneroTs.connectToDaemonRpc(TestConfig.monerod.url, TestConfig.monerod.username, TestConfig.monerod.password);
-    await mineToHeight(160); // initialize blockchain to latest block type
-  } catch (err: any) {
-    HavenoUtils.log(0, "Error initializing internal monerod: " + err.message); // allowed in order to test starting and stopping local node
-  }
+  if (getBaseCurrencyNetwork() === BaseCurrencyNetwork.XMR_LOCAL) await generateBlocks(80 - await monerod.getHeight()); // enough mature coinbase outputs for ring members on a fresh chain
 
   // start configured haveno daemons
   const startupHavenods: HavenoClient[] = [];
@@ -664,16 +670,27 @@ afterAll(async () => {
 });
 
 async function shutDown() {
+  try {
 
-  // release all clients
-  const promises: Promise<void>[] = [];
-  for (const client of HAVENO_CLIENTS.slice()) {
-    promises.push(releaseHavenoClient(client));
+    // release all clients
+    const promises: Promise<void>[] = [];
+    for (const client of HAVENO_CLIENTS.slice()) {
+      promises.push(releaseHavenoClient(client));
+    }
+    await Promise.all(promises);
+  } finally {
+
+    // stop mining blocks on the local network
+    if (miner) await stopMining();
+
+    // stop processes started by the tests
+    for (const server of [fundingWallet, monerod, monerod2]) {
+      if (server?.getProcess()) await server.stopProcess().catch((err: any) => HavenoUtils.log(0, "Error stopping process: " + err.message));
+    }
+
+    // terminate monero-ts library
+    await moneroTs.shutdown();
   }
-  await Promise.all(promises);
-
-  // terminate monero-ts library
-  await moneroTs.shutdown();
 }
 
 // ----------------------------------- TESTS ----------------------------------
@@ -919,28 +936,7 @@ test("Can manage Monero daemon connections (Test, CI)", async () => {
     assert(!await user3.isConnectedToMonero());
 
     // start monerod3
-    const cmd = [
-      TestConfig.moneroBinsDir + "/monerod",
-      "--no-igd",
-      "--hide-my-port",
-      "--data-dir",  TestConfig.moneroBinsDir + "/" + TestConfig.baseCurrencyNetwork.toLowerCase() + "/node3",
-      "--p2p-bind-ip", "127.0.0.1",
-      "--p2p-bind-port", TestConfig.monerod3.p2pBindPort,
-      "--rpc-bind-port", TestConfig.monerod3.rpcBindPort,
-      "--zmq-rpc-bind-port", TestConfig.monerod3.zmqRpcBindPort,
-      "--add-exclusive-node", "127.0.0.1:28080",
-      "--add-exclusive-node", "127.0.0.1:48080",
-      "--log-level", "0",
-      "--rpc-access-control-origins", "http://127.0.0.1:8080",
-      "--fixed-difficulty", TestConfig.fixedDifficulty.toString(),
-      "--disable-rpc-ban",
-      "--rpc-max-connections", "1000",
-      "--max-connections-per-ip", "10",
-      "--rpc-max-connections-per-private-ip", "1000",
-      "--non-interactive"
-    ];
-    if (getBaseCurrencyNetwork() !== BaseCurrencyNetwork.XMR_MAINNET) cmd.push("--" + moneroTs.MoneroNetworkType.toString(TestConfig.networkType).toLowerCase());
-    if (TestConfig.monerod3.username) cmd.push("--rpc-login", TestConfig.monerod3.username + ":" + TestConfig.monerod3.password);
+    const cmd = getMonerodCmd(TestConfig.monerod3);
     HavenoUtils.log(1, "Starting monerod3 with command: " + cmd.join(" "));
     monerod3 = await moneroTs.connectToDaemonRpc(cmd);
 
@@ -4316,13 +4312,75 @@ async function initHavenoAccount(havenod: HavenoClient, password: string) {
   return;
 }
 
+// command to start a local monerod like its monerodN-local target in the Makefile
+function getMonerodCmd(config: typeof TestConfig.monerod): string[] {
+  const nodes = [TestConfig.monerod, TestConfig.monerod2, TestConfig.monerod3];
+  const cmd = [
+    TestConfig.moneroBinsDir + "/monerod",
+    "--no-igd",
+    "--hide-my-port",
+    "--check-updates", "disabled",
+    "--data-dir", TestConfig.moneroBinsDir + "/" + TestConfig.baseCurrencyNetwork.toLowerCase() + "/node" + (nodes.indexOf(config) + 1),
+    "--p2p-bind-ip", "127.0.0.1",
+    "--p2p-bind-port", config.p2pBindPort,
+    "--rpc-bind-port", config.rpcBindPort,
+    "--zmq-rpc-bind-port", config.zmqRpcBindPort,
+    "--log-level", "0",
+    "--rpc-access-control-origins", "http://127.0.0.1:8080",
+    "--fixed-difficulty", "1", // blocks are generated instead of mined
+    "--disable-rpc-ban",
+    "--rpc-max-connections", "1000",
+    "--max-connections-per-ip", "10",
+    "--rpc-max-connections-per-private-ip", "1000",
+    "--non-interactive"
+  ];
+  for (const node of nodes) if (node !== config) cmd.push("--add-exclusive-node", "127.0.0.1:" + node.p2pBindPort);
+  if (getBaseCurrencyNetwork() === BaseCurrencyNetwork.XMR_LOCAL) cmd.push("--regtest", "--keep-fakechain");
+  else if (getBaseCurrencyNetwork() !== BaseCurrencyNetwork.XMR_MAINNET) cmd.push("--" + moneroTs.MoneroNetworkType.toString(TestConfig.networkType).toLowerCase());
+  if (config.username) cmd.push("--rpc-login", config.username + ":" + config.password);
+  return cmd;
+}
+
 /**
- * Open or create funding wallet.
+ * Connect to a configured monerod, starting it on the local network if nothing answers.
+ */
+async function initMonerod(config: typeof TestConfig.monerod): Promise<moneroTs.MoneroDaemonRpc> {
+  const daemon = await moneroTs.connectToDaemonRpc(config.url, config.username, config.password);
+  if (getBaseCurrencyNetwork() !== BaseCurrencyNetwork.XMR_LOCAL) return daemon;
+  try {
+    await daemon.getHeight();
+    return daemon;
+  } catch (err: any) {
+    const cmd = getMonerodCmd(config);
+    HavenoUtils.log(1, "Starting monerod with command: " + cmd.join(" "));
+    return moneroTs.connectToDaemonRpc(cmd);
+  }
+}
+
+/**
+ * Open or create funding wallet, starting its monero-wallet-rpc on the local network if nothing answers.
  */
 async function initFundingWallet() {
 
   // init client connected to monero-wallet-rpc
   fundingWallet = await moneroTs.connectToWalletRpc(TestConfig.fundingWallet.url, TestConfig.fundingWallet.username, TestConfig.fundingWallet.password);
+  if (getBaseCurrencyNetwork() === BaseCurrencyNetwork.XMR_LOCAL) {
+    try {
+      await fundingWallet.getVersion();
+    } catch (err: any) {
+      const cmd = [
+        TestConfig.moneroBinsDir + "/monero-wallet-rpc",
+        "--allow-mismatched-daemon-version",
+        "--daemon-address", TestConfig.monerod.url,
+        "--rpc-bind-port", TestConfig.fundingWallet.rpcBindPort,
+        "--rpc-login", TestConfig.fundingWallet.username + ":" + TestConfig.fundingWallet.password,
+        "--rpc-access-control-origins", "http://127.0.0.1:8080",
+        "--wallet-dir", TestConfig.moneroBinsDir
+      ];
+      HavenoUtils.log(1, "Starting funding wallet with command: " + cmd.join(" "));
+      fundingWallet = await moneroTs.connectToWalletRpc(cmd);
+    }
+  }
 
   // check if wallet is open
   let walletIsOpen = false
@@ -4399,6 +4457,7 @@ async function getWallet(havenod: HavenoClient): Promise<moneroTs.MoneroWalletFu
   if (!HAVENO_WALLETS.has(havenod)) {
     const wallet = await moneroTs.createWalletFull({
       networkType: TestConfig.networkType,
+      regtest: getBaseCurrencyNetwork() === BaseCurrencyNetwork.XMR_LOCAL,
       seed: await havenod.getXmrSeed(),
       server: {uri: TestConfig.monerod.url, username: TestConfig.monerod.username, password: TestConfig.monerod.password}
     });
@@ -4425,14 +4484,42 @@ async function closeHavenodWallet(havenod: HavenoClient) {
  * @return {boolean} true if mining was already started, false otherwise
  */
 async function isMining(): Promise<boolean> {
+  if (getBaseCurrencyNetwork() === BaseCurrencyNetwork.XMR_LOCAL) return miner !== undefined;
   const miningStarted = await startMining();
   if (miningStarted) await stopMining();
   return !miningStarted;
 }
 
 async function startMining(): Promise<boolean> {
+
+  // generate a block per block period on average on the local network
+  if (getBaseCurrencyNetwork() === BaseCurrencyNetwork.XMR_LOCAL) {
+    await waitUntilSynchronized();
+    while (miner?.stopped) await miner.done; // stopped mining finishes first
+    if (miner) {
+      HavenoUtils.log(2, "Already mining");
+      return false;
+    }
+    const startedMiner = {stopped: false, done: Promise.resolve(), wake: (): void => undefined};
+    startedMiner.done = (async () => {
+      while (!startedMiner.stopped) {
+        try { await generateBlocks(1); }
+        catch (err: any) { HavenoUtils.log(0, "Error mining block: " + err.message); }
+        if (startedMiner.stopped) break;
+        await new Promise<void>((resolve) => { // exponential intervals like mined blocks
+          const timeout = setTimeout(resolve, -Math.log(1 - Math.random()) * TestConfig.blockPeriodMs);
+          startedMiner.wake = () => { clearTimeout(timeout); resolve(); };
+        });
+      }
+    })();
+    miner = startedMiner;
+    HavenoUtils.log(2, "Mining started");
+    return true;
+  }
+
+  // otherwise mine with the daemon
   try {
-    const numThreads = getBaseCurrencyNetwork() === BaseCurrencyNetwork.XMR_LOCAL ? 1 : Math.max(1, Math.floor(os.cpus().length * TestConfig.maxCpuPct));
+    const numThreads = Math.max(1, Math.floor(os.cpus().length * TestConfig.maxCpuPct));
     await monerod.startMining(await fundingWallet.getPrimaryAddress(), numThreads);
     HavenoUtils.log(2, "Mining started");
     return true;
@@ -4444,8 +4531,34 @@ async function startMining(): Promise<boolean> {
 }
 
 async function stopMining() {
-  await monerod.stopMining();
+  if (getBaseCurrencyNetwork() === BaseCurrencyNetwork.XMR_LOCAL) {
+    const stoppedMiner = miner;
+    if (stoppedMiner) {
+      stoppedMiner.stopped = true;
+      stoppedMiner.wake(); // skip the wait for the next block
+      await stoppedMiner.done; // a block being mined completes first
+      if (miner === stoppedMiner) miner = undefined;
+    }
+  } else {
+    await monerod.stopMining();
+  }
   HavenoUtils.log(2, "Mining stopped");
+}
+
+// generate blocks to the funding wallet on the local network
+async function generateBlocks(numBlocks: number) {
+  if (numBlocks <= 0) return;
+  await waitUntilSynchronized();
+  const resp = await (await monerod.getRpcConnection()).sendJsonRequest("generateblocks", {wallet_address: await fundingWallet.getPrimaryAddress(), amount_of_blocks: numBlocks});
+  if (resp.result.status !== "OK") throw new Error("Could not generate blocks: " + resp.result.status);
+}
+
+// a started monerod cannot mine until synchronized with a peer
+async function waitUntilSynchronized() {
+  for (let i = 0; !(await monerod.getInfo()).getIsSynchronized(); i++) {
+    if (i >= 60) throw new Error("monerod is not synchronized with a peer");
+    await wait(1000);
+  }
 }
 
 const unlockTimeoutMs = 600000; // max time to wait for mining to unlock funds
