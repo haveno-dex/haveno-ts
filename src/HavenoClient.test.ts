@@ -200,6 +200,7 @@ class TradeContext {
   reserveExactAmount?: boolean;
   isPrivateOffer?: boolean;
   buyerAsTakerWithoutDeposit?: boolean; // buyer as taker security deposit is optional for private offers
+  requireSignedTaker?: boolean; // takers need a signed payment account, only for sell offers with chargeback risk
   extraInfo?: string;
   sourceOfferId?: string;
 
@@ -1832,6 +1833,54 @@ test("Can clone offers (Test, CI, sanity check)", async () => {
   await user1.removeOffer(clonedOffer2.getId());
 });
 
+test("Can require takers to have signed payment accounts (Test, CI)", async () => {
+
+  // wait for user1 to have unlocked balance to post offer
+  await waitForAvailableBalance(250000000000n * 2n, user1);
+
+  // signed takers can only be required for sell offers with chargeback risk
+  const assetCode = "USD";
+  const zelleAccountId = (await createPaymentAccount(user1, assetCode, "zelle")).getId();
+  const payByMailAccountId = (await createPaymentAccount(user1, assetCode)).getId();
+  for (const invalidCtx of [{direction: OfferDirection.BUY, makerPaymentAccountId: zelleAccountId}, {direction: OfferDirection.SELL, makerPaymentAccountId: payByMailAccountId}]) {
+    try {
+      await makeOffer({maker: {havenod: user1}, assetCode: assetCode, requireSignedTaker: true, ...invalidCtx});
+      throw new Error("Should have rejected requiring signed takers without chargeback risk");
+    } catch (err: any) {
+      if (err.message.indexOf("Signed takers can only be required") < 0) throw err;
+    }
+  }
+
+  // post sell offer which requires signed takers
+  const ctx: Partial<TradeContext> = {maker: {havenod: user1}, direction: OfferDirection.SELL, assetCode: assetCode, makerPaymentAccountId: zelleAccountId, requireSignedTaker: true};
+  const offer = await makeOffer(ctx);
+  assert.equal(offer.getState(), "AVAILABLE");
+  assert.equal(offer.getRequireSignedTaker(), true);
+
+  // peer sees offer but cannot take it without a signed payment account
+  await wait(TestConfig.trade.maxTimePeerNoticeMs);
+  const peerOffer = getOffer(await user2.getOffers(assetCode, OfferDirection.SELL), offer.getId());
+  if (!peerOffer) throw new Error("Offer " + offer.getId() + " was not found in peer's offers after posted");
+  testOffer(peerOffer, ctx, false);
+  const takerAccountId = (await createPaymentAccount(user2, assetCode, "zelle")).getId();
+  try {
+    await user2.takeOffer(offer.getId(), takerAccountId);
+    throw new Error("Should have rejected taking offer without a signed payment account");
+  } catch (err: any) {
+    if (err.message.indexOf("requires a signed payment account") < 0) throw err;
+  }
+
+  // cloned and edited offers keep the requirement
+  const clonedOffer = await user1.postOffer({sourceOfferId: offer.getId()});
+  assert.equal(clonedOffer.getRequireSignedTaker(), true);
+  const editedOffer = await user1.editOffer({offerId: offer.getId(), extraInfo: "My edited extra info"});
+  assert.equal(editedOffer.getRequireSignedTaker(), true);
+
+  // remove offers
+  await user1.removeOffer(offer.getId());
+  await user1.removeOffer(clonedOffer.getId());
+});
+
 // TODO: provide number of confirmations in offer status
 test("Can schedule offers with locked funds (Test, CI)", async () => {
   let user3: HavenoClient|undefined;
@@ -3391,6 +3440,7 @@ async function makeOffer(ctxP?: Partial<TradeContext>): Promise<OfferInfo> {
     ctx.isPrivateOffer = sourceOffer.getIsPrivateOffer();
     ctx.direction = sourceOffer.getDirection() == "BUY" ? OfferDirection.BUY : OfferDirection.SELL;
     ctx.buyerAsTakerWithoutDeposit = ctx.isPrivateOffer && ctx.direction === OfferDirection.SELL && sourceOffer.getBuyerSecurityDepositPct() === 0;
+    ctx.requireSignedTaker = sourceOffer.getRequireSignedTaker();
   }
 
   // post or clone offer
@@ -3407,6 +3457,7 @@ async function makeOffer(ctxP?: Partial<TradeContext>): Promise<OfferInfo> {
     reserveExactAmount: ctx.reserveExactAmount,
     isPrivateOffer: ctx.isPrivateOffer,
     buyerAsTakerWithoutDeposit: ctx.buyerAsTakerWithoutDeposit,
+    requireSignedTaker: ctx.requireSignedTaker,
     extraInfo: ctx.extraInfo,
     sourceOfferId: ctx.sourceOfferId
   });
@@ -4907,6 +4958,7 @@ function testOffer(offer: OfferInfo, ctxP?: Partial<TradeContext>, isMyOffer?: b
   expect(offer.getId().length).toBeGreaterThan(0);
   if (ctxP) {
     expect(offer.getIsPrivateOffer()).toEqual(ctx?.isPrivateOffer ? true : false); // TODO: update tests for security deposit
+    expect(offer.getRequireSignedTaker()).toEqual(ctx.requireSignedTaker ? true : false);
     if (offer.getIsPrivateOffer()) {
       if (isMyOffer) expect(offer.getChallenge().length).toBeGreaterThan(0);
       else expect(offer.getChallenge()).toEqual("");
