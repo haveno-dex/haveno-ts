@@ -2970,6 +2970,7 @@ async function executeTrades(ctxs: Partial<TradeContext>[], executionCtx?: Parti
       }
     }
     await Promise.all(fundWalletPromises);
+    if (executionCtx.concurrentTrades) await wait(TestConfig.trade.walletSyncPeriodMs * 2); // concurrent offers do not await funds, so let havenods observe them
 
     // execute trades in thread pool unless serial
     if (executionCtx.concurrentTrades) {
