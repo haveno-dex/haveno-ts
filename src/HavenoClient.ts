@@ -21,7 +21,7 @@ import HavenoUtils from "./utils/HavenoUtils";
 import TaskLooper from "./utils/TaskLooper";
 import type * as grpcWeb from "grpc-web";
 import { GetTradeStatisticsClient, GetVersionClient, AccountClient, XmrConnectionsClient, DisputesClient, DisputeAgentsClient, NotificationsClient, WalletsClient, PriceClient, OffersClient, PaymentAccountsClient, TradesClient, ShutdownServerClient, XmrNodeClient } from './protobuf/GrpcServiceClientPb';
-import { GetTradeStatisticsRequest, GetVersionRequest, IsAppInitializedRequest, RegisterDisputeAgentRequest, UnregisterDisputeAgentRequest, MarketPriceRequest, MarketPricesRequest, MarketPriceInfo, MarketDepthRequest, MarketDepthInfo, GetWalletHeightRequest, GetWalletHeightReply, GetBalancesRequest, XmrBalanceInfo, GetMyOfferRequest, GetOffersRequest, OfferInfo, GetPaymentMethodsRequest, GetPaymentAccountFormRequest, CreatePaymentAccountRequest, ValidateFormFieldRequest, GetPaymentAccountsRequest, CreateCryptoCurrencyPaymentAccountRequest, DeletePaymentAccountRequest, PostOfferRequest, EditOfferRequest, DeactivateOfferRequest, ActivateOfferRequest, CancelOfferRequest, TakeOfferRequest, TradeInfo, GetTradeRequest, GetTradesRequest, GetXmrSeedRequest, GetXmrPrimaryAddressRequest, GetXmrNewSubaddressRequest, ConfirmPaymentSentRequest, ConfirmPaymentReceivedRequest, CompleteTradeRequest, XmrTx, GetXmrTxsRequest, XmrDestination, CreateXmrTxRequest, CreateXmrSweepTxsRequest, RelayXmrTxsRequest, CreateAccountRequest, CreateAccountFromSeedRequest, AccountExistsRequest, DeleteAccountRequest, OpenAccountRequest, IsAccountOpenRequest, CloseAccountRequest, ChangePasswordRequest, BackupAccountRequest, BackupAccountReply, RestoreAccountRequest, RestoreXmrWalletFromSeedRequest, StopRequest, NotificationMessage, RegisterNotificationListenerRequest, SendNotificationRequest, UrlConnection, AddConnectionRequest, RemoveConnectionRequest, GetConnectionRequest, GetConnectionsRequest, SetConnectionRequest, CheckConnectionRequest, GetBestConnectionRequest, SetAutoSwitchRequest, GetAutoSwitchRequest, GetDisputeRequest, GetDisputesRequest, OpenDisputeRequest, ResolveDisputeRequest, SendDisputeChatMessageRequest, SendChatMessageRequest, GetChatMessagesRequest, StartXmrNodeRequest, StopXmrNodeRequest, IsXmrNodeOnlineRequest, GetXmrNodeSettingsRequest } from "./protobuf/grpc_pb";
+import { GetTradeStatisticsRequest, GetVersionRequest, IsAppInitializedRequest, RegisterDisputeAgentRequest, UnregisterDisputeAgentRequest, MarketPriceRequest, MarketPricesRequest, MarketPriceInfo, MarketDepthRequest, MarketDepthInfo, GetWalletHeightRequest, GetWalletHeightReply, GetBalancesRequest, XmrBalanceInfo, GetMyOfferRequest, GetOffersRequest, OfferInfo, GetPaymentMethodsRequest, GetPaymentAccountFormRequest, CreatePaymentAccountRequest, ValidateFormFieldRequest, GetPaymentAccountsRequest, CreateCryptoCurrencyPaymentAccountRequest, DeletePaymentAccountRequest, PostOfferRequest, EditOfferRequest, DeactivateOfferRequest, ActivateOfferRequest, CancelOfferRequest, TakeOfferRequest, TradeInfo, GetTradeRequest, GetTradesRequest, GetXmrSeedRequest, GetXmrPrimaryAddressRequest, GetXmrNewSubaddressRequest, ConfirmPaymentSentRequest, ConfirmPaymentReceivedRequest, RequestCancelTradeRequest, ConfirmCancelTradeRequest, DeclineCancelTradeRequest, CompleteTradeRequest, XmrTx, GetXmrTxsRequest, XmrDestination, CreateXmrTxRequest, CreateXmrSweepTxsRequest, RelayXmrTxsRequest, CreateAccountRequest, CreateAccountFromSeedRequest, AccountExistsRequest, DeleteAccountRequest, OpenAccountRequest, IsAccountOpenRequest, CloseAccountRequest, ChangePasswordRequest, BackupAccountRequest, BackupAccountReply, RestoreAccountRequest, RestoreXmrWalletFromSeedRequest, StopRequest, NotificationMessage, RegisterNotificationListenerRequest, SendNotificationRequest, UrlConnection, AddConnectionRequest, RemoveConnectionRequest, GetConnectionRequest, GetConnectionsRequest, SetConnectionRequest, CheckConnectionRequest, GetBestConnectionRequest, SetAutoSwitchRequest, GetAutoSwitchRequest, GetDisputeRequest, GetDisputesRequest, OpenDisputeRequest, ResolveDisputeRequest, SendDisputeChatMessageRequest, SendChatMessageRequest, GetChatMessagesRequest, StartXmrNodeRequest, StopXmrNodeRequest, IsXmrNodeOnlineRequest, GetXmrNodeSettingsRequest } from "./protobuf/grpc_pb";
 import { TradeStatistics3, OfferDirection, PaymentMethod, PaymentAccountForm, PaymentAccountFormField, PaymentAccount, PaymentAccountPayload, Attachment, DisputeResult, Dispute, ChatMessage, XmrNodeSettings } from "./protobuf/pb_pb";
 
 
@@ -1351,6 +1351,46 @@ export default class HavenoClient {
   async confirmPaymentReceived(tradeId: string): Promise<void> {
     try {
       await this._tradesClient.confirmPaymentReceived(new ConfirmPaymentReceivedRequest().setTradeId(tradeId), {password: this._password});
+    } catch (e: any) {
+      throw new HavenoError(e.message, e.code);
+    }
+  }
+
+  /**
+   * Ask the trade peer to cancel a trade, or agree to their request.
+   * The trade is canceled once the buyer confirms.
+   *
+   * @param {string} tradeId - the id of the trade
+   */
+  async requestCancelTrade(tradeId: string): Promise<void> {
+    try {
+      await this._tradesClient.requestCancelTrade(new RequestCancelTradeRequest().setTradeId(tradeId), {password: this._password});
+    } catch (e: any) {
+      throw new HavenoError(e.message, e.code);
+    }
+  }
+
+  /**
+   * Cancel a trade as the buyer after the seller asked or agreed to cancel it.
+   *
+   * @param {string} tradeId - the id of the trade
+   */
+  async confirmCancelTrade(tradeId: string): Promise<void> {
+    try {
+      await this._tradesClient.confirmCancelTrade(new ConfirmCancelTradeRequest().setTradeId(tradeId), {password: this._password});
+    } catch (e: any) {
+      throw new HavenoError(e.message, e.code);
+    }
+  }
+
+  /**
+   * Decline the trade peer's request to cancel a trade.
+   *
+   * @param {string} tradeId - the id of the trade
+   */
+  async declineCancelTrade(tradeId: string): Promise<void> {
+    try {
+      await this._tradesClient.declineCancelTrade(new DeclineCancelTradeRequest().setTradeId(tradeId), {password: this._password});
     } catch (e: any) {
       throw new HavenoError(e.message, e.code);
     }
