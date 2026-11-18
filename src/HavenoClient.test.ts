@@ -2337,6 +2337,63 @@ test("Can go offline while completing a trade (Test, CI, sanity check)", async (
   if (err) throw err;
 });
 
+test("Can cancel a trade by agreement (Test, CI)", async () => {
+
+  // execute trade until deposits unlock
+  const ctx = TradeContext.init({buyerSendsPayment: false});
+  const tradeId = await executeTrade(ctx);
+  const buyer = ctx.getBuyer().havenod!;
+  const seller = ctx.getSeller().havenod!;
+
+  // register to receive notifications
+  const buyerNotifications: NotificationMessage[] = [];
+  const sellerNotifications: NotificationMessage[] = [];
+  await buyer.addNotificationListener(notification => { buyerNotifications.push(notification); });
+  await seller.addNotificationListener(notification => { sellerNotifications.push(notification); });
+  const getTitles = (notifications: NotificationMessage[]) => getNotifications(notifications, NotificationMessage.NotificationType.TRADE_UPDATE, tradeId).map(notification => notification.getTitle());
+
+  // seller asks to cancel, which buyer is notified of and declines
+  await seller.requestCancelTrade(tradeId);
+  await wait(ctx.maxTimePeerNoticeMs);
+  expect((await buyer.getTrade(tradeId)).getSellerCancelState()).toEqual("REQUESTED");
+  expect(getTitles(buyerNotifications)).toContain("Cancel Requested");
+  await buyer.declineCancelTrade(tradeId);
+  expect((await buyer.getTrade(tradeId)).getSellerCancelState()).toEqual("DECLINED");
+  await wait(ctx.maxTimePeerNoticeMs);
+  expect((await seller.getTrade(tradeId)).getSellerCancelState()).toEqual("DECLINED");
+  expect(getTitles(sellerNotifications)).toContain("Cancel Declined");
+
+  // seller cannot ask again, and buyer cannot decline or confirm without a request
+  await expect(seller.requestCancelTrade(tradeId)).rejects.toThrow("Already asked to cancel trade");
+  await expect(buyer.declineCancelTrade(tradeId)).rejects.toThrow("There is no request to cancel trade");
+  await expect(buyer.confirmCancelTrade(tradeId)).rejects.toThrow("Seller has not asked to cancel trade");
+
+  // buyer asks to cancel, which seller agrees to and buyer confirms
+  await buyer.requestCancelTrade(tradeId);
+  await wait(ctx.maxTimePeerNoticeMs);
+  expect((await seller.getTrade(tradeId)).getBuyerCancelState()).toEqual("REQUESTED");
+  expect(getTitles(sellerNotifications)).toContain("Cancel Requested");
+  await seller.requestCancelTrade(tradeId);
+  await wait(ctx.maxTimePeerNoticeMs);
+  expect((await buyer.getTrade(tradeId)).getSellerCancelState()).toEqual("REQUESTED");
+  expect(getTitles(buyerNotifications)).toContain("Cancel Agreed");
+  await buyer.confirmCancelTrade(tradeId);
+  expect((await buyer.getTrade(tradeId)).getIsCancelSigned()).toBe(true);
+
+  // trade is canceled, returning each trader's deposit less half of the payout fee
+  await wait(ctx.maxTimePeerNoticeMs + ctx.maxWalletStartupMs + ctx.walletSyncPeriodMs);
+  for (const peer of [ctx.getBuyer(), ctx.getSeller()]) {
+    const trade = await peer.havenod!.getTrade(tradeId);
+    expect(trade.getIsCanceled()).toBe(true);
+    expect(trade.getIsPayoutPublished()).toBe(true);
+    expect(BigInt(trade.getBuyerPayoutAmount())).toEqual(BigInt(trade.getBuyerSecurityDeposit()) - BigInt(trade.getBuyerPayoutTxFee()));
+    expect(BigInt(trade.getSellerPayoutAmount())).toEqual(BigInt(trade.getSellerSecurityDeposit()) + BigInt(trade.getAmount()) - BigInt(trade.getSellerPayoutTxFee()));
+    const payoutAmount = BigInt(peer === ctx.getBuyer() ? trade.getBuyerPayoutAmount() : trade.getSellerPayoutAmount());
+    expect(BigInt((await peer.havenod!.getBalances()).getBalance()) - BigInt(peer.balancesBeforePayout!.getBalance())).toEqual(payoutAmount);
+    await peer.havenod!.completeTrade(tradeId);
+  }
+});
+
 test("Can resolve a dispute (Test, CI)", async () => {
 
   // create payment accounts
