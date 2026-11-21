@@ -1113,6 +1113,7 @@ class HavenoClient {
      * @param {number} [config.reserveExactAmount] - reserve exact amount needed for offer, incurring on-chain transaction and 10 confirmations before the offer goes live (default = false)
      * @param {boolean} [config.isPrivateOffer] - whether the offer is private (default = false)
      * @param {boolean} [config.buyerAsTakerWithoutDeposit] - waive buyer as taker deposit and fee (default false)
+     * @param {boolean} [config.requireSignedTaker] - require takers to have a signed payment account, only for sell offers with chargeback risk (default false)
      * @param {string} [config.extraInfo] - extra information to include with the offer (optional)
      * @param {string} [config.sourceOfferId] - create a clone of a source offer which shares the same reserved funds. overrides other fields which are immutable or unspecified (optional)
      * @return {OfferInfo} the posted offer
@@ -1147,6 +1148,8 @@ class HavenoClient {
             request.setIsPrivateOffer(true);
         if (config.buyerAsTakerWithoutDeposit)
             request.setBuyerAsTakerWithoutDeposit(true);
+        if (config.requireSignedTaker)
+            request.setRequireSignedTaker(true);
         if (config.extraInfo)
             request.setExtraInfo(config.extraInfo);
         if (config.sourceOfferId)

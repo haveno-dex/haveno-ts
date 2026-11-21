@@ -12555,7 +12555,8 @@ reserveTxHash: jspb.Message.getFieldWithDefault(msg, 17, ""),
 reserveTxHex: jspb.Message.getFieldWithDefault(msg, 18, ""),
 reserveTxKey: jspb.Message.getFieldWithDefault(msg, 19, ""),
 payoutAddress: jspb.Message.getFieldWithDefault(msg, 20, ""),
-challenge: jspb.Message.getFieldWithDefault(msg, 21, "")
+challenge: jspb.Message.getFieldWithDefault(msg, 21, ""),
+accountAgeWitnessHash: msg.getAccountAgeWitnessHash_asB64()
   };
 
   if (includeInstance) {
@@ -12679,6 +12680,10 @@ proto.io.haveno.protobuffer.InitTradeRequest.deserializeBinaryFromReader = funct
     case 21:
       var value = /** @type {string} */ (reader.readString());
       msg.setChallenge(value);
+      break;
+    case 22:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setAccountAgeWitnessHash(value);
       break;
     default:
       reader.skipField();
@@ -12857,6 +12862,13 @@ proto.io.haveno.protobuffer.InitTradeRequest.serializeBinaryToWriter = function(
   if (f.length > 0) {
     writer.writeString(
       21,
+      f
+    );
+  }
+  f = message.getAccountAgeWitnessHash_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
+      22,
       f
     );
   }
@@ -13338,6 +13350,48 @@ proto.io.haveno.protobuffer.InitTradeRequest.prototype.getChallenge = function()
  */
 proto.io.haveno.protobuffer.InitTradeRequest.prototype.setChallenge = function(value) {
   return jspb.Message.setProto3StringField(this, 21, value);
+};
+
+
+/**
+ * optional bytes account_age_witness_hash = 22;
+ * @return {!(string|Uint8Array)}
+ */
+proto.io.haveno.protobuffer.InitTradeRequest.prototype.getAccountAgeWitnessHash = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 22, ""));
+};
+
+
+/**
+ * optional bytes account_age_witness_hash = 22;
+ * This is a type-conversion wrapper around `getAccountAgeWitnessHash()`
+ * @return {string}
+ */
+proto.io.haveno.protobuffer.InitTradeRequest.prototype.getAccountAgeWitnessHash_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getAccountAgeWitnessHash()));
+};
+
+
+/**
+ * optional bytes account_age_witness_hash = 22;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getAccountAgeWitnessHash()`
+ * @return {!Uint8Array}
+ */
+proto.io.haveno.protobuffer.InitTradeRequest.prototype.getAccountAgeWitnessHash_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getAccountAgeWitnessHash()));
+};
+
+
+/**
+ * @param {!(string|Uint8Array)} value
+ * @return {!proto.io.haveno.protobuffer.InitTradeRequest} returns this
+ */
+proto.io.haveno.protobuffer.InitTradeRequest.prototype.setAccountAgeWitnessHash = function(value) {
+  return jspb.Message.setProto3BytesField(this, 22, value);
 };
 
 
@@ -62736,7 +62790,8 @@ buyScreenOtherPaymentMethodId: jspb.Message.getFieldWithDefault(msg, 76, ""),
 sellScreenOtherPaymentMethodId: jspb.Message.getFieldWithDefault(msg, 77, ""),
 depositAddressesExpanded: jspb.Message.getBooleanFieldWithDefault(msg, 78, false),
 tacAcceptedVersion: jspb.Message.getFieldWithDefault(msg, 79, 0),
-useNativeXmrWallet: jspb.Message.getBooleanFieldWithDefault(msg, 80, false)
+useNativeXmrWallet: jspb.Message.getBooleanFieldWithDefault(msg, 80, false),
+repeatNotificationSoundSeconds: jspb.Message.getFieldWithDefault(msg, 81, 0)
   };
 
   if (includeInstance) {
@@ -63105,6 +63160,10 @@ proto.io.haveno.protobuffer.PreferencesPayload.deserializeBinaryFromReader = fun
     case 80:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setUseNativeXmrWallet(value);
+      break;
+    case 81:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setRepeatNotificationSoundSeconds(value);
       break;
     default:
       reader.skipField();
@@ -63695,6 +63754,13 @@ proto.io.haveno.protobuffer.PreferencesPayload.serializeBinaryToWriter = functio
   if (f) {
     writer.writeBool(
       80,
+      f
+    );
+  }
+  f = message.getRepeatNotificationSoundSeconds();
+  if (f !== 0) {
+    writer.writeInt32(
+      81,
       f
     );
   }
@@ -65360,6 +65426,24 @@ proto.io.haveno.protobuffer.PreferencesPayload.prototype.getUseNativeXmrWallet =
  */
 proto.io.haveno.protobuffer.PreferencesPayload.prototype.setUseNativeXmrWallet = function(value) {
   return jspb.Message.setProto3BooleanField(this, 80, value);
+};
+
+
+/**
+ * optional int32 repeat_notification_sound_seconds = 81;
+ * @return {number}
+ */
+proto.io.haveno.protobuffer.PreferencesPayload.prototype.getRepeatNotificationSoundSeconds = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 81, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.io.haveno.protobuffer.PreferencesPayload} returns this
+ */
+proto.io.haveno.protobuffer.PreferencesPayload.prototype.setRepeatNotificationSoundSeconds = function(value) {
+  return jspb.Message.setProto3IntField(this, 81, value);
 };
 
 
@@ -70589,7 +70673,8 @@ proto.io.haveno.protobuffer.AvailabilityResult = {
   UNCONF_TX_LIMIT_HIT: 11,
   MAKER_DENIED_API_USER: 12,
   PRICE_CHECK_FAILED: 13,
-  MAKER_DENIED_TAKER: 14
+  MAKER_DENIED_TAKER: 14,
+  UNSIGNED_TAKER_ACCOUNT: 15
 };
 
 /**

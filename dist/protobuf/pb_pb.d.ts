@@ -1088,6 +1088,11 @@ export class InitTradeRequest extends jspb.Message {
   getChallenge(): string;
   setChallenge(value: string): InitTradeRequest;
 
+  getAccountAgeWitnessHash(): Uint8Array | string;
+  getAccountAgeWitnessHash_asU8(): Uint8Array;
+  getAccountAgeWitnessHash_asB64(): string;
+  setAccountAgeWitnessHash(value: Uint8Array | string): InitTradeRequest;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): InitTradeRequest.AsObject;
   static toObject(includeInstance: boolean, msg: InitTradeRequest): InitTradeRequest.AsObject;
@@ -1119,6 +1124,7 @@ export namespace InitTradeRequest {
     reserveTxKey: string,
     payoutAddress: string,
     challenge: string,
+    accountAgeWitnessHash: Uint8Array | string,
   }
 }
 
@@ -8022,6 +8028,9 @@ export class PreferencesPayload extends jspb.Message {
   getUseNativeXmrWallet(): boolean;
   setUseNativeXmrWallet(value: boolean): PreferencesPayload;
 
+  getRepeatNotificationSoundSeconds(): number;
+  setRepeatNotificationSoundSeconds(value: number): PreferencesPayload;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PreferencesPayload.AsObject;
   static toObject(includeInstance: boolean, msg: PreferencesPayload): PreferencesPayload.AsObject;
@@ -8112,6 +8121,7 @@ export namespace PreferencesPayload {
     depositAddressesExpanded: boolean,
     tacAcceptedVersion: number,
     useNativeXmrWallet: boolean,
+    repeatNotificationSoundSeconds: number,
   }
 }
 
@@ -8953,6 +8963,7 @@ export enum AvailabilityResult {
   MAKER_DENIED_API_USER = 12,
   PRICE_CHECK_FAILED = 13,
   MAKER_DENIED_TAKER = 14,
+  UNSIGNED_TAKER_ACCOUNT = 15,
 }
 export enum MediationResultState { 
   PB_ERROR_MEDIATION_RESULT = 0,
