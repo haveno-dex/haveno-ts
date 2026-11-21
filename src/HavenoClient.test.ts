@@ -397,7 +397,7 @@ const TestConfig = {
     useNativeXmrWallet: false, // start havenods with native wallet libraries instead of monero-wallet-rpc
     haveno: {
         path: "../haveno",
-        version: "1.12.0"
+        version: "1.13.0"
     },
     monerod: { // corresponds to monerod1-local in Makefile
         url: "http://127.0.0.1:" + getNetworkStartPort() + "8081", // 18081, 28081, 38081 for mainnet, local regtest, and stagenet, respectively
