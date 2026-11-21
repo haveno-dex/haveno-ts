@@ -1600,6 +1600,9 @@ export class PostOfferRequest extends jspb.Message {
   getSourceOfferId(): string;
   setSourceOfferId(value: string): PostOfferRequest;
 
+  getRequireSignedTaker(): boolean;
+  setRequireSignedTaker(value: boolean): PostOfferRequest;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PostOfferRequest.AsObject;
   static toObject(includeInstance: boolean, msg: PostOfferRequest): PostOfferRequest.AsObject;
@@ -1625,6 +1628,7 @@ export namespace PostOfferRequest {
     buyerAsTakerWithoutDeposit: boolean,
     extraInfo: string,
     sourceOfferId: string,
+    requireSignedTaker: boolean,
   }
 }
 
@@ -1924,6 +1928,9 @@ export class OfferInfo extends jspb.Message {
   getCity(): string;
   setCity(value: string): OfferInfo;
 
+  getRequireSignedTaker(): boolean;
+  setRequireSignedTaker(value: boolean): OfferInfo;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): OfferInfo.AsObject;
   static toObject(includeInstance: boolean, msg: OfferInfo): OfferInfo.AsObject;
@@ -1971,6 +1978,7 @@ export namespace OfferInfo {
     acceptedCountryCodesList: Array<string>,
     acceptedCountriesString: string,
     city: string,
+    requireSignedTaker: boolean,
   }
 }
 

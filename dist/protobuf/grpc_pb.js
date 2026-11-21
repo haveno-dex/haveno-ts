@@ -15373,7 +15373,8 @@ paymentAccountId: jspb.Message.getFieldWithDefault(msg, 11, ""),
 isPrivateOffer: jspb.Message.getBooleanFieldWithDefault(msg, 12, false),
 buyerAsTakerWithoutDeposit: jspb.Message.getBooleanFieldWithDefault(msg, 13, false),
 extraInfo: jspb.Message.getFieldWithDefault(msg, 14, ""),
-sourceOfferId: jspb.Message.getFieldWithDefault(msg, 15, "")
+sourceOfferId: jspb.Message.getFieldWithDefault(msg, 15, ""),
+requireSignedTaker: jspb.Message.getBooleanFieldWithDefault(msg, 16, false)
   };
 
   if (includeInstance) {
@@ -15469,6 +15470,10 @@ proto.io.haveno.protobuffer.PostOfferRequest.deserializeBinaryFromReader = funct
     case 15:
       var value = /** @type {string} */ (reader.readString());
       msg.setSourceOfferId(value);
+      break;
+    case 16:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setRequireSignedTaker(value);
       break;
     default:
       reader.skipField();
@@ -15601,6 +15606,13 @@ proto.io.haveno.protobuffer.PostOfferRequest.serializeBinaryToWriter = function(
   if (f.length > 0) {
     writer.writeString(
       15,
+      f
+    );
+  }
+  f = message.getRequireSignedTaker();
+  if (f) {
+    writer.writeBool(
+      16,
       f
     );
   }
@@ -15874,6 +15886,24 @@ proto.io.haveno.protobuffer.PostOfferRequest.prototype.getSourceOfferId = functi
  */
 proto.io.haveno.protobuffer.PostOfferRequest.prototype.setSourceOfferId = function(value) {
   return jspb.Message.setProto3StringField(this, 15, value);
+};
+
+
+/**
+ * optional bool require_signed_taker = 16;
+ * @return {boolean}
+ */
+proto.io.haveno.protobuffer.PostOfferRequest.prototype.getRequireSignedTaker = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 16, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.io.haveno.protobuffer.PostOfferRequest} returns this
+ */
+proto.io.haveno.protobuffer.PostOfferRequest.prototype.setRequireSignedTaker = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 16, value);
 };
 
 
@@ -17287,7 +17317,8 @@ challenge: jspb.Message.getFieldWithDefault(msg, 33, ""),
 extraInfo: jspb.Message.getFieldWithDefault(msg, 34, ""),
 acceptedCountryCodesList: (f = jspb.Message.getRepeatedField(msg, 35)) == null ? undefined : f,
 acceptedCountriesString: jspb.Message.getFieldWithDefault(msg, 36, ""),
-city: jspb.Message.getFieldWithDefault(msg, 37, "")
+city: jspb.Message.getFieldWithDefault(msg, 37, ""),
+requireSignedTaker: jspb.Message.getBooleanFieldWithDefault(msg, 38, false)
   };
 
   if (includeInstance) {
@@ -17471,6 +17502,10 @@ proto.io.haveno.protobuffer.OfferInfo.deserializeBinaryFromReader = function(msg
     case 37:
       var value = /** @type {string} */ (reader.readString());
       msg.setCity(value);
+      break;
+    case 38:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setRequireSignedTaker(value);
       break;
     default:
       reader.skipField();
@@ -17757,6 +17792,13 @@ proto.io.haveno.protobuffer.OfferInfo.serializeBinaryToWriter = function(message
   if (f.length > 0) {
     writer.writeString(
       37,
+      f
+    );
+  }
+  f = message.getRequireSignedTaker();
+  if (f) {
+    writer.writeBool(
+      38,
       f
     );
   }
@@ -18445,6 +18487,24 @@ proto.io.haveno.protobuffer.OfferInfo.prototype.getCity = function() {
  */
 proto.io.haveno.protobuffer.OfferInfo.prototype.setCity = function(value) {
   return jspb.Message.setProto3StringField(this, 37, value);
+};
+
+
+/**
+ * optional bool require_signed_taker = 38;
+ * @return {boolean}
+ */
+proto.io.haveno.protobuffer.OfferInfo.prototype.getRequireSignedTaker = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 38, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.io.haveno.protobuffer.OfferInfo} returns this
+ */
+proto.io.haveno.protobuffer.OfferInfo.prototype.setRequireSignedTaker = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 38, value);
 };
 
 
