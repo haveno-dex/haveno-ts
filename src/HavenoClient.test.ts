@@ -2233,6 +2233,42 @@ test("Can complete a passphrase-protected trade which requires a buyer deposit (
   expect(ctx.challenge!.length).toBeGreaterThan(0);
 });
 
+test("Can trade with a custom payment method (Test, CI)", async () => {
+
+  // create accounts for the same custom payment method spelled differently, and for another one
+  const paymentMethodId = HavenoUtils.getPaymentMethodId(PaymentAccountForm.FormId.CUSTOM);
+  const assetCode = "USD";
+  const nameFieldId = PaymentAccountFormField.FieldId.PAYMENT_METHOD_NAME;
+  const makerAccountId = (await createPaymentAccount(user1, assetCode, paymentMethodId, new Map([[nameFieldId, "Orange Money"]]))).getId();
+  const takerAccountId = (await createPaymentAccount(user2, assetCode, paymentMethodId, new Map([[nameFieldId, "orange-money"]]))).getId();
+  const otherAccountId = (await createPaymentAccount(user2, assetCode, paymentMethodId, new Map([[nameFieldId, "Airtel Money"]]))).getId();
+
+  // cannot post offer above the trade limit of custom payment methods
+  const ctx: Partial<TradeContext> = {maker: {havenod: user1}, taker: {havenod: user2}, direction: OfferDirection.SELL, assetCode: assetCode, makerPaymentAccountId: makerAccountId, takerPaymentAccountId: takerAccountId};
+  try {
+    await makeOffer({...ctx, offerAmount: HavenoUtils.xmrToAtomicUnits(3.1)});
+    throw new Error("Should have rejected posting offer above trade limit");
+  } catch (err: any) {
+    if (err.message.indexOf("must be below maximum") < 0) throw err;
+  }
+
+  // post offer which names the custom payment method
+  const offer = await makeOffer(ctx);
+  assert.equal(offer.getCustomPaymentMethodName(), "Orange Money");
+
+  // peer cannot take offer with an account for another custom payment method
+  await wait(TestConfig.trade.maxTimePeerNoticeMs);
+  try {
+    await user2.takeOffer(offer.getId(), otherAccountId);
+    throw new Error("Should have rejected taking offer with an account for another custom payment method");
+  } catch (err: any) {
+    if (err.message.indexOf("cannot take") < 0) throw err;
+  }
+
+  // complete trade with the account for the same custom payment method
+  await executeTrade({...ctx, offerId: offer.getId()});
+});
+
 test("Can complete trades at the same time (Test, CI, sanity check)", async () => {
 
   // create trade contexts with customized payment methods and random amounts
@@ -5072,12 +5108,13 @@ function getCryptoAddress(currencyCode: string): string|undefined {
   }
 }
 
-async function createPaymentAccount(trader: HavenoClient, assetCodes: string, paymentMethodId?: string | PaymentAccountForm.FormId) {
+async function createPaymentAccount(trader: HavenoClient, assetCodes: string, paymentMethodId?: string | PaymentAccountForm.FormId, formValues?: Map<PaymentAccountFormField.FieldId, string>) {
   if (!paymentMethodId) paymentMethodId = isCrypto(assetCodes!) ? PaymentAccountForm.FormId.BLOCK_CHAINS : PaymentAccountForm.FormId.PAY_BY_MAIL;
   const accountForm = await trader.getPaymentAccountForm(paymentMethodId);
 
-  // set trade currencies
+  // set trade currencies and given values
   if (HavenoUtils.hasFormField(accountForm, PaymentAccountFormField.FieldId.TRADE_CURRENCIES)) HavenoUtils.setFormValue(accountForm, PaymentAccountFormField.FieldId.TRADE_CURRENCIES, assetCodes);
+  if (formValues) for (const [fieldId, value] of formValues) HavenoUtils.setFormValue(accountForm, fieldId, value);
 
   // initialize remaining fields
   for (const field of accountForm.getFieldsList()) {
@@ -5153,6 +5190,9 @@ function testOffer(offer: OfferInfo, ctxP?: Partial<TradeContext>, isMyOffer?: b
       expect(offer.getAcceptedCountriesString).toBeDefined();
       expect(offer.getCity()).toBeDefined();
     }
+
+    // test custom payment method name
+    if (offer.getPaymentMethodId() === "CUSTOM") expect(offer.getCustomPaymentMethodName().length).toBeGreaterThan(0);
 
     // TODO: test rest of offer
   }
@@ -5326,6 +5366,8 @@ function getValidFormInputAux(form: PaymentAccountForm, fieldId: PaymentAccountF
       return field.getSupportedCountriesList().map(country => country.getCode()).join(',');
     case PaymentAccountFormField.FieldId.ACCEPTED_BANKS:
       return "123456,Bank XYZ,Bank of America,Wells Fargo";
+    case PaymentAccountFormField.FieldId.ACCOUNT_DATA:
+      return "John Doe (" + havenod.getAppName() + ")\n+225 0700000000";
     case PaymentAccountFormField.FieldId.ACCOUNT_ID:
       return havenod.getAppName() + "_jdoe@no.com";
     case PaymentAccountFormField.FieldId.ACCOUNT_NAME:
@@ -5439,6 +5481,8 @@ function getValidFormInputAux(form: PaymentAccountForm, fieldId: PaymentAccountF
       return havenod.getAppName() + "_john.doe@example.com";
     case PaymentAccountFormField.FieldId.CLABE:
       return "012345678901234567"; // 18-digit Mexican CLABE
+    case PaymentAccountFormField.FieldId.PAYMENT_METHOD_NAME:
+      return "Orange Money"; // must not be the name of a supported payment method
     case PaymentAccountFormField.FieldId.PIX_KEY:
       return "123456789";
     case PaymentAccountFormField.FieldId.POSTAL_ADDRESS:
@@ -5490,6 +5534,8 @@ function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFo
       return "US,XX";
     case PaymentAccountFormField.FieldId.ACCEPTED_BANKS:
       return ""; // at least one accepted bank required
+    case PaymentAccountFormField.FieldId.ACCOUNT_DATA:
+      return "---"; // must contain a letter or number
     case PaymentAccountFormField.FieldId.ACCOUNT_ID:
       return "";
     case PaymentAccountFormField.FieldId.ACCOUNT_NAME:
@@ -5586,6 +5632,8 @@ function getInvalidFormInput(form: PaymentAccountForm, fieldId: PaymentAccountFo
       return "A";
     case PaymentAccountFormField.FieldId.CLABE:
       return "123"; // must be 18 digits
+    case PaymentAccountFormField.FieldId.PAYMENT_METHOD_NAME:
+      return "SEPA"; // name of a supported payment method
     case PaymentAccountFormField.FieldId.PIX_KEY:
       return "A";
     case PaymentAccountFormField.FieldId.POSTAL_ADDRESS:
@@ -5742,6 +5790,12 @@ function testPaymentAccount(account: PaymentAccount, form: PaymentAccountForm) {
         break;
       case PaymentAccountForm.FormId.CASH_AT_ATM:
         expect(account.getPaymentAccountPayload()!.getCashAtAtmAccountPayload()!.getExtraInfo()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.EXTRA_INFO).getValue());
+        expect(account.getTradeCurrenciesList().length).toEqual(1);
+        expect(account.getTradeCurrenciesList()[0].getCode()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.TRADE_CURRENCIES).getValue());
+        break;
+      case PaymentAccountForm.FormId.CUSTOM:
+        expect(account.getPaymentAccountPayload()!.getCustomPaymentMethodAccountPayload()!.getPaymentMethodName()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.PAYMENT_METHOD_NAME).getValue());
+        expect(account.getPaymentAccountPayload()!.getCustomPaymentMethodAccountPayload()!.getAccountData()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.ACCOUNT_DATA).getValue());
         expect(account.getTradeCurrenciesList().length).toEqual(1);
         expect(account.getTradeCurrenciesList()[0].getCode()).toEqual(getFormField(form, PaymentAccountFormField.FieldId.TRADE_CURRENCIES).getValue());
         break;
